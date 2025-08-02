@@ -6,6 +6,7 @@ use App\Models\Province;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Str;
 
 class CityForm
 {
@@ -13,7 +14,11 @@ class CityForm
     {
         return $schema
             ->components([
-                TextInput::make('name')->required(),
+                TextInput::make('name')->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('slug', Str::slug($state));
+                    }),
                 TextInput::make('slug'),
                 Select::make('province_id')
                     ->label('Province')
