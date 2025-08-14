@@ -2,7 +2,9 @@
 
 namespace App\Filament\Rahasia\Resources\Posts\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -18,14 +20,16 @@ class PostsTable
         return $table
             ->columns([
                 TextColumn::make('title')->searchable(),
-                TextColumn::make('excerpt')->searchable(),
+                TextColumn::make('excerpt')
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => strlen($state) > 25 ? mb_substr($state, 0, 25) . '...' : $state),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->searchable(),
-                TextColumn::make('cities.name')
+                TextColumn::make('city.name')
                     ->label('City')
                     ->searchable(),
-                TextColumn::make('provinces.name')
+                TextColumn::make('province.name')
                     ->label('Province')
                     ->searchable(),
                 TextColumn::make('status'),
@@ -44,7 +48,7 @@ class PostsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -52,6 +56,7 @@ class PostsTable
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordUrl(null);
     }
 }

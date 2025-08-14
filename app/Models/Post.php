@@ -9,6 +9,22 @@ class Post extends Model
 {
     use SoftDeletes;
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($post) {
+            if ($post->status === 'published' && is_null($post->published_at)) {
+                $post->published_at = now();
+            }
+        });
+
+        static::updating(function ($post) {
+            if ($post->status === 'published' && is_null($post->published_at)) {
+                $post->published_at = now();
+            }
+        });
+    }
+
     protected $guarded = [
         'id',
     ];
