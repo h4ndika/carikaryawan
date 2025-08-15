@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Repeater;
 
 class PostForm
 {
@@ -58,27 +59,40 @@ class PostForm
 
                 RichEditor::make('ai_prompt')
                     ->label('AI Prompt')
-                    ->default('Deskripsikan hotel ini dengan format Tentang, Fasilitas, Lokasi, Harga')
+                    ->default('Deskripsikan dengan format Tentang, Fasilitas, Lokasi, Harga')
                     ->hintAction(
                         Action::make('generateContent')
                             ->label('Generate AI')
                             ->icon('heroicon-o-sparkles')
                             ->color('primary')
                             ->action(function (\Filament\Schemas\Components\Utilities\Get $get, \Filament\Schemas\Components\Utilities\Set $set) {
-                                $judul = $get('name');
+                                $judul = $get('title');
                                 $cityName = optional(\App\Models\City::find($get('city_id')))->name;
                                 $provinceName = optional(\App\Models\Province::find($get('province_id')))->name;
+                                $category = \App\Models\Category::find($get('category_id'))?->name ?? '';
                                 $promptUser = $get('ai_prompt');
 
-                                $finalPrompt = "Buatkan artikel tentang \"$judul\" yang berlokasi di $cityName, $provinceName. ".
-                                   "Gunakan format berikut: $promptUser. ".
+                                $finalPrompt = "Buatkan artikel dengan Judul : \"$judul\", yang berlokasi di $cityName, $provinceName. ".
+                                   "Artikel ini kategorinya $category".
                                    "Tulis dengan bahasa Indonesia yang natural dan menarik.".
-                                   "Berikan output hanya dalam format HTML tanpa tambahan teks lain seperti penutup atau salam.";
+                                   "Format artikel dalam HTML, jangan gunakan blok markdown atau backticks. Dan tanpa tambahan teks lain seperti penutup atau salam.".
+                                   "Tambahkan juga data detail dalam JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal:".
+                                   "- Kalau kategori seperti Hotel, Tempat Makan dll : harga, lokasi, jam_buka, fasilitas".
+                                   "- Kalau kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan".
+                                   "- dan selanjutnya tolong pikirkan key nya berdasarkan kategori lainnya".
+                                   "Dengan Format Universal seperti ini :".
+                                   "{
+                                        \"key1\": \"value1\",
+                                        \"key2\": \"value2\",
+                                        \"key3\": \"value3\",
+                                        \"key4\": \"value4\",
+                                    }".
+                                   "Prompt tambahan: $promptUser";
 
                                 $response = OpenAI::chat()->create([
                                     'model' => 'gpt-4o-mini',
                                     'messages' => [
-                                        ['role' => 'system', 'content' => 'Kamu adalah penulis artikel profesional dan membuat konten HTML untuk website.'],
+                                        ['role' => 'system', 'content' => 'Kamu adalah penulis artikel SEO profesional dan membuat konten HTML untuk website.'],
                                         ['role' => 'user', 'content' => $finalPrompt],
                                     ],
                                     'temperature' => 0.7,
@@ -96,7 +110,29 @@ class PostForm
                                     //throw $th;
                                 }
 
+                                try {
+                                    // Ambil bagian JSON
+                                    preg_match('/<json>(.*?)<\/json>/s', $generated, $jsonMatch);
+                                    $detailsArray = [];
+                                    if (!empty($jsonMatch[1])) {
+                                        $jsonData = json_decode(trim($jsonMatch[1]), true);
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($jsonData)) {
+                                            foreach ($jsonData as $key => $value) {
+                                                $detailsArray[] = [
+                                                    'meta_key'   => $key,
+                                                    'meta_value' => is_array($value) ? implode(", ", $value) : $value,
+                                                ];
+                                            }
+                                        }
+                                        // Hapus JSON dari HTML
+                                        $generated = preg_replace('/<json>.*<\/json>/s', '', $generated);
+                                    }
+                                } catch (\Throwable $th) {
+                                    //throw $th;
+                                }
+
                                 $set('content', trim($generated));
+                                $set('details', $detailsArray);
                             })
                         ),
 
@@ -104,6 +140,15 @@ class PostForm
                     ->label('Konten')
                     ->columnSpanFull()
                     ->required(),
+                Repeater::make('details')
+                    ->label('Detail Tambahan')
+                    ->schema([
+                        TextInput::make('meta_key')->label('Key')->required(),
+                        Textarea::make('meta_value')->label('Value')->rows(2),
+                    ])
+                    ->minItems(0)
+                    ->columnSpanFull()
+                    ->dehydrated(),
                 Textarea::make('excerpt')
                     ->label('Excerpt'),
                 Select::make('status')
