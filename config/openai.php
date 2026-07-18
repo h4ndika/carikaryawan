@@ -31,10 +31,23 @@ return [
     | OpenAI Base URL
     |--------------------------------------------------------------------------
     |
-    | Here you may specify your OpenAI API base URL used to make requests. This
-    | is needed if using a custom API endpoint. Defaults to: api.openai.com/v1
+    | OpenAI-compatible base URI (tanpa https://). Contoh:
+    | - api.openai.com/v1
+    | - api.groq.com/openai/v1
+    | - openrouter.ai/api/v1
+    | - api.deepseek.com
     */
     'base_uri' => env('OPENAI_BASE_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Chat Model
+    |--------------------------------------------------------------------------
+    |
+    | Nama model untuk chat completions. Harus cocok dengan provider di base_uri.
+    | Contoh: gpt-4o-mini, deepseek-chat, llama-3.3-70b-versatile
+    */
+    'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
 
     /*
     |--------------------------------------------------------------------------

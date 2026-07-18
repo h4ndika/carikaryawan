@@ -29,23 +29,54 @@ class Post extends Model
         'id',
     ];
 
-    public function province() {
+    public function province()
+    {
         return $this->belongsTo(Province::class);
     }
 
-    public function city() {
+    public function city()
+    {
         return $this->belongsTo(City::class);
     }
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function details() {
+    public function details()
+    {
         return $this->hasMany(PostDetail::class);
     }
 
-    public function images() {
-        return $this->hasMany(PostImage::class);
+    public function images()
+    {
+        return $this->hasMany(PostImage::class)->orderBy('order');
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    /** SEO helpers — fallback ke field konten jika meta kosong. */
+    public function seoTitle(): string
+    {
+        return $this->meta_title ?: (string) $this->title;
+    }
+
+    public function seoDescription(): string
+    {
+        return $this->meta_description ?: (string) ($this->excerpt ?? '');
+    }
+
+    public function seoImage(): string
+    {
+        return $this->og_image ?: (string) ($this->thumbnail ?? '');
+    }
+
+    public function seoRobots(): string
+    {
+        return $this->robots ?: 'index,follow';
     }
 }
