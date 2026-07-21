@@ -10,7 +10,13 @@ class City extends Model
         'id',
     ];
 
-    public function province() {
+    public function province()
+    {
         return $this->belongsTo(Province::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }

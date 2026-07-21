@@ -56,7 +56,19 @@ class PostShow extends Component
                 'slug' => $this->post->slug,
             ]);
 
-        return view('livewire.post-show')
+        $related = Post::query()
+            ->published()
+            ->where('category_id', $this->post->category_id)
+            ->where('city_id', $this->post->city_id)
+            ->where('id', '!=', $this->post->id)
+            ->with(['category', 'city', 'province'])
+            ->latest('published_at')
+            ->limit(6)
+            ->get();
+
+        return view('livewire.post-show', [
+            'related' => $related,
+        ])
             ->layout('layouts.app', [
                 'metaDescription' => $this->post->seoDescription(),
                 'metaRobots' => $this->post->seoRobots(),

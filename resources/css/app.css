@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +6,98 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    --color-brand-50: #eef8ff;
+    --color-brand-100: #d9efff;
+    --color-brand-200: #bce4ff;
+    --color-brand-300: #8ed4ff;
+    --color-brand-400: #59baff;
+    --color-brand-500: #3399ff;
+    --color-brand-600: #1a78f5;
+    --color-brand-700: #1360e1;
+    --color-brand-800: #164eb6;
+    --color-brand-900: #18448f;
+    --color-brand-950: #132a57;
+
+    --color-accent-400: #34d399;
+    --color-accent-500: #10b981;
+    --color-accent-600: #059669;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Soft scrollbar */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #f4f7fb;
+}
+
+/* Hide empty image broken icon */
+img {
+    color: transparent;
+}
+
+/* Content prose inside post */
+.post-content a {
+    color: var(--color-brand-700);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.post-content img {
+    border-radius: 0.75rem;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Card hover lift */
+.card-lift {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 12px 28px -8px rgb(19 42 87 / 0.18),
+        0 4px 10px -4px rgb(19 42 87 / 0.08);
+}
+
+/* Hero gradient mesh */
+.hero-mesh {
+    background:
+        radial-gradient(
+            ellipse 80% 60% at 20% 40%,
+            rgb(26 120 245 / 0.35),
+            transparent 55%
+        ),
+        radial-gradient(
+            ellipse 70% 50% at 80% 20%,
+            rgb(16 185 129 / 0.25),
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse 60% 40% at 60% 80%,
+            rgb(89 186 255 / 0.2),
+            transparent 45%
+        ),
+        linear-gradient(145deg, #0b1f44 0%, #1360e1 45%, #0d9488 100%);
+}
+
+/* Category pill scrollbar */
+.chip-scroll {
+    scrollbar-width: none;
+}
+.chip-scroll::-webkit-scrollbar {
+    display: none;
 }
