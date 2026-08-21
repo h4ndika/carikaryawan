@@ -1,0 +1,3828 @@
+[
+  {
+    "type": "province",
+    "name": "Aceh",
+    "label": "Provinsi Aceh",
+    "value": "Aceh, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sumatera Utara",
+    "label": "Provinsi Sumatera Utara",
+    "value": "Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sumatera Barat",
+    "label": "Provinsi Sumatera Barat",
+    "value": "Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Riau",
+    "label": "Provinsi Riau",
+    "value": "Riau, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Jambi",
+    "label": "Provinsi Jambi",
+    "value": "Jambi, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sumatera Selatan",
+    "label": "Provinsi Sumatera Selatan",
+    "value": "Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Bengkulu",
+    "label": "Provinsi Bengkulu",
+    "value": "Bengkulu, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Lampung",
+    "label": "Provinsi Lampung",
+    "value": "Lampung, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kepulauan Bangka Belitung",
+    "label": "Provinsi Kepulauan Bangka Belitung",
+    "value": "Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kepulauan Riau",
+    "label": "Provinsi Kepulauan Riau",
+    "value": "Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Daerah Khusus Ibukota Jakarta",
+    "label": "Provinsi Daerah Khusus Ibukota Jakarta",
+    "value": "Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Jawa Barat",
+    "label": "Provinsi Jawa Barat",
+    "value": "Jawa Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Jawa Tengah",
+    "label": "Provinsi Jawa Tengah",
+    "value": "Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Daerah Istimewa Yogyakarta",
+    "label": "Provinsi Daerah Istimewa Yogyakarta",
+    "value": "Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Jawa Timur",
+    "label": "Provinsi Jawa Timur",
+    "value": "Jawa Timur, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Banten",
+    "label": "Provinsi Banten",
+    "value": "Banten, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Bali",
+    "label": "Provinsi Bali",
+    "value": "Bali, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Nusa Tenggara Barat",
+    "label": "Provinsi Nusa Tenggara Barat",
+    "value": "Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Nusa Tenggara Timur",
+    "label": "Provinsi Nusa Tenggara Timur",
+    "value": "Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kalimantan Barat",
+    "label": "Provinsi Kalimantan Barat",
+    "value": "Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kalimantan Tengah",
+    "label": "Provinsi Kalimantan Tengah",
+    "value": "Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kalimantan Selatan",
+    "label": "Provinsi Kalimantan Selatan",
+    "value": "Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kalimantan Timur",
+    "label": "Provinsi Kalimantan Timur",
+    "value": "Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Kalimantan Utara",
+    "label": "Provinsi Kalimantan Utara",
+    "value": "Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sulawesi Utara",
+    "label": "Provinsi Sulawesi Utara",
+    "value": "Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sulawesi Tengah",
+    "label": "Provinsi Sulawesi Tengah",
+    "value": "Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sulawesi Selatan",
+    "label": "Provinsi Sulawesi Selatan",
+    "value": "Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sulawesi Tenggara",
+    "label": "Provinsi Sulawesi Tenggara",
+    "value": "Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Gorontalo",
+    "label": "Provinsi Gorontalo",
+    "value": "Gorontalo, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Sulawesi Barat",
+    "label": "Provinsi Sulawesi Barat",
+    "value": "Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Maluku",
+    "label": "Provinsi Maluku",
+    "value": "Maluku, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Maluku Utara",
+    "label": "Provinsi Maluku Utara",
+    "value": "Maluku Utara, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua",
+    "label": "Provinsi Papua",
+    "value": "Papua, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua Barat",
+    "label": "Provinsi Papua Barat",
+    "value": "Papua Barat, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua Selatan",
+    "label": "Provinsi Papua Selatan",
+    "value": "Papua Selatan, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua Tengah",
+    "label": "Provinsi Papua Tengah",
+    "value": "Papua Tengah, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua Pegunungan",
+    "label": "Provinsi Papua Pegunungan",
+    "value": "Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "province",
+    "name": "Papua Barat Daya",
+    "label": "Provinsi Papua Barat Daya",
+    "value": "Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Selatan",
+    "province": "Aceh",
+    "label": "Kab. Aceh Selatan (Aceh)",
+    "value": "Kabupaten Aceh Selatan, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Tenggara",
+    "province": "Aceh",
+    "label": "Kab. Aceh Tenggara (Aceh)",
+    "value": "Kabupaten Aceh Tenggara, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Timur",
+    "province": "Aceh",
+    "label": "Kab. Aceh Timur (Aceh)",
+    "value": "Kabupaten Aceh Timur, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Tengah",
+    "province": "Aceh",
+    "label": "Kab. Aceh Tengah (Aceh)",
+    "value": "Kabupaten Aceh Tengah, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Barat",
+    "province": "Aceh",
+    "label": "Kab. Aceh Barat (Aceh)",
+    "value": "Kabupaten Aceh Barat, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Besar",
+    "province": "Aceh",
+    "label": "Kab. Aceh Besar (Aceh)",
+    "value": "Kabupaten Aceh Besar, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pidie",
+    "province": "Aceh",
+    "label": "Kab. Pidie (Aceh)",
+    "value": "Kabupaten Pidie, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Utara",
+    "province": "Aceh",
+    "label": "Kab. Aceh Utara (Aceh)",
+    "value": "Kabupaten Aceh Utara, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Simeulue",
+    "province": "Aceh",
+    "label": "Kab. Simeulue (Aceh)",
+    "value": "Kabupaten Simeulue, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Singkil",
+    "province": "Aceh",
+    "label": "Kab. Aceh Singkil (Aceh)",
+    "value": "Kabupaten Aceh Singkil, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bireuen",
+    "province": "Aceh",
+    "label": "Kab. Bireuen (Aceh)",
+    "value": "Kabupaten Bireuen, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Barat Daya",
+    "province": "Aceh",
+    "label": "Kab. Aceh Barat Daya (Aceh)",
+    "value": "Kabupaten Aceh Barat Daya, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gayo Lues",
+    "province": "Aceh",
+    "label": "Kab. Gayo Lues (Aceh)",
+    "value": "Kabupaten Gayo Lues, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Jaya",
+    "province": "Aceh",
+    "label": "Kab. Aceh Jaya (Aceh)",
+    "value": "Kabupaten Aceh Jaya, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nagan Raya",
+    "province": "Aceh",
+    "label": "Kab. Nagan Raya (Aceh)",
+    "value": "Kabupaten Nagan Raya, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Aceh Tamiang",
+    "province": "Aceh",
+    "label": "Kab. Aceh Tamiang (Aceh)",
+    "value": "Kabupaten Aceh Tamiang, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bener Meriah",
+    "province": "Aceh",
+    "label": "Kab. Bener Meriah (Aceh)",
+    "value": "Kabupaten Bener Meriah, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pidie Jaya",
+    "province": "Aceh",
+    "label": "Kab. Pidie Jaya (Aceh)",
+    "value": "Kabupaten Pidie Jaya, Aceh, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Banda Aceh",
+    "province": "Aceh",
+    "label": "Kota Banda Aceh (Aceh)",
+    "value": "Kota Banda Aceh, Aceh, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sabang",
+    "province": "Aceh",
+    "label": "Kota Sabang (Aceh)",
+    "value": "Kota Sabang, Aceh, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Lhokseumawe",
+    "province": "Aceh",
+    "label": "Kota Lhokseumawe (Aceh)",
+    "value": "Kota Lhokseumawe, Aceh, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Langsa",
+    "province": "Aceh",
+    "label": "Kota Langsa (Aceh)",
+    "value": "Kota Langsa, Aceh, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Subulussalam",
+    "province": "Aceh",
+    "label": "Kota Subulussalam (Aceh)",
+    "value": "Kota Subulussalam, Aceh, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tapanuli Tengah",
+    "province": "Sumatera Utara",
+    "label": "Kab. Tapanuli Tengah (Sumatera Utara)",
+    "value": "Kabupaten Tapanuli Tengah, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tapanuli Utara",
+    "province": "Sumatera Utara",
+    "label": "Kab. Tapanuli Utara (Sumatera Utara)",
+    "value": "Kabupaten Tapanuli Utara, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tapanuli Selatan",
+    "province": "Sumatera Utara",
+    "label": "Kab. Tapanuli Selatan (Sumatera Utara)",
+    "value": "Kabupaten Tapanuli Selatan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nias",
+    "province": "Sumatera Utara",
+    "label": "Kab. Nias (Sumatera Utara)",
+    "value": "Kabupaten Nias, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Langkat",
+    "province": "Sumatera Utara",
+    "label": "Kab. Langkat (Sumatera Utara)",
+    "value": "Kabupaten Langkat, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Karo",
+    "province": "Sumatera Utara",
+    "label": "Kab. Karo (Sumatera Utara)",
+    "value": "Kabupaten Karo, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Deli Serdang",
+    "province": "Sumatera Utara",
+    "label": "Kab. Deli Serdang (Sumatera Utara)",
+    "value": "Kabupaten Deli Serdang, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Simalungun",
+    "province": "Sumatera Utara",
+    "label": "Kab. Simalungun (Sumatera Utara)",
+    "value": "Kabupaten Simalungun, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Asahan",
+    "province": "Sumatera Utara",
+    "label": "Kab. Asahan (Sumatera Utara)",
+    "value": "Kabupaten Asahan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Labuhanbatu",
+    "province": "Sumatera Utara",
+    "label": "Kab. Labuhanbatu (Sumatera Utara)",
+    "value": "Kabupaten Labuhanbatu, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Dairi",
+    "province": "Sumatera Utara",
+    "label": "Kab. Dairi (Sumatera Utara)",
+    "value": "Kabupaten Dairi, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Toba",
+    "province": "Sumatera Utara",
+    "label": "Kab. Toba (Sumatera Utara)",
+    "value": "Kabupaten Toba, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mandailing Natal",
+    "province": "Sumatera Utara",
+    "label": "Kab. Mandailing Natal (Sumatera Utara)",
+    "value": "Kabupaten Mandailing Natal, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nias Selatan",
+    "province": "Sumatera Utara",
+    "label": "Kab. Nias Selatan (Sumatera Utara)",
+    "value": "Kabupaten Nias Selatan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pakpak Bharat",
+    "province": "Sumatera Utara",
+    "label": "Kab. Pakpak Bharat (Sumatera Utara)",
+    "value": "Kabupaten Pakpak Bharat, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Humbang Hasundutan",
+    "province": "Sumatera Utara",
+    "label": "Kab. Humbang Hasundutan (Sumatera Utara)",
+    "value": "Kabupaten Humbang Hasundutan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Samosir",
+    "province": "Sumatera Utara",
+    "label": "Kab. Samosir (Sumatera Utara)",
+    "value": "Kabupaten Samosir, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Serdang Bedagai",
+    "province": "Sumatera Utara",
+    "label": "Kab. Serdang Bedagai (Sumatera Utara)",
+    "value": "Kabupaten Serdang Bedagai, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Batu Bara",
+    "province": "Sumatera Utara",
+    "label": "Kab. Batu Bara (Sumatera Utara)",
+    "value": "Kabupaten Batu Bara, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Padang Lawas Utara",
+    "province": "Sumatera Utara",
+    "label": "Kab. Padang Lawas Utara (Sumatera Utara)",
+    "value": "Kabupaten Padang Lawas Utara, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Padang Lawas",
+    "province": "Sumatera Utara",
+    "label": "Kab. Padang Lawas (Sumatera Utara)",
+    "value": "Kabupaten Padang Lawas, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Labuhanbatu Selatan",
+    "province": "Sumatera Utara",
+    "label": "Kab. Labuhanbatu Selatan (Sumatera Utara)",
+    "value": "Kabupaten Labuhanbatu Selatan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Labuhanbatu Utara",
+    "province": "Sumatera Utara",
+    "label": "Kab. Labuhanbatu Utara (Sumatera Utara)",
+    "value": "Kabupaten Labuhanbatu Utara, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nias Utara",
+    "province": "Sumatera Utara",
+    "label": "Kab. Nias Utara (Sumatera Utara)",
+    "value": "Kabupaten Nias Utara, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nias Barat",
+    "province": "Sumatera Utara",
+    "label": "Kab. Nias Barat (Sumatera Utara)",
+    "value": "Kabupaten Nias Barat, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Medan",
+    "province": "Sumatera Utara",
+    "label": "Kota Medan (Sumatera Utara)",
+    "value": "Kota Medan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pematangsiantar",
+    "province": "Sumatera Utara",
+    "label": "Kota Pematangsiantar (Sumatera Utara)",
+    "value": "Kota Pematangsiantar, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sibolga",
+    "province": "Sumatera Utara",
+    "label": "Kota Sibolga (Sumatera Utara)",
+    "value": "Kota Sibolga, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tanjungbalai",
+    "province": "Sumatera Utara",
+    "label": "Kota Tanjungbalai (Sumatera Utara)",
+    "value": "Kota Tanjungbalai, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Binjai",
+    "province": "Sumatera Utara",
+    "label": "Kota Binjai (Sumatera Utara)",
+    "value": "Kota Binjai, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tebing Tinggi",
+    "province": "Sumatera Utara",
+    "label": "Kota Tebing Tinggi (Sumatera Utara)",
+    "value": "Kota Tebing Tinggi, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Padangsidimpuan",
+    "province": "Sumatera Utara",
+    "label": "Kota Padangsidimpuan (Sumatera Utara)",
+    "value": "Kota Padangsidimpuan, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Gunungsitoli",
+    "province": "Sumatera Utara",
+    "label": "Kota Gunungsitoli (Sumatera Utara)",
+    "value": "Kota Gunungsitoli, Sumatera Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pesisir Selatan",
+    "province": "Sumatera Barat",
+    "label": "Kab. Pesisir Selatan (Sumatera Barat)",
+    "value": "Kabupaten Pesisir Selatan, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Solok",
+    "province": "Sumatera Barat",
+    "label": "Kab. Solok (Sumatera Barat)",
+    "value": "Kabupaten Solok, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sijunjung",
+    "province": "Sumatera Barat",
+    "label": "Kab. Sijunjung (Sumatera Barat)",
+    "value": "Kabupaten Sijunjung, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanah Datar",
+    "province": "Sumatera Barat",
+    "label": "Kab. Tanah Datar (Sumatera Barat)",
+    "value": "Kabupaten Tanah Datar, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Padang Pariaman",
+    "province": "Sumatera Barat",
+    "label": "Kab. Padang Pariaman (Sumatera Barat)",
+    "value": "Kabupaten Padang Pariaman, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Agam",
+    "province": "Sumatera Barat",
+    "label": "Kab. Agam (Sumatera Barat)",
+    "value": "Kabupaten Agam, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lima Puluh Kota",
+    "province": "Sumatera Barat",
+    "label": "Kab. Lima Puluh Kota (Sumatera Barat)",
+    "value": "Kabupaten Lima Puluh Kota, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pasaman",
+    "province": "Sumatera Barat",
+    "label": "Kab. Pasaman (Sumatera Barat)",
+    "value": "Kabupaten Pasaman, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Mentawai",
+    "province": "Sumatera Barat",
+    "label": "Kab. Kepulauan Mentawai (Sumatera Barat)",
+    "value": "Kabupaten Kepulauan Mentawai, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Dharmasraya",
+    "province": "Sumatera Barat",
+    "label": "Kab. Dharmasraya (Sumatera Barat)",
+    "value": "Kabupaten Dharmasraya, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Solok Selatan",
+    "province": "Sumatera Barat",
+    "label": "Kab. Solok Selatan (Sumatera Barat)",
+    "value": "Kabupaten Solok Selatan, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pasaman Barat",
+    "province": "Sumatera Barat",
+    "label": "Kab. Pasaman Barat (Sumatera Barat)",
+    "value": "Kabupaten Pasaman Barat, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Padang",
+    "province": "Sumatera Barat",
+    "label": "Kota Padang (Sumatera Barat)",
+    "value": "Kota Padang, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Solok",
+    "province": "Sumatera Barat",
+    "label": "Kota Solok (Sumatera Barat)",
+    "value": "Kota Solok, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sawahlunto",
+    "province": "Sumatera Barat",
+    "label": "Kota Sawahlunto (Sumatera Barat)",
+    "value": "Kota Sawahlunto, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Padang Panjang",
+    "province": "Sumatera Barat",
+    "label": "Kota Padang Panjang (Sumatera Barat)",
+    "value": "Kota Padang Panjang, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bukittinggi",
+    "province": "Sumatera Barat",
+    "label": "Kota Bukittinggi (Sumatera Barat)",
+    "value": "Kota Bukittinggi, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Payakumbuh",
+    "province": "Sumatera Barat",
+    "label": "Kota Payakumbuh (Sumatera Barat)",
+    "value": "Kota Payakumbuh, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pariaman",
+    "province": "Sumatera Barat",
+    "label": "Kota Pariaman (Sumatera Barat)",
+    "value": "Kota Pariaman, Sumatera Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kampar",
+    "province": "Riau",
+    "label": "Kab. Kampar (Riau)",
+    "value": "Kabupaten Kampar, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Indragiri Hulu",
+    "province": "Riau",
+    "label": "Kab. Indragiri Hulu (Riau)",
+    "value": "Kabupaten Indragiri Hulu, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bengkalis",
+    "province": "Riau",
+    "label": "Kab. Bengkalis (Riau)",
+    "value": "Kabupaten Bengkalis, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Indragiri Hilir",
+    "province": "Riau",
+    "label": "Kab. Indragiri Hilir (Riau)",
+    "value": "Kabupaten Indragiri Hilir, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pelalawan",
+    "province": "Riau",
+    "label": "Kab. Pelalawan (Riau)",
+    "value": "Kabupaten Pelalawan, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Rokan Hulu",
+    "province": "Riau",
+    "label": "Kab. Rokan Hulu (Riau)",
+    "value": "Kabupaten Rokan Hulu, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Rokan Hilir",
+    "province": "Riau",
+    "label": "Kab. Rokan Hilir (Riau)",
+    "value": "Kabupaten Rokan Hilir, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Siak",
+    "province": "Riau",
+    "label": "Kab. Siak (Riau)",
+    "value": "Kabupaten Siak, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kuantan Singingi",
+    "province": "Riau",
+    "label": "Kab. Kuantan Singingi (Riau)",
+    "value": "Kabupaten Kuantan Singingi, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Meranti",
+    "province": "Riau",
+    "label": "Kab. Kepulauan Meranti (Riau)",
+    "value": "Kabupaten Kepulauan Meranti, Riau, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pekanbaru",
+    "province": "Riau",
+    "label": "Kota Pekanbaru (Riau)",
+    "value": "Kota Pekanbaru, Riau, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Dumai",
+    "province": "Riau",
+    "label": "Kota Dumai (Riau)",
+    "value": "Kota Dumai, Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kerinci",
+    "province": "Jambi",
+    "label": "Kab. Kerinci (Jambi)",
+    "value": "Kabupaten Kerinci, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Merangin",
+    "province": "Jambi",
+    "label": "Kab. Merangin (Jambi)",
+    "value": "Kabupaten Merangin, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sarolangun",
+    "province": "Jambi",
+    "label": "Kab. Sarolangun (Jambi)",
+    "value": "Kabupaten Sarolangun, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Batanghari",
+    "province": "Jambi",
+    "label": "Kab. Batanghari (Jambi)",
+    "value": "Kabupaten Batanghari, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Muaro Jambi",
+    "province": "Jambi",
+    "label": "Kab. Muaro Jambi (Jambi)",
+    "value": "Kabupaten Muaro Jambi, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanjung Jabung Barat",
+    "province": "Jambi",
+    "label": "Kab. Tanjung Jabung Barat (Jambi)",
+    "value": "Kabupaten Tanjung Jabung Barat, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanjung Jabung Timur",
+    "province": "Jambi",
+    "label": "Kab. Tanjung Jabung Timur (Jambi)",
+    "value": "Kabupaten Tanjung Jabung Timur, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bungo",
+    "province": "Jambi",
+    "label": "Kab. Bungo (Jambi)",
+    "value": "Kabupaten Bungo, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tebo",
+    "province": "Jambi",
+    "label": "Kab. Tebo (Jambi)",
+    "value": "Kabupaten Tebo, Jambi, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Jambi",
+    "province": "Jambi",
+    "label": "Kota Jambi (Jambi)",
+    "value": "Kota Jambi, Jambi, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sungai Penuh",
+    "province": "Jambi",
+    "label": "Kota Sungai Penuh (Jambi)",
+    "value": "Kota Sungai Penuh, Jambi, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ogan Komering Ulu",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Ogan Komering Ulu (Sumatera Selatan)",
+    "value": "Kabupaten Ogan Komering Ulu, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ogan Komering Ilir",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Ogan Komering Ilir (Sumatera Selatan)",
+    "value": "Kabupaten Ogan Komering Ilir, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Muara Enim",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Muara Enim (Sumatera Selatan)",
+    "value": "Kabupaten Muara Enim, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lahat",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Lahat (Sumatera Selatan)",
+    "value": "Kabupaten Lahat, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Musi Rawas",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Musi Rawas (Sumatera Selatan)",
+    "value": "Kabupaten Musi Rawas, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Musi Banyuasin",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Musi Banyuasin (Sumatera Selatan)",
+    "value": "Kabupaten Musi Banyuasin, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banyuasin",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Banyuasin (Sumatera Selatan)",
+    "value": "Kabupaten Banyuasin, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ogan Komering Ulu Timur",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Ogan Komering Ulu Timur (Sumatera Selatan)",
+    "value": "Kabupaten Ogan Komering Ulu Timur, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ogan Komering Ulu Selatan",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Ogan Komering Ulu Selatan (Sumatera Selatan)",
+    "value": "Kabupaten Ogan Komering Ulu Selatan, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ogan Ilir",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Ogan Ilir (Sumatera Selatan)",
+    "value": "Kabupaten Ogan Ilir, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Empat Lawang",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Empat Lawang (Sumatera Selatan)",
+    "value": "Kabupaten Empat Lawang, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Penukal Abab Lematang Ilir",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Penukal Abab Lematang Ilir (Sumatera Selatan)",
+    "value": "Kabupaten Penukal Abab Lematang Ilir, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Musi Rawas Utara",
+    "province": "Sumatera Selatan",
+    "label": "Kab. Musi Rawas Utara (Sumatera Selatan)",
+    "value": "Kabupaten Musi Rawas Utara, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Palembang",
+    "province": "Sumatera Selatan",
+    "label": "Kota Palembang (Sumatera Selatan)",
+    "value": "Kota Palembang, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pagar Alam",
+    "province": "Sumatera Selatan",
+    "label": "Kota Pagar Alam (Sumatera Selatan)",
+    "value": "Kota Pagar Alam, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Lubuk Linggau",
+    "province": "Sumatera Selatan",
+    "label": "Kota Lubuk Linggau (Sumatera Selatan)",
+    "value": "Kota Lubuk Linggau, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Prabumulih",
+    "province": "Sumatera Selatan",
+    "label": "Kota Prabumulih (Sumatera Selatan)",
+    "value": "Kota Prabumulih, Sumatera Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bengkulu Selatan",
+    "province": "Bengkulu",
+    "label": "Kab. Bengkulu Selatan (Bengkulu)",
+    "value": "Kabupaten Bengkulu Selatan, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Rejang Lebong",
+    "province": "Bengkulu",
+    "label": "Kab. Rejang Lebong (Bengkulu)",
+    "value": "Kabupaten Rejang Lebong, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bengkulu Utara",
+    "province": "Bengkulu",
+    "label": "Kab. Bengkulu Utara (Bengkulu)",
+    "value": "Kabupaten Bengkulu Utara, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kaur",
+    "province": "Bengkulu",
+    "label": "Kab. Kaur (Bengkulu)",
+    "value": "Kabupaten Kaur, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Seluma",
+    "province": "Bengkulu",
+    "label": "Kab. Seluma (Bengkulu)",
+    "value": "Kabupaten Seluma, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mukomuko",
+    "province": "Bengkulu",
+    "label": "Kab. Mukomuko (Bengkulu)",
+    "value": "Kabupaten Mukomuko, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lebong",
+    "province": "Bengkulu",
+    "label": "Kab. Lebong (Bengkulu)",
+    "value": "Kabupaten Lebong, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepahiang",
+    "province": "Bengkulu",
+    "label": "Kab. Kepahiang (Bengkulu)",
+    "value": "Kabupaten Kepahiang, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bengkulu Tengah",
+    "province": "Bengkulu",
+    "label": "Kab. Bengkulu Tengah (Bengkulu)",
+    "value": "Kabupaten Bengkulu Tengah, Bengkulu, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bengkulu",
+    "province": "Bengkulu",
+    "label": "Kota Bengkulu (Bengkulu)",
+    "value": "Kota Bengkulu, Bengkulu, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lampung Selatan",
+    "province": "Lampung",
+    "label": "Kab. Lampung Selatan (Lampung)",
+    "value": "Kabupaten Lampung Selatan, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lampung Tengah",
+    "province": "Lampung",
+    "label": "Kab. Lampung Tengah (Lampung)",
+    "value": "Kabupaten Lampung Tengah, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lampung Utara",
+    "province": "Lampung",
+    "label": "Kab. Lampung Utara (Lampung)",
+    "value": "Kabupaten Lampung Utara, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lampung Barat",
+    "province": "Lampung",
+    "label": "Kab. Lampung Barat (Lampung)",
+    "value": "Kabupaten Lampung Barat, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tulang Bawang",
+    "province": "Lampung",
+    "label": "Kab. Tulang Bawang (Lampung)",
+    "value": "Kabupaten Tulang Bawang, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanggamus",
+    "province": "Lampung",
+    "label": "Kab. Tanggamus (Lampung)",
+    "value": "Kabupaten Tanggamus, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lampung Timur",
+    "province": "Lampung",
+    "label": "Kab. Lampung Timur (Lampung)",
+    "value": "Kabupaten Lampung Timur, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Way Kanan",
+    "province": "Lampung",
+    "label": "Kab. Way Kanan (Lampung)",
+    "value": "Kabupaten Way Kanan, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pesawaran",
+    "province": "Lampung",
+    "label": "Kab. Pesawaran (Lampung)",
+    "value": "Kabupaten Pesawaran, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pringsewu",
+    "province": "Lampung",
+    "label": "Kab. Pringsewu (Lampung)",
+    "value": "Kabupaten Pringsewu, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mesuji",
+    "province": "Lampung",
+    "label": "Kab. Mesuji (Lampung)",
+    "value": "Kabupaten Mesuji, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tulang Bawang Barat",
+    "province": "Lampung",
+    "label": "Kab. Tulang Bawang Barat (Lampung)",
+    "value": "Kabupaten Tulang Bawang Barat, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pesisir Barat",
+    "province": "Lampung",
+    "label": "Kab. Pesisir Barat (Lampung)",
+    "value": "Kabupaten Pesisir Barat, Lampung, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bandar Lampung",
+    "province": "Lampung",
+    "label": "Kota Bandar Lampung (Lampung)",
+    "value": "Kota Bandar Lampung, Lampung, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Metro",
+    "province": "Lampung",
+    "label": "Kota Metro (Lampung)",
+    "value": "Kota Metro, Lampung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangka",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Bangka (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Bangka, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Belitung",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Belitung (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Belitung, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangka Selatan",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Bangka Selatan (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Bangka Selatan, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangka Tengah",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Bangka Tengah (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Bangka Tengah, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangka Barat",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Bangka Barat (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Bangka Barat, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Belitung Timur",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kab. Belitung Timur (Kepulauan Bangka Belitung)",
+    "value": "Kabupaten Belitung Timur, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pangkal Pinang",
+    "province": "Kepulauan Bangka Belitung",
+    "label": "Kota Pangkal Pinang (Kepulauan Bangka Belitung)",
+    "value": "Kota Pangkal Pinang, Kepulauan Bangka Belitung, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bintan",
+    "province": "Kepulauan Riau",
+    "label": "Kab. Bintan (Kepulauan Riau)",
+    "value": "Kabupaten Bintan, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Karimun",
+    "province": "Kepulauan Riau",
+    "label": "Kab. Karimun (Kepulauan Riau)",
+    "value": "Kabupaten Karimun, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Natuna",
+    "province": "Kepulauan Riau",
+    "label": "Kab. Natuna (Kepulauan Riau)",
+    "value": "Kabupaten Natuna, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lingga",
+    "province": "Kepulauan Riau",
+    "label": "Kab. Lingga (Kepulauan Riau)",
+    "value": "Kabupaten Lingga, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Anambas",
+    "province": "Kepulauan Riau",
+    "label": "Kab. Kepulauan Anambas (Kepulauan Riau)",
+    "value": "Kabupaten Kepulauan Anambas, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Batam",
+    "province": "Kepulauan Riau",
+    "label": "Kota Batam (Kepulauan Riau)",
+    "value": "Kota Batam, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tanjung Pinang",
+    "province": "Kepulauan Riau",
+    "label": "Kota Tanjung Pinang (Kepulauan Riau)",
+    "value": "Kota Tanjung Pinang, Kepulauan Riau, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Administrasi Kepulauan Seribu",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kab. Administrasi Kepulauan Seribu (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kabupaten Administrasi Kepulauan Seribu, Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Administrasi Jakarta Pusat",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kota Administrasi Jakarta Pusat (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kota Administrasi Jakarta Pusat, Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Administrasi Jakarta Utara ",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kota Administrasi Jakarta Utara  (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kota Administrasi Jakarta Utara , Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Administrasi Jakarta Barat",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kota Administrasi Jakarta Barat (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kota Administrasi Jakarta Barat, Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Administrasi Jakarta Selatan",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kota Administrasi Jakarta Selatan (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kota Administrasi Jakarta Selatan, Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Administrasi Jakarta Timur",
+    "province": "Daerah Khusus Ibukota Jakarta",
+    "label": "Kota Administrasi Jakarta Timur (Daerah Khusus Ibukota Jakarta)",
+    "value": "Kota Administrasi Jakarta Timur, Daerah Khusus Ibukota Jakarta, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bogor",
+    "province": "Jawa Barat",
+    "label": "Kab. Bogor (Jawa Barat)",
+    "value": "Kabupaten Bogor, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sukabumi",
+    "province": "Jawa Barat",
+    "label": "Kab. Sukabumi (Jawa Barat)",
+    "value": "Kabupaten Sukabumi, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Cianjur",
+    "province": "Jawa Barat",
+    "label": "Kab. Cianjur (Jawa Barat)",
+    "value": "Kabupaten Cianjur, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bandung",
+    "province": "Jawa Barat",
+    "label": "Kab. Bandung (Jawa Barat)",
+    "value": "Kabupaten Bandung, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Garut",
+    "province": "Jawa Barat",
+    "label": "Kab. Garut (Jawa Barat)",
+    "value": "Kabupaten Garut, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tasikmalaya",
+    "province": "Jawa Barat",
+    "label": "Kab. Tasikmalaya (Jawa Barat)",
+    "value": "Kabupaten Tasikmalaya, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ciamis",
+    "province": "Jawa Barat",
+    "label": "Kab. Ciamis (Jawa Barat)",
+    "value": "Kabupaten Ciamis, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kuningan",
+    "province": "Jawa Barat",
+    "label": "Kab. Kuningan (Jawa Barat)",
+    "value": "Kabupaten Kuningan, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Cirebon",
+    "province": "Jawa Barat",
+    "label": "Kab. Cirebon (Jawa Barat)",
+    "value": "Kabupaten Cirebon, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Majalengka",
+    "province": "Jawa Barat",
+    "label": "Kab. Majalengka (Jawa Barat)",
+    "value": "Kabupaten Majalengka, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumedang",
+    "province": "Jawa Barat",
+    "label": "Kab. Sumedang (Jawa Barat)",
+    "value": "Kabupaten Sumedang, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Indramayu",
+    "province": "Jawa Barat",
+    "label": "Kab. Indramayu (Jawa Barat)",
+    "value": "Kabupaten Indramayu, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Subang",
+    "province": "Jawa Barat",
+    "label": "Kab. Subang (Jawa Barat)",
+    "value": "Kabupaten Subang, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Purwakarta",
+    "province": "Jawa Barat",
+    "label": "Kab. Purwakarta (Jawa Barat)",
+    "value": "Kabupaten Purwakarta, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Karawang",
+    "province": "Jawa Barat",
+    "label": "Kab. Karawang (Jawa Barat)",
+    "value": "Kabupaten Karawang, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bekasi",
+    "province": "Jawa Barat",
+    "label": "Kab. Bekasi (Jawa Barat)",
+    "value": "Kabupaten Bekasi, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bandung Barat",
+    "province": "Jawa Barat",
+    "label": "Kab. Bandung Barat (Jawa Barat)",
+    "value": "Kabupaten Bandung Barat, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pangandaran",
+    "province": "Jawa Barat",
+    "label": "Kab. Pangandaran (Jawa Barat)",
+    "value": "Kabupaten Pangandaran, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bogor",
+    "province": "Jawa Barat",
+    "label": "Kota Bogor (Jawa Barat)",
+    "value": "Kota Bogor, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sukabumi",
+    "province": "Jawa Barat",
+    "label": "Kota Sukabumi (Jawa Barat)",
+    "value": "Kota Sukabumi, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bandung",
+    "province": "Jawa Barat",
+    "label": "Kota Bandung (Jawa Barat)",
+    "value": "Kota Bandung, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Cirebon",
+    "province": "Jawa Barat",
+    "label": "Kota Cirebon (Jawa Barat)",
+    "value": "Kota Cirebon, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bekasi",
+    "province": "Jawa Barat",
+    "label": "Kota Bekasi (Jawa Barat)",
+    "value": "Kota Bekasi, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Depok",
+    "province": "Jawa Barat",
+    "label": "Kota Depok (Jawa Barat)",
+    "value": "Kota Depok, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Cimahi",
+    "province": "Jawa Barat",
+    "label": "Kota Cimahi (Jawa Barat)",
+    "value": "Kota Cimahi, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tasikmalaya",
+    "province": "Jawa Barat",
+    "label": "Kota Tasikmalaya (Jawa Barat)",
+    "value": "Kota Tasikmalaya, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Banjar",
+    "province": "Jawa Barat",
+    "label": "Kota Banjar (Jawa Barat)",
+    "value": "Kota Banjar, Jawa Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Cilacap",
+    "province": "Jawa Tengah",
+    "label": "Kab. Cilacap (Jawa Tengah)",
+    "value": "Kabupaten Cilacap, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banyumas",
+    "province": "Jawa Tengah",
+    "label": "Kab. Banyumas (Jawa Tengah)",
+    "value": "Kabupaten Banyumas, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Purbalingga",
+    "province": "Jawa Tengah",
+    "label": "Kab. Purbalingga (Jawa Tengah)",
+    "value": "Kabupaten Purbalingga, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banjarnegara",
+    "province": "Jawa Tengah",
+    "label": "Kab. Banjarnegara (Jawa Tengah)",
+    "value": "Kabupaten Banjarnegara, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kebumen",
+    "province": "Jawa Tengah",
+    "label": "Kab. Kebumen (Jawa Tengah)",
+    "value": "Kabupaten Kebumen, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Purworejo",
+    "province": "Jawa Tengah",
+    "label": "Kab. Purworejo (Jawa Tengah)",
+    "value": "Kabupaten Purworejo, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Wonosobo",
+    "province": "Jawa Tengah",
+    "label": "Kab. Wonosobo (Jawa Tengah)",
+    "value": "Kabupaten Wonosobo, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Magelang",
+    "province": "Jawa Tengah",
+    "label": "Kab. Magelang (Jawa Tengah)",
+    "value": "Kabupaten Magelang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Boyolali",
+    "province": "Jawa Tengah",
+    "label": "Kab. Boyolali (Jawa Tengah)",
+    "value": "Kabupaten Boyolali, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Klaten",
+    "province": "Jawa Tengah",
+    "label": "Kab. Klaten (Jawa Tengah)",
+    "value": "Kabupaten Klaten, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sukoharjo",
+    "province": "Jawa Tengah",
+    "label": "Kab. Sukoharjo (Jawa Tengah)",
+    "value": "Kabupaten Sukoharjo, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Wonogiri",
+    "province": "Jawa Tengah",
+    "label": "Kab. Wonogiri (Jawa Tengah)",
+    "value": "Kabupaten Wonogiri, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Karanganyar",
+    "province": "Jawa Tengah",
+    "label": "Kab. Karanganyar (Jawa Tengah)",
+    "value": "Kabupaten Karanganyar, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sragen",
+    "province": "Jawa Tengah",
+    "label": "Kab. Sragen (Jawa Tengah)",
+    "value": "Kabupaten Sragen, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Grobogan",
+    "province": "Jawa Tengah",
+    "label": "Kab. Grobogan (Jawa Tengah)",
+    "value": "Kabupaten Grobogan, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Blora",
+    "province": "Jawa Tengah",
+    "label": "Kab. Blora (Jawa Tengah)",
+    "value": "Kabupaten Blora, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Rembang",
+    "province": "Jawa Tengah",
+    "label": "Kab. Rembang (Jawa Tengah)",
+    "value": "Kabupaten Rembang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pati",
+    "province": "Jawa Tengah",
+    "label": "Kab. Pati (Jawa Tengah)",
+    "value": "Kabupaten Pati, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kudus",
+    "province": "Jawa Tengah",
+    "label": "Kab. Kudus (Jawa Tengah)",
+    "value": "Kabupaten Kudus, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jepara",
+    "province": "Jawa Tengah",
+    "label": "Kab. Jepara (Jawa Tengah)",
+    "value": "Kabupaten Jepara, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Demak",
+    "province": "Jawa Tengah",
+    "label": "Kab. Demak (Jawa Tengah)",
+    "value": "Kabupaten Demak, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Semarang",
+    "province": "Jawa Tengah",
+    "label": "Kab. Semarang (Jawa Tengah)",
+    "value": "Kabupaten Semarang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Temanggung",
+    "province": "Jawa Tengah",
+    "label": "Kab. Temanggung (Jawa Tengah)",
+    "value": "Kabupaten Temanggung, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kendal",
+    "province": "Jawa Tengah",
+    "label": "Kab. Kendal (Jawa Tengah)",
+    "value": "Kabupaten Kendal, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Batang",
+    "province": "Jawa Tengah",
+    "label": "Kab. Batang (Jawa Tengah)",
+    "value": "Kabupaten Batang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pekalongan",
+    "province": "Jawa Tengah",
+    "label": "Kab. Pekalongan (Jawa Tengah)",
+    "value": "Kabupaten Pekalongan, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pemalang",
+    "province": "Jawa Tengah",
+    "label": "Kab. Pemalang (Jawa Tengah)",
+    "value": "Kabupaten Pemalang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tegal",
+    "province": "Jawa Tengah",
+    "label": "Kab. Tegal (Jawa Tengah)",
+    "value": "Kabupaten Tegal, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Brebes",
+    "province": "Jawa Tengah",
+    "label": "Kab. Brebes (Jawa Tengah)",
+    "value": "Kabupaten Brebes, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Magelang",
+    "province": "Jawa Tengah",
+    "label": "Kota Magelang (Jawa Tengah)",
+    "value": "Kota Magelang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Surakarta",
+    "province": "Jawa Tengah",
+    "label": "Kota Surakarta (Jawa Tengah)",
+    "value": "Kota Surakarta, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Salatiga",
+    "province": "Jawa Tengah",
+    "label": "Kota Salatiga (Jawa Tengah)",
+    "value": "Kota Salatiga, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Semarang",
+    "province": "Jawa Tengah",
+    "label": "Kota Semarang (Jawa Tengah)",
+    "value": "Kota Semarang, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pekalongan",
+    "province": "Jawa Tengah",
+    "label": "Kota Pekalongan (Jawa Tengah)",
+    "value": "Kota Pekalongan, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tegal",
+    "province": "Jawa Tengah",
+    "label": "Kota Tegal (Jawa Tengah)",
+    "value": "Kota Tegal, Jawa Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kulon Progo",
+    "province": "Daerah Istimewa Yogyakarta",
+    "label": "Kab. Kulon Progo (Daerah Istimewa Yogyakarta)",
+    "value": "Kabupaten Kulon Progo, Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bantul",
+    "province": "Daerah Istimewa Yogyakarta",
+    "label": "Kab. Bantul (Daerah Istimewa Yogyakarta)",
+    "value": "Kabupaten Bantul, Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gunungkidul",
+    "province": "Daerah Istimewa Yogyakarta",
+    "label": "Kab. Gunungkidul (Daerah Istimewa Yogyakarta)",
+    "value": "Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sleman",
+    "province": "Daerah Istimewa Yogyakarta",
+    "label": "Kab. Sleman (Daerah Istimewa Yogyakarta)",
+    "value": "Kabupaten Sleman, Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Yogyakarta",
+    "province": "Daerah Istimewa Yogyakarta",
+    "label": "Kota Yogyakarta (Daerah Istimewa Yogyakarta)",
+    "value": "Kota Yogyakarta, Daerah Istimewa Yogyakarta, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pacitan",
+    "province": "Jawa Timur",
+    "label": "Kab. Pacitan (Jawa Timur)",
+    "value": "Kabupaten Pacitan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ponorogo",
+    "province": "Jawa Timur",
+    "label": "Kab. Ponorogo (Jawa Timur)",
+    "value": "Kabupaten Ponorogo, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Trenggalek",
+    "province": "Jawa Timur",
+    "label": "Kab. Trenggalek (Jawa Timur)",
+    "value": "Kabupaten Trenggalek, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tulungagung",
+    "province": "Jawa Timur",
+    "label": "Kab. Tulungagung (Jawa Timur)",
+    "value": "Kabupaten Tulungagung, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Blitar",
+    "province": "Jawa Timur",
+    "label": "Kab. Blitar (Jawa Timur)",
+    "value": "Kabupaten Blitar, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kediri",
+    "province": "Jawa Timur",
+    "label": "Kab. Kediri (Jawa Timur)",
+    "value": "Kabupaten Kediri, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Malang",
+    "province": "Jawa Timur",
+    "label": "Kab. Malang (Jawa Timur)",
+    "value": "Kabupaten Malang, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lumajang",
+    "province": "Jawa Timur",
+    "label": "Kab. Lumajang (Jawa Timur)",
+    "value": "Kabupaten Lumajang, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jember",
+    "province": "Jawa Timur",
+    "label": "Kab. Jember (Jawa Timur)",
+    "value": "Kabupaten Jember, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banyuwangi",
+    "province": "Jawa Timur",
+    "label": "Kab. Banyuwangi (Jawa Timur)",
+    "value": "Kabupaten Banyuwangi, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bondowoso",
+    "province": "Jawa Timur",
+    "label": "Kab. Bondowoso (Jawa Timur)",
+    "value": "Kabupaten Bondowoso, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Situbondo",
+    "province": "Jawa Timur",
+    "label": "Kab. Situbondo (Jawa Timur)",
+    "value": "Kabupaten Situbondo, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Probolinggo",
+    "province": "Jawa Timur",
+    "label": "Kab. Probolinggo (Jawa Timur)",
+    "value": "Kabupaten Probolinggo, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pasuruan",
+    "province": "Jawa Timur",
+    "label": "Kab. Pasuruan (Jawa Timur)",
+    "value": "Kabupaten Pasuruan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sidoarjo",
+    "province": "Jawa Timur",
+    "label": "Kab. Sidoarjo (Jawa Timur)",
+    "value": "Kabupaten Sidoarjo, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mojokerto",
+    "province": "Jawa Timur",
+    "label": "Kab. Mojokerto (Jawa Timur)",
+    "value": "Kabupaten Mojokerto, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jombang",
+    "province": "Jawa Timur",
+    "label": "Kab. Jombang (Jawa Timur)",
+    "value": "Kabupaten Jombang, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nganjuk",
+    "province": "Jawa Timur",
+    "label": "Kab. Nganjuk (Jawa Timur)",
+    "value": "Kabupaten Nganjuk, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Madiun",
+    "province": "Jawa Timur",
+    "label": "Kab. Madiun (Jawa Timur)",
+    "value": "Kabupaten Madiun, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Magetan",
+    "province": "Jawa Timur",
+    "label": "Kab. Magetan (Jawa Timur)",
+    "value": "Kabupaten Magetan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ngawi",
+    "province": "Jawa Timur",
+    "label": "Kab. Ngawi (Jawa Timur)",
+    "value": "Kabupaten Ngawi, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bojonegoro",
+    "province": "Jawa Timur",
+    "label": "Kab. Bojonegoro (Jawa Timur)",
+    "value": "Kabupaten Bojonegoro, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tuban",
+    "province": "Jawa Timur",
+    "label": "Kab. Tuban (Jawa Timur)",
+    "value": "Kabupaten Tuban, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lamongan",
+    "province": "Jawa Timur",
+    "label": "Kab. Lamongan (Jawa Timur)",
+    "value": "Kabupaten Lamongan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gresik",
+    "province": "Jawa Timur",
+    "label": "Kab. Gresik (Jawa Timur)",
+    "value": "Kabupaten Gresik, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangkalan",
+    "province": "Jawa Timur",
+    "label": "Kab. Bangkalan (Jawa Timur)",
+    "value": "Kabupaten Bangkalan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sampang",
+    "province": "Jawa Timur",
+    "label": "Kab. Sampang (Jawa Timur)",
+    "value": "Kabupaten Sampang, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pamekasan",
+    "province": "Jawa Timur",
+    "label": "Kab. Pamekasan (Jawa Timur)",
+    "value": "Kabupaten Pamekasan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumenep",
+    "province": "Jawa Timur",
+    "label": "Kab. Sumenep (Jawa Timur)",
+    "value": "Kabupaten Sumenep, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Kediri",
+    "province": "Jawa Timur",
+    "label": "Kota Kediri (Jawa Timur)",
+    "value": "Kota Kediri, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Blitar",
+    "province": "Jawa Timur",
+    "label": "Kota Blitar (Jawa Timur)",
+    "value": "Kota Blitar, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Malang",
+    "province": "Jawa Timur",
+    "label": "Kota Malang (Jawa Timur)",
+    "value": "Kota Malang, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Probolinggo",
+    "province": "Jawa Timur",
+    "label": "Kota Probolinggo (Jawa Timur)",
+    "value": "Kota Probolinggo, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pasuruan",
+    "province": "Jawa Timur",
+    "label": "Kota Pasuruan (Jawa Timur)",
+    "value": "Kota Pasuruan, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Mojokerto",
+    "province": "Jawa Timur",
+    "label": "Kota Mojokerto (Jawa Timur)",
+    "value": "Kota Mojokerto, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Madiun",
+    "province": "Jawa Timur",
+    "label": "Kota Madiun (Jawa Timur)",
+    "value": "Kota Madiun, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Surabaya",
+    "province": "Jawa Timur",
+    "label": "Kota Surabaya (Jawa Timur)",
+    "value": "Kota Surabaya, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Batu",
+    "province": "Jawa Timur",
+    "label": "Kota Batu (Jawa Timur)",
+    "value": "Kota Batu, Jawa Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pandeglang",
+    "province": "Banten",
+    "label": "Kab. Pandeglang (Banten)",
+    "value": "Kabupaten Pandeglang, Banten, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lebak",
+    "province": "Banten",
+    "label": "Kab. Lebak (Banten)",
+    "value": "Kabupaten Lebak, Banten, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tangerang",
+    "province": "Banten",
+    "label": "Kab. Tangerang (Banten)",
+    "value": "Kabupaten Tangerang, Banten, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Serang",
+    "province": "Banten",
+    "label": "Kab. Serang (Banten)",
+    "value": "Kabupaten Serang, Banten, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tangerang",
+    "province": "Banten",
+    "label": "Kota Tangerang (Banten)",
+    "value": "Kota Tangerang, Banten, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Cilegon",
+    "province": "Banten",
+    "label": "Kota Cilegon (Banten)",
+    "value": "Kota Cilegon, Banten, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Serang",
+    "province": "Banten",
+    "label": "Kota Serang (Banten)",
+    "value": "Kota Serang, Banten, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tangerang Selatan",
+    "province": "Banten",
+    "label": "Kota Tangerang Selatan (Banten)",
+    "value": "Kota Tangerang Selatan, Banten, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jembrana",
+    "province": "Bali",
+    "label": "Kab. Jembrana (Bali)",
+    "value": "Kabupaten Jembrana, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tabanan",
+    "province": "Bali",
+    "label": "Kab. Tabanan (Bali)",
+    "value": "Kabupaten Tabanan, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Badung",
+    "province": "Bali",
+    "label": "Kab. Badung (Bali)",
+    "value": "Kabupaten Badung, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gianyar",
+    "province": "Bali",
+    "label": "Kab. Gianyar (Bali)",
+    "value": "Kabupaten Gianyar, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Klungkung",
+    "province": "Bali",
+    "label": "Kab. Klungkung (Bali)",
+    "value": "Kabupaten Klungkung, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bangli",
+    "province": "Bali",
+    "label": "Kab. Bangli (Bali)",
+    "value": "Kabupaten Bangli, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Karangasem",
+    "province": "Bali",
+    "label": "Kab. Karangasem (Bali)",
+    "value": "Kabupaten Karangasem, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buleleng",
+    "province": "Bali",
+    "label": "Kab. Buleleng (Bali)",
+    "value": "Kabupaten Buleleng, Bali, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Denpasar",
+    "province": "Bali",
+    "label": "Kota Denpasar (Bali)",
+    "value": "Kota Denpasar, Bali, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lombok Barat",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Lombok Barat (Nusa Tenggara Barat)",
+    "value": "Kabupaten Lombok Barat, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lombok Tengah",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Lombok Tengah (Nusa Tenggara Barat)",
+    "value": "Kabupaten Lombok Tengah, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lombok Timur",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Lombok Timur (Nusa Tenggara Barat)",
+    "value": "Kabupaten Lombok Timur, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumbawa",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Sumbawa (Nusa Tenggara Barat)",
+    "value": "Kabupaten Sumbawa, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Dompu",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Dompu (Nusa Tenggara Barat)",
+    "value": "Kabupaten Dompu, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bima",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Bima (Nusa Tenggara Barat)",
+    "value": "Kabupaten Bima, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumbawa Barat",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Sumbawa Barat (Nusa Tenggara Barat)",
+    "value": "Kabupaten Sumbawa Barat, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lombok Utara",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kab. Lombok Utara (Nusa Tenggara Barat)",
+    "value": "Kabupaten Lombok Utara, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Mataram",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kota Mataram (Nusa Tenggara Barat)",
+    "value": "Kota Mataram, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bima",
+    "province": "Nusa Tenggara Barat",
+    "label": "Kota Bima (Nusa Tenggara Barat)",
+    "value": "Kota Bima, Nusa Tenggara Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kupang",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Kupang (Nusa Tenggara Timur)",
+    "value": "Kabupaten Kupang, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Timor Tengah Selatan",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Timor Tengah Selatan (Nusa Tenggara Timur)",
+    "value": "Kabupaten Timor Tengah Selatan, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Timor Tengah Utara",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Timor Tengah Utara (Nusa Tenggara Timur)",
+    "value": "Kabupaten Timor Tengah Utara, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Belu",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Belu (Nusa Tenggara Timur)",
+    "value": "Kabupaten Belu, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Alor",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Alor (Nusa Tenggara Timur)",
+    "value": "Kabupaten Alor, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Flores Timur",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Flores Timur (Nusa Tenggara Timur)",
+    "value": "Kabupaten Flores Timur, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sikka",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sikka (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sikka, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ende",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Ende (Nusa Tenggara Timur)",
+    "value": "Kabupaten Ende, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ngada",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Ngada (Nusa Tenggara Timur)",
+    "value": "Kabupaten Ngada, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Manggarai",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Manggarai (Nusa Tenggara Timur)",
+    "value": "Kabupaten Manggarai, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumba Timur",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sumba Timur (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sumba Timur, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumba Barat",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sumba Barat (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sumba Barat, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lembata",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Lembata (Nusa Tenggara Timur)",
+    "value": "Kabupaten Lembata, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Rote Ndao",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Rote Ndao (Nusa Tenggara Timur)",
+    "value": "Kabupaten Rote Ndao, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Manggarai Barat",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Manggarai Barat (Nusa Tenggara Timur)",
+    "value": "Kabupaten Manggarai Barat, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nagekeo",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Nagekeo (Nusa Tenggara Timur)",
+    "value": "Kabupaten Nagekeo, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumba Tengah",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sumba Tengah (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sumba Tengah, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sumba Barat Daya",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sumba Barat Daya (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sumba Barat Daya, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Manggarai Timur",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Manggarai Timur (Nusa Tenggara Timur)",
+    "value": "Kabupaten Manggarai Timur, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sabu Raijua",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Sabu Raijua (Nusa Tenggara Timur)",
+    "value": "Kabupaten Sabu Raijua, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Malaka",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kab. Malaka (Nusa Tenggara Timur)",
+    "value": "Kabupaten Malaka, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Kupang",
+    "province": "Nusa Tenggara Timur",
+    "label": "Kota Kupang (Nusa Tenggara Timur)",
+    "value": "Kota Kupang, Nusa Tenggara Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sambas",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Sambas (Kalimantan Barat)",
+    "value": "Kabupaten Sambas, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mempawah",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Mempawah (Kalimantan Barat)",
+    "value": "Kabupaten Mempawah, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sanggau",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Sanggau (Kalimantan Barat)",
+    "value": "Kabupaten Sanggau, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Ketapang",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Ketapang (Kalimantan Barat)",
+    "value": "Kabupaten Ketapang, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sintang",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Sintang (Kalimantan Barat)",
+    "value": "Kabupaten Sintang, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kapuas Hulu",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Kapuas Hulu (Kalimantan Barat)",
+    "value": "Kabupaten Kapuas Hulu, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bengkayang",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Bengkayang (Kalimantan Barat)",
+    "value": "Kabupaten Bengkayang, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Landak",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Landak (Kalimantan Barat)",
+    "value": "Kabupaten Landak, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sekadau",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Sekadau (Kalimantan Barat)",
+    "value": "Kabupaten Sekadau, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Melawi",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Melawi (Kalimantan Barat)",
+    "value": "Kabupaten Melawi, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kayong Utara",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Kayong Utara (Kalimantan Barat)",
+    "value": "Kabupaten Kayong Utara, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kubu Raya",
+    "province": "Kalimantan Barat",
+    "label": "Kab. Kubu Raya (Kalimantan Barat)",
+    "value": "Kabupaten Kubu Raya, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Pontianak",
+    "province": "Kalimantan Barat",
+    "label": "Kota Pontianak (Kalimantan Barat)",
+    "value": "Kota Pontianak, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Singkawang",
+    "province": "Kalimantan Barat",
+    "label": "Kota Singkawang (Kalimantan Barat)",
+    "value": "Kota Singkawang, Kalimantan Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kotawaringin Barat",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Kotawaringin Barat (Kalimantan Tengah)",
+    "value": "Kabupaten Kotawaringin Barat, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kotawaringin Timur",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Kotawaringin Timur (Kalimantan Tengah)",
+    "value": "Kabupaten Kotawaringin Timur, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kapuas",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Kapuas (Kalimantan Tengah)",
+    "value": "Kabupaten Kapuas, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Barito Selatan",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Barito Selatan (Kalimantan Tengah)",
+    "value": "Kabupaten Barito Selatan, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Barito Utara",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Barito Utara (Kalimantan Tengah)",
+    "value": "Kabupaten Barito Utara, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Katingan",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Katingan (Kalimantan Tengah)",
+    "value": "Kabupaten Katingan, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Seruyan",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Seruyan (Kalimantan Tengah)",
+    "value": "Kabupaten Seruyan, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sukamara",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Sukamara (Kalimantan Tengah)",
+    "value": "Kabupaten Sukamara, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lamandau",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Lamandau (Kalimantan Tengah)",
+    "value": "Kabupaten Lamandau, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gunung Mas",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Gunung Mas (Kalimantan Tengah)",
+    "value": "Kabupaten Gunung Mas, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pulang Pisau",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Pulang Pisau (Kalimantan Tengah)",
+    "value": "Kabupaten Pulang Pisau, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Murung Raya",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Murung Raya (Kalimantan Tengah)",
+    "value": "Kabupaten Murung Raya, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Barito Timur",
+    "province": "Kalimantan Tengah",
+    "label": "Kab. Barito Timur (Kalimantan Tengah)",
+    "value": "Kabupaten Barito Timur, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Palangkaraya",
+    "province": "Kalimantan Tengah",
+    "label": "Kota Palangkaraya (Kalimantan Tengah)",
+    "value": "Kota Palangkaraya, Kalimantan Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanah Laut",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Tanah Laut (Kalimantan Selatan)",
+    "value": "Kabupaten Tanah Laut, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kotabaru",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Kotabaru (Kalimantan Selatan)",
+    "value": "Kabupaten Kotabaru, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banjar",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Banjar (Kalimantan Selatan)",
+    "value": "Kabupaten Banjar, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Barito Kuala",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Barito Kuala (Kalimantan Selatan)",
+    "value": "Kabupaten Barito Kuala, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tapin",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Tapin (Kalimantan Selatan)",
+    "value": "Kabupaten Tapin, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Hulu Sungai Selatan",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Hulu Sungai Selatan (Kalimantan Selatan)",
+    "value": "Kabupaten Hulu Sungai Selatan, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Hulu Sungai Tengah",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Hulu Sungai Tengah (Kalimantan Selatan)",
+    "value": "Kabupaten Hulu Sungai Tengah, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Hulu Sungai Utara",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Hulu Sungai Utara (Kalimantan Selatan)",
+    "value": "Kabupaten Hulu Sungai Utara, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tabalong",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Tabalong (Kalimantan Selatan)",
+    "value": "Kabupaten Tabalong, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tanah Bumbu",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Tanah Bumbu (Kalimantan Selatan)",
+    "value": "Kabupaten Tanah Bumbu, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Balangan",
+    "province": "Kalimantan Selatan",
+    "label": "Kab. Balangan (Kalimantan Selatan)",
+    "value": "Kabupaten Balangan, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Banjarmasin",
+    "province": "Kalimantan Selatan",
+    "label": "Kota Banjarmasin (Kalimantan Selatan)",
+    "value": "Kota Banjarmasin, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Banjarbaru",
+    "province": "Kalimantan Selatan",
+    "label": "Kota Banjarbaru (Kalimantan Selatan)",
+    "value": "Kota Banjarbaru, Kalimantan Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Paser",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Paser (Kalimantan Timur)",
+    "value": "Kabupaten Paser, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kutai Kartanegara",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Kutai Kartanegara (Kalimantan Timur)",
+    "value": "Kabupaten Kutai Kartanegara, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Berau",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Berau (Kalimantan Timur)",
+    "value": "Kabupaten Berau, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kutai Barat",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Kutai Barat (Kalimantan Timur)",
+    "value": "Kabupaten Kutai Barat, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kutai Timur",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Kutai Timur (Kalimantan Timur)",
+    "value": "Kabupaten Kutai Timur, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Penajam Paser Utara",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Penajam Paser Utara (Kalimantan Timur)",
+    "value": "Kabupaten Penajam Paser Utara, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mahakam Ulu",
+    "province": "Kalimantan Timur",
+    "label": "Kab. Mahakam Ulu (Kalimantan Timur)",
+    "value": "Kabupaten Mahakam Ulu, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Balikpapan",
+    "province": "Kalimantan Timur",
+    "label": "Kota Balikpapan (Kalimantan Timur)",
+    "value": "Kota Balikpapan, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Samarinda",
+    "province": "Kalimantan Timur",
+    "label": "Kota Samarinda (Kalimantan Timur)",
+    "value": "Kota Samarinda, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bontang",
+    "province": "Kalimantan Timur",
+    "label": "Kota Bontang (Kalimantan Timur)",
+    "value": "Kota Bontang, Kalimantan Timur, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bulungan",
+    "province": "Kalimantan Utara",
+    "label": "Kab. Bulungan (Kalimantan Utara)",
+    "value": "Kabupaten Bulungan, Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Malinau",
+    "province": "Kalimantan Utara",
+    "label": "Kab. Malinau (Kalimantan Utara)",
+    "value": "Kabupaten Malinau, Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nunukan",
+    "province": "Kalimantan Utara",
+    "label": "Kab. Nunukan (Kalimantan Utara)",
+    "value": "Kabupaten Nunukan, Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tana Tidung",
+    "province": "Kalimantan Utara",
+    "label": "Kab. Tana Tidung (Kalimantan Utara)",
+    "value": "Kabupaten Tana Tidung, Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tarakan",
+    "province": "Kalimantan Utara",
+    "label": "Kota Tarakan (Kalimantan Utara)",
+    "value": "Kota Tarakan, Kalimantan Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bolaang Mongondow",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Bolaang Mongondow (Sulawesi Utara)",
+    "value": "Kabupaten Bolaang Mongondow, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Minahasa",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Minahasa (Sulawesi Utara)",
+    "value": "Kabupaten Minahasa, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Sangihe",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Kepulauan Sangihe (Sulawesi Utara)",
+    "value": "Kabupaten Kepulauan Sangihe, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Talaud",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Kepulauan Talaud (Sulawesi Utara)",
+    "value": "Kabupaten Kepulauan Talaud, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Minahasa Selatan",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Minahasa Selatan (Sulawesi Utara)",
+    "value": "Kabupaten Minahasa Selatan, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Minahasa Utara",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Minahasa Utara (Sulawesi Utara)",
+    "value": "Kabupaten Minahasa Utara, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Minahasa Tenggara",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Minahasa Tenggara (Sulawesi Utara)",
+    "value": "Kabupaten Minahasa Tenggara, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bolaang Mongondow Utara",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Bolaang Mongondow Utara (Sulawesi Utara)",
+    "value": "Kabupaten Bolaang Mongondow Utara, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kep. Siau Tagulandang Biaro",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Kep. Siau Tagulandang Biaro (Sulawesi Utara)",
+    "value": "Kabupaten Kep. Siau Tagulandang Biaro, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bolaang Mongondow Timur",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Bolaang Mongondow Timur (Sulawesi Utara)",
+    "value": "Kabupaten Bolaang Mongondow Timur, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bolaang Mongondow Selatan",
+    "province": "Sulawesi Utara",
+    "label": "Kab. Bolaang Mongondow Selatan (Sulawesi Utara)",
+    "value": "Kabupaten Bolaang Mongondow Selatan, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Manado",
+    "province": "Sulawesi Utara",
+    "label": "Kota Manado (Sulawesi Utara)",
+    "value": "Kota Manado, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bitung",
+    "province": "Sulawesi Utara",
+    "label": "Kota Bitung (Sulawesi Utara)",
+    "value": "Kota Bitung, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tomohon",
+    "province": "Sulawesi Utara",
+    "label": "Kota Tomohon (Sulawesi Utara)",
+    "value": "Kota Tomohon, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Kotamobagu",
+    "province": "Sulawesi Utara",
+    "label": "Kota Kotamobagu (Sulawesi Utara)",
+    "value": "Kota Kotamobagu, Sulawesi Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banggai",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Banggai (Sulawesi Tengah)",
+    "value": "Kabupaten Banggai, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Poso",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Poso (Sulawesi Tengah)",
+    "value": "Kabupaten Poso, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Donggala",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Donggala (Sulawesi Tengah)",
+    "value": "Kabupaten Donggala, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Toli-Toli",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Toli-Toli (Sulawesi Tengah)",
+    "value": "Kabupaten Toli-Toli, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buol",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Buol (Sulawesi Tengah)",
+    "value": "Kabupaten Buol, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Morowali",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Morowali (Sulawesi Tengah)",
+    "value": "Kabupaten Morowali, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banggai Kepulauan",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Banggai Kepulauan (Sulawesi Tengah)",
+    "value": "Kabupaten Banggai Kepulauan, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Parigi Moutong",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Parigi Moutong (Sulawesi Tengah)",
+    "value": "Kabupaten Parigi Moutong, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tojo Una Una",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Tojo Una Una (Sulawesi Tengah)",
+    "value": "Kabupaten Tojo Una Una, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sigi",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Sigi (Sulawesi Tengah)",
+    "value": "Kabupaten Sigi, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Banggai Laut",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Banggai Laut (Sulawesi Tengah)",
+    "value": "Kabupaten Banggai Laut, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Morowali Utara",
+    "province": "Sulawesi Tengah",
+    "label": "Kab. Morowali Utara (Sulawesi Tengah)",
+    "value": "Kabupaten Morowali Utara, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Palu",
+    "province": "Sulawesi Tengah",
+    "label": "Kota Palu (Sulawesi Tengah)",
+    "value": "Kota Palu, Sulawesi Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Selayar",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Kepulauan Selayar (Sulawesi Selatan)",
+    "value": "Kabupaten Kepulauan Selayar, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bulukumba",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Bulukumba (Sulawesi Selatan)",
+    "value": "Kabupaten Bulukumba, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bantaeng",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Bantaeng (Sulawesi Selatan)",
+    "value": "Kabupaten Bantaeng, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jeneponto",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Jeneponto (Sulawesi Selatan)",
+    "value": "Kabupaten Jeneponto, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Takalar",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Takalar (Sulawesi Selatan)",
+    "value": "Kabupaten Takalar, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gowa",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Gowa (Sulawesi Selatan)",
+    "value": "Kabupaten Gowa, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sinjai",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Sinjai (Sulawesi Selatan)",
+    "value": "Kabupaten Sinjai, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bone",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Bone (Sulawesi Selatan)",
+    "value": "Kabupaten Bone, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Maros",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Maros (Sulawesi Selatan)",
+    "value": "Kabupaten Maros, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pangkajene dan Kepulauan",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Pangkajene dan Kepulauan (Sulawesi Selatan)",
+    "value": "Kabupaten Pangkajene dan Kepulauan, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Barru",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Barru (Sulawesi Selatan)",
+    "value": "Kabupaten Barru, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Soppeng",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Soppeng (Sulawesi Selatan)",
+    "value": "Kabupaten Soppeng, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Wajo",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Wajo (Sulawesi Selatan)",
+    "value": "Kabupaten Wajo, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sidenreng Rappang",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Sidenreng Rappang (Sulawesi Selatan)",
+    "value": "Kabupaten Sidenreng Rappang, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pinrang",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Pinrang (Sulawesi Selatan)",
+    "value": "Kabupaten Pinrang, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Enrekang",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Enrekang (Sulawesi Selatan)",
+    "value": "Kabupaten Enrekang, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Luwu",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Luwu (Sulawesi Selatan)",
+    "value": "Kabupaten Luwu, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tana Toraja",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Tana Toraja (Sulawesi Selatan)",
+    "value": "Kabupaten Tana Toraja, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Luwu Utara",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Luwu Utara (Sulawesi Selatan)",
+    "value": "Kabupaten Luwu Utara, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Luwu Timur",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Luwu Timur (Sulawesi Selatan)",
+    "value": "Kabupaten Luwu Timur, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Toraja Utara",
+    "province": "Sulawesi Selatan",
+    "label": "Kab. Toraja Utara (Sulawesi Selatan)",
+    "value": "Kabupaten Toraja Utara, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Makassar",
+    "province": "Sulawesi Selatan",
+    "label": "Kota Makassar (Sulawesi Selatan)",
+    "value": "Kota Makassar, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Parepare",
+    "province": "Sulawesi Selatan",
+    "label": "Kota Parepare (Sulawesi Selatan)",
+    "value": "Kota Parepare, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Palopo",
+    "province": "Sulawesi Selatan",
+    "label": "Kota Palopo (Sulawesi Selatan)",
+    "value": "Kota Palopo, Sulawesi Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kolaka",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Kolaka (Sulawesi Tenggara)",
+    "value": "Kabupaten Kolaka, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Konawe",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Konawe (Sulawesi Tenggara)",
+    "value": "Kabupaten Konawe, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Muna",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Muna (Sulawesi Tenggara)",
+    "value": "Kabupaten Muna, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buton",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Buton (Sulawesi Tenggara)",
+    "value": "Kabupaten Buton, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Konawe Selatan",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Konawe Selatan (Sulawesi Tenggara)",
+    "value": "Kabupaten Konawe Selatan, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bombana",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Bombana (Sulawesi Tenggara)",
+    "value": "Kabupaten Bombana, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Wakatobi",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Wakatobi (Sulawesi Tenggara)",
+    "value": "Kabupaten Wakatobi, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kolaka Utara",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Kolaka Utara (Sulawesi Tenggara)",
+    "value": "Kabupaten Kolaka Utara, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Konawe Utara",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Konawe Utara (Sulawesi Tenggara)",
+    "value": "Kabupaten Konawe Utara, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buton Utara",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Buton Utara (Sulawesi Tenggara)",
+    "value": "Kabupaten Buton Utara, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kolaka Timur",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Kolaka Timur (Sulawesi Tenggara)",
+    "value": "Kabupaten Kolaka Timur, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Konawe Kepulauan",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Konawe Kepulauan (Sulawesi Tenggara)",
+    "value": "Kabupaten Konawe Kepulauan, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Muna Barat",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Muna Barat (Sulawesi Tenggara)",
+    "value": "Kabupaten Muna Barat, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buton Tengah",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Buton Tengah (Sulawesi Tenggara)",
+    "value": "Kabupaten Buton Tengah, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buton Selatan",
+    "province": "Sulawesi Tenggara",
+    "label": "Kab. Buton Selatan (Sulawesi Tenggara)",
+    "value": "Kabupaten Buton Selatan, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Kendari",
+    "province": "Sulawesi Tenggara",
+    "label": "Kota Kendari (Sulawesi Tenggara)",
+    "value": "Kota Kendari, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Bau Bau",
+    "province": "Sulawesi Tenggara",
+    "label": "Kota Bau Bau (Sulawesi Tenggara)",
+    "value": "Kota Bau Bau, Sulawesi Tenggara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gorontalo",
+    "province": "Gorontalo",
+    "label": "Kab. Gorontalo (Gorontalo)",
+    "value": "Kabupaten Gorontalo, Gorontalo, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Boalemo",
+    "province": "Gorontalo",
+    "label": "Kab. Boalemo (Gorontalo)",
+    "value": "Kabupaten Boalemo, Gorontalo, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Bone Bolango",
+    "province": "Gorontalo",
+    "label": "Kab. Bone Bolango (Gorontalo)",
+    "value": "Kabupaten Bone Bolango, Gorontalo, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pohuwato",
+    "province": "Gorontalo",
+    "label": "Kab. Pohuwato (Gorontalo)",
+    "value": "Kabupaten Pohuwato, Gorontalo, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Gorontalo Utara",
+    "province": "Gorontalo",
+    "label": "Kab. Gorontalo Utara (Gorontalo)",
+    "value": "Kabupaten Gorontalo Utara, Gorontalo, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Gorontalo",
+    "province": "Gorontalo",
+    "label": "Kota Gorontalo (Gorontalo)",
+    "value": "Kota Gorontalo, Gorontalo, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pasangkayu",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Pasangkayu (Sulawesi Barat)",
+    "value": "Kabupaten Pasangkayu, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mamuju",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Mamuju (Sulawesi Barat)",
+    "value": "Kabupaten Mamuju, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mamasa",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Mamasa (Sulawesi Barat)",
+    "value": "Kabupaten Mamasa, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Polewali Mandar",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Polewali Mandar (Sulawesi Barat)",
+    "value": "Kabupaten Polewali Mandar, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Majene",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Majene (Sulawesi Barat)",
+    "value": "Kabupaten Majene, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mamuju Tengah",
+    "province": "Sulawesi Barat",
+    "label": "Kab. Mamuju Tengah (Sulawesi Barat)",
+    "value": "Kabupaten Mamuju Tengah, Sulawesi Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Maluku Tengah",
+    "province": "Maluku",
+    "label": "Kab. Maluku Tengah (Maluku)",
+    "value": "Kabupaten Maluku Tengah, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Maluku Tenggara",
+    "province": "Maluku",
+    "label": "Kab. Maluku Tenggara (Maluku)",
+    "value": "Kabupaten Maluku Tenggara, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Tanimbar",
+    "province": "Maluku",
+    "label": "Kab. Kepulauan Tanimbar (Maluku)",
+    "value": "Kabupaten Kepulauan Tanimbar, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buru",
+    "province": "Maluku",
+    "label": "Kab. Buru (Maluku)",
+    "value": "Kabupaten Buru, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Seram Bagian Timur",
+    "province": "Maluku",
+    "label": "Kab. Seram Bagian Timur (Maluku)",
+    "value": "Kabupaten Seram Bagian Timur, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Seram Bagian Barat",
+    "province": "Maluku",
+    "label": "Kab. Seram Bagian Barat (Maluku)",
+    "value": "Kabupaten Seram Bagian Barat, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Aru",
+    "province": "Maluku",
+    "label": "Kab. Kepulauan Aru (Maluku)",
+    "value": "Kabupaten Kepulauan Aru, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Maluku Barat Daya",
+    "province": "Maluku",
+    "label": "Kab. Maluku Barat Daya (Maluku)",
+    "value": "Kabupaten Maluku Barat Daya, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Buru Selatan",
+    "province": "Maluku",
+    "label": "Kab. Buru Selatan (Maluku)",
+    "value": "Kabupaten Buru Selatan, Maluku, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Ambon",
+    "province": "Maluku",
+    "label": "Kota Ambon (Maluku)",
+    "value": "Kota Ambon, Maluku, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tual",
+    "province": "Maluku",
+    "label": "Kota Tual (Maluku)",
+    "value": "Kota Tual, Maluku, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Halmahera Barat",
+    "province": "Maluku Utara",
+    "label": "Kab. Halmahera Barat (Maluku Utara)",
+    "value": "Kabupaten Halmahera Barat, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Halmahera Tengah",
+    "province": "Maluku Utara",
+    "label": "Kab. Halmahera Tengah (Maluku Utara)",
+    "value": "Kabupaten Halmahera Tengah, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Halmahera Utara",
+    "province": "Maluku Utara",
+    "label": "Kab. Halmahera Utara (Maluku Utara)",
+    "value": "Kabupaten Halmahera Utara, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Halmahera Selatan",
+    "province": "Maluku Utara",
+    "label": "Kab. Halmahera Selatan (Maluku Utara)",
+    "value": "Kabupaten Halmahera Selatan, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Sula",
+    "province": "Maluku Utara",
+    "label": "Kab. Kepulauan Sula (Maluku Utara)",
+    "value": "Kabupaten Kepulauan Sula, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Halmahera Timur",
+    "province": "Maluku Utara",
+    "label": "Kab. Halmahera Timur (Maluku Utara)",
+    "value": "Kabupaten Halmahera Timur, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pulau Morotai",
+    "province": "Maluku Utara",
+    "label": "Kab. Pulau Morotai (Maluku Utara)",
+    "value": "Kabupaten Pulau Morotai, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pulau Taliabu",
+    "province": "Maluku Utara",
+    "label": "Kab. Pulau Taliabu (Maluku Utara)",
+    "value": "Kabupaten Pulau Taliabu, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Ternate",
+    "province": "Maluku Utara",
+    "label": "Kota Ternate (Maluku Utara)",
+    "value": "Kota Ternate, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Tidore Kepulauan",
+    "province": "Maluku Utara",
+    "label": "Kota Tidore Kepulauan (Maluku Utara)",
+    "value": "Kota Tidore Kepulauan, Maluku Utara, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jayapura",
+    "province": "Papua",
+    "label": "Kab. Jayapura (Papua)",
+    "value": "Kabupaten Jayapura, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kepulauan Yapen",
+    "province": "Papua",
+    "label": "Kab. Kepulauan Yapen (Papua)",
+    "value": "Kabupaten Kepulauan Yapen, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Biak Numfor",
+    "province": "Papua",
+    "label": "Kab. Biak Numfor (Papua)",
+    "value": "Kabupaten Biak Numfor, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sarmi",
+    "province": "Papua",
+    "label": "Kab. Sarmi (Papua)",
+    "value": "Kabupaten Sarmi, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Keerom",
+    "province": "Papua",
+    "label": "Kab. Keerom (Papua)",
+    "value": "Kabupaten Keerom, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Waropen",
+    "province": "Papua",
+    "label": "Kab. Waropen (Papua)",
+    "value": "Kabupaten Waropen, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Supiori",
+    "province": "Papua",
+    "label": "Kab. Supiori (Papua)",
+    "value": "Kabupaten Supiori, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mamberamo Raya",
+    "province": "Papua",
+    "label": "Kab. Mamberamo Raya (Papua)",
+    "value": "Kabupaten Mamberamo Raya, Papua, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Jayapura",
+    "province": "Papua",
+    "label": "Kota Jayapura (Papua)",
+    "value": "Kota Jayapura, Papua, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Manokwari",
+    "province": "Papua Barat",
+    "label": "Kab. Manokwari (Papua Barat)",
+    "value": "Kabupaten Manokwari, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Fak Fak",
+    "province": "Papua Barat",
+    "label": "Kab. Fak Fak (Papua Barat)",
+    "value": "Kabupaten Fak Fak, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Teluk Bintuni",
+    "province": "Papua Barat",
+    "label": "Kab. Teluk Bintuni (Papua Barat)",
+    "value": "Kabupaten Teluk Bintuni, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Teluk Wondama",
+    "province": "Papua Barat",
+    "label": "Kab. Teluk Wondama (Papua Barat)",
+    "value": "Kabupaten Teluk Wondama, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Kaimana",
+    "province": "Papua Barat",
+    "label": "Kab. Kaimana (Papua Barat)",
+    "value": "Kabupaten Kaimana, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Manokwari Selatan",
+    "province": "Papua Barat",
+    "label": "Kab. Manokwari Selatan (Papua Barat)",
+    "value": "Kabupaten Manokwari Selatan, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pegunungan Arfak",
+    "province": "Papua Barat",
+    "label": "Kab. Pegunungan Arfak (Papua Barat)",
+    "value": "Kabupaten Pegunungan Arfak, Papua Barat, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Merauke",
+    "province": "Papua Selatan",
+    "label": "Kab. Merauke (Papua Selatan)",
+    "value": "Kabupaten Merauke, Papua Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Boven Digoel",
+    "province": "Papua Selatan",
+    "label": "Kab. Boven Digoel (Papua Selatan)",
+    "value": "Kabupaten Boven Digoel, Papua Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mappi",
+    "province": "Papua Selatan",
+    "label": "Kab. Mappi (Papua Selatan)",
+    "value": "Kabupaten Mappi, Papua Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Asmat",
+    "province": "Papua Selatan",
+    "label": "Kab. Asmat (Papua Selatan)",
+    "value": "Kabupaten Asmat, Papua Selatan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nabire",
+    "province": "Papua Tengah",
+    "label": "Kab. Nabire (Papua Tengah)",
+    "value": "Kabupaten Nabire, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Puncak Jaya",
+    "province": "Papua Tengah",
+    "label": "Kab. Puncak Jaya (Papua Tengah)",
+    "value": "Kabupaten Puncak Jaya, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Paniai",
+    "province": "Papua Tengah",
+    "label": "Kab. Paniai (Papua Tengah)",
+    "value": "Kabupaten Paniai, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mimika",
+    "province": "Papua Tengah",
+    "label": "Kab. Mimika (Papua Tengah)",
+    "value": "Kabupaten Mimika, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Puncak",
+    "province": "Papua Tengah",
+    "label": "Kab. Puncak (Papua Tengah)",
+    "value": "Kabupaten Puncak, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Dogiyai",
+    "province": "Papua Tengah",
+    "label": "Kab. Dogiyai (Papua Tengah)",
+    "value": "Kabupaten Dogiyai, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Intan Jaya",
+    "province": "Papua Tengah",
+    "label": "Kab. Intan Jaya (Papua Tengah)",
+    "value": "Kabupaten Intan Jaya, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Deiyai",
+    "province": "Papua Tengah",
+    "label": "Kab. Deiyai (Papua Tengah)",
+    "value": "Kabupaten Deiyai, Papua Tengah, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Jayawijaya",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Jayawijaya (Papua Pegunungan)",
+    "value": "Kabupaten Jayawijaya, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Pegunungan Bintang",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Pegunungan Bintang (Papua Pegunungan)",
+    "value": "Kabupaten Pegunungan Bintang, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Yahukimo",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Yahukimo (Papua Pegunungan)",
+    "value": "Kabupaten Yahukimo, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tolikara",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Tolikara (Papua Pegunungan)",
+    "value": "Kabupaten Tolikara, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Mamberamo Tengah",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Mamberamo Tengah (Papua Pegunungan)",
+    "value": "Kabupaten Mamberamo Tengah, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Yalimo",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Yalimo (Papua Pegunungan)",
+    "value": "Kabupaten Yalimo, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Lanny Jaya",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Lanny Jaya (Papua Pegunungan)",
+    "value": "Kabupaten Lanny Jaya, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Nduga",
+    "province": "Papua Pegunungan",
+    "label": "Kab. Nduga (Papua Pegunungan)",
+    "value": "Kabupaten Nduga, Papua Pegunungan, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sorong",
+    "province": "Papua Barat Daya",
+    "label": "Kab. Sorong (Papua Barat Daya)",
+    "value": "Kabupaten Sorong, Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Sorong Selatan",
+    "province": "Papua Barat Daya",
+    "label": "Kab. Sorong Selatan (Papua Barat Daya)",
+    "value": "Kabupaten Sorong Selatan, Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Raja Ampat",
+    "province": "Papua Barat Daya",
+    "label": "Kab. Raja Ampat (Papua Barat Daya)",
+    "value": "Kabupaten Raja Ampat, Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Tambrauw",
+    "province": "Papua Barat Daya",
+    "label": "Kab. Tambrauw (Papua Barat Daya)",
+    "value": "Kabupaten Tambrauw, Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "regency",
+    "name": "Kabupaten Maybrat",
+    "province": "Papua Barat Daya",
+    "label": "Kab. Maybrat (Papua Barat Daya)",
+    "value": "Kabupaten Maybrat, Papua Barat Daya, Indonesia"
+  },
+  {
+    "type": "city",
+    "name": "Kota Sorong",
+    "province": "Papua Barat Daya",
+    "label": "Kota Sorong (Papua Barat Daya)",
+    "value": "Kota Sorong, Papua Barat Daya, Indonesia"
+  }
+]

@@ -22,3 +22,13 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Google Map Extractor Tool
+/tools/google-map-extractor/node_modules
+/tools/google-map-extractor/data/*.sqlite*
+/tools/google-map-extractor/output
+/tools/google-map-extractor/.env
+/tools/google-map-extractor/accounts.json
+/tools/google-map-extractor/src/token.json
+/tools/google-map-extractor/src/credentials.json
+/tools/google-map-extractor/src/github_accounts.txt
