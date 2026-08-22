@@ -129,8 +129,29 @@ class AiGenerationJobsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    Action::make('processBatchSelected')
+                        ->label('Proses Terpilih (Paralel)')
+                        ->icon('heroicon-o-bolt')
+                        ->color('success')
+                        ->accessSelectedRecords()
+                        ->requiresConfirmation()
+                        ->modalHeading('Proses Terpilih Secara Bersamaan')
+                        ->modalDescription('Akan memproses semua job yang dipilih secara paralel/simultan.')
+                        ->action(function (Collection $records) {
+                            $startTime = microtime(true);
+                            $aiService = app(\App\Services\PostAiContentService::class);
+                            $result = $aiService->generateBatchConcurrent($records, 5);
+                            $duration = round(microtime(true) - $startTime, 2);
+
+                            Notification::make()
+                                ->title("Proses Selesai ({$duration}s)")
+                                ->body("Total: {$result['total']} | Berhasil: {$result['completed']} | Gagal: {$result['failed']}")
+                                ->color($result['failed'] > 0 ? 'warning' : 'success')
+                                ->send();
+                        }),
+
                     Action::make('retryBulk')
-                        ->label('Jalankan Ulang Terpilih')
+                        ->label('Jalankan Ulang Terpilih (Kembalikan ke Antrean)')
                         ->icon('heroicon-o-arrow-path')
                         ->color('warning')
                         ->accessSelectedRecords()
@@ -152,6 +173,7 @@ class AiGenerationJobsTable
                                 ->success()
                                 ->send();
                         }),
+
                     DeleteBulkAction::make(),
                 ]),
             ]);

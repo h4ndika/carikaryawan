@@ -37,16 +37,74 @@ class ListAiGenerationJobs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('runBatchConcurrent')
+                ->label('Proses Batch Cepat (Paralel)')
+                ->icon('heroicon-o-bolt')
+                ->color('success')
+                ->modalHeading('Proses Antrean AI Secara Bersamaan')
+                ->modalDescription('Memproses beberapa post sekaligus secara paralel (5-10 post bersamaan) menggunakan multi-thread API call untuk kecepatan maksimal.')
+                ->form([
+                    \Filament\Forms\Components\Select::make('limit')
+                        ->label('Jumlah Antrean yang Diproses')
+                        ->options([
+                            '5' => '5 Post',
+                            '10' => '10 Post (Rekomendasi)',
+                            '20' => '20 Post',
+                            '50' => '50 Post',
+                        ])
+                        ->default('10')
+                        ->required(),
+                    \Filament\Forms\Components\Select::make('concurrency')
+                        ->label('Kecepatan Paralel (Simultan)')
+                        ->options([
+                            '3' => '3 Post Sekaligus',
+                            '5' => '5 Post Sekaligus (Cepat)',
+                            '10' => '10 Post Sekaligus (Sangat Cepat)',
+                        ])
+                        ->default('5')
+                        ->required()
+                        ->helperText('Jumlah post yang dikirim ke AI dalam satu detik yang sama.'),
+                ])
+                ->action(function (array $data) {
+                    $limit = (int) ($data['limit'] ?? 10);
+                    $concurrency = (int) ($data['concurrency'] ?? 5);
+
+                    $pendingJobs = AiGenerationJob::with('post.category', 'post.city', 'post.province')
+                        ->where('status', 'pending')
+                        ->orderBy('id', 'asc')
+                        ->limit($limit)
+                        ->get();
+
+                    if ($pendingJobs->isEmpty()) {
+                        Notification::make()
+                            ->title('Tidak ada antrean pending')
+                            ->body('Semua antrean sudah selesai diproses.')
+                            ->info()
+                            ->send();
+                        return;
+                    }
+
+                    $startTime = microtime(true);
+                    $aiService = app(\App\Services\PostAiContentService::class);
+                    $result = $aiService->generateBatchConcurrent($pendingJobs, $concurrency);
+                    $duration = round(microtime(true) - $startTime, 2);
+
+                    Notification::make()
+                        ->title("Batch Selesai ({$duration}s)")
+                        ->body("Total: {$result['total']} | Berhasil: {$result['completed']} | Gagal: {$result['failed']}")
+                        ->color($result['failed'] > 0 ? 'warning' : 'success')
+                        ->send();
+                }),
+
             Action::make('runWorker')
-                ->label('Proses Antrean Sekarang')
+                ->label('Worker Standar (1 per 1)')
                 ->icon('heroicon-o-play')
-                ->color('primary')
+                ->color('gray')
                 ->requiresConfirmation()
-                ->modalHeading('Jalankan Worker Queue')
-                ->modalDescription('Akan memproses antrean job AI yang sedang menunggu (pending) di server.')
+                ->modalHeading('Jalankan Worker Standar')
+                ->modalDescription('Akan memproses antrean job AI satu per satu menggunakan artisan queue:work.')
                 ->action(function () {
                     try {
-                        // Process pending jobs with queue:work --stop-when-empty
                         Artisan::call('queue:work', [
                             '--stop-when-empty' => true,
                             '--timeout' => 180,
