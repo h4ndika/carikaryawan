@@ -1,32 +1,42 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="Navigasi Halaman" class="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
-        {{-- Status Counter (Mobile / Desktop) --}}
-        <div class="text-sm text-zinc-600 font-medium order-2 sm:order-1">
-            Menampilkan <span class="font-bold text-zinc-950">{{ $paginator->firstItem() ?? 0 }}</span> - <span class="font-bold text-zinc-950">{{ $paginator->lastItem() ?? 0 }}</span> dari <span class="font-bold text-zinc-950">{{ $paginator->total() }}</span> tempat
+    <nav role="navigation" aria-label="Navigasi Halaman" class="border-t border-zinc-200/80 pt-8 pb-6 flex flex-col sm:flex-row items-center justify-between gap-5">
+        {{-- Status Counter (Menampilkan X - Y dari Z tempat) --}}
+        <div class="text-xs text-zinc-500 font-medium order-2 sm:order-1 flex items-center gap-1.5">
+            <span>Menampilkan</span>
+            <span class="font-bold text-zinc-900 bg-zinc-100 px-2 py-0.5 rounded text-xs">{{ $paginator->firstItem() ?? 0 }} - {{ $paginator->lastItem() ?? 0 }}</span>
+            <span>dari</span>
+            <span class="font-bold text-zinc-900">{{ $paginator->total() }}</span>
+            <span>tempat</span>
         </div>
 
         {{-- Page Numbers & Nav Controls --}}
-        <div class="flex items-center gap-2 order-1 sm:order-2">
+        <div class="flex items-center gap-1 sm:gap-1.5 order-1 sm:order-2">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
-                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-300 cursor-not-allowed">
-                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                <span class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-300 select-none cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span class="hidden sm:inline">Sebelumnya</span>
                 </span>
             @else
                 <button type="button" 
                         wire:click="previousPage('{{ $paginator->getPageName() }}')" 
                         wire:loading.attr="disabled"
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-colors shadow-2xs cursor-pointer"
+                        style="cursor: pointer !important;"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 hover:text-amber-800 hover:bg-zinc-100/80 rounded-lg transition-colors cursor-pointer select-none"
                         aria-label="Halaman Sebelumnya">
-                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span class="hidden sm:inline">Sebelumnya</span>
                 </button>
             @endif
+
+            {{-- Separator line between prev and numbers on mobile --}}
+            <div class="h-4 w-px bg-zinc-200 mx-1 hidden sm:block"></div>
 
             {{-- Pagination Elements --}}
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <span class="inline-flex items-center justify-center w-10 h-10 text-sm font-bold text-zinc-400">
+                    <span class="inline-flex items-center justify-center w-8 h-8 text-xs font-bold text-zinc-400 select-none">
                         {{ $element }}
                     </span>
                 @endif
@@ -35,14 +45,15 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-950 text-white font-bold text-sm shadow-xs">
+                            <span class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-zinc-950 text-white font-bold text-xs sm:text-sm shadow-2xs select-none">
                                 {{ $page }}
                             </span>
                         @else
                             <button type="button" 
                                     wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
                                     wire:loading.attr="disabled"
-                                    class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 font-semibold text-sm transition-colors shadow-2xs cursor-pointer">
+                                    style="cursor: pointer !important;"
+                                    class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 font-semibold text-xs sm:text-sm transition-colors cursor-pointer select-none">
                                 {{ $page }}
                             </button>
                         @endif
@@ -50,18 +61,24 @@
                 @endif
             @endforeach
 
+            {{-- Separator line between numbers and next on mobile --}}
+            <div class="h-4 w-px bg-zinc-200 mx-1 hidden sm:block"></div>
+
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <button type="button" 
                         wire:click="nextPage('{{ $paginator->getPageName() }}')" 
                         wire:loading.attr="disabled"
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-colors shadow-2xs cursor-pointer"
+                        style="cursor: pointer !important;"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 hover:text-amber-800 hover:bg-zinc-100/80 rounded-lg transition-colors cursor-pointer select-none"
                         aria-label="Halaman Berikutnya">
-                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                    <span class="hidden sm:inline">Berikutnya</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
             @else
-                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-300 cursor-not-allowed">
-                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                <span class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-300 select-none cursor-not-allowed">
+                    <span class="hidden sm:inline">Berikutnya</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </span>
             @endif
         </div>
