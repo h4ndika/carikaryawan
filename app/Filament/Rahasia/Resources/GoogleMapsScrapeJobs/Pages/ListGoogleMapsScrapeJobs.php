@@ -9,12 +9,12 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\GoogleMapsScrapeJob;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Section;
 
 class ListGoogleMapsScrapeJobs extends ListRecords
 {
@@ -43,60 +43,53 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         ->placeholder('Contoh: Bandung, Indonesia')
                         ->columnSpanFull(),
 
-                    Grid::make(2)
-                        ->schema([
-                            Select::make('category_id')
-                                ->label('Tetapkan Kategori (Opsional)')
-                                ->options(Category::pluck('name', 'id'))
-                                ->searchable()
-                                ->placeholder('Otomatis deteksi dari Google Maps')
-                                ->helperText('Jika dikosongkan, kategori akan dideteksi dari tag Google Maps.'),
+                    Select::make('category_id')
+                        ->label('Tetapkan Kategori (Opsional)')
+                        ->options(Category::pluck('name', 'id'))
+                        ->searchable()
+                        ->placeholder('Otomatis deteksi dari Google Maps')
+                        ->helperText('Jika dikosongkan, kategori akan dideteksi dari tag Google Maps.'),
 
-                            Select::make('city_id')
-                                ->label('Tetapkan Kota (Opsional)')
-                                ->options(City::pluck('name', 'id'))
-                                ->searchable()
-                                ->placeholder('Otomatis deteksi dari Alamat')
-                                ->helperText('Jika dikosongkan, kota akan dideteksi dari parsing alamat.'),
-                        ]),
+                    Select::make('city_id')
+                        ->label('Tetapkan Kota (Opsional)')
+                        ->options(City::pluck('name', 'id'))
+                        ->searchable()
+                        ->placeholder('Otomatis deteksi dari Alamat')
+                        ->helperText('Jika dikosongkan, kota akan dideteksi dari parsing alamat.'),
 
-                    Grid::make(2)
-                        ->schema([
-                            TextInput::make('target_limit')
-                                ->label('Jumlah Target Tempat')
-                                ->numeric()
-                                ->default(20)
-                                ->minValue(1)
-                                ->maxValue(500)
-                                ->required(),
+                    TextInput::make('target_limit')
+                        ->label('Jumlah Target Tempat')
+                        ->numeric()
+                        ->default(20)
+                        ->minValue(1)
+                        ->maxValue(500)
+                        ->required(),
 
-                            Select::make('apify_account_id')
-                                ->label('Pilih Akun / Token Apify')
-                                ->options(
-                                    ApifyAccount::active()->pluck('label', 'id')->map(function ($label, $id) {
-                                        return $label ?: 'Akun #' . $id;
-                                    })
-                                )
-                                ->placeholder('Rotasi Otomatis (Load Balancing)')
-                                ->helperText('Pilih akun tertentu atau biarkan otomatis memilih akun yang siap pakai.'),
-                        ]),
+                    Select::make('apify_account_id')
+                        ->label('Pilih Akun / Token Apify')
+                        ->options(
+                            ApifyAccount::active()->pluck('label', 'id')->map(function ($label, $id) {
+                                return $label ?: 'Akun #' . $id;
+                            })
+                        )
+                        ->placeholder('Rotasi Otomatis (Load Balancing)')
+                        ->helperText('Pilih akun tertentu atau biarkan otomatis memilih akun yang siap pakai.'),
 
-                    Grid::make(3)
-                        ->schema([
-                            Toggle::make('include_images')
-                                ->label('Ambil Foto Galeri')
-                                ->default(true),
+                    Toggle::make('include_images')
+                        ->label('Ambil Foto Galeri')
+                        ->default(true),
 
-                            Toggle::make('include_reviews')
-                                ->label('Ambil Ulasan Pengguna')
-                                ->default(false),
+                    Toggle::make('include_reviews')
+                        ->label('Ambil Ulasan Pengguna')
+                        ->default(false),
 
-                            Toggle::make('publish_imported')
-                                ->label('Langsung Publikasikan')
-                                ->default(false)
-                                ->helperText('Jika aktif, status langsung Published. Jika tidak, akan Draft.'),
-                        ]),
+                    Toggle::make('publish_imported')
+                        ->label('Langsung Publikasikan')
+                        ->default(false)
+                        ->columnSpanFull()
+                        ->helperText('Jika aktif, status langsung Published. Jika tidak, akan Draft.'),
                 ])
+                ->columns(2)
                 ->action(function (array $data) {
                     $job = GoogleMapsScrapeJob::create([
                         'query' => $data['query'],
