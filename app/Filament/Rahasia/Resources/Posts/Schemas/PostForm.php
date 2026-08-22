@@ -79,9 +79,10 @@ class PostForm
                                         $promptUser = $get('ai_prompt');
 
                                         $finalPrompt = "Buatkan artikel dengan Judul : \"$judul\", yang berlokasi di $cityName, $provinceName. " .
-                                            "Artikel ini kategorinya $category" .
-                                            'Tulis dengan bahasa Indonesia yang natural dan menarik.' .
-                                            'Format artikel dalam HTML, jangan gunakan blok markdown atau backticks. Dan tanpa tambahan teks lain seperti penutup atau salam.' .
+                                            "Artikel ini kategorinya $category. " .
+                                            'Tulis dengan bahasa Indonesia yang natural dan menarik seperti majalah editorial. ' .
+                                            'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2> atau <h1>. JANGAN berikan teks pengantar, penjelasan instruksi, pemikiran/reasoning, atau salam pembuka/penutup. ' .
+                                            'Format artikel dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), jangan gunakan blok markdown atau backticks. ' .
                                             'Tambahkan juga data detail dalam JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal:' .
                                             '- Kalau kategori seperti Hotel, Tempat Makan dll : harga, lokasi, jam_buka, fasilitas' .
                                             '- Kalau kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan' .
@@ -91,7 +92,7 @@ class PostForm
                                                 "key1": "value1",
                                                 "key2": "value2",
                                                 "key3": "value3",
-                                                "key4": "value4",
+                                                "key4": "value4"
                                             }' .
                                             "Prompt tambahan: $promptUser";
 
@@ -99,7 +100,7 @@ class PostForm
                                             $response = OpenAI::chat()->create([
                                                 'model' => config('openai.model'),
                                                 'messages' => [
-                                                    ['role' => 'system', 'content' => 'Kamu adalah penulis artikel SEO profesional dan membuat konten HTML untuk website.'],
+                                                    ['role' => 'system', 'content' => 'Kamu adalah penulis artikel editorial profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/reasoning, dan tanpa penutup/salam.'],
                                                     ['role' => 'user', 'content' => $finalPrompt],
                                                 ],
                                                 'temperature' => 0.7,
@@ -115,36 +116,11 @@ class PostForm
                                             return;
                                         }
 
-                                        $generated = $response->choices[0]->message->content ?? '';
-                                        try {
-                                            $generated = preg_replace('/^```html\s*/', '', $generated);
-                                            $generated = preg_replace('/```$/', '', $generated);
-                                            $generated = preg_replace('/Semoga.*$/is', '', $generated);
-                                        } catch (\Throwable $th) {
-                                            //
-                                        }
+                                        $rawGenerated = $response->choices[0]->message->content ?? '';
+                                        $cleaned = \App\Services\PostAiContentService::cleanGeneratedContent($rawGenerated);
 
-                                        $detailsArray = [];
-                                        try {
-                                            preg_match('/<json>(.*?)<\/json>/s', $generated, $jsonMatch);
-                                            if (!empty($jsonMatch[1])) {
-                                                $jsonData = json_decode(trim($jsonMatch[1]), true);
-                                                if (json_last_error() === JSON_ERROR_NONE && is_array($jsonData)) {
-                                                    foreach ($jsonData as $key => $value) {
-                                                        $detailsArray[] = [
-                                                            'meta_key' => $key,
-                                                            'meta_value' => is_array($value) ? implode(', ', $value) : $value,
-                                                        ];
-                                                    }
-                                                }
-                                                $generated = preg_replace('/<json>.*<\/json>/s', '', $generated);
-                                            }
-                                        } catch (\Throwable $th) {
-                                            //
-                                        }
-
-                                        $set('content', trim($generated));
-                                        $set('details', $detailsArray);
+                                        $set('content', $cleaned['content']);
+                                        $set('details', $cleaned['details']);
                                     })
                             ),
 
