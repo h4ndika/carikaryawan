@@ -29,6 +29,13 @@ class Post extends Model
         'id',
     ];
 
+    protected $casts = [
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+        'rating' => 'decimal:2',
+        'reviews_count' => 'integer',
+    ];
+
     public function province()
     {
         return $this->belongsTo(Province::class);
@@ -78,5 +85,29 @@ class Post extends Model
     public function seoRobots(): string
     {
         return $this->robots ?: 'index,follow';
+    }
+
+    /**
+     * Scope query to posts with a specific place_id
+     */
+    public function scopeByPlaceId($query, string $placeId)
+    {
+        return $query->where('place_id', $placeId);
+    }
+
+    /**
+     * Check if post has a Google Maps place_id
+     */
+    public function hasPlaceId(): bool
+    {
+        return !empty($this->place_id);
+    }
+
+    /**
+     * Check if post was imported from Google Maps
+     */
+    public function isImportedFromGoogleMaps(): bool
+    {
+        return $this->hasPlaceId();
     }
 }
