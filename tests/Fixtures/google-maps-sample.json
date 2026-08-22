@@ -1,0 +1,71 @@
+[
+  {
+    "title": "Kafe Keren Bandung",
+    "category": "Coffee Shop",
+    "address": "Jl. Braga No. 10, Bandung, Jawa Barat",
+    "phone": "+62 22 1234567",
+    "website": "https://kafekeren.com",
+    "rating": 4.5,
+    "reviewsCount": 120,
+    "price": "$$",
+    "latitude": -6.917464,
+    "longitude": 107.619123,
+    "openingHours": "Mon-Sun: 08:00-22:00",
+    "description": "Cozy coffee shop in the heart of Bandung with excellent Indonesian coffee and pastries. Perfect spot for working or meeting friends.",
+    "facilities": "WiFi, Parking, AC, Outdoor Seating, Non-Smoking Area",
+    "googleMapsUrl": "https://maps.google.com/?cid=12345678901",
+    "imageUrls": [
+      "https://lh3.googleusercontent.com/p/example1.jpg",
+      "https://lh3.googleusercontent.com/p/example2.jpg",
+      "https://lh3.googleusercontent.com/p/example3.jpg"
+    ],
+    "placeId": "ChIJBandung001",
+    "cid": "12345678901234567890"
+  },
+  {
+    "title": "Restoran Sunda Sederhana Jakarta",
+    "category": "Restaurant",
+    "address": "Jl. Sudirman No. 45, Jakarta Pusat, DKI Jakarta",
+    "phone": "+62 21 5551234",
+    "website": "https://restosunda.com",
+    "rating": 4.7,
+    "reviewsCount": 350,
+    "price": "$$$",
+    "latitude": -6.208763,
+    "longitude": 106.845599,
+    "openingHours": "Mon-Sun: 10:00-22:00",
+    "description": "Authentic Sundanese cuisine in the heart of Jakarta. Famous for our nasi timbel and grilled fish.",
+    "facilities": "Parking, AC, Private Rooms, WiFi, Family Friendly",
+    "googleMapsUrl": "https://maps.google.com/?cid=98765432101",
+    "imageUrls": [
+      "https://lh3.googleusercontent.com/p/resto1.jpg",
+      "https://lh3.googleusercontent.com/p/resto2.jpg"
+    ],
+    "placeId": "ChIJJakarta002",
+    "cid": "98765432109876543210"
+  },
+  {
+    "title": "Hotel Bintang Lima Surabaya",
+    "category": "Hotel",
+    "address": "Jl. Tunjungan No. 100, Surabaya, Jawa Timur",
+    "phone": "+62 31 5559876",
+    "website": "https://hotelbintang5.com",
+    "rating": 4.8,
+    "reviewsCount": 520,
+    "price": "$$$$",
+    "latitude": -7.257472,
+    "longitude": 112.752090,
+    "openingHours": "24/7",
+    "description": "Luxury 5-star hotel in downtown Surabaya with world-class amenities, spa, and rooftop restaurant.",
+    "facilities": "Pool, Spa, Gym, Restaurant, Bar, Conference Rooms, Concierge, Valet Parking",
+    "googleMapsUrl": "https://maps.google.com/?cid=11122233344",
+    "imageUrls": [
+      "https://lh3.googleusercontent.com/p/hotel1.jpg",
+      "https://lh3.googleusercontent.com/p/hotel2.jpg",
+      "https://lh3.googleusercontent.com/p/hotel3.jpg",
+      "https://lh3.googleusercontent.com/p/hotel4.jpg"
+    ],
+    "placeId": "ChIJSurabaya003",
+    "cid": "11122233344556677889"
+  }
+]
