@@ -133,6 +133,7 @@ class AiGenerationJobsTable
                         ->label('Jalankan Ulang Terpilih')
                         ->icon('heroicon-o-arrow-path')
                         ->color('warning')
+                        ->accessSelectedRecords()
                         ->action(function (Collection $records) {
                             $count = 0;
                             foreach ($records as $record) {

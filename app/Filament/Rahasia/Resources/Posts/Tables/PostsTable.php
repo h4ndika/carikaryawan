@@ -164,6 +164,7 @@ class PostsTable
                         ->label('Generate Konten Pakai AI')
                         ->icon('heroicon-o-sparkles')
                         ->color('amber')
+                        ->accessSelectedRecords()
                         ->modalHeading('Generate Konten AI untuk Post Terpilih')
                         ->modalDescription('Membuat konten, excerpt, dan detail tempat secara otomatis untuk post yang dipilih menggunakan background job queue.')
                         ->modalSubmitActionLabel('Mulai Antrean AI')
