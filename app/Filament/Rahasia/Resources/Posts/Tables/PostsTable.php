@@ -147,6 +147,24 @@ class PostsTable
                             ->default(false),
                     ])
                     ->action(function (Post $record, array $data) {
+                        $isAlreadyQueued = AiGenerationJob::where('post_id', $record->id)
+                            ->whereIn('status', ['pending', 'processing'])
+                            ->exists();
+
+                        if ($isAlreadyQueued) {
+                            Notification::make()
+                                ->title('Post Sudah Berada di Antrean')
+                                ->body("Post '{$record->title}' saat ini sedang dalam proses antrean AI. Silakan pantau di menu Antrean AI.")
+                                ->warning()
+                                ->actions([
+                                    Action::make('lihatAntrean')
+                                        ->label('Lihat Antrean')
+                                        ->url(route('filament.rahasia.resources.ai-generation-jobs.index')),
+                                ])
+                                ->send();
+                            return;
+                        }
+
                         $aiJob = AiGenerationJob::create([
                             'post_id' => $record->id,
                             'post_title' => $record->title,
@@ -202,8 +220,19 @@ class PostsTable
 
                             $dispatchedCount = 0;
                             $skippedCount = 0;
+                            $alreadyInQueueCount = 0;
 
                             foreach ($records as $post) {
+                                // Cek apakah post sedang aktif dalam antrean
+                                $isAlreadyQueued = AiGenerationJob::where('post_id', $post->id)
+                                    ->whereIn('status', ['pending', 'processing'])
+                                    ->exists();
+
+                                if ($isAlreadyQueued) {
+                                    $alreadyInQueueCount++;
+                                    continue;
+                                }
+
                                 $wordCount = str_word_count(strip_tags($post->content ?? ''));
                                 if ($onlyEmpty && $wordCount >= 200) {
                                     $skippedCount++;
@@ -222,9 +251,19 @@ class PostsTable
                                 $dispatchedCount++;
                             }
 
+                            $notes = [];
+                            if ($alreadyInQueueCount > 0) {
+                                $notes[] = "{$alreadyInQueueCount} dilewati karena sedang dalam antrean";
+                            }
+                            if ($skippedCount > 0) {
+                                $notes[] = "{$skippedCount} dilewati karena artikel sudah lengkap (>= 200 kata)";
+                            }
+
+                            $noteText = !empty($notes) ? ' (' . implode(', ', $notes) . ')' : '';
+
                             Notification::make()
                                 ->title('Antrean Generate AI Dimulai')
-                                ->body("{$dispatchedCount} post berhasil dimasukkan ke antrean." . ($skippedCount > 0 ? " ({$skippedCount} dilewati karena sudah memiliki artikel lengkap >= 200 kata)" : ''))
+                                ->body("{$dispatchedCount} post berhasil dimasukkan ke antrean.{$noteText}")
                                 ->actions([
                                     Action::make('lihatAntrean')
                                         ->label('Buka Pemantau Antrean')
