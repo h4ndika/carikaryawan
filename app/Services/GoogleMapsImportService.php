@@ -25,6 +25,42 @@ class GoogleMapsImportService
     protected bool $skipDuplicates = false;
     protected int $batchSize = 100;
     protected ?int $defaultCategoryId = null;
+    protected ?int $overrideCityId = null;
+    protected ?int $overrideProvinceId = null;
+    protected string $defaultStatus = 'draft';
+
+    /**
+     * Import directly from an array of Google Maps records (e.g. from Apify Crawler)
+     */
+    public function importFromRecords(array $records, array $options = []): array
+    {
+        $this->resetStats();
+
+        if (isset($options['skip_duplicates'])) {
+            $this->skipDuplicates = (bool) $options['skip_duplicates'];
+        }
+        if (isset($options['category_id'])) {
+            $this->defaultCategoryId = (int) $options['category_id'];
+        }
+        if (isset($options['city_id'])) {
+            $this->overrideCityId = (int) $options['city_id'];
+            $city = City::find($this->overrideCityId);
+            if ($city) {
+                $this->overrideProvinceId = $city->province_id;
+            }
+        }
+        if (isset($options['status'])) {
+            $this->defaultStatus = $options['status'];
+        }
+
+        if (empty($records)) {
+            return $this->stats;
+        }
+
+        $this->processRecords($records);
+
+        return $this->stats;
+    }
 
     /**
      * Import from directory containing JSON files
@@ -168,9 +204,11 @@ class GoogleMapsImportService
     {
         // Parse address to get location
         $location = $this->parseAddressToLocation($data['address'] ?? '');
+        $provinceId = $this->overrideProvinceId ?: $location['province_id'];
+        $cityId = $this->overrideCityId ?: $location['city_id'];
 
         // Find category
-        $categoryId = $this->findCategoryByName($data['category'] ?? '');
+        $categoryId = $this->findCategoryByName($data['category'] ?? '') ?: $this->defaultCategoryId;
 
         // Generate slug
         $slug = Str::slug($data['title']);
@@ -180,19 +218,22 @@ class GoogleMapsImportService
         $description = $data['description'] ?? '';
         $excerpt = Str::limit(strip_tags($description), 200);
 
+        $status = $this->defaultStatus ?: 'draft';
+        $publishedAt = $status === 'published' ? now() : null;
+
         return [
             // Basic fields
             'title' => $data['title'],
             'slug' => $slug,
             'excerpt' => $excerpt,
             'content' => $description,
-            'status' => 'draft',
-            'published_at' => null,
+            'status' => $status,
+            'published_at' => $publishedAt,
 
             // Location
             'category_id' => $categoryId,
-            'province_id' => $location['province_id'],
-            'city_id' => $location['city_id'],
+            'province_id' => $provinceId,
+            'city_id' => $cityId,
 
             // Google Maps fields
             'place_id' => $data['placeId'] ?? null,
