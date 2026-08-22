@@ -320,6 +320,49 @@ class PostForm
                     ->columns(2)
                     ->columnSpanFull()
                     ->collapsed(),
+
+                Section::make('Data Google Maps')
+                    ->description('Informasi terintegrasi dari Google Maps.')
+                    ->schema([
+                        TextInput::make('place_id')
+                            ->label('Place ID')
+                            ->maxLength(255)
+                            ->disabled(),
+                        TextInput::make('rating')
+                            ->label('Rating')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(5),
+                        TextInput::make('reviews_count')
+                            ->label('Jumlah Ulasan')
+                            ->numeric()
+                            ->minValue(0),
+                        TextInput::make('price_level')
+                            ->label('Tingkat Harga')
+                            ->maxLength(50),
+                        TextInput::make('phone')
+                            ->label('Nomor Telepon')
+                            ->tel()
+                            ->maxLength(50),
+                        TextInput::make('website')
+                            ->label('Website Resmi')
+                            ->url()
+                            ->maxLength(255),
+                        TextInput::make('google_maps_url')
+                            ->label('Google Maps URL')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        TextInput::make('latitude')
+                            ->label('Latitude')
+                            ->numeric(),
+                        TextInput::make('longitude')
+                            ->label('Longitude')
+                            ->numeric(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull()
+                    ->collapsed(),
             ]);
     }
 }
