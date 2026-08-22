@@ -86,10 +86,8 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     Toggle::make('publish_imported')
                         ->label('Langsung Publikasikan')
                         ->default(false)
-                        ->columnSpanFull()
                         ->helperText('Jika aktif, status langsung Published. Jika tidak, akan Draft.'),
                 ])
-                ->columns(2)
                 ->action(function (array $data) {
                     $job = GoogleMapsScrapeJob::create([
                         'query' => $data['query'],
