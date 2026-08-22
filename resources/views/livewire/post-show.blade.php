@@ -67,9 +67,10 @@
             </div>
         </header>
 
-        <!-- Featured Image with Placeholder Fallback & OnError Handling -->
+        <!-- Featured Image with Placeholder Fallback & Gallery Fallback -->
         @php
-            $mainImg = $post->featured_image_url ?: $post->thumbnail;
+            $mainImg = $post->primary_image_url;
+            $fallbackGalleryUrls = $post->fallback_image_urls;
         @endphp
         <div class="mb-12">
             <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200/80">
@@ -79,7 +80,8 @@
                             class="block w-full cursor-zoom-in group">
                         <img src="{{ $mainImg }}" 
                              alt="{{ $post->title }}" 
-                             onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                             data-fallbacks='@json($fallbackGalleryUrls)'
+                             onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                              class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
                         <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
                             <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto

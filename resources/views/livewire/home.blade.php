@@ -13,7 +13,8 @@
         <!-- Lead Editorial Spread (Hero Magazine Layout) -->
         @if ($featuredPost)
         @php
-            $featuredThumb = $featuredPost->featured_image_url ?: $featuredPost->thumbnail;
+            $featuredThumb = $featuredPost->primary_image_url;
+            $fallbackFeaturedUrls = $featuredPost->fallback_image_urls;
         @endphp
         <section class="border-b border-zinc-200 pb-12 mb-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -25,7 +26,8 @@
                             @if ($featuredThumb)
                                 <img src="{{ $featuredThumb }}" 
                                      alt="{{ $featuredPost->title }}" 
-                                     onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                                     data-fallbacks='@json($fallbackFeaturedUrls)'
+                                     onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                             @else
                                 <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-8">
@@ -72,7 +74,8 @@
                     <div class="space-y-6 divide-y divide-zinc-100">
                         @forelse ($sideFeatured as $sidePost)
                             @php
-                                $sideThumb = $sidePost->featured_image_url ?: $sidePost->thumbnail;
+                                $sideThumb = $sidePost->primary_image_url;
+                                $fallbackSideUrls = $sidePost->fallback_image_urls;
                             @endphp
                             <article class="pt-6 first:pt-0 group">
                                 <a href="{{ route('posts.show', ['category' => $sidePost->category->slug, 'city' => $sidePost->city->slug, 'slug' => $sidePost->slug]) }}" 
@@ -94,10 +97,12 @@
                                         @if ($sideThumb)
                                             <img src="{{ $sideThumb }}" 
                                                  alt="{{ $sidePost->title }}" 
-                                                 onerror="this.onerror=null; this.src='/images/placeholder.svg';"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                                 data-fallbacks='@json($fallbackSideUrls)'
+                                                 onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                 loading="lazy">
                                         @else
-                                            <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-300">
+                                            <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
                                                 <i class="fa-solid fa-camera text-base"></i>
                                             </div>
                                         @endif

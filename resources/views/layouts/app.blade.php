@@ -128,6 +128,23 @@
         </footer>
     </div>
 
+    <script>
+        window.handleImageFallback = function(img) {
+            try {
+                const raw = img.getAttribute('data-fallbacks');
+                const fallbacks = raw ? JSON.parse(raw) : [];
+                let nextIndex = parseInt(img.getAttribute('data-fallback-index') || '0', 10);
+                if (Array.isArray(fallbacks) && nextIndex < fallbacks.length) {
+                    img.setAttribute('data-fallback-index', nextIndex + 1);
+                    img.src = fallbacks[nextIndex];
+                    return;
+                }
+            } catch (e) {}
+            img.onerror = null;
+            img.src = '/images/placeholder.svg';
+        };
+    </script>
+
     @livewireScripts
 </body>
 </html>

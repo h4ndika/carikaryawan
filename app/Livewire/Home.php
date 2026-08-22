@@ -42,7 +42,7 @@ class Home extends Component
     {
         $postQuery = Post::query()
             ->published()
-            ->with(['category', 'city', 'province']);
+            ->with(['category', 'city', 'province', 'images']);
 
         if ($this->selectedCategory !== '') {
             $postQuery->whereHas('category', fn($q) => $q->where('slug', $this->selectedCategory));

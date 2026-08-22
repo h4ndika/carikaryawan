@@ -62,6 +62,45 @@ class Post extends Model
         return $this->hasMany(PostImage::class)->orderBy('order');
     }
 
+    /**
+     * Get the primary image URL (featured_image_url -> thumbnail -> first gallery image).
+     */
+    public function getPrimaryImageUrlAttribute(): ?string
+    {
+        if (!empty($this->featured_image_url)) {
+            return $this->featured_image_url;
+        }
+        if (!empty($this->thumbnail)) {
+            return $this->thumbnail;
+        }
+        if ($this->relationLoaded('images')) {
+            return $this->images->first()?->image_url;
+        }
+        return $this->images()->first()?->image_url;
+    }
+
+    /**
+     * Get all alternative candidate image URLs for fallback cascade.
+     */
+    public function getFallbackImageUrlsAttribute(): array
+    {
+        $primary = !empty($this->featured_image_url) ? $this->featured_image_url : $this->thumbnail;
+        $urls = [];
+
+        if (!empty($this->thumbnail) && $this->thumbnail !== $primary) {
+            $urls[] = $this->thumbnail;
+        }
+
+        $gallery = $this->relationLoaded('images') ? $this->images : $this->images()->get();
+        foreach ($gallery as $img) {
+            if (!empty($img->image_url) && $img->image_url !== $primary && !in_array($img->image_url, $urls)) {
+                $urls[] = $img->image_url;
+            }
+        }
+
+        return $urls;
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published');

@@ -2,7 +2,8 @@
     @if (isset($posts) && $posts->count() > 0)
         @foreach ($posts as $pick)
         @php
-            $pickThumb = $pick->featured_image_url ?: $pick->thumbnail;
+            $pickThumb = $pick->primary_image_url;
+            $fallbackPickUrls = $pick->fallback_image_urls;
         @endphp
         <article class="py-4 first:pt-0 last:pb-0 group">
             <a href="{{ route('posts.show', ['category' => $pick->category->slug, 'city' => $pick->city->slug, 'slug' => $pick->slug]) }}" 
@@ -25,7 +26,8 @@
                     @if ($pickThumb)
                         <img src="{{ $pickThumb }}" 
                              alt="{{ $pick->title }}" 
-                             onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                             data-fallbacks='@json($fallbackPickUrls)'
+                             onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                              loading="lazy">
                     @else

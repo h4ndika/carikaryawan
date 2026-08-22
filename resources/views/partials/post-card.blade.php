@@ -4,7 +4,8 @@
         'city' => $post->city->slug,
         'slug' => $post->slug,
     ]);
-    $thumb = $post->featured_image_url ?: $post->thumbnail;
+    $thumb = $post->primary_image_url;
+    $fallbackThumbUrls = $post->fallback_image_urls;
 @endphp
 
 <article class="group flex flex-col bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
@@ -13,7 +14,8 @@
             <img
                 src="{{ $thumb }}"
                 alt="{{ $post->title }}"
-                onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                data-fallbacks='@json($fallbackThumbUrls)'
+                onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 loading="lazy"
             >
