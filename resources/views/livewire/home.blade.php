@@ -26,9 +26,10 @@
                             @if ($featuredThumb)
                                 <img src="{{ $featuredThumb }}" 
                                      alt="{{ $featuredPost->title }}" 
-                                     data-fallbacks='@json($fallbackFeaturedUrls)'
+                                     data-fallbacks='@json($fallbackFeaturedUrls ?? [])'
                                      onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                     loading="lazy">
                             @else
                                 <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-8">
                                     <i class="fa-solid fa-camera text-4xl text-zinc-300 mb-2"></i>
