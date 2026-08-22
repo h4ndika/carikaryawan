@@ -266,10 +266,13 @@ class PostsTable
 
                             // Trigger background worker process asynchronously so it runs immediately
                             if ($dispatchedCount > 0) {
-                                try {
-                                    \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=100 --concurrency=5');
-                                } catch (\Throwable $e) {
-                                    // Fallback to queue worker
+                                $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
+                                $artisan = escapeshellarg(base_path('artisan'));
+
+                                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                                    @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$dispatchedCount} --concurrency=5 > NUL 2>&1", 'r'));
+                                } else {
+                                    @exec("{$php} {$artisan} ai:process-batch --limit={$dispatchedCount} --concurrency=5 > /dev/null 2>&1 &");
                                 }
                             }
 

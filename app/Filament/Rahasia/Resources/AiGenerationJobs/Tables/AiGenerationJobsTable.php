@@ -147,16 +147,19 @@ class AiGenerationJobsTable
                             $jobIds = $records->pluck('id')->all();
                             $count = count($jobIds);
 
-                            // Dispatch into chunked batch jobs
+                            // 1. Dispatch ke Laravel Queue (untuk php artisan queue:work)
                             foreach (array_chunk($jobIds, 10) as $chunkIds) {
                                 \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
                             }
 
-                            try {
-                                \Illuminate\Support\Facades\Process::path(base_path())
-                                    ->start("php artisan ai:process-batch --limit=100 --concurrency=5");
-                            } catch (\Throwable $e) {
-                                // Fallback
+                            // 2. Spawn background worker mandiri
+                            $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
+                            $artisan = escapeshellarg(base_path('artisan'));
+
+                            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                                @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > NUL 2>&1", 'r'));
+                            } else {
+                                @exec("{$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > /dev/null 2>&1 &");
                             }
 
                             Notification::make()
@@ -172,7 +175,7 @@ class AiGenerationJobsTable
                         ->color('warning')
                         ->accessSelectedRecords()
                         ->action(function (Collection $records) {
-                            $count = 0;
+                            $jobIds = [];
                             foreach ($records as $record) {
                                 $record->update([
                                     'status' => 'pending',
@@ -180,15 +183,22 @@ class AiGenerationJobsTable
                                     'started_at' => null,
                                     'finished_at' => null,
                                 ]);
-                                GeneratePostContentJob::dispatch($record->id);
-                                $count++;
+                                $jobIds[] = $record->id;
                             }
 
+                            $count = count($jobIds);
                             if ($count > 0) {
-                                try {
-                                    \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=100 --concurrency=5');
-                                } catch (\Throwable $e) {
-                                    // Fallback
+                                foreach (array_chunk($jobIds, 10) as $chunkIds) {
+                                    \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                                }
+
+                                $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
+                                $artisan = escapeshellarg(base_path('artisan'));
+
+                                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                                    @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > NUL 2>&1", 'r'));
+                                } else {
+                                    @exec("{$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > /dev/null 2>&1 &");
                                 }
                             }
 
