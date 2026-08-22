@@ -354,7 +354,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach ($related as $item)
                         @php
-                            $itemThumb = $item->featured_image_url ?: $item->thumbnail;
+                            $itemThumb = $item->primary_image_url;
+                            $fallbackItemUrls = $item->fallback_image_urls;
                         @endphp
                         <article class="group space-y-3">
                             <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" 
@@ -362,7 +363,8 @@
                                 @if ($itemThumb)
                                     <img src="{{ $itemThumb }}" 
                                          alt="{{ $item->title }}" 
-                                         onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                                         data-fallbacks='@json($fallbackItemUrls)'
+                                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                          loading="lazy">
                                 @else

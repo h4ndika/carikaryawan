@@ -61,7 +61,7 @@ class PostShow extends Component
             ->where('category_id', $this->post->category_id)
             ->where('city_id', $this->post->city_id)
             ->where('id', '!=', $this->post->id)
-            ->with(['category', 'city', 'province'])
+            ->with(['category', 'city', 'province', 'images'])
             ->latest('published_at')
             ->limit(6)
             ->get();
