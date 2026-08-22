@@ -142,17 +142,27 @@ class AiGenerationJobsTable
                         ->accessSelectedRecords()
                         ->requiresConfirmation()
                         ->modalHeading('Proses Terpilih Secara Bersamaan')
-                        ->modalDescription('Akan memproses semua job yang dipilih secara paralel/simultan.')
+                        ->modalDescription('Akan memproses semua job yang dipilih secara paralel di latar belakang.')
                         ->action(function (Collection $records) {
-                            $startTime = microtime(true);
-                            $aiService = app(\App\Services\PostAiContentService::class);
-                            $result = $aiService->generateBatchConcurrent($records, 5);
-                            $duration = round(microtime(true) - $startTime, 2);
+                            $jobIds = $records->pluck('id')->all();
+                            $count = count($jobIds);
+
+                            // Dispatch into chunked batch jobs
+                            foreach (array_chunk($jobIds, 10) as $chunkIds) {
+                                \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                            }
+
+                            try {
+                                \Illuminate\Support\Facades\Process::path(base_path())
+                                    ->start("php artisan ai:process-batch --limit=100 --concurrency=5");
+                            } catch (\Throwable $e) {
+                                // Fallback
+                            }
 
                             Notification::make()
-                                ->title("Proses Selesai ({$duration}s)")
-                                ->body("Total: {$result['total']} | Berhasil: {$result['completed']} | Gagal: {$result['failed']}")
-                                ->color($result['failed'] > 0 ? 'warning' : 'success')
+                                ->title('Proses Dimulai di Latar Belakang')
+                                ->body("Sedang memproses {$count} job terpilih secara paralel. Status akan ter-update otomatis.")
+                                ->success()
                                 ->send();
                         }),
 

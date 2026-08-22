@@ -69,13 +69,9 @@ class ListAiGenerationJobs extends ListRecords
                     $limit = (int) ($data['limit'] ?? 10);
                     $concurrency = (int) ($data['concurrency'] ?? 5);
 
-                    $pendingJobs = AiGenerationJob::with('post.category', 'post.city', 'post.province')
-                        ->where('status', 'pending')
-                        ->orderBy('id', 'asc')
-                        ->limit($limit)
-                        ->get();
+                    $pendingCount = AiGenerationJob::where('status', 'pending')->count();
 
-                    if ($pendingJobs->isEmpty()) {
+                    if ($pendingCount === 0) {
                         Notification::make()
                             ->title('Tidak ada antrean pending')
                             ->body('Semua antrean sudah selesai diproses.')
@@ -84,16 +80,24 @@ class ListAiGenerationJobs extends ListRecords
                         return;
                     }
 
-                    $startTime = microtime(true);
-                    $aiService = app(\App\Services\PostAiContentService::class);
-                    $result = $aiService->generateBatchConcurrent($pendingJobs, $concurrency);
-                    $duration = round(microtime(true) - $startTime, 2);
+                    $processCount = min($limit, $pendingCount);
 
-                    Notification::make()
-                        ->title("Batch Selesai ({$duration}s)")
-                        ->body("Total: {$result['total']} | Berhasil: {$result['completed']} | Gagal: {$result['failed']}")
-                        ->color($result['failed'] > 0 ? 'warning' : 'success')
-                        ->send();
+                    try {
+                        \Illuminate\Support\Facades\Process::path(base_path())
+                            ->start("php artisan ai:process-batch --limit={$limit} --concurrency={$concurrency}");
+
+                        Notification::make()
+                            ->title('Batch Dimulai di Latar Belakang')
+                            ->body("Sedang memproses {$processCount} antrean secara paralel ({$concurrency} post sekaligus). Halaman ini akan otomatis ter-update.")
+                            ->success()
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Gagal memulai proses latar belakang')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
                 }),
 
             Action::make('runWorker')
