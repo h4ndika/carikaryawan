@@ -149,15 +149,15 @@
                         @endforeach
                     </div>
 
-                    <!-- Explore More Places CTA -->
-                    <div class="mt-12 pt-8 border-t border-zinc-200 text-center">
+                    <!-- Explore More Places Link (styled like Baca Catatan) -->
+                    <div class="mt-8 pt-6 border-t border-zinc-200/80 flex items-center justify-between">
+                        <span class="text-xs text-zinc-500 font-medium">Tertarik mencari tempat lain?</span>
                         <a href="{{ route('search') }}" 
                            wire:navigate
-                           class="inline-flex items-center gap-3 px-7 py-3.5 bg-zinc-950 hover:bg-amber-800 text-white rounded-xl text-xs uppercase tracking-widest font-bold transition-all duration-300 shadow-sm hover:shadow-md group">
-                            <span>Jelajahi Banyak Tempat</span>
-                            <i class="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
+                           class="font-semibold text-sm text-zinc-900 hover:text-amber-800 flex items-center gap-2 transition-colors group">
+                            <span>Jelajahi banyak tempat</span>
+                            <i class="fa-solid fa-arrow-right text-[11px] transition-transform duration-300 group-hover:translate-x-1"></i>
                         </a>
-                        <p class="text-xs text-zinc-500 mt-2.5 font-medium">Temukan ribuan rekomendasi kafe, penginapan, dan destinasi lainnya di sekitarmu</p>
                     </div>
                 @endif
             </div>
