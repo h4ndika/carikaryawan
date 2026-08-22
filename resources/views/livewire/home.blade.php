@@ -128,7 +128,7 @@
             <div class="lg:col-span-8">
                 <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-200">
                     <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950">
-                        {{ !empty($selectedCategory) ? 'Kategori: ' . ucfirst($selectedCategory) : 'Cerita & Ulasan Terbaru' }}
+                        {{ !empty($selectedCategory) ? 'Kategori: ' . $activeCategoryName : 'Cerita & Ulasan Terbaru' }}
                     </h2>
                     <span class="text-xs uppercase tracking-wider text-zinc-500 font-semibold">Semua Wilayah</span>
                 </div>

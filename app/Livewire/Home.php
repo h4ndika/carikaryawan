@@ -48,9 +48,18 @@ class Home extends Component
             $postQuery->whereHas('category', fn($q) => $q->where('slug', $this->selectedCategory));
         }
 
+        $categories = Category::query()->orderBy('name')->get();
+
+        // Resolve slug ke nama kategori yang sebenarnya
+        $activeCategoryName = '';
+        if ($this->selectedCategory !== '') {
+            $activeCategoryName = $categories->firstWhere('slug', $this->selectedCategory)?->name ?? ucfirst(str_replace('-', ' ', $this->selectedCategory));
+        }
+
         return view('livewire.home', [
             'selectedCategory' => $this->selectedCategory,
-            'categories' => Category::query()->orderBy('name')->get(),
+            'activeCategoryName' => $activeCategoryName,
+            'categories' => $categories,
             // Limit kota untuk select (full list berat). Prioritas kota yang punya post.
             'cities' => City::query()
                 ->whereHas('posts', fn($q) => $q->published())
