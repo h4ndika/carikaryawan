@@ -43,7 +43,7 @@ class Search extends Component
     {
         $query = Post::query()
             ->published()
-            ->with(['category', 'city', 'province']);
+            ->with(['category', 'city', 'province', 'images']);
 
         $term = trim($this->q);
         if ($term !== '') {

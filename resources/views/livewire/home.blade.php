@@ -149,12 +149,16 @@
                         @endforeach
                     </div>
 
-                    <!-- Pagination -->
-                    @if (method_exists($posts, 'links'))
-                        <div class="mt-12 pt-6 border-t border-zinc-200">
-                            {{ $posts->links() }}
-                        </div>
-                    @endif
+                    <!-- Explore More Places CTA -->
+                    <div class="mt-12 pt-8 border-t border-zinc-200 text-center">
+                        <a href="{{ route('search') }}" 
+                           wire:navigate
+                           class="inline-flex items-center gap-3 px-7 py-3.5 bg-zinc-950 hover:bg-amber-800 text-white rounded-xl text-xs uppercase tracking-widest font-bold transition-all duration-300 shadow-sm hover:shadow-md group">
+                            <span>Jelajahi Banyak Tempat</span>
+                            <i class="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
+                        </a>
+                        <p class="text-xs text-zinc-500 mt-2.5 font-medium">Temukan ribuan rekomendasi kafe, penginapan, dan destinasi lainnya di sekitarmu</p>
+                    </div>
                 @endif
             </div>
 

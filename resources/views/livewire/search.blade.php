@@ -92,16 +92,18 @@
                 @endif
             </div>
 
-            <!-- Posts Grid -->
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($posts as $post)
-                    @include('partials.post-card', ['post' => $post])
-                @endforeach
+            <!-- Posts Feed (Editorial layout matching Home) -->
+            <div class="bg-white border border-zinc-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="space-y-10">
+                    @foreach ($posts as $post)
+                        @include('partials.article-feed', ['post' => $post])
+                    @endforeach
+                </div>
             </div>
 
-            <!-- Pagination Links -->
-            <div class="mt-12 pt-6 border-t border-zinc-200">
-                {{ $posts->links() }}
+            <!-- Custom Editorial Pagination Links -->
+            <div class="mt-8">
+                {{ $posts->links('partials.pagination') }}
             </div>
         @endif
 
