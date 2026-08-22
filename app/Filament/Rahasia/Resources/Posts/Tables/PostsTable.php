@@ -176,12 +176,6 @@ class PostsTable
 
                         GeneratePostContentJob::dispatch($aiJob->id);
 
-                        try {
-                            \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=10 --concurrency=5');
-                        } catch (\Throwable $e) {
-                            // Fallback
-                        }
-
                         Notification::make()
                             ->title('Antrean AI Dibuat')
                             ->body("Generate konten untuk '{$record->title}' telah dimasukkan ke antrean latar belakang.")
@@ -262,18 +256,6 @@ class PostsTable
                             // Dispatch background batch parallel jobs in chunks of 10 (concurrency 5)
                             foreach (array_chunk($createdJobIds, 10) as $chunkIds) {
                                 ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
-                            }
-
-                            // Trigger background worker process asynchronously so it runs immediately
-                            if ($dispatchedCount > 0) {
-                                $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
-                                $artisan = escapeshellarg(base_path('artisan'));
-
-                                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                                    @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$dispatchedCount} --concurrency=5 > NUL 2>&1", 'r'));
-                                } else {
-                                    @exec("{$php} {$artisan} ai:process-batch --limit={$dispatchedCount} --concurrency=5 > /dev/null 2>&1 &");
-                                }
                             }
 
                             $notes = [];

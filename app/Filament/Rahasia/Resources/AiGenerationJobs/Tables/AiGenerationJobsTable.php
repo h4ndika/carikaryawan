@@ -109,12 +109,6 @@ class AiGenerationJobsTable
 
                         GeneratePostContentJob::dispatch($record->id);
 
-                        try {
-                            \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=10 --concurrency=5');
-                        } catch (\Throwable $e) {
-                            // Fallback
-                        }
-
                         Notification::make()
                             ->title('Job berhasil dimasukkan kembali ke antrean')
                             ->success()
@@ -142,29 +136,19 @@ class AiGenerationJobsTable
                         ->accessSelectedRecords()
                         ->requiresConfirmation()
                         ->modalHeading('Proses Terpilih Secara Bersamaan')
-                        ->modalDescription('Akan memproses semua job yang dipilih secara paralel di latar belakang.')
+                        ->modalDescription('Akan memasukkan semua job yang dipilih ke antrean batch paralel.')
                         ->action(function (Collection $records) {
                             $jobIds = $records->pluck('id')->all();
                             $count = count($jobIds);
 
-                            // 1. Dispatch ke Laravel Queue (untuk php artisan queue:work)
+                            // Dispatch ke Laravel Queue
                             foreach (array_chunk($jobIds, 10) as $chunkIds) {
                                 \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
                             }
 
-                            // 2. Spawn background worker mandiri
-                            $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
-                            $artisan = escapeshellarg(base_path('artisan'));
-
-                            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                                @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > NUL 2>&1", 'r'));
-                            } else {
-                                @exec("{$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > /dev/null 2>&1 &");
-                            }
-
                             Notification::make()
-                                ->title('Proses Dimulai di Latar Belakang')
-                                ->body("Sedang memproses {$count} job terpilih secara paralel. Status akan ter-update otomatis.")
+                                ->title('Job Berhasil Dimasukkan ke Antrean')
+                                ->body("{$count} job terpilih dimasukkan ke antrean batch queue (5 post sekaligus).")
                                 ->success()
                                 ->send();
                         }),
@@ -190,15 +174,6 @@ class AiGenerationJobsTable
                             if ($count > 0) {
                                 foreach (array_chunk($jobIds, 10) as $chunkIds) {
                                     \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
-                                }
-
-                                $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
-                                $artisan = escapeshellarg(base_path('artisan'));
-
-                                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                                    @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > NUL 2>&1", 'r'));
-                                } else {
-                                    @exec("{$php} {$artisan} ai:process-batch --limit={$count} --concurrency=5 > /dev/null 2>&1 &");
                                 }
                             }
 

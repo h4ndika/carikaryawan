@@ -86,24 +86,14 @@ class ListAiGenerationJobs extends ListRecords
                         return;
                     }
 
-                    // 1. Dispatch ke Laravel Queue Table (agar bisa diproses oleh php artisan queue:work)
+                    // Dispatch ke Laravel Queue Table (diproses oleh php artisan queue:work)
                     foreach (array_chunk($pendingJobs, 10) as $chunkIds) {
                         \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, $concurrency);
                     }
 
-                    // 2. Jalankan background process mandiri di server (agar jalan otomatis walau tanpa terminal queue:work)
-                    $php = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
-                    $artisan = escapeshellarg(base_path('artisan'));
-
-                    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                        @pclose(@popen("start /B {$php} {$artisan} ai:process-batch --limit={$limit} --concurrency={$concurrency} > NUL 2>&1", 'r'));
-                    } else {
-                        @exec("{$php} {$artisan} ai:process-batch --limit={$limit} --concurrency={$concurrency} > /dev/null 2>&1 &");
-                    }
-
                     Notification::make()
-                        ->title('Batch Dimulai di Latar Belakang')
-                        ->body("Sedang memproses {$count} antrean secara paralel ({$concurrency} post sekaligus). Halaman ini akan otomatis ter-update.")
+                        ->title('Antrean Batch Berhasil Dibuat')
+                        ->body("{$count} antrean AI siap diproses secara paralel ({$concurrency} post sekaligus). Pastikan worker queue berjalan (php artisan queue:work).")
                         ->success()
                         ->send();
                 }),
