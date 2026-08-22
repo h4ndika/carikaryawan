@@ -147,7 +147,7 @@ class PostsTable
                             ->title('Job AI Berhasil Ditambahkan ke Antrean')
                             ->body("Post '{$record->title}' sedang diproses di latar belakang.")
                             ->actions([
-                                \Filament\Notifications\Actions\Action::make('lihatAntrean')
+                                Action::make('lihatAntrean')
                                     ->label('Lihat Antrean')
                                     ->url(route('filament.rahasia.resources.ai-generation-jobs.index')),
                             ])
@@ -211,7 +211,7 @@ class PostsTable
                                 ->title('Antrean Generate AI Dimulai')
                                 ->body("{$dispatchedCount} post berhasil dimasukkan ke antrean." . ($skippedCount > 0 ? " ({$skippedCount} dilewati karena sudah ada konten)" : ''))
                                 ->actions([
-                                    \Filament\Notifications\Actions\Action::make('lihatAntrean')
+                                    Action::make('lihatAntrean')
                                         ->label('Buka Pemantau Antrean')
                                         ->url(route('filament.rahasia.resources.ai-generation-jobs.index')),
                                 ])
