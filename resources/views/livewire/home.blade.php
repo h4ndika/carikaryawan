@@ -12,20 +12,24 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <!-- Lead Editorial Spread (Hero Magazine Layout) -->
         @if ($featuredPost)
+        @php
+            $featuredThumb = $featuredPost->featured_image_url ?: $featuredPost->thumbnail;
+        @endphp
         <section class="border-b border-zinc-200 pb-12 mb-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 <!-- Lead Story (7 cols) -->
                 <article class="lg:col-span-7 group">
                     <a href="{{ route('posts.show', ['category' => $featuredPost->category->slug, 'city' => $featuredPost->city->slug, 'slug' => $featuredPost->slug]) }}" 
                        wire:navigate class="block space-y-4">
-                        <div class="aspect-[16/10] overflow-hidden rounded-xl bg-zinc-100 relative">
-                            @if ($featuredPost->featured_image_url)
-                                <img src="{{ $featuredPost->featured_image_url }}" 
+                        <div class="aspect-[16/10] overflow-hidden rounded-xl bg-zinc-100 border border-zinc-200/60 relative">
+                            @if ($featuredThumb)
+                                <img src="{{ $featuredThumb }}" 
                                      alt="{{ $featuredPost->title }}" 
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                             @else
-                                <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
-                                    <i class="fa-solid fa-image text-4xl"></i>
+                                <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-8">
+                                    <i class="fa-solid fa-camera text-4xl text-zinc-300 mb-2"></i>
+                                    <span class="text-xs uppercase font-bold tracking-widest text-zinc-400">DISEKITAR KURASI</span>
                                 </div>
                             @endif
                         </div>
@@ -66,6 +70,9 @@
 
                     <div class="space-y-6 divide-y divide-zinc-100">
                         @forelse ($sideFeatured as $sidePost)
+                            @php
+                                $sideThumb = $sidePost->featured_image_url ?: $sidePost->thumbnail;
+                            @endphp
                             <article class="pt-6 first:pt-0 group">
                                 <a href="{{ route('posts.show', ['category' => $sidePost->category->slug, 'city' => $sidePost->city->slug, 'slug' => $sidePost->slug]) }}" 
                                    wire:navigate class="grid grid-cols-3 gap-4 items-start">
@@ -82,14 +89,14 @@
                                             <span>{{ max(1, round(str_word_count(strip_tags($sidePost->content ?? '')) / 200)) }} min</span>
                                         </div>
                                     </div>
-                                    <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100">
-                                        @if ($sidePost->featured_image_url)
-                                            <img src="{{ $sidePost->featured_image_url }}" 
+                                    <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200/60 flex items-center justify-center">
+                                        @if ($sideThumb)
+                                            <img src="{{ $sideThumb }}" 
                                                  alt="{{ $sidePost->title }}" 
                                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         @else
                                             <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-300">
-                                                <i class="fa-solid fa-image text-xl"></i>
+                                                <i class="fa-solid fa-camera text-base"></i>
                                             </div>
                                         @endif
                                     </div>

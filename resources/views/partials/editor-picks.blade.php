@@ -1,6 +1,9 @@
 <div class="divide-y divide-zinc-100">
     @if (isset($posts) && $posts->count() > 0)
         @foreach ($posts as $pick)
+        @php
+            $pickThumb = $pick->featured_image_url ?: $pick->thumbnail;
+        @endphp
         <article class="py-4 first:pt-0 last:pb-0 group">
             <a href="{{ route('posts.show', ['category' => $pick->category->slug, 'city' => $pick->city->slug, 'slug' => $pick->slug]) }}" 
                wire:navigate class="flex items-start gap-4">
@@ -18,13 +21,18 @@
                         {{ $pick->city->name ?? 'Indonesia' }}
                     </p>
                 </div>
-                @if ($pick->featured_image_url)
-                    <div class="w-16 h-16 rounded-md overflow-hidden bg-zinc-100 flex-shrink-0">
-                        <img src="{{ $pick->featured_image_url }}" 
+                <div class="w-16 h-16 rounded-lg overflow-hidden bg-zinc-100 flex-shrink-0 border border-zinc-200/60 flex items-center justify-center">
+                    @if ($pickThumb)
+                        <img src="{{ $pickThumb }}" 
                              alt="{{ $pick->title }}" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    </div>
-                @endif
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                             loading="lazy">
+                    @else
+                        <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </div>
+                    @endif
+                </div>
             </a>
         </article>
         @endforeach

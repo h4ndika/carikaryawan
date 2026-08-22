@@ -17,8 +17,9 @@
                 loading="lazy"
             >
         @else
-            <div class="flex h-full w-full items-center justify-center text-zinc-300">
-                <i class="fa-solid fa-image text-3xl"></i>
+            <div class="flex h-full w-full flex-col items-center justify-center bg-zinc-100 text-zinc-400 p-4">
+                <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300"></i>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">DISEKITAR</span>
             </div>
         @endif
 

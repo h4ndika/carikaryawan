@@ -65,23 +65,31 @@
             </div>
         </header>
 
-        <!-- Featured Image -->
-        @if ($post->featured_image_url || $post->thumbnail)
-            <div class="mb-12">
-                <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200">
+        <!-- Featured Image with Placeholder Fallback -->
+        @php
+            $mainImg = $post->featured_image_url ?: $post->thumbnail;
+        @endphp
+        <div class="mb-12">
+            <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200/80">
+                @if ($mainImg)
                     <button type="button" 
-                            wire:click="openLightbox(@js($post->featured_image_url ?: $post->thumbnail))"
+                            wire:click="openLightbox(@js($mainImg))"
                             class="block w-full cursor-zoom-in group">
-                        <img src="{{ $post->featured_image_url ?: $post->thumbnail }}" 
+                        <img src="{{ $mainImg }}" 
                              alt="{{ $post->title }}" 
                              class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
                         <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
                             <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
                         </div>
                     </button>
-                </figure>
-            </div>
-        @endif
+                @else
+                    <div class="w-full h-72 sm:h-96 bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-8">
+                        <i class="fa-solid fa-camera text-5xl text-zinc-300 mb-3"></i>
+                        <span class="text-xs uppercase font-bold tracking-widest text-zinc-400">DOKUMENTASI KURASI DISEKITAR</span>
+                    </div>
+                @endif
+            </figure>
+        </div>
 
         <!-- Main 2-Column Content Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -317,17 +325,21 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach ($related as $item)
+                        @php
+                            $itemThumb = $item->featured_image_url ?: $item->thumbnail;
+                        @endphp
                         <article class="group space-y-3">
                             <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" 
-                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100">
-                                @if ($item->featured_image_url)
-                                    <img src="{{ $item->featured_image_url }}" 
+                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200/60">
+                                @if ($itemThumb)
+                                    <img src="{{ $itemThumb }}" 
                                          alt="{{ $item->title }}" 
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                          loading="lazy">
                                 @else
-                                    <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
-                                        <i class="fa-solid fa-image text-2xl"></i>
+                                    <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-4">
+                                        <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300"></i>
+                                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">DISEKITAR</span>
                                     </div>
                                 @endif
                             </a>

@@ -1,16 +1,21 @@
+@php
+    $thumb = $post->featured_image_url ?: $post->thumbnail;
+@endphp
+
 <article class="group pb-10 border-b border-zinc-200/80 last:border-0 last:pb-0">
     <div class="flex flex-col sm:flex-row gap-6 md:gap-8 items-start">
         <div class="w-full sm:w-5/12 flex-shrink-0">
             <a href="{{ route('posts.show', ['category' => $post->category->slug, 'city' => $post->city->slug, 'slug' => $post->slug]) }}" 
-               wire:navigate class="block overflow-hidden rounded-lg aspect-[16/10] bg-zinc-100">
-                @if ($post->featured_image_url)
-                    <img src="{{ $post->featured_image_url }}" 
+               wire:navigate class="block overflow-hidden rounded-xl aspect-[16/10] bg-zinc-100 border border-zinc-200/60 relative">
+                @if ($thumb)
+                    <img src="{{ $thumb }}" 
                          alt="{{ $post->title }}" 
                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                          loading="lazy">
                 @else
-                    <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
-                        <i class="fa-solid fa-image text-3xl"></i>
+                    <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-4">
+                        <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300"></i>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400">DISEKITAR</span>
                     </div>
                 @endif
             </a>
