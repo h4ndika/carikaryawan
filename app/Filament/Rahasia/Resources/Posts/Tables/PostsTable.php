@@ -219,6 +219,56 @@ class PostsTable
                                 ->send();
                         }),
 
+                    Action::make('publishBulk')
+                        ->label('Publikasikan Terpilih')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->accessSelectedRecords()
+                        ->requiresConfirmation()
+                        ->modalHeading('Publikasikan Post Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status semua post yang dipilih menjadi Published?')
+                        ->modalSubmitActionLabel('Ya, Publikasikan')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                $updateData = ['status' => 'published'];
+                                if (is_null($record->published_at)) {
+                                    $updateData['published_at'] = now();
+                                }
+                                $record->update($updateData);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Post Berhasil Dipublikasikan')
+                                ->body("{$count} post telah diubah statusnya menjadi Published.")
+                                ->success()
+                                ->send();
+                        }),
+
+                    Action::make('draftBulk')
+                        ->label('Jadikan Draft Terpilih')
+                        ->icon('heroicon-o-document-text')
+                        ->color('gray')
+                        ->accessSelectedRecords()
+                        ->requiresConfirmation()
+                        ->modalHeading('Jadikan Draft Post Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status semua post yang dipilih menjadi Draft?')
+                        ->modalSubmitActionLabel('Ya, Jadikan Draft')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                $record->update(['status' => 'draft']);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('Status Diubah ke Draft')
+                                ->body("{$count} post telah diubah statusnya menjadi Draft.")
+                                ->info()
+                                ->send();
+                        }),
+
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
