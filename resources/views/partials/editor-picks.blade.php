@@ -1,32 +1,32 @@
-<div class="space-y-10">
-    @if ($posts && $posts->count() > 0)
+<div class="space-y-6">
+    @if (isset($posts) && $posts->count() > 0)
         @foreach ($posts as $pick)
-        <div class="group">
+        <article class="group">
             <a href="{{ route('posts.show', ['category' => $pick->category->slug, 'city' => $pick->city->slug, 'slug' => $pick->slug]) }}" 
-               wire:navigate class="block">
-                <div class="aspect-video bg-[#e8d9c0] mb-4 overflow-hidden rounded-lg">
+               wire:navigate class="block space-y-2">
+                <div class="aspect-[16/9] bg-[#e8d9c0] overflow-hidden rounded-xl">
                     @if ($pick->featured_image_url)
                         <img src="{{ $pick->featured_image_url }}" 
                              alt="{{ $pick->title }}" 
-                             class="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500">
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     @else
-                        <div class="w-full h-full bg-gradient-to-br from-[#e8d9c0] to-[#d4c4ae] flex items-center justify-center">
-                            <i class="fa-solid fa-image text-2xl text-[#8d6e5e]/40"></i>
+                        <div class="w-full h-full bg-[#f0e4d2] flex items-center justify-center text-[#8d6e5e]/40">
+                            <i class="fa-solid fa-image text-2xl"></i>
                         </div>
                     @endif
                 </div>
-                <h4 class="heading font-light text-lg leading-tight mb-1 group-hover:text-[#8d6e5e] transition-colors">
-                    {{ $loop->iteration }}. {{ $pick->title }}
-                </h4>
-                <p class="text-xs text-[#8d6e5e] uppercase tracking-widest">
-                    {{ $pick->category->name }} — {{ max(1, round(str_word_count($pick->content) / 200)) }} min baca
-                </p>
+                <div>
+                    <span class="text-[11px] font-bold text-[#8d6e5e] uppercase tracking-wider">
+                        {{ $pick->category->name ?? 'CERITA' }}
+                    </span>
+                    <h4 class="heading font-bold text-sm leading-snug group-hover:text-[#8d6e5e] transition-colors line-clamp-2 text-[#2c1810] mt-0.5">
+                        {{ $pick->title }}
+                    </h4>
+                </div>
             </a>
-        </div>
+        </article>
         @endforeach
     @else
-        <div class="text-center py-8 text-[#8d6e5e]/60">
-            <p class="text-sm">Tidak ada artikel tersedia saat ini.</p>
-        </div>
+        <p class="text-xs text-[#8d6e5e]/60 py-4 text-center">Belum ada cerita pilihan.</p>
     @endif
 </div>
