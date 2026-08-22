@@ -61,10 +61,11 @@ class PostAiContentService
         $response = OpenAI::chat()->create([
             'model' => config('openai.model', 'gpt-4o-mini'),
             'messages' => [
-                ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran, tanpa kata pembuka, dan tanpa penutup.'],
+                ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
                 ['role' => 'user', 'content' => $finalPrompt],
             ],
             'temperature' => 0.7,
+            'max_tokens' => 3000,
             'stream' => false,
         ]);
 
@@ -73,6 +74,12 @@ class PostAiContentService
         $cleaned = self::cleanGeneratedContent($rawGenerated);
         $cleanContent = $cleaned['content'];
         $detailsArray = $cleaned['details'];
+
+        // Validasi: pastikan konten bersih bukan hanya komentar/pemikiran kosong
+        $wordCount = str_word_count(strip_tags($cleanContent));
+        if ($wordCount < 40) {
+            throw new \RuntimeException("Hasil generate AI tidak valid atau terpotong (panjang konten hanya {$wordCount} kata). Silakan generate ulang.");
+        }
 
         // Auto-generate excerpt if empty
         $plainText = strip_tags($cleanContent);
@@ -118,9 +125,9 @@ class PostAiContentService
     {
         $text = $raw;
 
-        // 1. Remove reasoning / thought tags (<think>...</think>, <thought>...</thought>)
-        $text = preg_replace('/<think>.*?<\/think>/is', '', $text);
-        $text = preg_replace('/<thought>.*?<\/thought>/is', '', $text);
+        // 1. Remove reasoning / thought tags (<think>...</think>, <thought>...</thought>, including unclosed ones)
+        $text = preg_replace('/<think>.*?(?:<\/think>|$)/is', '', $text);
+        $text = preg_replace('/<thought>.*?(?:<\/thought>|$)/is', '', $text);
 
         // 2. Remove markdown code fences
         $text = preg_replace('/^```(?:html)?\s*/i', '', $text);
@@ -128,7 +135,7 @@ class PostAiContentService
 
         // 3. Extract JSON details before cleaning HTML
         $detailsArray = [];
-        if (preg_match('/<json>(.*?)<\/json>/is', $text, $jsonMatch)) {
+        if (preg_match('/<json>(.*?)(?:<\/json>|$)/is', $text, $jsonMatch)) {
             $jsonData = json_decode(trim($jsonMatch[1]), true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($jsonData)) {
                 foreach ($jsonData as $key => $value) {
@@ -138,18 +145,28 @@ class PostAiContentService
                     ];
                 }
             }
-            $text = preg_replace('/<json>.*?<\/json>/is', '', $text);
+            $text = preg_replace('/<json>.*?(?:<\/json>|$)/is', '', $text);
         }
 
-        // 4. Strip conversational preambles / thoughts before the first HTML heading (<h1..3>)
-        if (preg_match('/(<h[1-3][^>]*>.*)$/is', $text, $headingMatch)) {
-            $text = $headingMatch[1];
-        } else {
-            // If no <h1>-<h3> tag found, strip common conversational intro lines
-            $text = preg_replace('/^(?:The user is asking|Here is|Here\'s|Berikut adalah|Tentu|Baiklah|Sure|Certainly|I will|I\'ll create|Let\'s create|This article)[^\n<]*\n+/i', '', $text);
+        // 4. Strip English reasoning preambles or conversational filler before the first real HTML heading or paragraph
+        // Cari posisi tag judul valid atau paragraf pertama yang bukan komentar
+        if (preg_match('/(<h[1-3][^>]*>[\s\S]*?<\/h[1-3]>)/i', $text, $headingMatch, PREG_OFFSET_CAPTURE)) {
+            $headingPos = $headingMatch[0][1];
+            // Potong semua teks sebelum tag heading pertama
+            $text = substr($text, $headingPos);
+        } elseif (preg_match('/(<p[^>]*>[\s\S]*?<\/p>)/i', $text, $pMatch, PREG_OFFSET_CAPTURE)) {
+            $pPos = $pMatch[0][1];
+            $beforeP = substr($text, 0, $pPos);
+            // Jika teks sebelum <p> adalah reasoning, buang
+            if (preg_match('/(?:okay|alright|user|thinking|let\'s|here is|berikut)/i', $beforeP)) {
+                $text = substr($text, $pPos);
+            }
         }
 
-        // 5. Remove conversational closing sentences
+        // 5. Bersihkan sisa-sisa pola reasoning umum jika masih terselip di awal
+        $text = preg_replace('/^(?:\s*(?:Okay,?\s+so|Alright,?\s+|Thinking Process|The user wants|The user is asking|I will write|I need to|First,?\s+I\'ll|Let\'s create|Let\'s break down|We need to|Here is|Here\'s|Berikut adalah|Tentu|Baiklah|Sure|Certainly)[^\n<]*\n+)+/is', '', $text);
+
+        // 6. Remove conversational closing sentences
         $closingPatterns = [
             '/<p>\s*(?:Semoga|Hope this|Let me know|Demikian|Sekian).*?<\/p>\s*$/is',
             '/(?:Semoga bermanfaat|Hope this helps|Let me know if you need).*$/is',
