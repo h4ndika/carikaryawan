@@ -65,7 +65,7 @@
             </div>
         </header>
 
-        <!-- Featured Image with Placeholder Fallback -->
+        <!-- Featured Image with Placeholder Fallback & OnError Handling -->
         @php
             $mainImg = $post->featured_image_url ?: $post->thumbnail;
         @endphp
@@ -77,6 +77,7 @@
                             class="block w-full cursor-zoom-in group">
                         <img src="{{ $mainImg }}" 
                              alt="{{ $post->title }}" 
+                             onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                              class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
                         <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
                             <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
@@ -117,6 +118,7 @@
                                             class="block w-full aspect-[4/3] cursor-zoom-in">
                                         <img src="{{ $img->image_url }}" 
                                              alt="{{ $img->caption ?: $post->title }}" 
+                                             onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                                              class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                                              loading="lazy">
                                     </button>
@@ -334,6 +336,7 @@
                                 @if ($itemThumb)
                                     <img src="{{ $itemThumb }}" 
                                          alt="{{ $item->title }}" 
+                                         onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                          loading="lazy">
                                 @else
@@ -377,6 +380,7 @@
             </button>
             <img src="{{ $lightbox }}"
                  alt="Preview Foto"
+                 onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                  class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
                  wire:click.stop>
         </div>

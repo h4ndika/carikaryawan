@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%" fill="none">
+  <rect width="800" height="500" fill="#f4f4f5"/>
+  <g transform="translate(400, 230)" text-anchor="middle">
+    <!-- Camera Icon -->
+    <path d="M-28 -8 C-28 -12, -25 -15, -21 -15 L-11 -15 L-7 -21 L7 -21 L11 -15 L21 -15 C25 -15, 28 -12, 28 -8 L28 20 C28 24, 25 27, 21 27 L-21 27 C-25 27, -28 24, -28 20 Z" fill="#d4d4d8"/>
+    <circle cx="0" cy="6" r="11" fill="#f4f4f5" stroke="#d4d4d8" stroke-width="4"/>
+    <circle cx="0" cy="6" r="5" fill="#d4d4d8"/>
+    <circle cx="17" cy="-6" r="2.5" fill="#d4d4d8"/>
+    <!-- Brand Subtext -->
+    <text y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" letter-spacing="3" fill="#a1a1aa">DISEKITAR</text>
+  </g>
+</svg>

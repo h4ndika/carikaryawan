@@ -25,6 +25,7 @@
                             @if ($featuredThumb)
                                 <img src="{{ $featuredThumb }}" 
                                      alt="{{ $featuredPost->title }}" 
+                                     onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                             @else
                                 <div class="w-full h-full bg-zinc-100 flex flex-col items-center justify-center text-zinc-400 p-8">
@@ -93,6 +94,7 @@
                                         @if ($sideThumb)
                                             <img src="{{ $sideThumb }}" 
                                                  alt="{{ $sidePost->title }}" 
+                                                 onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         @else
                                             <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-300">

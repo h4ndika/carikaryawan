@@ -10,6 +10,7 @@
                 @if ($thumb)
                     <img src="{{ $thumb }}" 
                          alt="{{ $post->title }}" 
+                         onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                          loading="lazy">
                 @else
