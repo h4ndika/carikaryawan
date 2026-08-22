@@ -133,47 +133,51 @@
                         <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 block mb-1">
                             Informasi Tempat
                         </span>
-                        <h3 class="font-serif-title font-bold text-lg text-zinc-950">
+                        <h3 class="font-serif-title font-bold text-xl text-zinc-950">
                             {{ $post->title }}
                         </h3>
 
                         @if ($post->rating)
-                            <div class="flex items-center gap-2 mt-2">
-                                <div class="flex items-center text-amber-500 text-sm">
+                            <div class="flex items-center gap-2 mt-2.5">
+                                <div class="flex items-center text-amber-500 text-xs gap-0.5">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= round($post->rating))
-                                            <i class="fa-solid fa-star text-xs"></i>
+                                            <i class="fa-solid fa-star"></i>
                                         @else
-                                            <i class="fa-regular fa-star text-xs text-zinc-300"></i>
+                                            <i class="fa-regular fa-star text-zinc-300"></i>
                                         @endif
                                     @endfor
                                 </div>
                                 <span class="text-xs font-bold text-zinc-900">{{ number_format($post->rating, 1) }}</span>
                                 @if ($post->reviews_count)
-                                    <span class="text-xs text-zinc-400">({{ number_format($post->reviews_count) }} ulasan)</span>
+                                    <span class="text-xs text-zinc-400">({{ number_format($post->reviews_count) }} ulasan Google)</span>
                                 @endif
                             </div>
                         @endif
                     </div>
 
                     <!-- Place Info Attributes -->
-                    <div class="space-y-4 text-xs">
+                    <div class="space-y-5 text-xs">
                         @if ($post->formatted_address)
                             <div class="flex items-start gap-3">
-                                <i class="fa-solid fa-location-dot text-amber-800 text-sm mt-0.5"></i>
-                                <div>
-                                    <span class="text-zinc-400 block font-medium">Alamat</span>
-                                    <span class="text-zinc-800 font-medium leading-relaxed">{{ $post->formatted_address }}</span>
+                                <div class="w-7 h-7 rounded-lg bg-zinc-100 flex items-center justify-center text-amber-800 flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-location-dot text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5">Alamat</span>
+                                    <span class="text-zinc-800 font-medium leading-relaxed block">{{ $post->formatted_address }}</span>
                                 </div>
                             </div>
                         @endif
 
                         @if ($post->phone)
                             <div class="flex items-start gap-3">
-                                <i class="fa-solid fa-phone text-amber-800 text-sm mt-0.5"></i>
-                                <div>
-                                    <span class="text-zinc-400 block font-medium">Telepon</span>
-                                    <a href="tel:{{ $post->phone }}" class="text-zinc-900 font-semibold hover:text-amber-800">
+                                <div class="w-7 h-7 rounded-lg bg-zinc-100 flex items-center justify-center text-amber-800 flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-phone text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5">Kontak & Telepon</span>
+                                    <a href="tel:{{ $post->phone }}" class="text-zinc-900 font-semibold hover:text-amber-800 transition-colors">
                                         {{ $post->phone }}
                                     </a>
                                 </div>
@@ -182,23 +186,81 @@
 
                         @if ($post->website)
                             <div class="flex items-start gap-3">
-                                <i class="fa-solid fa-globe text-amber-800 text-sm mt-0.5"></i>
-                                <div>
-                                    <span class="text-zinc-400 block font-medium">Website</span>
-                                    <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 font-semibold hover:underline break-all">
-                                        Kunjungi Situs Resmi <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                                <div class="w-7 h-7 rounded-lg bg-zinc-100 flex items-center justify-center text-amber-800 flex-shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-globe text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5">Situs Resmi</span>
+                                    <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 font-semibold hover:underline inline-flex items-center gap-1">
+                                        Kunjungi Website <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                     </a>
                                 </div>
                             </div>
                         @endif
 
-                        <!-- Key Value Details -->
+                        <!-- Key Value Details with Clean Humanized Labels & Icons -->
                         @if ($post->details && $post->details->isNotEmpty())
-                            <div class="pt-3 border-t border-zinc-100 space-y-2.5">
+                            @php
+                                $detailMetaMap = [
+                                    'jam_buka' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
+                                    'jam_operasional' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
+                                    'opening_hours' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
+                                    'harga' => ['label' => 'Estimasi Harga', 'icon' => 'fa-solid fa-tag'],
+                                    'rentang_harga' => ['label' => 'Rentang Harga', 'icon' => 'fa-solid fa-tag'],
+                                    'price' => ['label' => 'Tarif / Harga', 'icon' => 'fa-solid fa-tag'],
+                                    'fasilitas' => ['label' => 'Fasilitas Utama', 'icon' => 'fa-solid fa-concierge-bell'],
+                                    'facilities' => ['label' => 'Fasilitas', 'icon' => 'fa-solid fa-concierge-bell'],
+                                    'lokasi' => ['label' => 'Lokasi / Alamat', 'icon' => 'fa-solid fa-map-pin'],
+                                    'alamat' => ['label' => 'Alamat', 'icon' => 'fa-solid fa-map-pin'],
+                                    'tiket_masuk' => ['label' => 'Tiket Masuk', 'icon' => 'fa-solid fa-ticket'],
+                                    'menu_favorit' => ['label' => 'Menu Favorit', 'icon' => 'fa-solid fa-utensils'],
+                                    'rekomendasi' => ['label' => 'Rekomendasi', 'icon' => 'fa-solid fa-thumbs-up'],
+                                ];
+                            @endphp
+
+                            <div class="pt-4 border-t border-zinc-100 space-y-4">
                                 @foreach ($post->details as $detail)
-                                    <div class="flex justify-between items-center py-1 border-b border-zinc-50">
-                                        <span class="text-zinc-500 font-medium">{{ $detail->meta_key }}</span>
-                                        <span class="text-zinc-900 font-semibold">{{ $detail->meta_value }}</span>
+                                    @php
+                                        $normKey = strtolower(trim($detail->meta_key));
+                                        // Skip duplicate lokasi if formatted_address already shown
+                                        if (in_array($normKey, ['lokasi', 'alamat']) && !empty($post->formatted_address)) {
+                                            continue;
+                                        }
+                                        $metaConfig = $detailMetaMap[$normKey] ?? [
+                                            'label' => ucwords(str_replace(['_', '-'], ' ', $detail->meta_key)),
+                                            'icon' => 'fa-solid fa-circle-info'
+                                        ];
+                                    @endphp
+
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-7 h-7 rounded-lg bg-zinc-100 flex items-center justify-center text-amber-800 flex-shrink-0 mt-0.5">
+                                            <i class="{{ $metaConfig['icon'] }} text-xs"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-0.5">
+                                                {{ $metaConfig['label'] }}
+                                            </span>
+                                            @if ($normKey === 'fasilitas' || $normKey === 'facilities')
+                                                @php
+                                                    $facilities = array_filter(array_map('trim', explode(',', $detail->meta_value)));
+                                                @endphp
+                                                @if (count($facilities) > 1)
+                                                    <div class="flex flex-wrap gap-1.5 mt-1.5">
+                                                        @foreach ($facilities as $facility)
+                                                            <span class="inline-block px-2.5 py-0.5 rounded-md bg-zinc-100 text-zinc-800 font-medium text-[11px]">
+                                                                {{ $facility }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <span class="text-zinc-800 font-medium leading-relaxed block">{{ $detail->meta_value }}</span>
+                                                @endif
+                                            @elseif (in_array($normKey, ['harga', 'rentang_harga', 'price', 'tiket_masuk']))
+                                                <span class="text-zinc-950 font-bold text-sm block">{{ $detail->meta_value }}</span>
+                                            @else
+                                                <span class="text-zinc-800 font-medium leading-relaxed block">{{ $detail->meta_value }}</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -216,7 +278,7 @@
                             <a href="{{ $mapsUrl }}" 
                                target="_blank" 
                                rel="noopener noreferrer"
-                               class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold tracking-wide transition-colors">
+                               class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold tracking-wide transition-colors">
                                 <i class="fa-solid fa-map-location-dot"></i>
                                 Petunjuk Arah di Google Maps
                             </a>
