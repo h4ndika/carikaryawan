@@ -4,15 +4,11 @@
         'city' => $post->city->slug,
         'slug' => $post->slug,
     ]);
-    $thumb = $post->thumbnail ?: null;
+    $thumb = $post->featured_image_url ?: $post->thumbnail;
 @endphp
 
-<a
-    href="{{ $href }}"
-    wire:navigate
-    class="card-lift group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm"
->
-    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-brand-100 to-brand-50">
+<article class="group flex flex-col bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
+    <a href="{{ $href }}" wire:navigate class="block aspect-[16/10] overflow-hidden bg-zinc-100 relative">
         @if ($thumb)
             <img
                 src="{{ $thumb }}"
@@ -21,35 +17,37 @@
                 loading="lazy"
             >
         @else
-            <div class="flex h-full w-full items-center justify-center">
-                <svg class="h-12 w-12 text-brand-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 19.5h18a1.5 1.5 0 001.5-1.5V6A1.5 1.5 0 0021 4.5H3A1.5 1.5 0 001.5 6v12A1.5 1.5 0 003 19.5z" />
-                </svg>
+            <div class="flex h-full w-full items-center justify-center text-zinc-300">
+                <i class="fa-solid fa-image text-3xl"></i>
             </div>
         @endif
 
-        <span class="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-700 shadow-sm backdrop-blur">
+        <span class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-amber-800 shadow-sm">
             {{ $post->category->name }}
         </span>
-    </div>
+    </a>
 
-    <div class="flex flex-1 flex-col gap-2 p-4">
-        <h3 class="line-clamp-2 text-base font-bold leading-snug text-slate-900 transition group-hover:text-brand-700">
-            {{ $post->title }}
-        </h3>
+    <div class="flex flex-1 flex-col justify-between p-5 space-y-3">
+        <div>
+            <h3 class="font-serif-title font-bold text-lg leading-snug text-zinc-950 group-hover:text-amber-800 transition-colors line-clamp-2">
+                <a href="{{ $href }}" wire:navigate>
+                    {{ $post->title }}
+                </a>
+            </h3>
 
-        @if ($post->excerpt)
-            <p class="line-clamp-2 text-sm leading-relaxed text-slate-500">
-                {{ $post->excerpt }}
-            </p>
-        @endif
+            @if ($post->excerpt)
+                <p class="mt-2 text-xs sm:text-sm text-zinc-600 leading-relaxed line-clamp-2">
+                    {{ $post->excerpt }}
+                </p>
+            @endif
+        </div>
 
-        <div class="mt-auto flex items-center gap-1.5 pt-1 text-xs font-medium text-slate-500">
-            <svg class="h-3.5 w-3.5 shrink-0 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-            </svg>
-            <span class="truncate">{{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif</span>
+        <div class="pt-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500 font-medium">
+            <div class="flex items-center gap-1.5 text-zinc-700">
+                <i class="fa-solid fa-location-dot text-amber-800 text-[11px]"></i>
+                <span class="truncate">{{ $post->city->name }}</span>
+            </div>
+            <span>{{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
         </div>
     </div>
-</a>
+</article>
