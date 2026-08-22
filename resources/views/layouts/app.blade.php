@@ -56,10 +56,22 @@
                         </span>
                     </a>
 
+                    @php
+                        $navCategories = \Illuminate\Support\Facades\Cache::remember('nav_categories', 3600, function () {
+                            return \App\Models\Category::orderBy('name')->take(4)->get();
+                        });
+                    @endphp
+
                     <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600">
                         <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a>
-                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Jelajah</a>
-                        <a href="{{ route('sitemap') }}" class="hover:text-zinc-950 transition-colors">Indeks Kota</a>
+                        @foreach ($navCategories as $navCat)
+                            <a href="{{ route('home', ['category' => $navCat->slug]) }}" wire:navigate class="hover:text-zinc-950 transition-colors">
+                                {{ $navCat->name }}
+                            </a>
+                        @endforeach
+                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors text-amber-800">
+                            Jelajah
+                        </a>
                     </nav>
                 </div>
 
