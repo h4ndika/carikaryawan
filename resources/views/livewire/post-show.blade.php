@@ -1,164 +1,310 @@
-<div>
-    {{-- Hero image strip --}}
-    <section class="relative bg-brand-950">
-        @if ($post->thumbnail)
-            <div class="relative mx-auto max-w-6xl">
-                <button
-                    type="button"
-                    wire:click="openLightbox(@js($post->thumbnail))"
-                    class="group relative block w-full cursor-zoom-in overflow-hidden"
-                >
-                    <img
-                        src="{{ $post->thumbnail }}"
-                        alt="{{ $post->title }}"
-                        class="max-h-[380px] w-full object-cover opacity-95 transition duration-500 group-hover:scale-[1.02] sm:max-h-[460px]"
-                    >
-                    <div class="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-brand-950/20 to-transparent"></div>
-                    <span class="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
-                        Perbesar
-                    </span>
-                </button>
+<div class="min-h-screen bg-[#fafaf9] py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Breadcrumb & Category -->
+        <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500 font-medium mb-6">
+            <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a>
+            <span class="text-zinc-300">/</span>
+            <a href="{{ route('home', ['category' => $post->category->slug]) }}" wire:navigate class="hover:text-zinc-950 transition-colors">
+                {{ $post->category->name }}
+            </a>
+            <span class="text-zinc-300">/</span>
+            <span class="text-zinc-900 font-semibold">{{ $post->city->name }}</span>
+        </nav>
+
+        <!-- Article Header -->
+        <header class="max-w-4xl space-y-4 mb-10">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold uppercase tracking-wider">
+                    {{ $post->category->name }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600">
+                    <i class="fa-solid fa-location-dot text-amber-800 text-[11px]"></i>
+                    {{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif
+                </span>
             </div>
-        @else
-            <div class="h-32 bg-gradient-to-br from-brand-800 to-brand-950 sm:h-40"></div>
-        @endif
-    </section>
 
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-        {{-- Title card overlapping hero --}}
-        <article class="relative {{ $post->thumbnail ? '-mt-16 sm:-mt-20' : '-mt-8' }}">
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl shadow-slate-200/60 sm:p-8">
-                <nav class="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
-                    <a href="{{ route('home') }}" wire:navigate class="hover:text-brand-700">Beranda</a>
-                    <svg class="h-3.5 w-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    <a
-                        href="{{ route('posts.list', ['category' => $post->category->slug, 'city' => $post->city->slug]) }}"
-                        wire:navigate
-                        class="hover:text-brand-700"
-                    >
-                        {{ $post->category->name }} / {{ $post->city->name }}
-                    </a>
-                </nav>
+            <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-zinc-950 tracking-tight">
+                {{ $post->title }}
+            </h1>
 
-                <div class="mb-3 flex flex-wrap items-center gap-2">
-                    <span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-brand-700">
-                        {{ $post->category->name }}
-                    </span>
-                    <span class="inline-flex items-center gap-1 text-xs font-medium text-slate-500">
-                        <svg class="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                        </svg>
-                        {{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif
-                    </span>
-                    @if ($post->published_at)
-                        <span class="text-xs text-slate-400">
-                            · {{ \Illuminate\Support\Carbon::parse($post->published_at)->format('d M Y') }}
-                        </span>
-                    @endif
+            @if ($post->excerpt)
+                <p class="text-lg sm:text-xl text-zinc-600 font-normal leading-relaxed">
+                    {{ $post->excerpt }}
+                </p>
+            @endif
+
+            <!-- Author / Curator Metadata & Share -->
+            <div class="pt-4 border-t border-zinc-200 flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-500 font-medium">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs">
+                        D
+                    </div>
+                    <div>
+                        <span class="text-zinc-900 font-bold block">Kurasi Redaksi DISEKITAR</span>
+                        <span>{{ $post->published_at ? \Illuminate\Support\Carbon::parse($post->published_at)->translatedFormat('d F Y') : date('d F Y') }} · {{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
+                    </div>
                 </div>
 
-                <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
-                    {{ $post->title }}
-                </h1>
+                <!-- Share Buttons -->
+                <div class="flex items-center gap-2">
+                    <span class="text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">Bagikan:</span>
+                    <a href="https://wa.me/?text={{ urlencode($post->title . ' ' . url()->current()) }}" 
+                       target="_blank" 
+                       class="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
+                       title="WhatsApp">
+                        <i class="fa-brands fa-whatsapp text-xs"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?text={{ urlencode($post->title) }}&url={{ urlencode(url()->current()) }}" 
+                       target="_blank" 
+                       class="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
+                       title="X / Twitter">
+                        <i class="fa-brands fa-x-twitter text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
 
-                @if ($post->excerpt)
-                    <p class="mt-3 text-base leading-relaxed text-slate-600 sm:text-lg">
-                        {{ $post->excerpt }}
-                    </p>
+        <!-- Featured Image -->
+        @if ($post->featured_image_url || $post->thumbnail)
+            <div class="mb-12">
+                <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200">
+                    <button type="button" 
+                            wire:click="openLightbox(@js($post->featured_image_url ?: $post->thumbnail))"
+                            class="block w-full cursor-zoom-in group">
+                        <img src="{{ $post->featured_image_url ?: $post->thumbnail }}" 
+                             alt="{{ $post->title }}" 
+                             class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
+                        <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
+                        </div>
+                    </button>
+                </figure>
+            </div>
+        @endif
+
+        <!-- Main 2-Column Content Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            <!-- Left Column: Story Prose & Gallery (8 cols) -->
+            <div class="lg:col-span-8">
+                <!-- Article Prose -->
+                <article class="prose-editorial max-w-none bg-white p-6 sm:p-10 rounded-2xl border border-zinc-200 shadow-sm">
+                    {!! $post->content !!}
+                </article>
+
+                <!-- Photo Gallery Grid (if available) -->
+                @if ($post->images && $post->images->isNotEmpty())
+                    <section class="mt-12 bg-white p-6 sm:p-8 rounded-2xl border border-zinc-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-zinc-100">
+                            <h2 class="font-serif-title text-xl font-bold text-zinc-950">Galeri & Suasana</h2>
+                            <span class="text-xs text-zinc-500">{{ $post->images->count() }} Foto</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @foreach ($post->images as $img)
+                                <figure class="group relative rounded-xl overflow-hidden bg-zinc-100 border border-zinc-100">
+                                    <button type="button" 
+                                            wire:click="openLightbox(@js($img->image_url))"
+                                            class="block w-full aspect-[4/3] cursor-zoom-in">
+                                        <img src="{{ $img->image_url }}" 
+                                             alt="{{ $img->caption ?: $post->title }}" 
+                                             class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                                             loading="lazy">
+                                    </button>
+                                    @if ($img->caption)
+                                        <figcaption class="p-2.5 text-xs text-zinc-600 bg-white border-t border-zinc-100">
+                                            {{ $img->caption }}
+                                        </figcaption>
+                                    @endif
+                                </figure>
+                            @endforeach
+                        </div>
+                    </section>
                 @endif
             </div>
 
-            {{-- Meta details grid --}}
-            @if ($post->details->isNotEmpty())
-                <section class="mt-6">
-                    <h2 class="mb-3 text-sm font-bold uppercase tracking-wider text-slate-400">Informasi</h2>
-                    <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach ($post->details as $detail)
-                            <div class="rounded-xl border border-slate-200/80 bg-white px-4 py-3 shadow-sm">
-                                <dt class="text-[11px] font-bold uppercase tracking-wide text-slate-400">{{ $detail->meta_key }}</dt>
-                                <dd class="mt-1 text-sm font-semibold text-slate-800">{{ $detail->meta_value }}</dd>
-                            </div>
-                        @endforeach
-                    </dl>
-                </section>
-            @endif
+            <!-- Right Column: Location Card & Place Details (4 cols) -->
+            <aside class="lg:col-span-4 space-y-8 sticky top-24">
+                
+                <!-- Place Summary Card -->
+                <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm space-y-6">
+                    <div class="pb-4 border-b border-zinc-100">
+                        <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 block mb-1">
+                            Informasi Tempat
+                        </span>
+                        <h3 class="font-serif-title font-bold text-lg text-zinc-950">
+                            {{ $post->title }}
+                        </h3>
 
-            {{-- Body --}}
-            <div class="post-content mt-6 max-w-none space-y-3 rounded-2xl border border-slate-200/80 bg-white p-5 text-slate-800 shadow-sm sm:p-8 [&_a]:text-brand-700 [&_h2]:mt-5 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:text-lg [&_h3]:font-bold [&_img]:my-4 [&_img]:rounded-xl [&_li]:ml-5 [&_li]:list-disc [&_p]:leading-relaxed [&_ul]:my-2">
-                {!! $post->content !!}
-            </div>
-
-            {{-- Gallery --}}
-            @if ($post->images->isNotEmpty())
-                <section class="mt-8">
-                    <h2 class="mb-4 text-lg font-extrabold text-slate-900">Galeri</h2>
-                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach ($post->images as $image)
-                            <figure class="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-                                <button
-                                    type="button"
-                                    wire:click="openLightbox(@js($image->image_url))"
-                                    class="block w-full cursor-zoom-in"
-                                >
-                                    <img
-                                        src="{{ $image->image_url }}"
-                                        alt="{{ $image->caption ?: $post->title }}"
-                                        class="h-44 w-full object-cover transition duration-500 group-hover:scale-105"
-                                        loading="lazy"
-                                    >
-                                </button>
-                                @if ($image->caption)
-                                    <figcaption class="px-3 py-2 text-xs text-slate-500">{{ $image->caption }}</figcaption>
+                        @if ($post->rating)
+                            <div class="flex items-center gap-2 mt-2">
+                                <div class="flex items-center text-amber-500 text-sm">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= round($post->rating))
+                                            <i class="fa-solid fa-star text-xs"></i>
+                                        @else
+                                            <i class="fa-regular fa-star text-xs text-zinc-300"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-xs font-bold text-zinc-900">{{ number_format($post->rating, 1) }}</span>
+                                @if ($post->reviews_count)
+                                    <span class="text-xs text-zinc-400">({{ number_format($post->reviews_count) }} ulasan)</span>
                                 @endif
-                            </figure>
-                        @endforeach
+                            </div>
+                        @endif
                     </div>
-                </section>
-            @endif
-        </article>
 
-        {{-- Related --}}
-        @if ($related->isNotEmpty())
-            <section class="mt-12">
-                <div class="mb-5 flex items-end justify-between">
-                    <div>
-                        <h2 class="text-xl font-extrabold text-slate-900">
-                            {{ $post->category->name }} lain di {{ $post->city->name }}
-                        </h2>
-                        <p class="mt-1 text-sm text-slate-500">Mungkin kamu juga suka</p>
+                    <!-- Place Info Attributes -->
+                    <div class="space-y-4 text-xs">
+                        @if ($post->formatted_address)
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-location-dot text-amber-800 text-sm mt-0.5"></i>
+                                <div>
+                                    <span class="text-zinc-400 block font-medium">Alamat</span>
+                                    <span class="text-zinc-800 font-medium leading-relaxed">{{ $post->formatted_address }}</span>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($post->phone)
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-phone text-amber-800 text-sm mt-0.5"></i>
+                                <div>
+                                    <span class="text-zinc-400 block font-medium">Telepon</span>
+                                    <a href="tel:{{ $post->phone }}" class="text-zinc-900 font-semibold hover:text-amber-800">
+                                        {{ $post->phone }}
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($post->website)
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-globe text-amber-800 text-sm mt-0.5"></i>
+                                <div>
+                                    <span class="text-zinc-400 block font-medium">Website</span>
+                                    <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 font-semibold hover:underline break-all">
+                                        Kunjungi Situs Resmi <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Key Value Details -->
+                        @if ($post->details && $post->details->isNotEmpty())
+                            <div class="pt-3 border-t border-zinc-100 space-y-2.5">
+                                @foreach ($post->details as $detail)
+                                    <div class="flex justify-between items-center py-1 border-b border-zinc-50">
+                                        <span class="text-zinc-500 font-medium">{{ $detail->meta_key }}</span>
+                                        <span class="text-zinc-900 font-semibold">{{ $detail->meta_value }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
+
+                    <!-- Open in Maps Button -->
+                    @if ($post->place_id || ($post->latitude && $post->longitude) || $post->formatted_address)
+                        @php
+                            $mapsUrl = $post->place_id 
+                                ? "https://www.google.com/maps/search/?api=1&query=" . urlencode($post->title) . "&query_place_id=" . $post->place_id
+                                : "https://www.google.com/maps/search/?api=1&query=" . urlencode($post->title . ' ' . ($post->formatted_address ?? $post->city->name));
+                        @endphp
+                        <div class="pt-2">
+                            <a href="{{ $mapsUrl }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold tracking-wide transition-colors">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                Petunjuk Arah di Google Maps
+                            </a>
+                        </div>
+                    @endif
                 </div>
-                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+                <!-- Back to City Guide -->
+                <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-5 text-center">
+                    <p class="text-xs text-zinc-500 mb-3">Mencari referensi lain di {{ $post->city->name }}?</p>
+                    <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
+                       wire:navigate
+                       class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-900 hover:text-amber-800 transition-colors">
+                        Lihat Semua Tempat di {{ $post->city->name }} <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Related Stories in Same City -->
+        @if (isset($related) && $related->isNotEmpty())
+            <section class="mt-20 pt-12 border-t border-zinc-200">
+                <div class="mb-8 flex items-baseline justify-between">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest font-bold text-amber-800 block mb-1">Eksplorasi Lanjutan</span>
+                        <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950">
+                            Cerita Terkait di {{ $post->city->name }}
+                        </h2>
+                    </div>
+                    <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
+                       wire:navigate
+                       class="text-xs font-bold text-zinc-900 hover:text-amber-800 hidden sm:inline-flex items-center gap-1">
+                        Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach ($related as $item)
-                        @include('partials.post-card', ['post' => $item])
+                        <article class="group space-y-3">
+                            <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" 
+                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100">
+                                @if ($item->featured_image_url)
+                                    <img src="{{ $item->featured_image_url }}" 
+                                         alt="{{ $item->title }}" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                         loading="lazy">
+                                @else
+                                    <div class="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
+                                        <i class="fa-solid fa-image text-2xl"></i>
+                                    </div>
+                                @endif
+                            </a>
+                            <div class="space-y-1.5">
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 block">
+                                    {{ $item->category->name }}
+                                </span>
+                                <h3 class="font-serif-title font-bold text-lg leading-snug text-zinc-950 group-hover:text-amber-800 transition-colors line-clamp-2">
+                                    <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" wire:navigate>
+                                        {{ $item->title }}
+                                    </a>
+                                </h3>
+                                <p class="text-xs text-zinc-500 line-clamp-2">
+                                    {{ $item->excerpt ?? \Illuminate\Support\Str::limit(strip_tags($item->content ?? ''), 90) }}
+                                </p>
+                            </div>
+                        </article>
                     @endforeach
                 </div>
             </section>
         @endif
+
     </div>
 
-    {{-- Lightbox --}}
+    <!-- Lightbox Modal -->
     @if ($lightbox)
-        <div
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-            wire:click="closeLightbox"
-            x-data
-            x-on:keydown.escape.window="$wire.closeLightbox()"
-        >
-            <button
-                type="button"
-                class="absolute right-4 top-4 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-                wire:click.stop="closeLightbox"
-            >
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+             wire:click="closeLightbox"
+             x-data
+             x-on:keydown.escape.window="$wire.closeLightbox()">
+            <button type="button"
+                    class="absolute right-6 top-6 rounded-full bg-white/10 hover:bg-white/20 px-4 py-2 text-xs font-semibold text-white transition"
+                    wire:click.stop="closeLightbox">
                 Tutup ✕
             </button>
-            <img
-                src="{{ $lightbox }}"
-                alt="Preview"
-                class="max-h-[90vh] max-w-full rounded-xl object-contain shadow-2xl"
-                wire:click.stop
-            >
+            <img src="{{ $lightbox }}"
+                 alt="Preview Foto"
+                 class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
+                 wire:click.stop>
         </div>
     @endif
 </div>

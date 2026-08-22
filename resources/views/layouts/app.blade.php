@@ -19,85 +19,98 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 
-    <style>
-        .heading { font-family: 'Playfair Display', Georgia, serif; }
-        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    </style>
-
     @if (! empty($jsonLd))
         <script type="application/ld+json">{!! $jsonLd !!}</script>
     @endif
 </head>
-<body class="min-h-screen bg-[#faf7f2] text-[#2c1810] antialiased selection:bg-[#8d6e5e] selection:text-white">
+<body class="min-h-screen bg-[#fafaf9] text-zinc-900 antialiased selection:bg-zinc-900 selection:text-white">
     <div class="min-h-screen flex flex-col">
-        <!-- Top Editorial Navigation Bar -->
-        <header class="bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e8d9c0] sticky top-0 z-50 transition-all">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 bg-[#8d6e5e] rounded-full flex items-center justify-center text-white text-base font-bold shadow-sm group-hover:bg-[#2c1810] transition-colors">
-                        D
+        <!-- Top Editorial Masthead & Navigation -->
+        <header class="bg-white border-b border-zinc-200 sticky top-0 z-50">
+            <!-- Masthead Top Info Bar -->
+            <div class="border-b border-zinc-100 hidden sm:block">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
+                    <div>
+                        <span>Jurnal Kurasi Lokal</span>
+                        <span class="mx-2 text-zinc-300">/</span>
+                        <span>Edisi {{ date('Y') }}</span>
                     </div>
-                    <span class="text-2xl font-bold tracking-tight heading text-[#2c1810]">disekitar</span>
-                </a>
+                    <div>
+                        <span>{{ \Illuminate\Support\Carbon::now()->translatedFormat('l, d F Y') }}</span>
+                    </div>
+                </div>
+            </div>
 
-                <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-[#2c1810]/80">
-                    <a href="{{ route('home') }}" wire:navigate class="hover:text-[#8d6e5e] transition-colors">Beranda</a>
-                    <a href="{{ route('search') }}" wire:navigate class="hover:text-[#8d6e5e] transition-colors">Jelajah Cerita</a>
-                    <a href="{{ route('sitemap') }}" class="hover:text-[#8d6e5e] transition-colors">Indeks Kota</a>
-                </nav>
+            <!-- Main Nav Bar -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <a href="{{ route('home') }}" wire:navigate class="group flex items-center gap-2.5">
+                        <span class="font-serif-title text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 group-hover:text-amber-800 transition-colors">
+                            disekitar.
+                        </span>
+                    </a>
+
+                    <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600">
+                        <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a>
+                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Jelajah</a>
+                        <a href="{{ route('sitemap') }}" class="hover:text-zinc-950 transition-colors">Indeks Kota</a>
+                    </nav>
+                </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('search') }}" wire:navigate class="p-2 text-[#2c1810]/80 hover:text-[#8d6e5e] transition-colors" title="Cari Tempat & Cerita">
-                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    <a href="{{ route('search') }}" 
+                       wire:navigate 
+                       class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-100 hover:bg-zinc-200 text-xs font-medium text-zinc-700 transition-colors"
+                       title="Cari cerita atau tempat">
+                        <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
+                        <span class="hidden sm:inline">Cari tempat & cerita...</span>
                     </a>
                 </div>
             </div>
         </header>
 
-        <!-- Main Slot -->
+        <!-- Page Main Slot -->
         <main class="flex-grow">
             {{ $slot }}
         </main>
 
-        <!-- Editorial Footer -->
-        <footer class="mt-24 border-t border-[#e8d9c0] bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div class="grid gap-10 sm:grid-cols-3">
-                    <div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-8 h-8 bg-[#8d6e5e] rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                D
-                            </div>
-                            <span class="font-bold tracking-tight heading text-xl text-[#2c1810]">disekitar</span>
-                        </div>
-                        <p class="text-sm leading-relaxed text-[#2c1810]/70 max-w-sm">
-                            Jurnal kurasi lokal untuk menemukan tempat, kuliner, penginapan, dan cerita bermakna di sekitarmu.
+        <!-- Clean Journal Footer -->
+        <footer class="mt-20 border-t border-zinc-200 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+                <div class="grid gap-10 md:grid-cols-12 items-start">
+                    <div class="md:col-span-6 space-y-3">
+                        <span class="font-serif-title text-2xl font-bold text-zinc-950">disekitar.</span>
+                        <p class="text-sm text-zinc-600 leading-relaxed max-w-md">
+                            Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa, dan dinamika kehidupan kota di Indonesia.
                         </p>
                     </div>
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#8d6e5e] mb-4">Jelajah</h3>
-                        <ul class="space-y-2.5 text-sm text-[#2c1810]/70 font-medium">
-                            <li><a href="{{ route('home') }}" wire:navigate class="hover:text-[#8d6e5e] transition-colors">Beranda</a></li>
-                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-[#8d6e5e] transition-colors">Pencarian Cerita</a></li>
-                            <li><a href="{{ route('sitemap') }}" class="hover:text-[#8d6e5e] transition-colors">Peta Situs / Kota</a></li>
+
+                    <div class="md:col-span-3 space-y-2">
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900">Navigasi</h4>
+                        <ul class="space-y-2 text-sm text-zinc-600">
+                            <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a></li>
+                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Pencarian Cerita</a></li>
+                            <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 transition-colors">Peta Situs</a></li>
                         </ul>
                     </div>
-                    <div>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#8d6e5e] mb-4">Tentang Disekitar</h3>
-                        <p class="text-sm leading-relaxed text-[#2c1810]/70">
-                            Fokus pada cerita autentik, visual berkualitas, dan panduan praktis yang mudah diakses pembaca.
+
+                    <div class="md:col-span-3 space-y-2">
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900">Tentang</h4>
+                        <p class="text-xs text-zinc-500 leading-relaxed">
+                            Setiap tempat memiliki cerita. Kami mendokumentasikan sudut-sudut menarik untuk menemani perjalananmu.
                         </p>
                     </div>
                 </div>
-                <div class="mt-12 pt-8 border-t border-[#e8d9c0] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8d6e5e]">
-                    <span>&copy; {{ date('Y') }} DISEKITAR. Hak cipta dilindungi undang-undang.</span>
-                    <span class="font-medium">Jurnal Kurasi Lokal</span>
+
+                <div class="mt-12 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
+                    <p>&copy; {{ date('Y') }} DISEKITAR. Hak cipta dilindungi.</p>
+                    <p>Kurasi Cerita & Tempat Indonesia</p>
                 </div>
             </div>
         </footer>
