@@ -13,31 +13,33 @@
         </nav>
 
         <!-- Article Header -->
-        <header class="max-w-4xl space-y-4 mb-10">
-            <div class="flex flex-wrap items-center gap-3">
-                <span class="px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold uppercase tracking-wider">
-                    {{ $post->category->name }}
-                </span>
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600">
-                    <i class="fa-solid fa-location-dot text-amber-800 text-[11px]"></i>
-                    {{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif
-                </span>
+        <header class="w-full mb-8">
+            <div class="max-w-4xl space-y-4 mb-6">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold uppercase tracking-wider">
+                        {{ $post->category->name }}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600">
+                        <i class="fa-solid fa-location-dot text-amber-800 text-[11px]"></i>
+                        {{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif
+                    </span>
+                </div>
+
+                <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-zinc-950 tracking-tight">
+                    {{ $post->title }}
+                </h1>
+
+                @if ($post->excerpt)
+                    <p class="text-lg sm:text-xl text-zinc-600 font-normal leading-relaxed">
+                        {{ $post->excerpt }}
+                    </p>
+                @endif
             </div>
 
-            <h1 class="font-serif-title text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-zinc-950 tracking-tight">
-                {{ $post->title }}
-            </h1>
-
-            @if ($post->excerpt)
-                <p class="text-lg sm:text-xl text-zinc-600 font-normal leading-relaxed">
-                    {{ $post->excerpt }}
-                </p>
-            @endif
-
-            <!-- Author / Curator Metadata & Share -->
-            <div class="pt-4 border-t border-zinc-200 flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-500 font-medium">
+            <!-- Author / Curator Metadata & Share (Full Width matching Image) -->
+            <div class="w-full pt-4 border-t border-zinc-200 flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-500 font-medium">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs">
+                    <div class="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
                         D
                     </div>
                     <div>
@@ -51,15 +53,15 @@
                     <span class="text-zinc-400 text-[11px] uppercase tracking-wider font-semibold">Bagikan:</span>
                     <a href="https://wa.me/?text={{ urlencode($post->title . ' ' . url()->current()) }}" 
                        target="_blank" 
-                       class="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
+                       class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
                        title="WhatsApp">
-                        <i class="fa-brands fa-whatsapp text-xs"></i>
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
                     </a>
                     <a href="https://twitter.com/intent/tweet?text={{ urlencode($post->title) }}&url={{ urlencode(url()->current()) }}" 
                        target="_blank" 
-                       class="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
+                       class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center transition-colors"
                        title="X / Twitter">
-                        <i class="fa-brands fa-x-twitter text-xs"></i>
+                        <i class="fa-brands fa-x-twitter text-sm"></i>
                     </a>
                 </div>
             </div>
