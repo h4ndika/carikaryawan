@@ -207,8 +207,13 @@ class GoogleMapsImportService
         $provinceId = $this->overrideProvinceId ?: $location['province_id'];
         $cityId = $this->overrideCityId ?: $location['city_id'];
 
-        // Find category
-        $categoryId = $this->findCategoryByName($data['category'] ?? '') ?: $this->defaultCategoryId;
+        // Find category with fallback to title keywords & default category
+        $categoryId = $this->defaultCategoryId 
+            ?: $this->findCategoryByName($data['category'] ?? '', $data['title'] ?? '');
+
+        if (!$categoryId) {
+            $categoryId = Category::query()->first()?->id;
+        }
 
         // Generate slug
         $slug = Str::slug($data['title']);
@@ -265,30 +270,74 @@ class GoogleMapsImportService
     }
 
     /**
-     * Find category by name (fuzzy matching)
+     * Find category by name or title keywords (fuzzy matching)
      */
-    protected function findCategoryByName(string $categoryName): ?int
+    protected function findCategoryByName(string $categoryName, string $title = ''): ?int
     {
-        if (empty($categoryName)) {
-            return $this->defaultCategoryId;
+        if (!empty($categoryName)) {
+            // Try exact match first
+            $category = Category::where('name', $categoryName)->first();
+            if ($category) {
+                return $category->id;
+            }
+
+            // Try case-insensitive match
+            $category = Category::whereRaw('LOWER(name) = ?', [strtolower($categoryName)])->first();
+            if ($category) {
+                return $category->id;
+            }
+
+            // Try partial match
+            $category = Category::where('name', 'LIKE', "%{$categoryName}%")->first();
+            if ($category) {
+                return $category->id;
+            }
         }
 
-        // Try exact match first
-        $category = Category::where('name', $categoryName)->first();
-        if ($category) {
-            return $category->id;
-        }
+        // Try detecting from title if categoryName is empty or not matched
+        if (!empty($title)) {
+            $lowerTitle = strtolower($title);
+            $categories = Category::all();
 
-        // Try case-insensitive match
-        $category = Category::whereRaw('LOWER(name) = ?', [strtolower($categoryName)])->first();
-        if ($category) {
-            return $category->id;
-        }
+            // First check if any category name is contained in the title
+            foreach ($categories as $cat) {
+                if (str_contains($lowerTitle, strtolower($cat->name))) {
+                    return $cat->id;
+                }
+            }
 
-        // Try partial match
-        $category = Category::where('name', 'LIKE', "%{$categoryName}%")->first();
-        if ($category) {
-            return $category->id;
+            // Check common hospitality / culinary keywords
+            if (preg_match('/\b(hotel|resort|villa|homestay|guest house|guesthouse|inn|penginapan|hostel)\b/i', $lowerTitle)) {
+                $hotelCat = Category::where('name', 'LIKE', '%hotel%')
+                    ->orWhere('name', 'LIKE', '%penginapan%')
+                    ->orWhere('name', 'LIKE', '%stay%')
+                    ->first();
+                if ($hotelCat) return $hotelCat->id;
+            }
+
+            if (preg_match('/\b(kafe|cafe|kopi|coffee|roastery|warkop)\b/i', $lowerTitle)) {
+                $cafeCat = Category::where('name', 'LIKE', '%kafe%')
+                    ->orWhere('name', 'LIKE', '%cafe%')
+                    ->orWhere('name', 'LIKE', '%kopi%')
+                    ->first();
+                if ($cafeCat) return $cafeCat->id;
+            }
+
+            if (preg_match('/\b(resto|restoran|restaurant|warung|kuliner|bakso|mie|ayam|soto|seafood|dapur)\b/i', $lowerTitle)) {
+                $restoCat = Category::where('name', 'LIKE', '%kuliner%')
+                    ->orWhere('name', 'LIKE', '%resto%')
+                    ->orWhere('name', 'LIKE', '%makan%')
+                    ->first();
+                if ($restoCat) return $restoCat->id;
+            }
+
+            if (preg_match('/\b(wisata|taman|pantai|curug|museum|candi|waterpark|spot)\b/i', $lowerTitle)) {
+                $wisataCat = Category::where('name', 'LIKE', '%wisata%')
+                    ->orWhere('name', 'LIKE', '%destinasi%')
+                    ->orWhere('name', 'LIKE', '%rekreasi%')
+                    ->first();
+                if ($wisataCat) return $wisataCat->id;
+            }
         }
 
         // Return default or null
