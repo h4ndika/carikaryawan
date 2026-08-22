@@ -34,13 +34,21 @@ class PostsTable
                 
                 IconColumn::make('content_status')
                     ->label('Konten')
-                    ->state(fn (Post $record): bool => !empty(trim(strip_tags($record->content ?? ''))))
+                    ->state(function (Post $record): bool {
+                        $words = str_word_count(strip_tags($record->content ?? ''));
+                        return $words >= 200;
+                    })
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger')
-                    ->tooltip(fn (Post $record): string => !empty(trim(strip_tags($record->content ?? ''))) ? 'Konten terisi' : 'Konten masih kosong'),
+                    ->tooltip(function (Post $record): string {
+                        $words = str_word_count(strip_tags($record->content ?? ''));
+                        return $words >= 200
+                            ? "Artikel lengkap ({$words} kata)"
+                            : ($words > 0 ? "Belum lengkap / deskripsi import ({$words} kata, < 200 kata)" : 'Konten masih kosong');
+                    }),
 
                 TextColumn::make('excerpt')
                     ->searchable()
@@ -81,19 +89,25 @@ class PostsTable
                         \Filament\Forms\Components\Select::make('has_content')
                             ->label('Ketersediaan Konten')
                             ->options([
-                                'filled' => 'Sudah Ada Konten',
-                                'empty' => 'Konten Masih Kosong',
+                                'filled' => 'Artikel Lengkap (>= 200 kata)',
+                                'empty' => 'Belum Lengkap / Import (< 200 kata)',
                             ]),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['has_content'] === 'filled',
-                                fn (Builder $q) => $q->whereNotNull('content')->where('content', '!=', '')
+                                fn (Builder $q) => $q->whereNotNull('content')
+                                    ->where('content', '!=', '')
+                                    ->whereRaw("(LENGTH(TRIM(content)) - LENGTH(REPLACE(TRIM(content), ' ', '')) + 1) >= 200")
                             )
                             ->when(
                                 $data['has_content'] === 'empty',
-                                fn (Builder $q) => $q->where(fn ($sub) => $sub->whereNull('content')->orWhere('content', ''))
+                                fn (Builder $q) => $q->where(function ($sub) {
+                                    $sub->whereNull('content')
+                                        ->orWhere('content', '')
+                                        ->orWhereRaw("(LENGTH(TRIM(content)) - LENGTH(REPLACE(TRIM(content), ' ', '')) + 1) < 200");
+                                })
                             );
                     }),
 
@@ -144,8 +158,8 @@ class PostsTable
                         GeneratePostContentJob::dispatch($aiJob->id);
 
                         Notification::make()
-                            ->title('Job AI Berhasil Ditambahkan ke Antrean')
-                            ->body("Post '{$record->title}' sedang diproses di latar belakang.")
+                            ->title('Antrean AI Dibuat')
+                            ->body("Generate konten untuk '{$record->title}' telah dimasukkan ke antrean latar belakang.")
                             ->actions([
                                 Action::make('lihatAntrean')
                                     ->label('Lihat Antrean')
@@ -170,9 +184,9 @@ class PostsTable
                         ->modalSubmitActionLabel('Mulai Antrean AI')
                         ->form([
                             Toggle::make('only_empty')
-                                ->label('Hanya proses post yang kontennya masih kosong')
+                                ->label('Hanya proses post yang belum memiliki artikel lengkap (< 200 kata)')
                                 ->default(true)
-                                ->helperText('Jika aktif, post yang sudah memiliki konten tidak akan ditimpa.'),
+                                ->helperText('Jika aktif, post yang sudah memiliki artikel lengkap (>= 200 kata) tidak akan ditimpa.'),
                             Textarea::make('prompt_additional')
                                 ->label('Prompt Tambahan (Opsional)')
                                 ->placeholder('Contoh: Deskripsikan dengan format Tentang, Fasilitas, Lokasi, Harga.')
@@ -190,7 +204,8 @@ class PostsTable
                             $skippedCount = 0;
 
                             foreach ($records as $post) {
-                                if ($onlyEmpty && !empty(trim(strip_tags($post->content ?? '')))) {
+                                $wordCount = str_word_count(strip_tags($post->content ?? ''));
+                                if ($onlyEmpty && $wordCount >= 200) {
                                     $skippedCount++;
                                     continue;
                                 }
@@ -209,7 +224,7 @@ class PostsTable
 
                             Notification::make()
                                 ->title('Antrean Generate AI Dimulai')
-                                ->body("{$dispatchedCount} post berhasil dimasukkan ke antrean." . ($skippedCount > 0 ? " ({$skippedCount} dilewati karena sudah ada konten)" : ''))
+                                ->body("{$dispatchedCount} post berhasil dimasukkan ke antrean." . ($skippedCount > 0 ? " ({$skippedCount} dilewati karena sudah memiliki artikel lengkap >= 200 kata)" : ''))
                                 ->actions([
                                     Action::make('lihatAntrean')
                                         ->label('Buka Pemantau Antrean')
