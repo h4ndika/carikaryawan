@@ -176,6 +176,12 @@ class PostsTable
 
                         GeneratePostContentJob::dispatch($aiJob->id);
 
+                        try {
+                            \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=10 --concurrency=5');
+                        } catch (\Throwable $e) {
+                            // Fallback
+                        }
+
                         Notification::make()
                             ->title('Antrean AI Dibuat')
                             ->body("Generate konten untuk '{$record->title}' telah dimasukkan ke antrean latar belakang.")
@@ -256,6 +262,15 @@ class PostsTable
                             // Dispatch background batch parallel jobs in chunks of 10 (concurrency 5)
                             foreach (array_chunk($createdJobIds, 10) as $chunkIds) {
                                 ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                            }
+
+                            // Trigger background worker process asynchronously so it runs immediately
+                            if ($dispatchedCount > 0) {
+                                try {
+                                    \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=100 --concurrency=5');
+                                } catch (\Throwable $e) {
+                                    // Fallback to queue worker
+                                }
                             }
 
                             $notes = [];

@@ -109,6 +109,12 @@ class AiGenerationJobsTable
 
                         GeneratePostContentJob::dispatch($record->id);
 
+                        try {
+                            \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=10 --concurrency=5');
+                        } catch (\Throwable $e) {
+                            // Fallback
+                        }
+
                         Notification::make()
                             ->title('Job berhasil dimasukkan kembali ke antrean')
                             ->success()
@@ -166,6 +172,14 @@ class AiGenerationJobsTable
                                 ]);
                                 GeneratePostContentJob::dispatch($record->id);
                                 $count++;
+                            }
+
+                            if ($count > 0) {
+                                try {
+                                    \Illuminate\Support\Facades\Process::path(base_path())->start('php artisan ai:process-batch --limit=100 --concurrency=5');
+                                } catch (\Throwable $e) {
+                                    // Fallback
+                                }
                             }
 
                             Notification::make()
