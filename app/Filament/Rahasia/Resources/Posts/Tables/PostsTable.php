@@ -3,6 +3,7 @@
 namespace App\Filament\Rahasia\Resources\Posts\Tables;
 
 use App\Jobs\GeneratePostContentJob;
+use App\Jobs\ProcessBatchAiQueueJob;
 use App\Models\AiGenerationJob;
 use App\Models\Post;
 use Filament\Actions\Action;
@@ -221,6 +222,7 @@ class PostsTable
                             $dispatchedCount = 0;
                             $skippedCount = 0;
                             $alreadyInQueueCount = 0;
+                            $createdJobIds = [];
 
                             foreach ($records as $post) {
                                 // Cek apakah post sedang aktif dalam antrean
@@ -247,8 +249,13 @@ class PostsTable
                                     'publish_on_complete' => $publishOnComplete,
                                 ]);
 
-                                GeneratePostContentJob::dispatch($aiJob->id);
+                                $createdJobIds[] = $aiJob->id;
                                 $dispatchedCount++;
+                            }
+
+                            // Dispatch background batch parallel jobs in chunks of 10 (concurrency 5)
+                            foreach (array_chunk($createdJobIds, 10) as $chunkIds) {
+                                ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
                             }
 
                             $notes = [];
