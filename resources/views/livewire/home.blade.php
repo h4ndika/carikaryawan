@@ -37,7 +37,7 @@
                     </div>
                     <span>•</span>
                     <div>
-                        {{ $featuredPost->published_at ? $featuredPost->published_at->translatedFormat('d M Y') : date('d M Y') }}
+                        {{ $featuredPost->published_at ? \Illuminate\Support\Carbon::parse($featuredPost->published_at)->translatedFormat('d M Y') : date('d M Y') }}
                     </div>
                 </div>
 

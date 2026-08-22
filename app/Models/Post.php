@@ -34,6 +34,7 @@ class Post extends Model
         'longitude' => 'decimal:8',
         'rating' => 'decimal:2',
         'reviews_count' => 'integer',
+        'published_at' => 'datetime',
     ];
 
     public function province()
