@@ -16,6 +16,19 @@
         <meta property="og:image" content="{{ $ogImage }}">
     @endif
 
+    <!-- Anti-FOUC Theme Init -->
+    <script>
+        (function() {
+            try {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,16 +42,16 @@
         <script type="application/ld+json">{!! $jsonLd !!}</script>
     @endif
 </head>
-<body class="min-h-screen bg-[#fafaf9] text-zinc-900 antialiased selection:bg-zinc-900 selection:text-white">
+<body class="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-900 dark:selection:bg-amber-500 selection:text-white dark:selection:text-zinc-950">
     <div class="min-h-screen flex flex-col">
         <!-- Top Editorial Masthead & Navigation -->
-        <header class="bg-white border-b border-zinc-200 sticky top-0 z-50">
+        <header class="bg-white dark:bg-zinc-900/95 dark:backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 sticky top-0 z-50 transition-colors duration-200">
             <!-- Masthead Top Info Bar -->
-            <div class="border-b border-zinc-100 hidden sm:block">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
+            <div class="border-b border-zinc-100 dark:border-zinc-800 hidden sm:block">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-medium">
                     <div>
                         <span>Jurnal Kurasi Lokal</span>
-                        <span class="mx-2 text-zinc-300">/</span>
+                        <span class="mx-2 text-zinc-300 dark:text-zinc-700">/</span>
                         <span>Edisi {{ date('Y') }}</span>
                     </div>
                     <div>
@@ -51,7 +64,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-8">
                     <a href="{{ route('home') }}" wire:navigate class="group flex items-center gap-2.5">
-                        <span class="font-serif-title text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 group-hover:text-amber-800 transition-colors">
+                        <span class="font-serif-title text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
                             disekitar.
                         </span>
                     </a>
@@ -62,14 +75,14 @@
                         });
                     @endphp
 
-                    <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600">
-                        <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a>
+                    <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600 dark:text-zinc-400">
+                        <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a>
                         @foreach ($navCategories as $navCat)
-                            <a href="{{ route('home', ['category' => $navCat->slug]) }}" wire:navigate class="hover:text-zinc-950 transition-colors">
+                            <a href="{{ route('home', ['category' => $navCat->slug]) }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                                 {{ $navCat->name }}
                             </a>
                         @endforeach
-                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors text-amber-800">
+                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors text-amber-800 dark:text-amber-400 font-bold">
                             Jelajah
                         </a>
                     </nav>
@@ -78,11 +91,44 @@
                 <div class="flex items-center gap-3">
                     <a href="{{ route('search') }}" 
                        wire:navigate 
-                       class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-100 hover:bg-zinc-200 text-xs font-medium text-zinc-700 transition-colors"
+                       class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition-colors"
                        title="Cari cerita atau tempat">
-                        <i class="fa-solid fa-magnifying-glass text-zinc-500 text-xs"></i>
+                        <i class="fa-solid fa-magnifying-glass text-zinc-500 dark:text-zinc-400 text-xs"></i>
                         <span class="hidden sm:inline">Cari tempat & cerita...</span>
                     </a>
+
+                    <!-- Theme Toggle Switch -->
+                    <div x-data="{
+                        darkMode: false,
+                        init() {
+                            this.darkMode = document.documentElement.classList.contains('dark');
+                        },
+                        toggle() {
+                            this.darkMode = !this.darkMode;
+                            if (this.darkMode) {
+                                document.documentElement.classList.add('dark');
+                                localStorage.theme = 'dark';
+                            } else {
+                                document.documentElement.classList.remove('dark');
+                                localStorage.theme = 'light';
+                            }
+                        }
+                    }" class="flex items-center">
+                        <button 
+                            type="button" 
+                            @click="toggle()" 
+                            class="relative inline-flex h-8 w-14 items-center rounded-full p-1 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-zinc-300/80 dark:border-zinc-700 cursor-pointer" 
+                            role="switch" 
+                            :aria-checked="darkMode" 
+                            aria-label="Ganti mode terang atau gelap"
+                            title="Ganti Mode Tampilan (Light / Dark)">
+                            <span 
+                                class="pointer-events-none flex h-6 w-6 transform items-center justify-center rounded-full bg-white dark:bg-zinc-950 shadow-sm transition-transform duration-300 text-xs text-amber-600 dark:text-amber-400"
+                                :class="darkMode ? 'translate-x-6' : 'translate-x-0'">
+                                <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'"></i>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -93,34 +139,34 @@
         </main>
 
         <!-- Clean Journal Footer -->
-        <footer class="mt-20 border-t border-zinc-200 bg-white">
+        <footer class="mt-20 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                 <div class="grid gap-10 md:grid-cols-12 items-start">
                     <div class="md:col-span-6 space-y-3">
-                        <span class="font-serif-title text-2xl font-bold text-zinc-950">disekitar.</span>
-                        <p class="text-sm text-zinc-600 leading-relaxed max-w-md">
+                        <span class="font-serif-title text-2xl font-bold text-zinc-950 dark:text-zinc-50">disekitar.</span>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
                             Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa, dan dinamika kehidupan kota di Indonesia.
                         </p>
                     </div>
 
                     <div class="md:col-span-3 space-y-2">
-                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900">Navigasi</h4>
-                        <ul class="space-y-2 text-sm text-zinc-600">
-                            <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a></li>
-                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Pencarian Cerita</a></li>
-                            <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 transition-colors">Peta Situs</a></li>
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Navigasi</h4>
+                        <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                            <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a></li>
+                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Pencarian Cerita</a></li>
+                            <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 dark:hover:text-white transition-colors">Peta Situs</a></li>
                         </ul>
                     </div>
 
                     <div class="md:col-span-3 space-y-2">
-                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900">Tentang</h4>
-                        <p class="text-xs text-zinc-500 leading-relaxed">
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Tentang</h4>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                             Setiap tempat memiliki cerita. Kami mendokumentasikan sudut-sudut menarik untuk menemani perjalananmu.
                         </p>
                     </div>
                 </div>
 
-                <div class="mt-12 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
+                <div class="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400 dark:text-zinc-500">
                     <p>&copy; {{ date('Y') }} DISEKITAR. Hak cipta dilindungi.</p>
                     <p>Kurasi Cerita & Tempat Indonesia</p>
                 </div>
@@ -143,6 +189,15 @@
             img.onerror = null;
             img.src = '/images/placeholder.svg';
         };
+
+        // Maintain dark mode on Livewire navigate
+        document.addEventListener('livewire:navigated', () => {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
     </script>
 
     @livewireScripts

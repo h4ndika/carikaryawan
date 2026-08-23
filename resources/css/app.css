@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -19,10 +20,20 @@ html {
     text-rendering: optimizeLegibility;
 }
 
+html.dark {
+    color-scheme: dark;
+}
+
 body {
     font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #18181b;
-    background-color: #fdfdfd;
+    background-color: #fafaf9;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+    color: #e4e4e7;
+    background-color: #0c0a09;
 }
 
 .font-serif-title {
@@ -105,6 +116,36 @@ body {
 
 .prose-editorial li {
     margin-bottom: 0.5rem;
+}
+
+/* Dark Mode Prose adjustments */
+.dark .prose-editorial {
+    color: #d4d4d8;
+}
+
+.dark .prose-editorial h2 {
+    color: #fafafa;
+}
+
+.dark .prose-editorial h3 {
+    color: #f4f4f5;
+}
+
+.dark .prose-editorial a {
+    color: #fb923c;
+}
+
+.dark .prose-editorial a:hover {
+    color: #fdba74;
+}
+
+.dark .prose-editorial blockquote {
+    color: #a1a1aa;
+    border-left-color: #f97316;
+}
+
+.dark .prose-editorial strong {
+    color: #ffffff;
 }
 
 /* Custom scrollbars */
