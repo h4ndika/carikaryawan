@@ -12,13 +12,13 @@ class PostList extends Component
 {
     use WithPagination;
 
-    public string $categorySlug;
+    public string $categorySlug = '';
 
-    public string $citySlug;
+    public string $citySlug = '';
 
-    public Category $category;
+    public ?Category $category = null;
 
-    public City $city;
+    public ?City $city = null;
 
     public function mount(string $category, ?string $city = null): void
     {
