@@ -188,7 +188,7 @@
         <!-- Main Feed & Editorial Sidebar -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
             <!-- Article Feed Column (8 cols) -->
-            <div class="lg:col-span-8">
+            <div id="posts-feed" class="lg:col-span-8 scroll-mt-24">
                 <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-200 dark:border-zinc-800">
                     <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50">
                         @if ($citySlug && $city)

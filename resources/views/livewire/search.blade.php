@@ -93,7 +93,7 @@
             </div>
 
             <!-- Posts Feed (Editorial layout matching Home) -->
-            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div id="posts-feed" class="scroll-mt-24 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xs">
                 <div class="space-y-10">
                     @foreach ($posts as $post)
                         @include('partials.article-feed', ['post' => $post])

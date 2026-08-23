@@ -20,6 +20,7 @@
             @else
                 <button type="button" 
                         wire:click="previousPage('{{ $paginator->getPageName() }}')" 
+                        onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
                         wire:loading.attr="disabled"
                         style="cursor: pointer !important;"
                         class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer select-none"
@@ -51,6 +52,7 @@
                         @else
                             <button type="button" 
                                     wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
+                                    onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
                                     wire:loading.attr="disabled"
                                     style="cursor: pointer !important;"
                                     class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold text-xs sm:text-sm transition-colors cursor-pointer select-none">
@@ -68,6 +70,7 @@
             @if ($paginator->hasMorePages())
                 <button type="button" 
                         wire:click="nextPage('{{ $paginator->getPageName() }}')" 
+                        onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
                         wire:loading.attr="disabled"
                         style="cursor: pointer !important;"
                         class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer select-none"
