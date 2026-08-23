@@ -46,31 +46,37 @@ Target utama:
 
 ---
 
-# URL Structure
+# URL Structure (Standard: Subdirectory)
 
-Gunakan URL yang sederhana, konsisten, dan mudah dibaca.
-
-Contoh:
+Gunakan struktur Subdirectory untuk memusatkan seluruh Domain Authority (DA), PageRank, dan efisiensi crawl budget ke root domain:
 
 ```text
-https://hotel.disekitar.com/bandung/hotel-harmoni
+https://disekitar.id/hotel
+https://disekitar.id/hotel/bandung
+https://disekitar.id/hotel/bandung/hotel-harmoni
 ```
 
-Atau pada domain utama:
+*Catatan: Pendekatan subdomain (`hotel.disekitar.id`) tidak direkomendasikan karena memecah Domain Authority dan menyulitkan pengindeksan SEO lokal untuk direktori agregator.*
 
-```text
-https://disekitar.com/hotel/bandung/hotel-harmoni
-```
+---
 
-Hindari:
+# Roadmap SEO & Local Search (Next Features)
 
-```text
-?id=123
+### 1. Halaman Berbasis Landmark & Titik Transit (Transit / Proximity SEO)
+- **Problem**: Pengguna yang baru tiba di stasiun/bandara/terminal mencari dengan query seperti *"hotel disekitar stasiun bandung"*, *"cafe dekat stasiun tugu jogja"*.
+- **Solusi**: 
+  - Dukungan entitas Landmark (Stasiun, Bandara, Terminal, Alun-alun, Tempat Wisata Utama).
+  - URL / Filter: `disekitar.id/hotel/bandung?landmark=stasiun-bandung` atau `disekitar.id/landmark/{landmark-slug}/{kategori}`.
+  - Geo-proximity query berdasarkan radius (latitude / longitude) dari titik landmark.
 
-/post/123
+### 2. Internal Linking Lintas Kategori Berbasis Lokasi (Cross-Category Proximity Linking)
+- **Problem**: Pengunjung membaca ulasan satu hotel dan butuh rekomendasi makanan atau aktivitas terdekat.
+- **Solusi**:
+  - Pada halaman detail post (misal: Hotel di Bandung Kota), tampilkan blok rekomendasi otomatis:
+    - *"Kuliner Pilihan di Sekitar Sini (Radius < 2 km)"*
+    - *"Tempat Menarik Lainnya di Bandung Kota"*
+  - Menjaga pengunjung tetap berinteraksi di dalam situs (mengurangi bounce rate) dan menyebarkan PageRank link equity ke seluruh artikel di wilayah yang sama.
 
-/index.php?id=5
-```
 
 ---
 

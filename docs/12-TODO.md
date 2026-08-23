@@ -255,9 +255,11 @@ Catat kendala yang menghambat progres.
 
 # Future Ideas
 
+- 💡 Landmark & Transit Hub SEO Pages (Halaman kurasi berbasis stasiun, bandara, terminal, dll.)
+- 💡 Proximity Cross-Category Internal Linking (Rekomendasi kuliner/tempat terdekat di sekitar artikel hotel/tempat yang sedang dibuka)
 - 💡 AI Content Generator
 - 💡 AI Search
-- 💡 Nearby Recommendation
+- 💡 Nearby Recommendation with Geolocation / Radius
 - 💡 Business Dashboard
 - 💡 Marketplace
 - 💡 Mobile Application
