@@ -6,7 +6,7 @@
             $fallbackPickUrls = $pick->fallback_image_urls;
         @endphp
         <article class="py-4 first:pt-0 last:pb-0 group">
-            <a href="{{ route('posts.show', ['category' => $pick->category->slug, 'city' => $pick->city->slug, 'slug' => $pick->slug]) }}" 
+            <a href="{{ $pick->url() }}" 
                wire:navigate class="flex items-start gap-4">
                 <span class="font-serif-title text-2xl font-bold text-zinc-300 dark:text-zinc-700 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors leading-none pt-0.5">
                     {{ sprintf('%02d', $loop->iteration) }}

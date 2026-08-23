@@ -6,7 +6,7 @@
 <article class="group pb-10 border-b border-zinc-200/80 dark:border-zinc-800/80 last:border-0 last:pb-0">
     <div class="flex flex-col sm:flex-row gap-6 md:gap-8 items-start">
         <div class="w-full sm:w-5/12 flex-shrink-0">
-            <a href="{{ route('posts.show', ['category' => $post->category->slug, 'city' => $post->city->slug, 'slug' => $post->slug]) }}" 
+            <a href="{{ $post->url() }}" 
                wire:navigate class="block overflow-hidden rounded-xl aspect-[16/10] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
                 @if ($thumb)
                     <img src="{{ $thumb }}" 
@@ -38,7 +38,7 @@
                 </div>
                 
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold leading-snug text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
-                    <a href="{{ route('posts.show', ['category' => $post->category->slug, 'city' => $post->city->slug, 'slug' => $post->slug]) }}" 
+                    <a href="{{ $post->url() }}" 
                        wire:navigate>
                         {{ $post->title }}
                     </a>
@@ -54,7 +54,7 @@
                     <i class="fa-solid fa-location-dot text-amber-800 dark:text-amber-400 text-[11px]"></i>
                     <span>{{ $post->city->name ?? 'Indonesia' }}</span>
                 </div>
-                <a href="{{ route('posts.show', ['category' => $post->category->slug, 'city' => $post->city->slug, 'slug' => $post->slug]) }}" 
+                <a href="{{ $post->url() }}" 
                    wire:navigate
                    class="font-semibold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 flex items-center gap-1.5 transition-colors">
                     Baca Catatan <i class="fa-solid fa-arrow-right text-[10px]"></i>

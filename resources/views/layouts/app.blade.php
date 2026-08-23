@@ -78,7 +78,7 @@
                     <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600 dark:text-zinc-400">
                         <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a>
                         @foreach ($navCategories as $navCat)
-                            <a href="{{ route('home', ['category' => $navCat->slug]) }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
+                            <a href="{{ $navCat->url() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                                 {{ $navCat->name }}
                             </a>
                         @endforeach

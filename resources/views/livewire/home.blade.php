@@ -20,7 +20,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 <!-- Lead Story (7 cols) -->
                 <article class="lg:col-span-7 group">
-                    <a href="{{ route('posts.show', ['category' => $featuredPost->category->slug, 'city' => $featuredPost->city->slug, 'slug' => $featuredPost->slug]) }}" 
+                    <a href="{{ $featuredPost->url() }}" 
                        wire:navigate class="block space-y-4">
                         <div class="aspect-[16/10] overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
                             @if ($featuredThumb)
@@ -84,7 +84,7 @@
                                 $fallbackSideUrls = $sidePost->fallback_image_urls;
                             @endphp
                             <article class="pt-6 first:pt-0 group">
-                                <a href="{{ route('posts.show', ['category' => $sidePost->category->slug, 'city' => $sidePost->city->slug, 'slug' => $sidePost->slug]) }}" 
+                                <a href="{{ $sidePost->url() }}" 
                                    wire:navigate class="grid grid-cols-3 gap-4 items-start">
                                     <div class="col-span-2 space-y-1.5">
                                         <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">

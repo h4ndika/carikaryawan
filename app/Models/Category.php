@@ -9,4 +9,13 @@ class Category extends Model
     protected $guarded = [
         'id',
     ];
+
+    /**
+     * Get subdomain category homepage URL
+     */
+    public function url(): string
+    {
+        return route('category.home', ['category' => $this->slug]);
+    }
 }
+
