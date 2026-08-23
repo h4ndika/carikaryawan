@@ -117,9 +117,8 @@
                 <!-- Photo Gallery Grid (if available) -->
                 @if ($post->images && $post->images->isNotEmpty())
                     <section class="mt-12 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
-                        <div class="flex items-center justify-between mb-6 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div class="mb-6 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                             <h2 class="font-serif-title text-xl font-bold text-zinc-950 dark:text-zinc-50">Galeri & Suasana</h2>
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $post->images->count() }} Foto</span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
