@@ -116,13 +116,14 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @foreach ($post->images as $img)
-                                <figure class="group relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800">
+                                <figure data-hide-on-error class="gallery-item group relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800">
                                     <button type="button" 
                                             wire:click="openLightbox(@js($img->image_url))"
                                             class="block w-full aspect-[4/3] cursor-zoom-in">
                                         <img src="{{ $img->image_url }}" 
                                              alt="{{ $img->caption ?: $post->title }}" 
-                                             onerror="this.onerror=null; this.src='/images/placeholder.svg';"
+                                             data-hide-on-error="true"
+                                             onerror="const f=this.closest('figure'); if(f){ const p=f.parentElement; f.remove(); if(p && p.querySelectorAll('figure').length===0){ p.closest('section')?.remove(); } }"
                                              class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                                              loading="lazy">
                                     </button>
