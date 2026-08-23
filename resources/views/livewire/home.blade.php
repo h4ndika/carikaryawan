@@ -30,6 +30,11 @@
                                      onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                      loading="lazy">
+                                @if ($featuredSource = $featuredPost->primary_image_source)
+                                    <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-medium text-white/90 tracking-wide pointer-events-none">
+                                        Foto: {{ $featuredSource }}
+                                    </span>
+                                @endif
                             @else
                                 <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-8">
                                     <i class="fa-solid fa-camera text-4xl text-zinc-300 dark:text-zinc-600 mb-2"></i>
@@ -94,7 +99,7 @@
                                             <span>{{ max(1, round(str_word_count(strip_tags($sidePost->content ?? '')) / 200)) }} min</span>
                                         </div>
                                     </div>
-                                    <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center">
+                                    <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
                                         @if ($sideThumb)
                                             <img src="{{ $sideThumb }}" 
                                                  alt="{{ $sidePost->title }}" 
@@ -102,6 +107,11 @@
                                                  onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                  loading="lazy">
+                                            @if ($sideSource = $sidePost->primary_image_source)
+                                                <span class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[8px] font-medium text-white/90 pointer-events-none">
+                                                    {{ $sideSource }}
+                                                </span>
+                                            @endif
                                         @else
                                             <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
                                                 <i class="fa-solid fa-camera text-base"></i>

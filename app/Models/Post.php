@@ -101,6 +101,49 @@ class Post extends Model
         return $urls;
     }
 
+    /**
+     * Extract human-friendly source domain from an image URL.
+     */
+    public static function extractImageSourceDomain(?string $url): ?string
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+        if (empty($host)) {
+            return null;
+        }
+
+        $host = preg_replace('/^www\./i', '', strtolower($host));
+
+        if (str_ends_with($host, 'googleusercontent.com') || str_ends_with($host, 'ggpht.com') || str_ends_with($host, 'google.com')) {
+            return 'Google Maps';
+        }
+
+        if (str_ends_with($host, 'unsplash.com')) {
+            return 'Unsplash';
+        }
+
+        if (str_ends_with($host, 'pexels.com')) {
+            return 'Pexels';
+        }
+
+        if (str_ends_with($host, 'wikimedia.org') || str_ends_with($host, 'wikipedia.org')) {
+            return 'Wikimedia';
+        }
+
+        return $host;
+    }
+
+    /**
+     * Get the source domain name of the primary image.
+     */
+    public function getPrimaryImageSourceAttribute(): ?string
+    {
+        return static::extractImageSourceDomain($this->primary_image_url);
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published');

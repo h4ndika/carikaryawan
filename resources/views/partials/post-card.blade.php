@@ -19,6 +19,11 @@
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 loading="lazy"
             >
+            @if ($source = $post->primary_image_source)
+                <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none z-10">
+                    Foto: {{ $source }}
+                </span>
+            @endif
         @else
             <div class="flex h-full w-full flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 p-4">
                 <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300 dark:text-zinc-600"></i>

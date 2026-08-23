@@ -15,6 +15,11 @@
                          onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                          loading="lazy">
+                    @if ($source = $post->primary_image_source)
+                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
+                            Foto: {{ $source }}
+                        </span>
+                    @endif
                 @else
                     <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
                         <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>

@@ -71,6 +71,7 @@
         @php
             $mainImg = $post->primary_image_url;
             $fallbackGalleryUrls = $post->fallback_image_urls;
+            $mainSource = $post->primary_image_source;
         @endphp
         <div class="mb-12">
             <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800">
@@ -83,8 +84,15 @@
                              data-fallbacks='@json($fallbackGalleryUrls)'
                              onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                              class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
-                        <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
-                            <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
+                        <div class="absolute bottom-4 right-4 flex items-center gap-2">
+                            @if ($mainSource)
+                                <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90">
+                                    <i class="fa-solid fa-camera mr-1 text-[10px]"></i> Sumber: {{ $mainSource }}
+                                </span>
+                            @endif
+                            <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
+                                <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
+                            </span>
                         </div>
                     </button>
                 @else
@@ -116,16 +124,24 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @foreach ($post->images as $img)
+                                @php
+                                    $imgSource = \App\Models\Post::extractImageSourceDomain($img->image_url);
+                                @endphp
                                 <figure data-hide-on-error class="gallery-item group relative rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800">
                                     <button type="button" 
                                             wire:click="openLightbox(@js($img->image_url))"
-                                            class="block w-full aspect-[4/3] cursor-zoom-in">
+                                            class="block w-full aspect-[4/3] cursor-zoom-in relative">
                                         <img src="{{ $img->image_url }}" 
                                              alt="{{ $img->caption ?: $post->title }}" 
                                              data-hide-on-error="true"
                                              onerror="const f=this.closest('figure'); if(f){ const p=f.parentElement; f.remove(); if(p && p.querySelectorAll('figure').length===0){ p.closest('section')?.remove(); } }"
                                              class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                                              loading="lazy">
+                                        @if ($imgSource)
+                                            <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
+                                                Foto: {{ $imgSource }}
+                                            </span>
+                                        @endif
                                     </button>
                                     @if ($img->caption)
                                         <figcaption class="p-2.5 text-xs text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
@@ -360,7 +376,7 @@
                         @endphp
                         <article class="group space-y-3">
                             <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" 
-                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800">
+                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
                                 @if ($itemThumb)
                                     <img src="{{ $itemThumb }}" 
                                          alt="{{ $item->title }}" 
@@ -368,6 +384,11 @@
                                          onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                          loading="lazy">
+                                    @if ($itemSource = $item->primary_image_source)
+                                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
+                                            Foto: {{ $itemSource }}
+                                        </span>
+                                    @endif
                                 @else
                                     <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
                                         <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300 dark:text-zinc-600"></i>
