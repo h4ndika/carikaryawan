@@ -253,9 +253,9 @@ class PostsTable
                                 $dispatchedCount++;
                             }
 
-                            // Dispatch background batch parallel jobs in chunks of 10 (concurrency 5)
+                            // Dispatch background batch parallel jobs in chunks of 10 (concurrency 10)
                             foreach (array_chunk($createdJobIds, 10) as $chunkIds) {
-                                ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                                ProcessBatchAiQueueJob::dispatch($chunkIds, 10);
                             }
 
                             $notes = [];

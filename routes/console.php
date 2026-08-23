@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Auto-process pending AI generation jobs in parallel batches of 10 every minute
-Schedule::command('ai:process-batch --limit=10 --concurrency=5')
+Schedule::command('ai:process-batch --limit=10 --concurrency=10')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();

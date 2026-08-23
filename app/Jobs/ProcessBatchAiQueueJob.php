@@ -33,7 +33,7 @@ class ProcessBatchAiQueueJob implements ShouldQueue
      */
     public function __construct(
         public array $aiJobIds,
-        public int $concurrency = 5
+        public int $concurrency = 10
     ) {}
 
     /**

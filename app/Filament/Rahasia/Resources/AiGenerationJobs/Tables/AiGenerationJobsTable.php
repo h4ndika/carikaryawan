@@ -143,12 +143,12 @@ class AiGenerationJobsTable
 
                             // Dispatch ke Laravel Queue
                             foreach (array_chunk($jobIds, 10) as $chunkIds) {
-                                \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                                \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 10);
                             }
 
                             Notification::make()
                                 ->title('Job Berhasil Dimasukkan ke Antrean')
-                                ->body("{$count} job terpilih dimasukkan ke antrean batch queue (5 post sekaligus).")
+                                ->body("{$count} job terpilih dimasukkan ke antrean batch queue (10 post sekaligus).")
                                 ->success()
                                 ->send();
                         }),
@@ -173,7 +173,7 @@ class AiGenerationJobsTable
                             $count = count($jobIds);
                             if ($count > 0) {
                                 foreach (array_chunk($jobIds, 10) as $chunkIds) {
-                                    \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 5);
+                                    \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, 10);
                                 }
                             }
 

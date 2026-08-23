@@ -57,17 +57,17 @@ class ListAiGenerationJobs extends ListRecords
                     \Filament\Forms\Components\Select::make('concurrency')
                         ->label('Kecepatan Paralel (Simultan)')
                         ->options([
-                            '3' => '3 Post Sekaligus',
-                            '5' => '5 Post Sekaligus (Cepat)',
-                            '10' => '10 Post Sekaligus (Sangat Cepat)',
+                            '5' => '5 Post Sekaligus',
+                            '10' => '10 Post Sekaligus (Cepat / Rekomendasi)',
+                            '15' => '15 Post Sekaligus (Sangat Cepat)',
                         ])
-                        ->default('5')
+                        ->default('10')
                         ->required()
                         ->helperText('Jumlah post yang dikirim ke AI dalam satu detik yang sama.'),
                 ])
                 ->action(function (array $data) {
                     $limit = (int) ($data['limit'] ?? 10);
-                    $concurrency = (int) ($data['concurrency'] ?? 5);
+                    $concurrency = (int) ($data['concurrency'] ?? 10);
 
                     $pendingJobs = AiGenerationJob::where('status', 'pending')
                         ->orderBy('id', 'asc')
