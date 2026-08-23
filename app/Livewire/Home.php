@@ -32,6 +32,7 @@ class Home extends Component
             'selectedCity.required' => 'Pilih kota dulu.',
         ]);
 
+        // Redirect to subdomain-based URL
         $this->redirectRoute('posts.list', [
             'category' => $this->selectedCategory,
             'city' => $this->selectedCity,

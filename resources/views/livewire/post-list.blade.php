@@ -5,9 +5,11 @@
         <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500 font-medium mb-6">
             <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 transition-colors">Beranda</a>
             <span class="text-zinc-300">/</span>
-            <a href="{{ route('home', ['category' => $category->slug]) }}" wire:navigate class="hover:text-zinc-950 transition-colors">{{ $category->name }}</a>
-            <span class="text-zinc-300">/</span>
-            <span class="text-zinc-900 font-semibold">{{ $city->name }}</span>
+            <a href="{{ route('category.home', ['category' => $category->slug]) }}" wire:navigate class="hover:text-zinc-950 transition-colors">{{ $category->name }}</a>
+            @if ($citySlug)
+                <span class="text-zinc-300">/</span>
+                <span class="text-zinc-900 font-semibold">{{ $city->name }}</span>
+            @endif
         </nav>
 
         <header class="mb-10 max-w-3xl">
@@ -15,10 +17,18 @@
                 Kurasi Direktori
             </span>
             <h1 class="font-serif-title text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-950 tracking-tight">
-                {{ $category->name }} di {{ $city->name }}
+                @if ($citySlug)
+                    {{ $category->name }} di {{ $city->name }}
+                @else
+                    {{ $category->name }}
+                @endif
             </h1>
             <p class="mt-2 text-sm sm:text-base text-zinc-600 leading-relaxed">
-                Rekomendasi dan ulasan {{ strtolower($category->name) }} pilihan di wilayah {{ $city->name }}.
+                @if ($citySlug)
+                    Rekomendasi dan ulasan {{ strtolower($category->name) }} pilihan di wilayah {{ $city->name }}.
+                @else
+                    Rekomendasi dan ulasan {{ strtolower($category->name) }} pilihan di seluruh Indonesia.
+                @endif
                 @if (! $posts->isEmpty())
                     <span class="font-semibold text-zinc-900">({{ $posts->total() }} catatan terbit)</span>
                 @endif

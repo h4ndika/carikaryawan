@@ -5,11 +5,11 @@
         <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-medium mb-6">
             <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">Beranda</a>
             <span class="text-zinc-300 dark:text-zinc-700">/</span>
-            <a href="{{ route('home', ['category' => $post->category->slug]) }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">
+            <a href="{{ $post->categoryUrl() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">
                 {{ $post->category->name }}
             </a>
             <span class="text-zinc-300 dark:text-zinc-700">/</span>
-            <span class="text-zinc-900 dark:text-zinc-200 font-semibold">{{ $post->city->name }}</span>
+            <a href="{{ $post->categoryWithCityUrl() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">{{ $post->city->name }}</a>
         </nav>
 
         <!-- Article Header -->
@@ -374,7 +374,7 @@
                             $fallbackItemUrls = $item->fallback_image_urls;
                         @endphp
                         <article class="group space-y-3">
-                            <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" 
+                            <a href="{{ $item->url() }}" 
                                wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
                                 @if ($itemThumb)
                                     <img src="{{ $itemThumb }}" 
@@ -400,7 +400,7 @@
                                     {{ $item->category->name }}
                                 </span>
                                 <h3 class="font-serif-title font-bold text-lg leading-snug text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
-                                    <a href="{{ route('posts.show', ['category' => $item->category->slug, 'city' => $item->city->slug, 'slug' => $item->slug]) }}" wire:navigate>
+                                    <a href="{{ $item->url() }}" wire:navigate>
                                         {{ $item->title }}
                                     </a>
                                 </h3>
