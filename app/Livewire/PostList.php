@@ -56,7 +56,20 @@ class PostList extends Component
         $posts = $postQuery
             ->with(['category', 'city', 'province', 'images'])
             ->latest('published_at')
-            ->paginate(12);
+            ->paginate(10);
+
+        $cities = City::query()
+            ->whereHas('posts', fn ($q) => $q->published()->where('category_id', $this->category->id))
+            ->orderBy('name')
+            ->get();
+
+        $editorPicks = Post::query()
+            ->published()
+            ->where('category_id', $this->category->id)
+            ->with(['category', 'city', 'province', 'images'])
+            ->latest('published_at')
+            ->limit(4)
+            ->get();
 
         $title = $this->citySlug 
             ? $this->category->name . ' di ' . $this->city->name . ' — DISEKITAR'
@@ -64,6 +77,8 @@ class PostList extends Component
 
         return view('livewire.post-list', [
             'posts' => $posts,
+            'cities' => $cities,
+            'editorPicks' => $editorPicks,
         ])
             ->layout('layouts.app')
             ->title($title);
