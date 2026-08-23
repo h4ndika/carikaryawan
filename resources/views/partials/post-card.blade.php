@@ -1,9 +1,5 @@
 @php
-    $href = route('posts.show', [
-        'category' => $post->category->slug,
-        'city' => $post->city->slug,
-        'slug' => $post->slug,
-    ]);
+    $href = $post->url();
     $thumb = $post->primary_image_url;
     $fallbackThumbUrls = $post->fallback_image_urls;
 @endphp

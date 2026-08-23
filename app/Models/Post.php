@@ -193,4 +193,37 @@ class Post extends Model
     {
         return $this->hasPlaceId();
     }
+
+    /**
+     * Generate subdomain-based URL for this post
+     */
+    public function url(): string
+    {
+        return route('posts.show', [
+            'category' => $this->category->slug,
+            'city' => $this->city->slug,
+            'slug' => $this->slug,
+        ]);
+    }
+
+    /**
+     * Generate category listing URL for this post's category
+     */
+    public function categoryUrl(): string
+    {
+        return route('category.home', [
+            'category' => $this->category->slug,
+        ]);
+    }
+
+    /**
+     * Generate category + city listing URL
+     */
+    public function categoryWithCityUrl(): string
+    {
+        return route('posts.list', [
+            'category' => $this->category->slug,
+            'city' => $this->city->slug,
+        ]);
+    }
 }

@@ -7,23 +7,32 @@ use App\Livewire\PostShow;
 use App\Livewire\Search;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', Home::class)->name('home');
+// Main domain routes (disekitar.test)
+Route::domain(config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : 'disekitar.test')->group(function () {
+    Route::get('/', Home::class)->name('home');
+    Route::get('/cari', Search::class)->name('search');
+    Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+});
 
-Route::get('/cari', Search::class)->name('search');
+// Category subdomain routes ({category}.disekitar.test)
+Route::domain('{category}.' . (config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : 'disekitar.test'))
+    ->where(['category' => '[a-z0-9\-]+'])
+    ->group(function () {
+        // Category homepage: hotel.disekitar.test/
+        Route::get('/', PostList::class)
+            ->name('category.home')
+            ->defaults('city', null);
 
-Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+        // City listing: hotel.disekitar.test/bandung-kota
+        Route::get('/{city}', PostList::class)
+            ->name('posts.list')
+            ->where('city', '[a-z0-9\-]+');
 
-Route::get('/{category}/{city}/{slug}', PostShow::class)
-    ->name('posts.show')
-    ->where([
-        'category' => '[a-z0-9\-]+',
-        'city' => '[a-z0-9\-]+',
-        'slug' => '[a-z0-9\-]+',
-    ]);
-
-Route::get('/{category}/{city}', PostList::class)
-    ->name('posts.list')
-    ->where([
-        'category' => '[a-z0-9\-]+',
-        'city' => '[a-z0-9\-]+',
-    ]);
+        // Post detail: hotel.disekitar.test/bandung-kota/hotel-a
+        Route::get('/{city}/{slug}', PostShow::class)
+            ->name('posts.show')
+            ->where([
+                'city' => '[a-z0-9\-]+',
+                'slug' => '[a-z0-9\-]+',
+            ]);
+    });

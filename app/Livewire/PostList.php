@@ -20,26 +20,36 @@ class PostList extends Component
 
     public City $city;
 
-    public function mount(string $category, string $city): void
+    public function mount(string $category, ?string $city = null): void
     {
         $this->categorySlug = $category;
-        $this->citySlug = $city;
+        $this->citySlug = $city ?? '';
 
         $this->category = Category::query()->where('slug', $category)->firstOrFail();
-        $this->city = City::query()->where('slug', $city)->firstOrFail();
+        
+        if ($city) {
+            $this->city = City::query()->where('slug', $city)->firstOrFail();
+        }
     }
 
     public function render()
     {
-        $posts = Post::query()
+        $postQuery = Post::query()
             ->published()
-            ->where('category_id', $this->category->id)
-            ->where('city_id', $this->city->id)
-            ->with(['category', 'city', 'province'])
+            ->where('category_id', $this->category->id);
+
+        if ($this->citySlug) {
+            $postQuery->where('city_id', $this->city->id);
+        }
+
+        $posts = $postQuery
+            ->with(['category', 'city', 'province', 'images'])
             ->latest('published_at')
             ->paginate(12);
 
-        $title = $this->category->name . ' di ' . $this->city->name . ' — DISEKITAR';
+        $title = $this->citySlug 
+            ? $this->category->name . ' di ' . $this->city->name . ' — DISEKITAR'
+            : $this->category->name . ' — DISEKITAR';
 
         return view('livewire.post-list', [
             'posts' => $posts,

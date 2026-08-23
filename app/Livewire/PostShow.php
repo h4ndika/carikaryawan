@@ -49,12 +49,7 @@ class PostShow extends Component
 
     public function render()
     {
-        $canonical = $this->post->canonical_url
-            ?: route('posts.show', [
-                'category' => $this->post->category->slug,
-                'city' => $this->post->city->slug,
-                'slug' => $this->post->slug,
-            ]);
+        $canonical = $this->post->canonical_url ?: $this->post->url();
 
         $related = Post::query()
             ->published()
