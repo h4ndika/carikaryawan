@@ -13,28 +13,47 @@ class PostShow extends Component
 
     public string $citySlug;
 
-    public string $slug;
-
-    public Post $post;
+    public ?Post $post = null;
 
     public ?string $lightbox = null;
 
-    public function mount(string $category, string $city, string $slug): void
-    {
-        $this->categorySlug = $category;
-        $this->citySlug = $city;
-        $this->slug = $slug;
+    public function mount(
+        Category|string|null $category = null,
+        City|string|null $city = null,
+        Post|string|null $slug = null
+    ): void {
+        if ($category instanceof Category) {
+            $categoryModel = $category;
+            $this->categorySlug = $category->slug;
+        } else {
+            $categorySlug = $category ?: (string) (request()->route('category') ?? '');
+            $this->categorySlug = $categorySlug;
+            $categoryModel = Category::query()->where('slug', $categorySlug)->firstOrFail();
+        }
 
-        $categoryModel = Category::query()->where('slug', $category)->firstOrFail();
-        $cityModel = City::query()->where('slug', $city)->firstOrFail();
+        if ($city instanceof City) {
+            $cityModel = $city;
+            $this->citySlug = $city->slug;
+        } else {
+            $citySlug = $city ?: (string) (request()->route('city') ?? '');
+            $this->citySlug = $citySlug;
+            $cityModel = City::query()->where('slug', $citySlug)->firstOrFail();
+        }
 
-        $this->post = Post::query()
-            ->published()
-            ->where('slug', $slug)
-            ->where('category_id', $categoryModel->id)
-            ->where('city_id', $cityModel->id)
-            ->with(['category', 'city', 'province', 'details', 'images'])
-            ->firstOrFail();
+        if ($slug instanceof Post) {
+            $this->post = $slug;
+            $this->slug = $slug->slug;
+        } else {
+            $postSlug = $slug ?: (string) (request()->route('slug') ?? '');
+            $this->slug = $postSlug;
+            $this->post = Post::query()
+                ->published()
+                ->where('slug', $postSlug)
+                ->where('category_id', $categoryModel->id)
+                ->where('city_id', $cityModel->id)
+                ->with(['category', 'city', 'province', 'details', 'images'])
+                ->firstOrFail();
+        }
     }
 
     public function openLightbox(string $url): void

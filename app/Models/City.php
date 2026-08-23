@@ -10,6 +10,11 @@ class City extends Model
         'id',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function province()
     {
         return $this->belongsTo(Province::class);

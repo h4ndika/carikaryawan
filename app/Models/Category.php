@@ -10,6 +10,11 @@ class Category extends Model
         'id',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     /**
      * Get subdomain category homepage URL
      */

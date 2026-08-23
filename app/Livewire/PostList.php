@@ -20,15 +20,26 @@ class PostList extends Component
 
     public ?City $city = null;
 
-    public function mount(string $category, ?string $city = null): void
+    public function mount(Category|string|null $category = null, City|string|null $city = null): void
     {
-        $this->categorySlug = $category;
-        $this->citySlug = $city ?? '';
+        if ($category instanceof Category) {
+            $this->category = $category;
+            $this->categorySlug = $category->slug;
+        } else {
+            $categorySlug = $category ?: (string) (request()->route('category') ?? '');
+            $this->categorySlug = $categorySlug;
+            $this->category = Category::query()->where('slug', $categorySlug)->firstOrFail();
+        }
 
-        $this->category = Category::query()->where('slug', $category)->firstOrFail();
-        
-        if ($city) {
-            $this->city = City::query()->where('slug', $city)->firstOrFail();
+        if ($city instanceof City) {
+            $this->city = $city;
+            $this->citySlug = $city->slug;
+        } else {
+            $citySlug = $city ?: (string) (request()->route('city') ?? '');
+            $this->citySlug = $citySlug;
+            if ($this->citySlug) {
+                $this->city = City::query()->where('slug', $citySlug)->firstOrFail();
+            }
         }
     }
 
