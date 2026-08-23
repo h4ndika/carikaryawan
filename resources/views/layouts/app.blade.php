@@ -99,9 +99,20 @@
 
                     <!-- Theme Toggle Switch -->
                     <div x-data="{
-                        darkMode: false,
+                        darkMode: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
                         init() {
-                            this.darkMode = document.documentElement.classList.contains('dark');
+                            this.sync();
+                            document.addEventListener('livewire:navigated', () => {
+                                this.sync();
+                            });
+                        },
+                        sync() {
+                            this.darkMode = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                            if (this.darkMode) {
+                                document.documentElement.classList.add('dark');
+                            } else {
+                                document.documentElement.classList.remove('dark');
+                            }
                         },
                         toggle() {
                             this.darkMode = !this.darkMode;
@@ -123,7 +134,7 @@
                             aria-label="Ganti mode terang atau gelap"
                             title="Ganti Mode Tampilan (Light / Dark)">
                             <span 
-                                class="pointer-events-none flex h-6 w-6 transform items-center justify-center rounded-full bg-white dark:bg-zinc-950 shadow-sm transition-transform duration-300 text-xs text-amber-600 dark:text-amber-400"
+                                class="pointer-events-none flex h-6 w-6 transform items-center justify-center rounded-full bg-white dark:bg-zinc-950 shadow-xs transition-transform duration-300 text-xs text-amber-600 dark:text-amber-400"
                                 :class="darkMode ? 'translate-x-6' : 'translate-x-0'">
                                 <i class="fa-solid" :class="darkMode ? 'fa-moon' : 'fa-sun'"></i>
                             </span>
