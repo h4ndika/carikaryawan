@@ -214,7 +214,7 @@
         </div>
 
         <!-- Main Feed & Editorial Sidebar Layout (Home-style Grid) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14" id="landmark-posts-feed">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14" id="posts-feed">
             <!-- Article Feed Column (8 cols) -->
             <div class="lg:col-span-8">
                 <div class="flex items-center justify-between mb-8 pb-4 border-b border-zinc-200 dark:border-zinc-800">
@@ -334,8 +334,8 @@
                     </div>
 
                     <!-- Pagination with smooth scroll -->
-                    <div class="mt-10" x-data x-init="$wire.on('page-changed', () => { document.getElementById('landmark-posts-feed')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); })">
-                        {{ $posts->links() }}
+                    <div class="mt-10">
+                        {{ $posts->links('partials.pagination') }}
                     </div>
                 @endif
             </div>
