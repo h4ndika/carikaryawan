@@ -73,7 +73,7 @@
             $fallbackGalleryUrls = $post->fallback_image_urls;
             $mainSource = $post->primary_image_source;
         @endphp
-        <div class="mb-6 sm:mb-8">
+        <div class="mb-4 sm:mb-6">
             <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800">
                 @if ($mainImg)
                     <button type="button" 
@@ -110,7 +110,7 @@
             <!-- Left Column: Story Prose & Gallery (8 cols) -->
             <div class="lg:col-span-8">
                 <!-- Article Prose -->
-                <article class="prose-editorial max-w-none bg-white dark:bg-zinc-900 px-6 py-6 sm:px-8 sm:py-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
+                <article class="prose-editorial max-w-none bg-white dark:bg-zinc-900 px-6 sm:px-10 pt-4 sm:pt-6 pb-8 sm:pb-10 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                     {!! $post->content !!}
                 </article>
 
