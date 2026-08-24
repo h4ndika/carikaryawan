@@ -24,4 +24,9 @@ class City extends Model
     {
         return $this->hasMany(Post::class);
     }
+
+    public function landmarks()
+    {
+        return $this->hasMany(Landmark::class);
+    }
 }

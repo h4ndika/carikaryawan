@@ -226,4 +226,44 @@ class Post extends Model
             'city' => $this->city->slug,
         ]);
     }
+
+    /**
+     * Haversine formula in SQL (kilometres).
+     * Earth radius = 6371 km.
+     *
+     * Usage:
+     *   Post::query()->withinDistanceOf(-6.917, 107.619, 3)->get();
+     */
+    public function scopeWithinDistanceOf($query, float $latitude, float $longitude, float $radiusKm = 3)
+    {
+        $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
+
+        return $query
+            ->select('*')
+            ->selectRaw("{$haversine} AS distance_km", [$latitude, $longitude, $latitude])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereRaw("{$haversine} <= ?", [$latitude, $longitude, $latitude, $radiusKm])
+            ->orderBy('distance_km', 'asc');
+    }
+
+    /**
+     * Cross-category proximity linking.
+     *
+     * Mengambil post lain di sekitar koordinat (lat,lng) dalam radius tertentu,
+     * tetapi TIDAK termasuk kategori dari post ini sendiri.
+     *
+     * @param  int  $limit  jumlah maksimal post yang dikembalikan
+     * @return \Illuminate\Database\Eloquent\Collection<int, Post>
+     */
+    public function getNearbyPostsFromOtherCategories(float $latitude, float $longitude, float $radiusKm = 3, int $limit = 4)
+    {
+        return static::query()
+            ->published()
+            ->where('id', '!=', $this->id)
+            ->where('category_id', '!=', $this->category_id)
+            ->withinDistanceOf($latitude, $longitude, $radiusKm)
+            ->limit($limit)
+            ->get();
+    }
 }
