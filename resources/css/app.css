@@ -47,6 +47,10 @@ body {
     color: #27272a;
 }
 
+.prose-editorial > :first-child {
+    margin-top: 0 !important;
+}
+
 .prose-editorial p {
     margin-bottom: 1.5rem;
 }
