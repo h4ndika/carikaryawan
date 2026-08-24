@@ -369,6 +369,7 @@
                         </div>
                     </div>
 
+                    {{-- Hidden as requested: Google Maps button
                     <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800">
                         <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($landmark->name . ' ' . ($landmark->city?->name ?? '')) }}" 
                            target="_blank" 
@@ -378,6 +379,7 @@
                             Buka di Google Maps
                         </a>
                     </div>
+                    --}}
                 </div>
 
                 <!-- Landmark Lain di Kota Ini -->

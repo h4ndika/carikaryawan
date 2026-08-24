@@ -319,7 +319,8 @@
                         @endif
                     </div>
 
-                    <!-- Open in Maps Button -->
+                    <!-- Open in Maps Button (Hidden as requested) -->
+                    {{--
                     @if ($post->place_id || ($post->latitude && $post->longitude) || $post->formatted_address)
                         @php
                             $mapsUrl = $post->place_id 
@@ -334,6 +335,102 @@
                                 <i class="fa-solid fa-map-location-dot"></i>
                                 Petunjuk Arah di Google Maps
                             </a>
+                        </div>
+                    @endif
+                    --}}
+
+                    <!-- Affiliate Booking & Reservasi Buttons -->
+                    @php
+                        $affiliateLinks = [];
+                        if (!empty($post->affiliate_links) && is_array($post->affiliate_links)) {
+                            $affiliateLinks = array_values(array_filter($post->affiliate_links, function ($link) {
+                                return !empty($link['url']) && ($link['is_active'] ?? true);
+                            }));
+                        }
+                    @endphp
+
+                    @if (!empty($affiliateLinks))
+                        <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-calendar-check text-xs"></i>
+                                    Booking & Reservasi
+                                </span>
+                                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">Partner Resmi</span>
+                            </div>
+
+                            <div class="space-y-2">
+                                @foreach ($affiliateLinks as $affLink)
+                                    @php
+                                        $provider = strtolower($affLink['provider'] ?? 'custom');
+                                        $label = $affLink['label'] ?? 'Pesan Sekarang';
+                                        $url = $affLink['url'];
+                                        $badge = $affLink['badge_text'] ?? null;
+
+                                        // Provider-specific styling & brand icons
+                                        $brandStyles = match($provider) {
+                                            'traveloka' => [
+                                                'bg' => 'bg-[#007CE8] hover:bg-[#0069C7] text-white',
+                                                'icon' => 'fa-solid fa-plane-departure',
+                                                'name' => 'Traveloka'
+                                            ],
+                                            'tiket_com' => [
+                                                'bg' => 'bg-[#0064D2] hover:bg-[#0051A8] text-white',
+                                                'icon' => 'fa-solid fa-ticket',
+                                                'name' => 'Tiket.com'
+                                            ],
+                                            'agoda' => [
+                                                'bg' => 'bg-[#5392F9] hover:bg-[#3D7EE8] text-white',
+                                                'icon' => 'fa-solid fa-hotel',
+                                                'name' => 'Agoda'
+                                            ],
+                                            'booking_com' => [
+                                                'bg' => 'bg-[#003580] hover:bg-[#00275E] text-white',
+                                                'icon' => 'fa-solid fa-bed',
+                                                'name' => 'Booking.com'
+                                            ],
+                                            'trip_com' => [
+                                                'bg' => 'bg-[#287DFA] hover:bg-[#1E67D1] text-white',
+                                                'icon' => 'fa-solid fa-globe',
+                                                'name' => 'Trip.com'
+                                            ],
+                                            'airbnb' => [
+                                                'bg' => 'bg-[#FF385C] hover:bg-[#E00B41] text-white',
+                                                'icon' => 'fa-solid fa-house-chimney-user',
+                                                'name' => 'Airbnb'
+                                            ],
+                                            'pegipegi' => [
+                                                'bg' => 'bg-[#FF7200] hover:bg-[#E56600] text-white',
+                                                'icon' => 'fa-solid fa-suitcase-rolling',
+                                                'name' => 'Pegipegi'
+                                            ],
+                                            default => [
+                                                'bg' => 'bg-amber-700 hover:bg-amber-800 text-white',
+                                                'icon' => 'fa-solid fa-arrow-up-right-from-square',
+                                                'name' => 'Pesan'
+                                            ],
+                                        };
+                                    @endphp
+
+                                    <a href="{{ $url }}" 
+                                       target="_blank" 
+                                       rel="nofollow sponsored noopener noreferrer"
+                                       class="w-full flex items-center justify-between py-2.5 px-4 rounded-xl {{ $brandStyles['bg'] }} text-xs font-semibold tracking-wide transition-all shadow-xs hover:shadow-md cursor-pointer group">
+                                        <span class="flex items-center gap-2.5">
+                                            <i class="{{ $brandStyles['icon'] }} text-xs opacity-90 group-hover:scale-110 transition-transform"></i>
+                                            <span>{{ $label }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-1.5">
+                                            @if ($badge)
+                                                <span class="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-xs">
+                                                    {{ $badge }}
+                                                </span>
+                                            @endif
+                                            <i class="fa-solid fa-arrow-right text-[10px] opacity-80 group-hover:translate-x-0.5 transition-transform"></i>
+                                        </span>
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
