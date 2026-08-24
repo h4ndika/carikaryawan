@@ -350,6 +350,82 @@
             </aside>
         </div>
 
+        <!-- Proximity Cross-Category Linking (Tempat Menarik Terdekat) -->
+        @if (isset($nearbyOtherCategories) && $nearbyOtherCategories->isNotEmpty())
+            <section class="mt-16 pt-12 border-t border-zinc-200 dark:border-zinc-800">
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs uppercase tracking-widest font-bold text-amber-800 dark:text-amber-400">
+                            Di Sekitar Sini
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-900 dark:text-amber-300">
+                            Radius 5 km
+                        </span>
+                    </div>
+                    <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50">
+                        Tempat Menarik Terdekat dari Kategori Lain
+                    </h2>
+                    <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                        Rekomendasi tempat populer di dekat {{ $post->title }} untuk melengkapi kunjungan Anda.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach ($nearbyOtherCategories as $nearby)
+                        @php
+                            $nearbyThumb = $nearby->primary_image_url;
+                            $nearbyDist = isset($nearby->distance_km) ? round((float) $nearby->distance_km, 2) : null;
+                        @endphp
+                        <article class="group bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/80 dark:border-zinc-800 overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col">
+                            <a href="{{ $nearby->url() }}" wire:navigate class="block aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
+                                @if ($nearbyThumb)
+                                    <img src="{{ $nearbyThumb }}" 
+                                         alt="{{ $nearby->title }}" 
+                                         data-fallbacks='@json($nearby->fallback_image_urls ?? [])'
+                                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                         loading="lazy">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500">
+                                        <i class="fa-solid fa-image text-2xl mb-1 text-zinc-300 dark:text-zinc-600"></i>
+                                    </div>
+                                @endif
+
+                                @if ($nearbyDist !== null)
+                                    <div class="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-zinc-950/80 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1 shadow-xs pointer-events-none">
+                                        <i class="fa-solid fa-location-arrow text-amber-400 text-[9px]"></i>
+                                        <span>{{ $nearbyDist < 1 ? round($nearbyDist * 1000) . ' m' : $nearbyDist . ' km' }}</span>
+                                    </div>
+                                @endif
+
+                                @if ($nearby->category)
+                                    <div class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xs text-zinc-900 dark:text-zinc-100 text-[9px] font-bold uppercase tracking-wider pointer-events-none">
+                                        {{ $nearby->category->name }}
+                                    </div>
+                                @endif
+                            </a>
+
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-serif-title font-bold text-sm text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
+                                        <a href="{{ $nearby->url() }}" wire:navigate>
+                                            {{ $nearby->title }}
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="mt-3 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                                    <span class="truncate">{{ $nearby->city->name ?? 'Indonesia' }}</span>
+                                    <span class="font-semibold text-amber-800 dark:text-amber-400 flex items-center gap-1">
+                                        Lihat <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         <!-- Related Stories in Same City -->
         @if (isset($related) && $related->isNotEmpty())
             <section class="mt-20 pt-12 border-t border-zinc-200 dark:border-zinc-800">

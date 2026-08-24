@@ -80,8 +80,19 @@ class PostShow extends Component
             ->limit(6)
             ->get();
 
+        $nearbyOtherCategories = collect();
+        if ($this->post->latitude && $this->post->longitude) {
+            $nearbyOtherCategories = $this->post->getNearbyPostsFromOtherCategories(
+                (float) $this->post->latitude,
+                (float) $this->post->longitude,
+                radiusKm: 5,
+                limit: 4
+            )->load(['category', 'city', 'images']);
+        }
+
         return view('livewire.post-show', [
             'related' => $related,
+            'nearbyOtherCategories' => $nearbyOtherCategories,
         ])
             ->layout('layouts.app', [
                 'metaDescription' => $this->post->seoDescription(),
