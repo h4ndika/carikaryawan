@@ -34,8 +34,41 @@ class Post extends Model
         'longitude' => 'decimal:8',
         'rating' => 'decimal:2',
         'reviews_count' => 'integer',
+        'affiliate_links' => 'array',
         'published_at' => 'datetime',
     ];
+
+    /**
+     * Determine if the post has any active affiliate links.
+     */
+    public function hasActiveAffiliateLinks(): bool
+    {
+        if (empty($this->affiliate_links) || !is_array($this->affiliate_links)) {
+            return false;
+        }
+
+        foreach ($this->affiliate_links as $link) {
+            if (!empty($link['url']) && ($link['is_active'] ?? true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get filtered active affiliate links.
+     */
+    public function getActiveAffiliateLinks(): array
+    {
+        if (empty($this->affiliate_links) || !is_array($this->affiliate_links)) {
+            return [];
+        }
+
+        return array_values(array_filter($this->affiliate_links, function ($link) {
+            return !empty($link['url']) && ($link['is_active'] ?? true);
+        }));
+    }
 
     public function province()
     {

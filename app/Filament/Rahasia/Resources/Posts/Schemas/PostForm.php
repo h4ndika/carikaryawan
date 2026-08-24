@@ -297,6 +297,69 @@ class PostForm
                     ->columnSpanFull()
                     ->collapsed(),
 
+                Section::make('Link Afiliasi & Booking')
+                    ->description('Tombol booking/reservasi online (Traveloka, Tiket.com, Agoda, Booking.com, dll.) untuk konversi affiliate.')
+                    ->schema([
+                        Repeater::make('affiliate_links')
+                            ->label('Daftar Link Afiliasi')
+                            ->schema([
+                                Select::make('provider')
+                                    ->label('Penyedia / Platform')
+                                    ->options([
+                                        'traveloka' => 'Traveloka',
+                                        'tiket_com' => 'Tiket.com',
+                                        'agoda' => 'Agoda',
+                                        'booking_com' => 'Booking.com',
+                                        'trip_com' => 'Trip.com',
+                                        'airbnb' => 'Airbnb',
+                                        'pegipegi' => 'Pegipegi',
+                                        'custom' => 'Lainnya / Custom',
+                                    ])
+                                    ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                        if (blank($get('label'))) {
+                                            $labels = [
+                                                'traveloka' => 'Pesan di Traveloka',
+                                                'tiket_com' => 'Booking di Tiket.com',
+                                                'agoda' => 'Cek Kamar di Agoda',
+                                                'booking_com' => 'Reservasi di Booking.com',
+                                                'trip_com' => 'Pesan di Trip.com',
+                                                'airbnb' => 'Lihat di Airbnb',
+                                                'pegipegi' => 'Pesan di Pegipegi',
+                                                'custom' => 'Pesan Sekarang',
+                                            ];
+                                            if (isset($labels[$state])) {
+                                                $set('label', $labels[$state]);
+                                            }
+                                        }
+                                    }),
+                                TextInput::make('label')
+                                    ->label('Label Tombol')
+                                    ->placeholder('Contoh: Pesan di Traveloka')
+                                    ->required(),
+                                TextInput::make('url')
+                                    ->label('URL Link Afiliasi')
+                                    ->url()
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->placeholder('https://...'),
+                                TextInput::make('badge_text')
+                                    ->label('Badge Promo / Info Harga (Opsional)')
+                                    ->placeholder('Contoh: Diskon 20%, Best Deal, dsb.'),
+                                Toggle::make('is_active')
+                                    ->label('Aktifkan Tombol')
+                                    ->default(true),
+                            ])
+                            ->columns(2)
+                            ->collapsible()
+                            ->reorderable()
+                            ->defaultItems(0)
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull()
+                    ->collapsible(),
+
                 Section::make('Data Google Maps')
                     ->description('Informasi terintegrasi dari Google Maps.')
                     ->schema([
