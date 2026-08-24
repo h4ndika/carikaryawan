@@ -71,9 +71,15 @@ class LandmarkShow extends Component
             $postQuery->where('category_id', $this->selectedCategory->id);
         }
 
-        $posts = $postQuery->paginate(12);
+        $posts = $postQuery->paginate(10);
 
         $categories = Category::query()->orderBy('name')->get();
+
+        $otherLandmarks = Landmark::query()
+            ->where('city_id', $this->landmark->city_id)
+            ->where('id', '!=', $this->landmark->id)
+            ->limit(6)
+            ->get();
 
         // SEO Meta setup
         $landmarkName = $this->landmark->name;
@@ -95,6 +101,7 @@ class LandmarkShow extends Component
         return view('livewire.landmark-show', [
             'posts' => $posts,
             'categories' => $categories,
+            'otherLandmarks' => $otherLandmarks,
             'radius' => $radius,
         ])
             ->layout('layouts.app', [
