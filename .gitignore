@@ -32,3 +32,6 @@ Thumbs.db
 /tools/google-map-extractor/src/token.json
 /tools/google-map-extractor/src/credentials.json
 /tools/google-map-extractor/src/github_accounts.txt
+
+# Graphify
+/graphify-out
