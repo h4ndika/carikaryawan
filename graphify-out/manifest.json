@@ -100,13 +100,13 @@
     "semantic_hash": "83a37179b0588b5786c9012336ffcef6"
   },
   "app/Filament/Rahasia/Resources/Posts/Schemas/PostForm.php": {
-    "mtime": 1787371214.9925177,
-    "ast_hash": "90ffd85316d2a676f864f64a877ff008",
+    "mtime": 1787561822.4752517,
+    "ast_hash": "b4b42fcb5fc4e18bb8edfb4aceeab522",
     "semantic_hash": ""
   },
   "app/Filament/Rahasia/Resources/Posts/Tables/PostsTable.php": {
-    "mtime": 1787371223.883314,
-    "ast_hash": "3267129ed20e89e9024d13f5e07b7ab8",
+    "mtime": 1787460165.6941915,
+    "ast_hash": "19dc8f1b45539bfb661779837140bd4b",
     "semantic_hash": ""
   },
   "app/Filament/Rahasia/Resources/Provinces/Pages/CreateProvince.php": {
@@ -145,43 +145,43 @@
     "semantic_hash": "25a307335c0719bc9a91b3f7babd186d"
   },
   "app/Http/Controllers/SitemapController.php": {
-    "mtime": 1784384551.4691105,
-    "ast_hash": "72de54ea434a10bd5e3c4ce86500b1ef",
-    "semantic_hash": "72de54ea434a10bd5e3c4ce86500b1ef"
+    "mtime": 1787719681.8239667,
+    "ast_hash": "4f909de2d9b7517cd662c439d2a15cb1",
+    "semantic_hash": ""
   },
   "app/Livewire/Home.php": {
-    "mtime": 1784615716.7607975,
-    "ast_hash": "dbeb47ec49bd499bf3ebff3508f4b735",
-    "semantic_hash": "dbeb47ec49bd499bf3ebff3508f4b735"
+    "mtime": 1787719665.0750508,
+    "ast_hash": "d7659303208b5a66cc0e8389aedd7399",
+    "semantic_hash": ""
   },
   "app/Livewire/PostList.php": {
-    "mtime": 1784388816.583506,
-    "ast_hash": "38fd02292b15a38bc33a237223b88409",
-    "semantic_hash": "38fd02292b15a38bc33a237223b88409"
+    "mtime": 1787719672.1176665,
+    "ast_hash": "e88a2a57b954753f35b906f2b2eee2f3",
+    "semantic_hash": ""
   },
   "app/Livewire/PostShow.php": {
-    "mtime": 1784616276.025952,
-    "ast_hash": "04bbe7b76cf08dbb176343eb66c8ea00",
-    "semantic_hash": "04bbe7b76cf08dbb176343eb66c8ea00"
+    "mtime": 1787719645.1719372,
+    "ast_hash": "a4d85d21e8e8edc9f5f791122ab643d9",
+    "semantic_hash": ""
   },
   "app/Livewire/Search.php": {
-    "mtime": 1784384718.6750293,
-    "ast_hash": "f67b2c04aacc0ff700f9027c623dbbc7",
-    "semantic_hash": "f67b2c04aacc0ff700f9027c623dbbc7"
+    "mtime": 1787390534.9687757,
+    "ast_hash": "eb95be7c203e2187f3017ef34d5b8680",
+    "semantic_hash": ""
   },
   "app/Models/Category.php": {
-    "mtime": 1784388816.583506,
-    "ast_hash": "c184ceed6a411b2d981b26616fed4c12",
-    "semantic_hash": "c184ceed6a411b2d981b26616fed4c12"
+    "mtime": 1787498661.4242938,
+    "ast_hash": "5f1ea715df6657549e0e6ad4b741a672",
+    "semantic_hash": ""
   },
   "app/Models/City.php": {
-    "mtime": 1784615735.645745,
-    "ast_hash": "d179a1b317adb994389f422fc2a37e12",
-    "semantic_hash": "d179a1b317adb994389f422fc2a37e12"
+    "mtime": 1787538912.605197,
+    "ast_hash": "e1b8c1723c5578a05d364e7975ba72aa",
+    "semantic_hash": ""
   },
   "app/Models/Post.php": {
-    "mtime": 1787361990.8037956,
-    "ast_hash": "13d688c00ca15db817e40e52fa15e58e",
+    "mtime": 1787719638.2394564,
+    "ast_hash": "7810369fadf9f5a0ab41fc16a027c5c2",
     "semantic_hash": ""
   },
   "app/Models/PostDetail.php": {
@@ -535,9 +535,9 @@
     "semantic_hash": ""
   },
   "resources/js/app.js": {
-    "mtime": 1784388816.7492619,
-    "ast_hash": "1ccf2b9101110f40ecaab1608a6f91cf",
-    "semantic_hash": "1ccf2b9101110f40ecaab1608a6f91cf"
+    "mtime": 1787461723.6532547,
+    "ast_hash": "181172399001568f1756cb8e93252a39",
+    "semantic_hash": ""
   },
   "resources/js/bootstrap.js": {
     "mtime": 1784388816.750272,
@@ -545,44 +545,44 @@
     "semantic_hash": "78f909acc19aea4717eddca5a87c1ba3"
   },
   "resources/views/errors/404.blade.php": {
-    "mtime": 1784615367.2777884,
-    "ast_hash": "91b65d8db01b6ef9554d899f51563899",
-    "semantic_hash": "91b65d8db01b6ef9554d899f51563899"
+    "mtime": 1787498347.996808,
+    "ast_hash": "74946fb73a92a845c060192d4ed88d78",
+    "semantic_hash": ""
   },
   "resources/views/layouts/app.blade.php": {
-    "mtime": 1787370886.0592713,
-    "ast_hash": "343c55f567872d8edd406bb8249be054",
+    "mtime": 1787719629.6961653,
+    "ast_hash": "0c842bea0be7332f0b8be18490ecf10f",
     "semantic_hash": ""
   },
   "resources/views/livewire/home.blade.php": {
-    "mtime": 1787370886.0608754,
-    "ast_hash": "c499d211e7adf49c39dadb2955b08a60",
+    "mtime": 1787497928.399784,
+    "ast_hash": "85e963696380deb37ccad1a8196dc154",
     "semantic_hash": ""
   },
   "resources/views/livewire/post-list.blade.php": {
-    "mtime": 1784615284.3047233,
-    "ast_hash": "91f53e00a8faa1e2795d0b203c28fd68",
-    "semantic_hash": "91f53e00a8faa1e2795d0b203c28fd68"
+    "mtime": 1787499342.0898948,
+    "ast_hash": "fd670e367683a893870d436c1e7e8219",
+    "semantic_hash": ""
   },
   "resources/views/livewire/post-show.blade.php": {
-    "mtime": 1784615321.1601832,
-    "ast_hash": "798202107469111456a467686d228f48",
-    "semantic_hash": "798202107469111456a467686d228f48"
+    "mtime": 1787562641.3927906,
+    "ast_hash": "e6a130b214ebe7dcc5f520c85eb93eb0",
+    "semantic_hash": ""
   },
   "resources/views/livewire/search.blade.php": {
-    "mtime": 1784617017.0018146,
-    "ast_hash": "344ce167206817e09c445ec58f1d5334",
-    "semantic_hash": "344ce167206817e09c445ec58f1d5334"
+    "mtime": 1787499347.5765889,
+    "ast_hash": "035e5eacdc67c803c7700d3512132adc",
+    "semantic_hash": ""
   },
   "resources/views/partials/post-card.blade.php": {
-    "mtime": 1784615196.718503,
-    "ast_hash": "a369b1550cd81148e88e08add933a984",
-    "semantic_hash": "a369b1550cd81148e88e08add933a984"
+    "mtime": 1787493815.1631765,
+    "ast_hash": "46b9b0e34b762b3d0d404d318dc677f4",
+    "semantic_hash": ""
   },
   "resources/views/partials/searchable-select.blade.php": {
-    "mtime": 1784617286.877453,
-    "ast_hash": "6532786a3ce08e1f0aebd0c73eab317e",
-    "semantic_hash": "6532786a3ce08e1f0aebd0c73eab317e"
+    "mtime": 1787460932.9945996,
+    "ast_hash": "f9ea43740fbf694d1de6e123ec145d97",
+    "semantic_hash": ""
   },
   "resources/views/sitemap.blade.php": {
     "mtime": 1784384483.4183724,
@@ -600,14 +600,14 @@
     "semantic_hash": "d2b547b00ec0831b11601e6f50fb23b0"
   },
   "routes/console.php": {
-    "mtime": 1784388816.7558756,
-    "ast_hash": "3c6ce2e6d16444282b24a9aa63885563",
-    "semantic_hash": "3c6ce2e6d16444282b24a9aa63885563"
+    "mtime": 1787460162.6316528,
+    "ast_hash": "004b9d5b547325e05d9235abf2d19a0a",
+    "semantic_hash": ""
   },
   "routes/web.php": {
-    "mtime": 1784616214.4605067,
-    "ast_hash": "3e4b805392fa7dbd3581fa0d4e13cadf",
-    "semantic_hash": "3e4b805392fa7dbd3581fa0d4e13cadf"
+    "mtime": 1787544778.153524,
+    "ast_hash": "d0b14382f4161b95f5f26984a96ce608",
+    "semantic_hash": ""
   },
   "tests/Browser/ExampleTest.php": {
     "mtime": 1784388816.7634597,
@@ -630,9 +630,9 @@
     "semantic_hash": "790177a1ed1abd15bc6170388608c1cc"
   },
   "tests/Feature/ExampleTest.php": {
-    "mtime": 1784388816.767166,
-    "ast_hash": "d38ddea7655f855a32c0325991776d48",
-    "semantic_hash": "d38ddea7655f855a32c0325991776d48"
+    "mtime": 1787498694.9229007,
+    "ast_hash": "42b47a114f1cec2c608589c3d2008eb2",
+    "semantic_hash": ""
   },
   "tests/Pest.php": {
     "mtime": 1784388816.767166,
@@ -665,8 +665,8 @@
     "semantic_hash": ""
   },
   "app/Services/GoogleMapsImportService.php": {
-    "mtime": 1787370776.8527079,
-    "ast_hash": "681fa12fcaa93f85c8bcc7c87c85706a",
+    "mtime": 1787391151.0302882,
+    "ast_hash": "e9b978c7b6c7eecc00fec36cf48abd77",
     "semantic_hash": ""
   },
   "database/migrations/2026_08_21_162822_add_google_maps_fields_to_posts_table.php": {
@@ -675,18 +675,18 @@
     "semantic_hash": ""
   },
   "resources/views/partials/article-feed.blade.php": {
-    "mtime": 1787370886.0619352,
-    "ast_hash": "07a8db2c8bc8d6e49333d55a25915d4a",
+    "mtime": 1787497938.2833445,
+    "ast_hash": "11951594d9c2e721c6b5dd3f91903a0f",
     "semantic_hash": ""
   },
   "resources/views/partials/category-tabs.blade.php": {
-    "mtime": 1787370886.0630188,
-    "ast_hash": "c0771c873a7e1b85b2cf17fa732e8425",
+    "mtime": 1787497913.0303645,
+    "ast_hash": "85b1080ee42dd25995325e53b54f996e",
     "semantic_hash": ""
   },
   "resources/views/partials/editor-picks.blade.php": {
-    "mtime": 1787370886.063555,
-    "ast_hash": "d0fe1fd759a59dfbe102921d4616cad8",
+    "mtime": 1787497944.6668317,
+    "ast_hash": "0a56d6a01ccc9a8bb97c73769b22a82e",
     "semantic_hash": ""
   },
   "tests/Fixtures/google-maps-sample.json": {
@@ -800,8 +800,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1785766983.3831518,
-    "ast_hash": "21ceb6533048be51308e69e7b74a35cf",
+    "mtime": 1787385910.7590065,
+    "ast_hash": "bfc02ee61ff81fe395faaeabcbc91d00",
     "semantic_hash": ""
   },
   "AI.md": {
@@ -855,8 +855,8 @@
     "semantic_hash": ""
   },
   "docs/06-SEO.md": {
-    "mtime": 1784388816.6361659,
-    "ast_hash": "c8e61c6cf25ca076856d778ea01044dd",
+    "mtime": 1787500478.215922,
+    "ast_hash": "d0c1f823bfb922dda18026a4f1ba9edd",
     "semantic_hash": ""
   },
   "docs/07-FEATURES.md": {
@@ -885,8 +885,8 @@
     "semantic_hash": ""
   },
   "docs/12-TODO.md": {
-    "mtime": 1784388816.6441915,
-    "ast_hash": "8d9d31e6b8ccb9ebd0c19bd87de6eb3a",
+    "mtime": 1787500486.550491,
+    "ast_hash": "c2947596aa8cc086621cec95bb0abdb8",
     "semantic_hash": ""
   },
   "docs/13-DOMAIN.md": {
@@ -900,8 +900,8 @@
     "semantic_hash": ""
   },
   "docs/TASK-BOARD.md": {
-    "mtime": 1784388613.7336142,
-    "ast_hash": "d2ed41a8d052361d830b00599fdddc6d",
+    "mtime": 1787469179.3699143,
+    "ast_hash": "b6616e498ddbeb2acaea22e0467ac704",
     "semantic_hash": ""
   },
   "docs/architecture/API_SPEC.md": {
@@ -1020,13 +1020,13 @@
     "semantic_hash": ""
   },
   "milestone.md": {
-    "mtime": 1784388816.666809,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1787469187.1187427,
+    "ast_hash": "15635346516d8cba715e9519b7afdeb0",
     "semantic_hash": ""
   },
   "public/robots.txt": {
-    "mtime": 1784388816.747607,
-    "ast_hash": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "mtime": 1787719621.5823364,
+    "ast_hash": "15eee3be6cd1c34d6aea6856918c51d2",
     "semantic_hash": ""
   },
   "tools/google-map-extractor/README.md": {
@@ -1037,6 +1037,196 @@
   "tools/google-map-extractor/public/index.html": {
     "mtime": 1787153391.0564735,
     "ast_hash": "c455a04df97a0e92758b5ec89a0d0a09",
+    "semantic_hash": ""
+  },
+  "app/Console/Commands/ProcessBatchAiQueueCommand.php": {
+    "mtime": 1787460160.0549989,
+    "ast_hash": "b15672db7e30eff3f7976c2744bb5905",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/AiGenerationJobs/AiGenerationJobResource.php": {
+    "mtime": 1787374812.2375724,
+    "ast_hash": "bd27d2fa146f7ea43ab17cf80cc40127",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/AiGenerationJobs/Pages/ListAiGenerationJobs.php": {
+    "mtime": 1787460172.8318028,
+    "ast_hash": "93a521069327a598fd44d8c6a19ca793",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/AiGenerationJobs/Tables/AiGenerationJobsTable.php": {
+    "mtime": 1787460169.7150123,
+    "ast_hash": "a11b0b7a87e46db1869eb39f7d5093b6",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/ApifyAccountResource.php": {
+    "mtime": 1787388872.3355339,
+    "ast_hash": "6ee0bd3a94a3cb5fed3facfb3da0666f",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/Pages/CreateApifyAccount.php": {
+    "mtime": 1787388872.337582,
+    "ast_hash": "f8aa2e3f3e00a4d659a5ec4092df965b",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/Pages/EditApifyAccount.php": {
+    "mtime": 1787388872.338466,
+    "ast_hash": "6b545d515aab72a5f4bd720377d715c6",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/Pages/ListApifyAccounts.php": {
+    "mtime": 1787388872.3396592,
+    "ast_hash": "5090a82f1f95aa9a1ec88f10e2a72bb2",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/Schemas/ApifyAccountForm.php": {
+    "mtime": 1787388872.3416765,
+    "ast_hash": "7591a3292aa1262c2dd43cf51a9e02a4",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/ApifyAccounts/Tables/ApifyAccountsTable.php": {
+    "mtime": 1787388872.3426757,
+    "ast_hash": "df765c3f67baf29a12f2390f41796461",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/GoogleMapsScrapeJobs/GoogleMapsScrapeJobResource.php": {
+    "mtime": 1787388872.3446763,
+    "ast_hash": "4769974962a5cc3800287b6a8e05f0c8",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/GoogleMapsScrapeJobs/Pages/ListGoogleMapsScrapeJobs.php": {
+    "mtime": 1787390061.9503124,
+    "ast_hash": "fa77bc28759a7b9908c63984e3dfdd96",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/GoogleMapsScrapeJobs/Tables/GoogleMapsScrapeJobsTable.php": {
+    "mtime": 1787388872.348334,
+    "ast_hash": "679f4e00d1633c6e0d220200dd87226a",
+    "semantic_hash": ""
+  },
+  "app/Jobs/GeneratePostContentJob.php": {
+    "mtime": 1787374801.1764133,
+    "ast_hash": "b484f9210cb519eb9ab24a0f708cbeb4",
+    "semantic_hash": ""
+  },
+  "app/Jobs/ProcessBatchAiQueueJob.php": {
+    "mtime": 1787460157.1977298,
+    "ast_hash": "d7c5c6c3adb377b4da60e8ceaa9c79ae",
+    "semantic_hash": ""
+  },
+  "app/Jobs/RunGoogleMapsScrapeJob.php": {
+    "mtime": 1787388872.3493862,
+    "ast_hash": "440c2f10357b8891de69b1ebab763d73",
+    "semantic_hash": ""
+  },
+  "app/Models/AiGenerationJob.php": {
+    "mtime": 1787374791.4451952,
+    "ast_hash": "e3ec174c1e4910e88caaa735f3c1bdd0",
+    "semantic_hash": ""
+  },
+  "app/Models/ApifyAccount.php": {
+    "mtime": 1787388872.3503494,
+    "ast_hash": "26920b36262f7f7eec5014fe689d7f2f",
+    "semantic_hash": ""
+  },
+  "app/Models/GoogleMapsScrapeJob.php": {
+    "mtime": 1787388872.3513453,
+    "ast_hash": "feea0b9a03e5c589317c2bacc4e64f60",
+    "semantic_hash": ""
+  },
+  "app/Services/ApifyScraperService.php": {
+    "mtime": 1787388872.3523495,
+    "ast_hash": "814bdeefdba905800ec52b4cfa830ee6",
+    "semantic_hash": ""
+  },
+  "app/Services/PostAiContentService.php": {
+    "mtime": 1787460180.3675876,
+    "ast_hash": "6702be96bab28c50d63c92d586a844ee",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_08_22_120000_create_ai_generation_jobs_table.php": {
+    "mtime": 1787374783.698422,
+    "ast_hash": "90139395ba35d921217b990eabf3ec5a",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_08_22_160000_create_apify_accounts_table.php": {
+    "mtime": 1787388872.3563726,
+    "ast_hash": "9f1705dc22276375f227fd3d5c69f652",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_08_22_160100_create_google_maps_scrape_jobs_table.php": {
+    "mtime": 1787388872.3573804,
+    "ast_hash": "7d6b456e7604278f6e455311e3d6a0ef",
+    "semantic_hash": ""
+  },
+  "resources/views/partials/pagination.blade.php": {
+    "mtime": 1787499335.2547748,
+    "ast_hash": "9a510d078b518005c5416136a5a75a49",
+    "semantic_hash": ""
+  },
+  "public/images/placeholder.svg": {
+    "mtime": 1787373417.3234603,
+    "ast_hash": "a13012785f825dd674cebeb1c497c2c3",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/LandmarkResource.php": {
+    "mtime": 1787538912.5940244,
+    "ast_hash": "1ee9d27dddf3109f6cadb25d3f12e3da",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/Pages/CreateLandmark.php": {
+    "mtime": 1787538912.5961466,
+    "ast_hash": "49f545506be126b3fd691e21c69a0597",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/Pages/EditLandmark.php": {
+    "mtime": 1787538912.5982654,
+    "ast_hash": "400b597b7b9e1e728ea31be936f6767b",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/Pages/ListLandmarks.php": {
+    "mtime": 1787538912.6000164,
+    "ast_hash": "8bffed931d321835763fae79334ab47a",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/Schemas/LandmarkForm.php": {
+    "mtime": 1787538912.6020272,
+    "ast_hash": "0f08147acb6f8a261a9fe0af2cf5ddff",
+    "semantic_hash": ""
+  },
+  "app/Filament/Rahasia/Resources/Landmarks/Tables/LandmarksTable.php": {
+    "mtime": 1787538912.605197,
+    "ast_hash": "00d7d0d6dd5b6caf57dfaa5e6f1bb29a",
+    "semantic_hash": ""
+  },
+  "app/Livewire/LandmarkShow.php": {
+    "mtime": 1787719651.2754488,
+    "ast_hash": "7f85a90e912b5340d73f4f684122e007",
+    "semantic_hash": ""
+  },
+  "app/Models/Landmark.php": {
+    "mtime": 1787538912.605197,
+    "ast_hash": "fa034ebc6fac678f8d74e1349b70b951",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_08_24_080000_create_landmarks_table.php": {
+    "mtime": 1787538912.6137435,
+    "ast_hash": "9d8fb0f33db3b1bdd3fdbd9aa1018849",
+    "semantic_hash": ""
+  },
+  "database/seeders/LandmarkSeeder.php": {
+    "mtime": 1787538912.6164055,
+    "ast_hash": "1d55a17034836fe72b9c6114e5268463",
+    "semantic_hash": ""
+  },
+  "resources/views/livewire/landmark-show.blade.php": {
+    "mtime": 1787561822.4789827,
+    "ast_hash": "4a5751f1363b1aaac233bb11874abe24",
+    "semantic_hash": ""
+  },
+  "database/migrations/2026_08_24_160000_add_affiliate_links_to_posts_table.php": {
+    "mtime": 1787561822.4779305,
+    "ast_hash": "2b4a8a74026fc20970ee2e2cfcd089d7",
     "semantic_hash": ""
   }
 }

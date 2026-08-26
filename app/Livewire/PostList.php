@@ -75,12 +75,72 @@ class PostList extends Component
             ? $this->category->name . ' di ' . $this->city->name . ' — DISEKITAR'
             : $this->category->name . ' — DISEKITAR';
 
+        $metaDescription = $this->citySlug
+            ? "Temukan kurasi rekomendasi {$this->category->name} terbaik dan terpopuler di {$this->city->name}. Ulasan lengkap, alamat, rating, dan info terdekat."
+            : "Kumpulan kurasi editorial {$this->category->name} terbaik di berbagai kota di Indonesia. Temukan pilihan menarik dan terpercaya di sekitarmu.";
+
+        $canonicalUrl = $this->citySlug
+            ? route('posts.list', ['category' => $this->category->slug, 'city' => $this->city->slug])
+            : route('category.home', ['category' => $this->category->slug]);
+
+        $firstPostImg = $posts->first()?->primary_image_url ?? $editorPicks->first()?->primary_image_url;
+
+        // JSON-LD Schema
+        $siteUrl = url('/');
+        $breadcrumbs = [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Beranda',
+                'item' => $siteUrl,
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $this->category->name,
+                'item' => route('category.home', ['category' => $this->category->slug]),
+            ],
+        ];
+
+        if ($this->citySlug && $this->city) {
+            $breadcrumbs[] = [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $this->city->name,
+                'item' => $canonicalUrl,
+            ];
+        }
+
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'CollectionPage',
+                    '@id' => $canonicalUrl . '#collection',
+                    'name' => $title,
+                    'description' => $metaDescription,
+                    'url' => $canonicalUrl,
+                    'inLanguage' => 'id-ID',
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    '@id' => $canonicalUrl . '#breadcrumb',
+                    'itemListElement' => $breadcrumbs,
+                ],
+            ],
+        ];
+
         return view('livewire.post-list', [
             'posts' => $posts,
             'cities' => $cities,
             'editorPicks' => $editorPicks,
         ])
-            ->layout('layouts.app')
+            ->layout('layouts.app', [
+                'metaDescription' => $metaDescription,
+                'canonicalUrl' => $canonicalUrl,
+                'ogImage' => $firstPostImg ?: null,
+                'jsonLd' => $jsonLd,
+            ])
             ->title($title);
     }
 }

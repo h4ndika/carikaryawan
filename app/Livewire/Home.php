@@ -57,6 +57,39 @@ class Home extends Component
             $activeCategoryName = $categories->firstWhere('slug', $this->selectedCategory)?->name ?? ucfirst(str_replace('-', ' ', $this->selectedCategory));
         }
 
+        $siteUrl = url('/');
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $siteUrl . '#website',
+                    'url' => $siteUrl,
+                    'name' => 'DISEKITAR',
+                    'description' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',
+                    'inLanguage' => 'id-ID',
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => [
+                            '@type' => 'EntryPoint',
+                            'urlTemplate' => $siteUrl . '/cari?q={search_term_string}',
+                        ],
+                        'query-input' => 'required name=search_term_string',
+                    ],
+                ],
+                [
+                    '@type' => 'Organization',
+                    '@id' => $siteUrl . '#organization',
+                    'name' => 'DISEKITAR',
+                    'url' => $siteUrl,
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        'url' => asset('images/logo.png'),
+                    ],
+                ],
+            ],
+        ];
+
         return view('livewire.home', [
             'selectedCategory' => $this->selectedCategory,
             'activeCategoryName' => $activeCategoryName,
@@ -72,6 +105,10 @@ class Home extends Component
                 ->latest('published_at')
                 ->limit(12)
                 ->get(),
-        ])->layout('layouts.app');
+        ])->layout('layouts.app', [
+            'canonicalUrl' => $siteUrl,
+            'metaDescription' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',
+            'jsonLd' => $jsonLd,
+        ]);
     }
 }

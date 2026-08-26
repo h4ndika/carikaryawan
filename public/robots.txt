@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /rahasia/
+Disallow: /livewire/
+Disallow: /cari*
+
+Sitemap: https://disekitar.com/sitemap.xml
+

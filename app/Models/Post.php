@@ -204,6 +204,158 @@ class Post extends Model
     }
 
     /**
+     * Generate Schema.org JSON-LD Structured Data for this post.
+     */
+    public function generateJsonLd(?string $canonicalUrl = null): array
+    {
+        $postUrl = $canonicalUrl ?: $this->url();
+        $siteUrl = url('/');
+        $catName = $this->category?->name ?? 'Tempat';
+        $catSlug = strtolower($this->category?->slug ?? '');
+        $cityName = $this->city?->name ?? '';
+        $provName = $this->province?->name ?? '';
+
+        // Determine specific schema type for local place
+        $placeType = 'LocalBusiness';
+        if (str_contains($catSlug, 'hotel') || str_contains($catSlug, 'penginapan') || str_contains($catSlug, 'villa') || str_contains($catSlug, 'resort')) {
+            $placeType = 'LodgingBusiness';
+        } elseif (str_contains($catSlug, 'kuliner') || str_contains($catSlug, 'restoran') || str_contains($catSlug, 'cafe') || str_contains($catSlug, 'kopi') || str_contains($catSlug, 'makan')) {
+            $placeType = 'Restaurant';
+        } elseif (str_contains($catSlug, 'wisata') || str_contains($catSlug, 'rekreasi') || str_contains($catSlug, 'taman') || str_contains($catSlug, 'alam')) {
+            $placeType = 'TouristAttraction';
+        }
+
+        $images = array_values(array_filter([
+            $this->primary_image_url,
+            $this->seoImage(),
+        ]));
+
+        $graph = [];
+
+        // 1. Article Schema
+        $articleSchema = [
+            '@type' => 'Article',
+            '@id' => $postUrl . '#article',
+            'isPartOf' => [
+                '@type' => 'WebPage',
+                '@id' => $postUrl,
+            ],
+            'headline' => $this->seoTitle(),
+            'description' => $this->seoDescription(),
+            'mainEntityOfPage' => $postUrl,
+            'datePublished' => optional($this->published_at)->toIso8601String() ?? now()->toIso8601String(),
+            'dateModified' => optional($this->updated_at)->toIso8601String() ?? now()->toIso8601String(),
+            'inLanguage' => 'id-ID',
+            'author' => [
+                '@type' => 'Organization',
+                'name' => 'Redaksi DISEKITAR',
+                'url' => $siteUrl,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'DISEKITAR',
+                'url' => $siteUrl,
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo.png'),
+                ],
+            ],
+        ];
+        if (!empty($images)) {
+            $articleSchema['image'] = $images;
+        }
+        $graph[] = $articleSchema;
+
+        // 2. Place / LocalBusiness Schema
+        $placeSchema = [
+            '@type' => $placeType,
+            '@id' => $postUrl . '#place',
+            'name' => $this->title,
+            'description' => $this->excerpt ?: $this->seoDescription(),
+            'url' => $postUrl,
+        ];
+        if (!empty($images)) {
+            $placeSchema['image'] = $images;
+        }
+        if ($this->formatted_address || $cityName) {
+            $placeSchema['address'] = [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $this->formatted_address ?: $this->title,
+                'addressLocality' => $cityName,
+                'addressRegion' => $provName,
+                'addressCountry' => 'ID',
+            ];
+        }
+        if ($this->latitude && $this->longitude) {
+            $placeSchema['geo'] = [
+                '@type' => 'GeoCoordinates',
+                'latitude' => (float) $this->latitude,
+                'longitude' => (float) $this->longitude,
+            ];
+        }
+        if ($this->rating && (float) $this->rating > 0) {
+            $placeSchema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => (float) $this->rating,
+                'reviewCount' => max(1, (int) ($this->reviews_count ?: 1)),
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ];
+        }
+        if ($this->place_id) {
+            $placeSchema['hasMap'] = "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->title) . "&query_place_id=" . $this->place_id;
+        }
+        $graph[] = $placeSchema;
+
+        // 3. BreadcrumbList Schema
+        $breadcrumbs = [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Beranda',
+                'item' => $siteUrl,
+            ],
+        ];
+
+        $pos = 2;
+        if ($this->category) {
+            $breadcrumbs[] = [
+                '@type' => 'ListItem',
+                'position' => $pos++,
+                'name' => $this->category->name,
+                'item' => $this->categoryUrl(),
+            ];
+        }
+
+        if ($this->city && $this->category) {
+            $breadcrumbs[] = [
+                '@type' => 'ListItem',
+                'position' => $pos++,
+                'name' => $this->city->name,
+                'item' => $this->categoryWithCityUrl(),
+            ];
+        }
+
+        $breadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => $pos,
+            'name' => $this->title,
+            'item' => $postUrl,
+        ];
+
+        $graph[] = [
+            '@type' => 'BreadcrumbList',
+            '@id' => $postUrl . '#breadcrumb',
+            'itemListElement' => $breadcrumbs,
+        ];
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => $graph,
+        ];
+    }
+
+    /**
      * Scope query to posts with a specific place_id
      */
     public function scopeByPlaceId($query, string $placeId)

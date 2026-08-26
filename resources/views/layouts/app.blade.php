@@ -3,18 +3,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? config('app.name', 'DISEKITAR') }}</title>
-    <meta name="description" content="{{ $metaDescription ?? 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.' }}">
+    @php
+        $pageTitle = $title ?? config('app.name', 'DISEKITAR');
+        $desc = $metaDescription ?? 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.';
+        $currentUrl = !empty($canonicalUrl) ? $canonicalUrl : url()->current();
+        $shareImage = !empty($ogImage) ? $ogImage : asset('images/placeholder.svg');
+    @endphp
+
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $desc }}">
     <meta name="robots" content="{{ $metaRobots ?? 'index,follow' }}">
     @if (! empty($canonicalUrl))
         <link rel="canonical" href="{{ $canonicalUrl }}">
     @endif
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $title ?? config('app.name', 'DISEKITAR') }}">
-    <meta property="og:description" content="{{ $metaDescription ?? 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.' }}">
-    @if (! empty($ogImage))
-        <meta property="og:image" content="{{ $ogImage }}">
-    @endif
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="DISEKITAR">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}">
+    <meta property="og:url" content="{{ $currentUrl }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $desc }}">
+    <meta property="og:image" content="{{ $shareImage }}">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ $currentUrl }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $desc }}">
+    <meta name="twitter:image" content="{{ $shareImage }}">
 
     <!-- Anti-FOUC Theme Init -->
     <script>
@@ -39,7 +56,11 @@
     @livewireStyles
 
     @if (! empty($jsonLd))
-        <script type="application/ld+json">{!! $jsonLd !!}</script>
+        @if (is_array($jsonLd))
+            <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+        @else
+            <script type="application/ld+json">{!! $jsonLd !!}</script>
+        @endif
     @endif
 </head>
 <body class="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-900 dark:selection:bg-amber-500 selection:text-white dark:selection:text-zinc-950">

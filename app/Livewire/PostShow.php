@@ -99,6 +99,8 @@ class PostShow extends Component
                 'metaRobots' => $this->post->seoRobots(),
                 'canonicalUrl' => $canonical,
                 'ogImage' => $this->post->seoImage() ?: null,
+                'ogType' => 'article',
+                'jsonLd' => $this->post->generateJsonLd($canonical),
             ])
             ->title($this->post->seoTitle() . ' — DISEKITAR');
     }

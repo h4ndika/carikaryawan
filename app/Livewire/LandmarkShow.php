@@ -98,6 +98,63 @@ class LandmarkShow extends Component
             ? route('category.landmark.show', ['category' => $this->selectedCategory->slug, 'landmark' => $this->landmark->slug])
             : route('landmark.show', ['landmark' => $this->landmark->slug]);
 
+        // JSON-LD Schema
+        $siteUrl = url('/');
+        $breadcrumbs = [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Beranda',
+                'item' => $siteUrl,
+            ],
+        ];
+
+        $pos = 2;
+        if ($this->selectedCategory) {
+            $breadcrumbs[] = [
+                '@type' => 'ListItem',
+                'position' => $pos++,
+                'name' => $this->selectedCategory->name,
+                'item' => route('category.home', ['category' => $this->selectedCategory->slug]),
+            ];
+        }
+
+        $breadcrumbs[] = [
+            '@type' => 'ListItem',
+            'position' => $pos,
+            'name' => "Di Sekitar {$landmarkName}",
+            'item' => $canonical,
+        ];
+
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'TouristAttraction',
+                    '@id' => $canonical . '#landmark',
+                    'name' => $landmarkName,
+                    'description' => $metaDescription,
+                    'url' => $canonical,
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'addressLocality' => $cityName,
+                        'addressRegion' => $this->landmark->province?->name ?? '',
+                        'addressCountry' => 'ID',
+                    ],
+                    'geo' => [
+                        '@type' => 'GeoCoordinates',
+                        'latitude' => (float) $this->landmark->latitude,
+                        'longitude' => (float) $this->landmark->longitude,
+                    ],
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    '@id' => $canonical . '#breadcrumb',
+                    'itemListElement' => $breadcrumbs,
+                ],
+            ],
+        ];
+
         return view('livewire.landmark-show', [
             'posts' => $posts,
             'categories' => $categories,
@@ -108,6 +165,7 @@ class LandmarkShow extends Component
                 'metaDescription' => $metaDescription,
                 'metaRobots' => 'index,follow',
                 'canonicalUrl' => $canonical,
+                'jsonLd' => $jsonLd,
             ])
             ->title($pageTitle);
     }

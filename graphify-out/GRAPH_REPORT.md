@@ -1,16 +1,16 @@
-# Graph Report - disekiar2  (2026-08-22)
+# Graph Report - disekiar2  (2026-08-26)
 
 ## Corpus Check
-- 206 files · ~142,682 words
+- 243 files · ~160,125 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 6630 nodes · 18736 edges · 247 communities (231 shown, 16 thin omitted)
-- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 2217 edges (avg confidence: 0.71)
+- 6814 nodes · 19148 edges · 251 communities (234 shown, 17 thin omitted)
+- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 2283 edges (avg confidence: 0.71)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `58e76530`
+- Built from commit: `08440692`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,74 +19,74 @@
 - components/chart.js
 - rich-editor.js
 - stat/chart.js
-- .slice
-- constructor
-- facet
+- .forEach
+- update
+- field
 - draw
 - markdown-editor.js
 - _update
-- W
+- prop
 - components/select.js
-- columns/select.js
+- selectOption
 - create
 - fromObject
-- slice
-- date-time-picker.js
-- resolve
+- advance
+- ApifyAccount
+- constructor
 - _update
-- invert
+- resolve
 - o
-- .forEach
-- create
-- reduce
-- getContext
+- e
+- Illuminate\Database\Eloquent\Model
+- slice
+- A
 - y
 - dx
-- by
+- jy
 - notifications.js
 - support.js
 - te
-- S
+- next
 - updateElements
 - slider.js
-- isHorizontal
-- fd
-- sliceDoc
-- hd
-- l
-- vd
-- addElementByRule
-- City
+- _each
 - get
-- ne
-- A
-- u
-- lineAt
+- match
+- parse
+- f
+- l
+- marks
+- Category
+- parse
+- t
+- ls
+- fn
+- getDatasetMeta
 - E
 - inRange
-- constructor
-- constructor
+- ar
+- Oc
 - Filament\Schemas\Schema
 - ERD.md
 - Cn
-- getDatasetMeta
-- Im
+- fn
+- Si
 - MODULES.md
 - dl
 - public/app.js
 - echo.js
 - Ye
 - 00-VISION.md
-- i
-- match
-- _calculateBarIndexPixels
-- User
+- facet
+- getDatasetMeta
+- find
+- DuskTestCase.php
 - 05-CODING-STANDARD.md
-- xt
-- _each
-- Filament\Resources\Pages\CreateRecord
+- V
+- constructor
+- Filament\Resources\Pages\ListRecords
 - home.blade.php
-- fn
+- ei
 - constructor
 - file-upload.js
 - tables.js
@@ -94,10 +94,10 @@
 - devDependencies
 - 08-UI-UX.md
 - t
-- addEventListener
-- add
-- Illuminate\Database\Eloquent\Model
-- Filament\Resources\Pages\ListRecords
+- N
+- S
+- closeDropdown
+- .slice
 - composer.json
 - dependencies
 - require-dev
@@ -107,12 +107,12 @@
 - require
 - server/index.js
 - PERMISSION_MODEL.md
-- Si
+- renderOptions
 - Illuminate\Console\Command
 - Xt
 - config
 - r
-- ls
+- addSingleBadge
 - Post
 - actions/actions.js
 - PROMPT_REVIEW.md
@@ -125,11 +125,12 @@
 - schemas.js
 - post-autoload-dump
 - post-create-project-cmd
-- extra
+- scrapePlacePhotos
 - graphify.js
 - DOMAIN_MODEL.md
 - components/actions.js
-- search.blade.php
+- _notify
+- RunGoogleMapsScrapeJob.php
 - SEO_STRATEGY.md
 - post-list.blade.php
 - db/index.js
@@ -141,7 +142,7 @@
 - accountCreator.js
 - 10-CONTRIBUTING.md
 - API_SPEC.md
-- g$
+- sliceDoc
 - exporters/index.js
 - 07-FEATURES.md
 - PROMPT_REFACTOR.md
@@ -154,28 +155,25 @@
 - Filament\Tables\Table
 - Analisis Project DISEKITAR
 - ROLE_MATRIX.md
-- Wi
-- fn
-- fn
+- En
+- Nn
+- columns/select.js
 - Google Maps Data Extractor v2 (Node.js & Apify Edition)
 - tasks/README.md
 - 01-ROADMAP.md
 - Cloud-Native Ready Philosophy
-- closeDropdown
-- closeDropdown
+- pagination.blade.php
+- nr
 - FE‑001 — Public Frontend Foundation
-- renderOptions
-- renderOptions
-- ar
+- extra
+- constructor
 - Phase 1 — Core CMS
-- i
+- P
 - Core Content
 - src/index.js
 - Discovery Features
-- No
 - README.md
 - Production Readiness Checklist
-- scrapePlacePhotos
 - Phase 0 — Foundation
 - Administration
 - Business Platform
@@ -202,6 +200,9 @@
 - Notification
 - BUGS.md
 - TECH-DEBT.md
+- Milestone: Editorial Platform & AI Automation Engine (21 - 23 Agustus 2026)
+- landmark-show.blade.php
+- yP
 
 ## God Nodes (most connected - your core abstractions)
 1. `o()` - 188 edges
@@ -218,227 +219,227 @@
 ## Surprising Connections (you probably didn't know these)
 - `scrapeGooglePlaces()` --indirect_call--> `err()`  [INFERRED]
   tools/google-map-extractor/src/scraper.js → public/js/filament/forms/components/rich-editor.js
+- `node()` --indirect_call--> `t()`  [INFERRED]
+  public/js/filament/forms/components/code-editor.js → public/js/filament/forms/components/date-time-picker.js
 - `cm()` --indirect_call--> `me()`  [INFERRED]
   public/js/filament/forms/components/file-upload.js → public/js/filament/forms/components/code-editor.js
 - `xQ()` --indirect_call--> `ay()`  [INFERRED]
   public/js/filament/forms/components/code-editor.js → public/js/filament/forms/components/rich-editor.js
 - `constructor()` --indirect_call--> `i()`  [INFERRED]
   public/js/filament/forms/components/color-picker.js → public/js/filament/forms/components/date-time-picker.js
-- `[x]()` --indirect_call--> `H()`  [INFERRED]
-  public/js/filament/forms/components/color-picker.js → public/js/filament/forms/components/markdown-editor.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (247 total, 16 thin omitted)
+## Communities (251 total, 17 thin omitted)
 
 ### Community 0 - "code-editor.js"
 Cohesion: 0.01
-Nodes (126): Ac(), addCompletion(), addCompletions(), addNamespace(), addNamespaceObject(), attrs(), bi(), Blockquote() (+118 more)
+Nodes (125): aa(), Ac(), addCompletion(), addCompletions(), addNamespace(), addNamespaceObject(), Ag(), AX() (+117 more)
 
 ### Community 1 - "components/chart.js"
 Cohesion: 0.01
-Nodes (129): Il(), abutsStart(), addControllers(), addPlugins(), addScales(), ah(), Be(), beforeDraw() (+121 more)
+Nodes (113): Il(), abutsStart(), addControllers(), addPlugins(), addScales(), afterDraw(), bd(), Be() (+105 more)
 
 ### Community 2 - "rich-editor.js"
 Cohesion: 0.01
-Nodes (156): aa(), addHackNode(), addNode(), addNodeMark(), addTextblockHacks(), applyAspectRatio(), applyConstraints(), atEnd() (+148 more)
+Nodes (167): [g](), aa(), addHackNode(), addNodeMark(), addTextblockHacks(), applyAspectRatio(), applyConstraints(), atEnd() (+159 more)
 
 ### Community 3 - "stat/chart.js"
 Cohesion: 0.03
-Nodes (80): themeClasses(), applyStack(), ba(), be(), beforeDatasetsDraw(), beforeDraw(), Bn(), color() (+72 more)
+Nodes (82): themeClasses(), an(), applyStack(), ba(), beforeDatasetsDraw(), beforeDraw(), Bn(), color() (+74 more)
 
-### Community 4 - ".slice"
+### Community 4 - ".forEach"
 Cohesion: 0.05
-Nodes (116): Ac(), addCommands(), ag(), allowedMarks(), allowsMarks(), apply(), applyInner(), applyTransaction() (+108 more)
+Nodes (64): addAttributes(), addOptions(), af(), an(), $b(), B0(), by(), c1() (+56 more)
 
-### Community 5 - "constructor"
-Cohesion: 0.03
-Nodes (127): add(), addChunk(), addEventListener(), addInfoPane(), addInner(), addWindowListeners(), adjust(), al() (+119 more)
-
-### Community 6 - "facet"
+### Community 5 - "update"
 Cohesion: 0.04
-Nodes (79): accept(), active(), baseTheme(), blur(), bu(), build(), changeByRange(), changes() (+71 more)
+Nodes (87): activeForPoint(), addChunk(), addInner(), adjust(), al(), annotation(), boundChange(), bS() (+79 more)
+
+### Community 6 - "field"
+Cohesion: 0.07
+Nodes (41): active(), apply(), b0(), between(), blur(), checkAsyncSchedule(), compute(), Ed() (+33 more)
 
 ### Community 7 - "draw"
 Cohesion: 0.04
-Nodes (111): acquireContext(), adjustHitBoxes(), Ao(), aspectRatio(), B(), bh(), buildTicks(), calculateLabelRotation() (+103 more)
+Nodes (102): _freeze(), getAllExtensions(), acquireContext(), adjustHitBoxes(), bh(), bu(), buildTicks(), calculateLabelRotation() (+94 more)
 
 ### Community 8 - "markdown-editor.js"
-Cohesion: 0.05
-Nodes (95): node(), m(), t(), _a(), ad(), af(), al(), ar() (+87 more)
+Cohesion: 0.04
+Nodes (140): xe(), Ac(), Ae(), af(), al(), An(), ao(), ar() (+132 more)
 
 ### Community 9 - "_update"
-Cohesion: 0.03
-Nodes (108): $a(), afterBuildTicks(), afterCalculateLabelRotation(), afterDataLimits(), afterDatasetsUpdate(), afterDraw(), afterFit(), afterSetDimensions() (+100 more)
-
-### Community 10 - "W"
 Cohesion: 0.04
-Nodes (94): AQ(), atLastNode(), au(), b1(), child(), childAfter(), childBefore(), continue() (+86 more)
+Nodes (91): $a(), addBox(), addElements(), addEventListener(), afterBuildTicks(), afterCalculateLabelRotation(), afterDataLimits(), afterFit() (+83 more)
+
+### Community 10 - "prop"
+Cohesion: 0.05
+Nodes (79): addChild(), AQ(), atLastNode(), au(), child(), childAfter(), childBefore(), continue() (+71 more)
 
 ### Community 11 - "components/select.js"
-Cohesion: 0.08
-Nodes (31): addBadgesForSelectedOptions(), addSingleBadge(), addSingleSelectionDisplay(), applyDisabledState(), bn(), Bt(), createBadgeElement(), createRemoveButton() (+23 more)
-
-### Community 12 - "columns/select.js"
 Cohesion: 0.09
-Nodes (26): addBadgesForSelectedOptions(), addSingleBadge(), addSingleSelectionDisplay(), applyDisabledState(), createBadgeElement(), createRemoveButton(), disable(), en() (+18 more)
+Nodes (27): addBadgesForSelectedOptions(), addSingleBadge(), addSingleSelectionDisplay(), Bt(), createBadgeElement(), createRemoveButton(), D(), en() (+19 more)
+
+### Community 12 - "selectOption"
+Cohesion: 0.15
+Nodes (33): addSingleSelectionDisplay(), closeDropdown(), constructor(), createOptionElement(), deferPositionDropdown(), destroy(), filterOptions(), focusNextOption() (+25 more)
 
 ### Community 13 - "create"
 Cohesion: 0.05
-Nodes (63): Cl(), clone(), create(), Ct(), dc(), Dl(), dtFormatter(), Ea() (+55 more)
+Nodes (63): Cl(), clone(), create(), Ct(), dc(), Dl(), dtFormatter(), Ec() (+55 more)
 
 ### Community 14 - "fromObject"
 Cohesion: 0.04
-Nodes (104): Oe(), ac(), ae(), after(), ag(), Al(), Am(), before() (+96 more)
+Nodes (98): Oe(), ac(), ae(), after(), ag(), Al(), Am(), before() (+90 more)
 
-### Community 15 - "slice"
-Cohesion: 0.03
-Nodes (96): addChild(), addGaps(), addLeafElement(), addNode(), advance(), ATXHeading(), balance(), blank() (+88 more)
+### Community 15 - "advance"
+Cohesion: 0.05
+Nodes (74): acceptToken(), addActions(), advance(), advanceFully(), advanceStack(), allActions(), allows(), break() (+66 more)
 
-### Community 16 - "date-time-picker.js"
-Cohesion: 0.38
-Nodes (3): e(), r(), s()
+### Community 16 - "ApifyAccount"
+Cohesion: 0.10
+Nodes (10): ApifyAccount, self, GoogleMapsScrapeJob, User, ApifyScraperService, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Database\Eloquent\Relations\BelongsTo, Illuminate\Database\Eloquent\Relations\HasMany (+2 more)
 
-### Community 17 - "resolve"
-Cohesion: 0.07
-Nodes (100): addKeyboardShortcuts(), after(), al(), before(), Bs(), canReplaceWith(), cellsInRect(), cg() (+92 more)
+### Community 17 - "constructor"
+Cohesion: 0.04
+Nodes (69): addNode(), applyInitialSize(), Bo(), bt(), constructor(), Cr(), createCommandManager(), createContainer() (+61 more)
 
 ### Community 18 - "_update"
 Cohesion: 0.05
-Nodes (63): aa(), addElements(), afterBuildTicks(), afterCalculateLabelRotation(), afterDataLimits(), afterFit(), afterSetDimensions(), afterTickToLabelConversion() (+55 more)
+Nodes (65): acquireContext(), addElements(), afterBuildTicks(), afterCalculateLabelRotation(), afterDataLimits(), afterFit(), afterSetDimensions(), afterTickToLabelConversion() (+57 more)
 
-### Community 19 - "invert"
-Cohesion: 0.11
-Nodes (28): addMaps(), addStep(), addTransform(), appendMap(), appendMapping(), appendMappingInverted(), aw(), compress() (+20 more)
+### Community 19 - "resolve"
+Cohesion: 0.06
+Nodes (137): Ac(), addKeyboardShortcuts(), after(), ag(), al(), allowedMarks(), allowsMarks(), before() (+129 more)
 
 ### Community 20 - "o"
 Cohesion: 0.03
-Nodes (132): o(), _0(), addGlobalAttributes(), addInputRules(), addMark(), addStoredMark(), Ah(), ak() (+124 more)
+Nodes (97): Mo(), Ym(), o(), _0(), addGlobalAttributes(), addInputRules(), addMark(), addPasteRules() (+89 more)
 
-### Community 21 - ".forEach"
-Cohesion: 0.04
-Nodes (75): accepts(), Ad(), addAttributes(), addPasteRules(), addProseMirrorPlugins(), af(), an(), $b() (+67 more)
-
-### Community 22 - "create"
-Cohesion: 0.05
-Nodes (53): addActive(), addChanges(), addSelection(), Ah(), applyTransaction(), Ar(), as(), asSingle() (+45 more)
-
-### Community 23 - "reduce"
+### Community 21 - "e"
 Cohesion: 0.06
-Nodes (61): addActions(), advanceFully(), advanceStack(), allActions(), apply(), b0(), canShift(), checkAsyncSchedule() (+53 more)
+Nodes (82): add(), addCommands(), addNodeView(), addProseMirrorPlugins(), AS(), Bf(), Bm(), cellsInRect() (+74 more)
 
-### Community 24 - "getContext"
-Cohesion: 0.09
-Nodes (38): acquireContext(), Ae(), bi(), Ca(), clear(), _computeGridLineItems(), _computeLabelArea(), dr() (+30 more)
+### Community 22 - "Illuminate\Database\Eloquent\Model"
+Cohesion: 0.10
+Nodes (9): EditPost, ListPosts, PostDetail, PostImage, DatabaseSeeder, LandmarkSeeder, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes (+1 more)
+
+### Community 23 - "slice"
+Cohesion: 0.03
+Nodes (97): activateHover(), addGaps(), addLeafElement(), addNode(), ATXHeading(), balance(), balanced(), baseIndent() (+89 more)
+
+### Community 24 - "A"
+Cohesion: 0.06
+Nodes (67): jo(), A(), Ae(), As(), bl(), buildTicks(), calculateLabelRotation(), _calculatePadding() (+59 more)
 
 ### Community 25 - "y"
-Cohesion: 0.14
-Nodes (55): An(), at(), cd(), Cr(), Ct(), de(), df(), dr() (+47 more)
+Cohesion: 0.17
+Nodes (53): at(), Be(), ca(), Cr(), Ct(), de(), dr(), dt() (+45 more)
 
 ### Community 26 - "dx"
-Cohesion: 0.12
-Nodes (24): Ei(), Aa(), ai(), Bi(), cf(), Gr(), Jc(), ka() (+16 more)
+Cohesion: 0.09
+Nodes (44): Hr(), Li(), ue(), wP(), Ei(), Aa(), ai(), Bi() (+36 more)
 
-### Community 27 - "by"
-Cohesion: 0.03
-Nodes (100): au(), ay(), Bd(), Bg(), bt(), by(), cl(), connectSelection() (+92 more)
+### Community 27 - "jy"
+Cohesion: 0.04
+Nodes (79): Ad(), au(), ay(), Bd(), cl(), connectSelection(), cu(), cy() (+71 more)
 
 ### Community 28 - "notifications.js"
 Cohesion: 0.06
 Nodes (31): actions(), button(), c(), close(), configureAnimations(), configureTransitions(), constructor(), danger() (+23 more)
 
 ### Community 29 - "support.js"
-Cohesion: 0.05
-Nodes (59): acquireScrollLock(), ai(), Ao(), apply(), as(), At(), close(), closeQuietly() (+51 more)
+Cohesion: 0.07
+Nodes (38): acquireScrollLock(), ai(), close(), closeQuietly(), commit(), destroy(), distribute(), es() (+30 more)
 
 ### Community 30 - "te"
 Cohesion: 0.05
-Nodes (8): Pr(), Bn(), br(), ji(), Ri(), te(), Vi(), Xc()
+Nodes (6): Bn(), ji(), Ri(), te(), Vi(), Xc()
 
-### Community 31 - "S"
-Cohesion: 0.05
-Nodes (61): afterAutoSkip(), Bt(), buildLookupTable(), cl(), Cn(), da(), determineDataLimits(), diff() (+53 more)
+### Community 31 - "next"
+Cohesion: 0.07
+Nodes (38): addActive(), addChanges(), addSelection(), Ar(), as(), be(), chunkEnd(), compose() (+30 more)
 
 ### Community 32 - "updateElements"
-Cohesion: 0.05
-Nodes (69): at(), Ba(), Bf(), _calculateBarValuePixels(), calculateCircumference(), _circumference(), _computeAngle(), countVisibleElements() (+61 more)
+Cohesion: 0.04
+Nodes (73): afterAutoSkip(), Ao(), aspectRatio(), buildLookupTable(), _calculateBarIndexPixels(), _calculateBarValuePixels(), calculateCircumference(), _circumference() (+65 more)
 
 ### Community 33 - "slider.js"
 Cohesion: 0.09
-Nodes (36): Ae(), ar(), Be(), Bt(), De(), _e(), Ee(), er() (+28 more)
+Nodes (37): Ae(), ar(), Be(), Bt(), De(), _e(), Ee(), er() (+29 more)
 
-### Community 34 - "isHorizontal"
-Cohesion: 0.07
-Nodes (49): Ao(), bl(), buildTicks(), calculateLabelRotation(), _calculatePadding(), ci(), _computeLabelItems(), _computeLabelSizes() (+41 more)
-
-### Community 35 - "fd"
-Cohesion: 0.04
-Nodes (85): activateHover(), addRange(), baseDirAt(), bidiIn(), bidiSpans(), bidiSpansAt(), bP(), cd() (+77 more)
-
-### Community 36 - "sliceDoc"
-Cohesion: 0.12
-Nodes (24): aO(), charCategorizer(), cS(), Fc(), getCursor(), getDeco(), gT(), highlight() (+16 more)
-
-### Community 37 - "hd"
-Cohesion: 0.08
-Nodes (28): aa(), ad(), afterAutoSkip(), bd(), br(), buildLookupTable(), cd(), Gd() (+20 more)
-
-### Community 38 - "l"
-Cohesion: 0.09
-Nodes (75): hd(), wo(), yf(), yS(), d(), g(), p(), b() (+67 more)
-
-### Community 39 - "vd"
-Cohesion: 0.11
-Nodes (41): B(), me(), Nh(), Ae(), as(), ci(), da(), er() (+33 more)
-
-### Community 40 - "addElementByRule"
-Cohesion: 0.14
-Nodes (25): addAll(), addDOM(), addElement(), addElementByRule(), addTextNode(), addToSet(), allowsMarkType(), closeExtra() (+17 more)
-
-### Community 41 - "City"
-Cohesion: 0.13
-Nodes (9): PostForm, Home, PostList, PostShow, Search, Category, City, Livewire\Component (+1 more)
-
-### Community 42 - "get"
-Cohesion: 0.08
-Nodes (41): addBlockWidget(), addBreak(), addComposition(), addDelimiter(), addInlineWidget(), addLine(), addLineStart(), addLineStartIfNotCovered() (+33 more)
-
-### Community 43 - "ne"
-Cohesion: 0.06
-Nodes (58): xe(), Ac(), ao(), bl(), Cc(), ce(), cl(), Cn() (+50 more)
-
-### Community 44 - "A"
+### Community 34 - "_each"
 Cohesion: 0.10
-Nodes (25): A(), As(), buildOrUpdateScales(), cr(), ensureScalesHaveIDs(), fn(), getScale(), gl() (+17 more)
+Nodes (25): addControllers(), addPlugins(), addScales(), br(), cancel(), _createDescriptors(), _descriptors(), _each() (+17 more)
 
-### Community 45 - "u"
-Cohesion: 0.20
-Nodes (31): ar(), c(), d(), di(), g(), Hi(), Hn(), I() (+23 more)
+### Community 35 - "get"
+Cohesion: 0.03
+Nodes (109): addBlock(), addBlockWidget(), addBreak(), addComposition(), addDelimiter(), addInlineWidget(), addLine(), addLineDeco() (+101 more)
 
-### Community 46 - "lineAt"
+### Community 36 - "match"
+Cohesion: 0.10
+Nodes (29): bd(), Bh(), clearDelayedAndroidKey(), d0(), De(), delayAndroidKey(), Dg(), E$() (+21 more)
+
+### Community 37 - "parse"
+Cohesion: 0.07
+Nodes (44): gX(), af(), apply(), at(), Ba(), Bf(), determineDataLimits(), Fa() (+36 more)
+
+### Community 38 - "f"
+Cohesion: 0.13
+Nodes (52): In(), mu(), W(), yS(), d(), g(), p(), b() (+44 more)
+
+### Community 39 - "l"
+Cohesion: 0.11
+Nodes (32): cP(), hd(), map(), scrollIntoView(), TS(), wa(), Ba(), lf() (+24 more)
+
+### Community 40 - "marks"
+Cohesion: 0.07
+Nodes (52): addAll(), addDOM(), addElement(), addElementByRule(), addStoredMark(), addTextNode(), addToSet(), allowsMarkType() (+44 more)
+
+### Community 41 - "Category"
+Cohesion: 0.07
+Nodes (14): AddressParser, Controller, SitemapController, Home, LandmarkShow, PostList, PostShow, Search (+6 more)
+
+### Community 42 - "parse"
 Cohesion: 0.06
-Nodes (50): addBlock(), addElement(), addLineDeco(), applyChanges(), balanced(), baseIndent(), baseIndentFor(), blankContent() (+42 more)
+Nodes (46): Bt(), cl(), Cn(), determineDataLimits(), diff(), el(), En(), endOf() (+38 more)
+
+### Community 43 - "t"
+Cohesion: 0.06
+Nodes (70): B(), bu(), coordsForChar(), dynamicSlot(), fromJSON(), _h(), Hs(), me() (+62 more)
+
+### Community 44 - "ls"
+Cohesion: 0.24
+Nodes (11): cs(), Io(), kn(), ls(), os(), si(), us(), ws() (+3 more)
+
+### Community 45 - "fn"
+Cohesion: 0.14
+Nodes (46): ar(), ba(), c(), cr(), d(), da(), di(), ei() (+38 more)
+
+### Community 46 - "getDatasetMeta"
+Cohesion: 0.09
+Nodes (31): afterDatasetsUpdate(), An(), datasetElementScopeKeys(), ef(), generateLabels(), getDatasetMeta(), getDataVisibility(), getMaxBorderWidth() (+23 more)
 
 ### Community 47 - "E"
 Cohesion: 0.05
-Nodes (69): add(), addBox(), addElements(), As(), beforeUpdate(), bi(), bo(), bs() (+61 more)
+Nodes (67): ch(), Yg(), aa(), add(), B(), bo(), br(), bs() (+59 more)
 
 ### Community 48 - "inRange"
-Cohesion: 0.04
-Nodes (64): active(), _animateOptions(), applyStack(), average(), beforeDatasetsDraw(), beforeLayout(), bu(), cf() (+56 more)
+Cohesion: 0.05
+Nodes (59): ad(), ah(), applyStack(), average(), beforeDatasetsDraw(), beforeLayout(), bi(), dataset() (+51 more)
 
-### Community 49 - "constructor"
-Cohesion: 0.04
-Nodes (68): af(), alpha(), apply(), Bc(), bg(), chartOptionScopes(), co(), constructor() (+60 more)
+### Community 49 - "ar"
+Cohesion: 0.11
+Nodes (22): ar(), beforeDatasetDraw(), dn(), getMinDaysInFirstWeek(), getMinimumDaysInFirstWeek(), getStartOfWeek(), getWeekendDays(), getWeekendWeekdays() (+14 more)
 
-### Community 50 - "constructor"
-Cohesion: 0.04
-Nodes (66): add(), addExtensions(), addNodeView(), addOptions(), applyInitialSize(), bl(), Bo(), bw() (+58 more)
+### Community 50 - "Oc"
+Cohesion: 0.11
+Nodes (27): ao(), append(), Cc(), cn(), co(), err(), finish(), fromArray() (+19 more)
 
 ### Community 51 - "Filament\Schemas\Schema"
-Cohesion: 0.14
-Nodes (12): CategoryResource, CategoryForm, CityResource, CityForm, PostResource, ProvinceResource, ProvinceForm, BackedEnum (+4 more)
+Cohesion: 0.10
+Nodes (11): ApifyAccountForm, CategoryForm, CityForm, LandmarkForm, PostForm, ProvinceForm, Province, Filament\Schemas\Schema (+3 more)
 
 ### Community 52 - "ERD.md"
 Cohesion: 0.04
@@ -446,15 +447,15 @@ Nodes (47): 10. Relationship Summary, 11. Standard Columns, 12. Naming Conventio
 
 ### Community 53 - "Cn"
 Cohesion: 0.14
-Nodes (36): _a(), Bi(), br(), Bt(), ca(), Cn(), ct(), Dn() (+28 more)
+Nodes (37): _a(), Bi(), br(), Bt(), ca(), Cn(), ct(), Dn() (+29 more)
 
-### Community 54 - "getDatasetMeta"
-Cohesion: 0.11
-Nodes (25): afterDatasetsUpdate(), buildOrUpdateControllers(), _destroyDatasetMeta(), getController(), getDatasetMeta(), getElement(), _handleEvent(), hide() (+17 more)
+### Community 54 - "fn"
+Cohesion: 0.15
+Nodes (27): An(), Ce(), de(), di(), dn(), Dt(), ei(), fn() (+19 more)
 
-### Community 55 - "Im"
-Cohesion: 0.20
-Nodes (14): Bm(), defaultType(), eat(), err(), hasRequiredAttrs(), Im(), isInGroup(), Lm() (+6 more)
+### Community 55 - "Si"
+Cohesion: 0.17
+Nodes (27): At(), bi(), bn(), ci(), cn(), ct(), fi(), gn() (+19 more)
 
 ### Community 56 - "MODULES.md"
 Cohesion: 0.04
@@ -462,71 +463,71 @@ Nodes (44): 10. System Modules, 11. Module Ownership, 12. Folder Structure, 13. 
 
 ### Community 57 - "dl"
 Cohesion: 0.07
-Nodes (39): ai(), ar(), bs(), describe(), dl(), ei(), er(), first() (+31 more)
+Nodes (38): Nn(), aa(), active(), addEventListener(), ai(), _animateOptions(), bindEvents(), bindResponsiveEvents() (+30 more)
 
 ### Community 58 - "public/app.js"
 Cohesion: 0.14
 Nodes (44): api(), appendLog(), closeModal(), connectSSE(), esc(), formatBytes(), formatDate(), formatNum() (+36 more)
 
 ### Community 59 - "echo.js"
-Cohesion: 0.09
-Nodes (16): a(), ar(), at(), cr(), d(), f(), H(), ji() (+8 more)
+Cohesion: 0.08
+Nodes (19): a(), ar(), at(), cr(), d(), f(), H(), ii() (+11 more)
 
 ### Community 60 - "Ye"
-Cohesion: 0.11
-Nodes (41): at(), bk(), bp(), Dk(), dp(), Ek(), fail(), Fk() (+33 more)
+Cohesion: 0.08
+Nodes (49): Rd(), $a(), at(), bk(), bp(), Dk(), dp(), Ek() (+41 more)
 
 ### Community 61 - "00-VISION.md"
 Cohesion: 0.05
 Nodes (43): 1. Mempermudah masyarakat menemukan informasi lokal, 2. Menjadi sumber informasi yang terpercaya, 3. Menghubungkan masyarakat dengan bisnis lokal, 4. Mengembangkan ekosistem informasi lokal, About DISEKITAR, Administrator, AI Ready, API Ready (+35 more)
 
-### Community 62 - "i"
-Cohesion: 0.05
-Nodes (67): a$(), aa(), activeForPoint(), after(), AX(), before(), Bg(), boundChange() (+59 more)
+### Community 62 - "facet"
+Cohesion: 0.04
+Nodes (70): accept(), addElement(), Ah(), applyTransaction(), asSingle(), changeByRange(), changes(), create() (+62 more)
 
-### Community 63 - "match"
+### Community 63 - "getDatasetMeta"
+Cohesion: 0.12
+Nodes (23): afterDatasetsUpdate(), buildOrUpdateControllers(), _destroyDatasetMeta(), getController(), getDatasetMeta(), getElement(), _handleEvent(), hide() (+15 more)
+
+### Community 64 - "find"
 Cohesion: 0.07
-Nodes (42): addToSet(), bd(), between(), Bh(), c0(), childString(), clearDelayedAndroidKey(), d0() (+34 more)
+Nodes (40): baseDirAt(), bidiIn(), bidiSpans(), bidiSpansAt(), checkHover(), computeBlockGapDeco(), coordsAtPos(), _d() (+32 more)
 
-### Community 64 - "_calculateBarIndexPixels"
-Cohesion: 0.14
-Nodes (18): addEventListener(), au(), bindResponsiveEvents(), _calculateBarIndexPixels(), fu(), _getAxis(), _getAxisCount(), getFirstScaleIdForIndexAxis() (+10 more)
-
-### Community 65 - "User"
-Cohesion: 0.09
-Nodes (15): User, UserFactory, DatabaseSeeder, Facebook\WebDriver\Remote\RemoteWebDriver, Illuminate\Database\Eloquent\Factories\Factory, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Database\Seeder, Illuminate\Foundation\Auth\User (+7 more)
+### Community 65 - "DuskTestCase.php"
+Cohesion: 0.20
+Nodes (7): Facebook\WebDriver\Remote\RemoteWebDriver, Illuminate\Foundation\Testing\TestCase, Illuminate\Support\Collection, Laravel\Dusk\TestCase, RemoteWebDriver, DuskTestCase, TestCase
 
 ### Community 66 - "05-CODING-STANDARD.md"
 Cohesion: 0.05
 Nodes (42): Action Rules, AI Coding Rules, API Response, Blade Standard, Class, Comments, Configuration, Constant (+34 more)
 
-### Community 67 - "xt"
-Cohesion: 0.13
-Nodes (27): Ra(), ae(), B(), cr(), de(), dt(), Ee(), fr() (+19 more)
+### Community 67 - "V"
+Cohesion: 0.16
+Nodes (21): ae(), B(), de(), dt(), Ee(), Ge(), Gt(), he() (+13 more)
 
-### Community 68 - "_each"
-Cohesion: 0.12
-Nodes (21): addControllers(), addPlugins(), addScales(), br(), cancel(), _createDescriptors(), _descriptors(), _each() (+13 more)
+### Community 68 - "constructor"
+Cohesion: 0.03
+Nodes (90): add(), addEventListener(), addInfoPane(), addToSet(), addWindowListeners(), applyChanges(), applyEdits(), bf() (+82 more)
 
-### Community 69 - "Filament\Resources\Pages\CreateRecord"
-Cohesion: 0.11
-Nodes (9): CreateCategory, EditCategory, CreateCity, EditCity, CreatePost, CreateProvince, EditProvince, Filament\Resources\Pages\CreateRecord (+1 more)
+### Community 69 - "Filament\Resources\Pages\ListRecords"
+Cohesion: 0.06
+Nodes (20): CreateApifyAccount, EditApifyAccount, ListApifyAccounts, CreateCategory, EditCategory, ListCategories, CreateCity, EditCity (+12 more)
 
 ### Community 70 - "home.blade.php"
 Cohesion: 0.50
-Nodes (3): partials.article-feed, partials.category-tabs, partials.editor-picks
+Nodes (3): partials.category-tabs, partials.article-feed, partials.editor-picks
 
-### Community 71 - "fn"
-Cohesion: 0.19
-Nodes (20): aa(), ba(), da(), ei(), Fi(), fn(), gr(), jt() (+12 more)
+### Community 71 - "ei"
+Cohesion: 0.10
+Nodes (22): ar(), describe(), ei(), er(), gn(), Gt(), ir(), ji() (+14 more)
 
 ### Community 72 - "constructor"
-Cohesion: 0.07
-Nodes (38): Ot(), alpha(), apply(), bo(), chartOptionScopes(), co(), constructor(), es() (+30 more)
+Cohesion: 0.06
+Nodes (49): Ot(), alpha(), apply(), be(), bo(), chartOptionScopes(), co(), constructor() (+41 more)
 
 ### Community 73 - "file-upload.js"
 Cohesion: 0.05
-Nodes (54): hc(), Bp(), c(), ca(), clickPercent(), cm(), constructor(), Cp() (+46 more)
+Nodes (53): baseTheme(), hc(), Bp(), c(), ca(), clickPercent(), cm(), constructor() (+45 more)
 
 ### Community 74 - "tables.js"
 Cohesion: 0.09
@@ -548,21 +549,21 @@ Nodes (42): Accessibility, Admin UX, Administrator, AI Coding Guidelines, Busine
 Cohesion: 0.18
 Nodes (12): Ce(), De(), di(), e(), Ht(), Ie(), Re(), t() (+4 more)
 
-### Community 79 - "addEventListener"
-Cohesion: 0.21
-Nodes (12): addEventListener(), bindEvents(), bindResponsiveEvents(), bindUserEvents(), ga(), Hn(), isAttached(), Ja() (+4 more)
+### Community 79 - "N"
+Cohesion: 0.10
+Nodes (21): afterAutoSkip(), Ao(), buildLookupTable(), ci(), dn(), _exec(), Fs(), getDecimalForValue() (+13 more)
 
-### Community 80 - "add"
-Cohesion: 0.08
-Nodes (35): active(), add(), _animateOptions(), _cachedScopes(), _createAnimations(), createResolver(), datasetElementScopeKeys(), get() (+27 more)
+### Community 80 - "S"
+Cohesion: 0.07
+Nodes (44): add(), _cachedScopes(), cr(), createResolver(), da(), fn(), fr(), ft() (+36 more)
 
-### Community 81 - "Illuminate\Database\Eloquent\Model"
-Cohesion: 0.12
-Nodes (6): EditPost, PostDetail, PostImage, Province, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\SoftDeletes
+### Community 81 - "closeDropdown"
+Cohesion: 0.23
+Nodes (17): applyDisabledState(), closeDropdown(), constructor(), destroy(), disable(), enable(), focusNextOption(), focusPreviousOption() (+9 more)
 
-### Community 82 - "Filament\Resources\Pages\ListRecords"
-Cohesion: 0.21
-Nodes (5): ListCategories, ListCities, ListPosts, ListProvinces, Filament\Resources\Pages\ListRecords
+### Community 82 - ".slice"
+Cohesion: 0.05
+Nodes (62): accepts(), addInner(), addMaps(), addStep(), addTransform(), appendMap(), appendMapping(), appendMappingInverted() (+54 more)
 
 ### Community 83 - "composer.json"
 Cohesion: 0.14
@@ -593,16 +594,16 @@ Cohesion: 0.20
 Nodes (10): require, dedoc/scramble, filament/filament, laravel/framework, laravel/sanctum, laravel/tinker, maatwebsite/excel, openai-php/laravel (+2 more)
 
 ### Community 90 - "server/index.js"
-Cohesion: 0.12
-Nodes (38): clearPhotoQueue(), deleteAccount(), deleteTask(), enqueuePlacesForPhotoEnrichment(), getAllPlaces(), getCategories(), getPendingPhotoQueue(), getPhotoQueueList() (+30 more)
+Cohesion: 0.11
+Nodes (39): clearPhotoQueue(), deleteAccount(), deleteTask(), enqueuePlacesForPhotoEnrichment(), getAllPlaces(), getCategories(), getPendingPhotoQueue(), getPhotoQueueList() (+31 more)
 
 ### Community 91 - "PERMISSION_MODEL.md"
 Cohesion: 0.05
 Nodes (36): 10. Middleware, 11. Laravel Policy, 12. UI Permission, 13. API Permission, 14. Audit Trail, 15. Future Multi-Tenant, 16. Database Structure, 17. Best Practices (+28 more)
 
-### Community 92 - "Si"
-Cohesion: 0.15
-Nodes (38): ae(), At(), bi(), ci(), cn(), ct(), de(), di() (+30 more)
+### Community 92 - "renderOptions"
+Cohesion: 0.37
+Nodes (13): createOptionElement(), deferPositionDropdown(), filterOptions(), handleSearch(), hideLoadingState(), openDropdown(), populateLabelRepositoryFromOptions(), positionDropdown() (+5 more)
 
 ### Community 93 - "Illuminate\Console\Command"
 Cohesion: 0.27
@@ -617,16 +618,16 @@ Cohesion: 0.29
 Nodes (7): pestphp/pest-plugin, php-http/discovery, config, allow-plugins, optimize-autoloader, preferred-install, sort-packages
 
 ### Community 96 - "r"
-Cohesion: 0.22
-Nodes (10): Be(), ei(), ii(), le(), ni(), oi(), r(), ri() (+2 more)
+Cohesion: 0.21
+Nodes (12): Be(), ei(), Fe(), He(), i(), le(), Mt(), ni() (+4 more)
 
-### Community 97 - "ls"
-Cohesion: 0.24
-Nodes (11): cs(), Io(), kn(), ls(), os(), si(), us(), ws() (+3 more)
+### Community 97 - "addSingleBadge"
+Cohesion: 0.33
+Nodes (6): addBadgesForSelectedOptions(), addSingleBadge(), createBadgeElement(), createRemoveButton(), getLabelForSingleSelection(), getSelectedOptionLabel()
 
 ### Community 98 - "Post"
-Cohesion: 0.11
-Nodes (4): Controller, SitemapController, Post, Illuminate\Http\Response
+Cohesion: 0.08
+Nodes (4): Post, UserFactory, Illuminate\Database\Eloquent\Factories\Factory, static
 
 ### Community 99 - "actions/actions.js"
 Cohesion: 0.44
@@ -641,8 +642,8 @@ Cohesion: 0.60
 Nodes (3): RahasiaPanelProvider, Filament\Panel, Filament\PanelProvider
 
 ### Community 103 - "post-show.blade.php"
-Cohesion: 0.40
-Nodes (4): closeLightbox, openLightbox(@js($image->image_url)), openLightbox(@js($post->thumbnail)), partials.post-card
+Cohesion: 0.50
+Nodes (3): closeLightbox, openLightbox(@js($img->image_url)), openLightbox(@js($mainImg))
 
 ### Community 104 - "psr-4"
 Cohesion: 0.40
@@ -654,7 +655,7 @@ Nodes (34): Admin API, AI Coding Guidelines, Authentication, Authentication API,
 
 ### Community 106 - "06-SEO.md"
 Cohesion: 0.06
-Nodes (32): AI Coding Guidelines, AI Search Readiness, Breadcrumb, Canonical URL, Content Quality, Definition of Done (SEO), DISEKITAR SEO Guidelines, Duplicate Content (+24 more)
+Nodes (35): 1. Halaman Berbasis Landmark & Titik Transit (Transit / Proximity SEO), 2. Internal Linking Lintas Kategori Berbasis Lokasi (Cross-Category Proximity Linking), AI Coding Guidelines, AI Search Readiness, Breadcrumb, Canonical URL, Content Quality, Definition of Done (SEO) (+27 more)
 
 ### Community 108 - "post-autoload-dump"
 Cohesion: 0.50
@@ -664,13 +665,21 @@ Nodes (4): post-autoload-dump, Illuminate\\Foundation\\ComposerScripts::postAuto
 Cohesion: 0.50
 Nodes (4): post-create-project-cmd, @php artisan key:generate --ansi, @php artisan migrate --graceful --ansi, @php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\
 
-### Community 110 - "extra"
-Cohesion: 0.67
-Nodes (3): extra, laravel, dont-discover
+### Community 110 - "scrapePlacePhotos"
+Cohesion: 0.43
+Nodes (6): apify-client, apify-client, getNextRotatedAccount(), getDuckDuckGoVQD(), isValidImageUrl(), scrapePlacePhotos()
 
 ### Community 126 - "DOMAIN_MODEL.md"
 Cohesion: 0.06
 Nodes (31): 10. Audit, 11. Future Modules, 12. Naming Convention, 13. Out of Scope, 1. Purpose, 2. Domain Overview, 3.1 Single Source of Truth, 3.2 Reusable Entity (+23 more)
+
+### Community 128 - "_notify"
+Cohesion: 0.15
+Nodes (17): active(), _animateOptions(), cancel(), _createAnimations(), _createDescriptors(), _d(), _descriptors(), _notify() (+9 more)
+
+### Community 129 - "RunGoogleMapsScrapeJob.php"
+Cohesion: 0.11
+Nodes (14): ProcessBatchAiQueueCommand, ListAiGenerationJobs, PostsTable, GeneratePostContentJob, ProcessBatchAiQueueJob, RunGoogleMapsScrapeJob, AiGenerationJob, PostAiContentService (+6 more)
 
 ### Community 133 - "SEO_STRATEGY.md"
 Cohesion: 0.06
@@ -678,7 +687,7 @@ Nodes (30): 10. Internal Linking, 11. Sitemap, 12. Robots, 13. Canonical, 14. Op
 
 ### Community 165 - "db/index.js"
 Cohesion: 0.12
-Nodes (30): ACCOUNT_COLUMNS, ACCOUNT_STATUSES, accountFromId(), createTask(), DB_DIR, DB_PATH, FINAL_STATUSES, getAccountByEmail() (+22 more)
+Nodes (29): ACCOUNT_COLUMNS, ACCOUNT_STATUSES, accountFromId(), createTask(), DB_DIR, DB_PATH, FINAL_STATUSES, getAccountByEmail() (+21 more)
 
 ### Community 166 - "03-DATABASE.md"
 Cohesion: 0.06
@@ -712,9 +721,9 @@ Nodes (27): AI Coding Agent Guidelines, API Changes, Backward Compatibility, Bef
 Cohesion: 0.07
 Nodes (26): 10. Opening Hour API, 11. Facility API, 12. Tag API, 13. Review API, 14. Event API, 15. Job API, 16. Article API, 17. Master API (+18 more)
 
-### Community 174 - "g$"
-Cohesion: 0.10
-Nodes (28): acceptToken(), Ag(), allows(), eh(), g$(), GO(), ih(), kh() (+20 more)
+### Community 174 - "sliceDoc"
+Cohesion: 0.08
+Nodes (33): a$(), aO(), b1(), charCategorizer(), Fc(), getCursor(), getDeco(), gT() (+25 more)
 
 ### Community 175 - "exporters/index.js"
 Cohesion: 0.14
@@ -728,17 +737,13 @@ Nodes (25): AI Coding Guidelines, API Features, Definition of Done, DISEKITAR Fe
 Cohesion: 0.08
 Nodes (24): AI Must NOT, Benefits, DISEKITAR AI Refactoring Prompt, Documentation Updated, Files Modified, Purpose, Refactoring Performed, Refactoring Principles (+16 more)
 
-### Community 178 - "GoogleMapsImportService"
-Cohesion: 0.14
-Nodes (3): AddressParser, GoogleMapsImportService, self
-
 ### Community 179 - "n"
-Cohesion: 0.15
-Nodes (22): A(), An(), b(), Bt(), D(), F(), ht(), $i() (+14 more)
+Cohesion: 0.11
+Nodes (28): A(), An(), b(), Bt(), D(), F(), gt(), ht() (+20 more)
 
 ### Community 180 - "color-picker.js"
-Cohesion: 0.11
-Nodes (9): constructor(), [g](), style(), update(), [x](), Gl(), lx(), ta() (+1 more)
+Cohesion: 0.14
+Nodes (4): constructor(), style(), update(), [x]()
 
 ### Community 181 - "PROMPT_DEVELOPMENT.md"
 Cohesion: 0.11
@@ -753,8 +758,8 @@ Cohesion: 0.11
 Nodes (17): AI Rules, Communication Rules, DISEKITAR AI Onboarding Prompt, Mandatory Documents, Purpose, Step 10 — Update Task, Step 1 — Read Documentation, Step 2 — Understand the Project (+9 more)
 
 ### Community 184 - "Filament\Tables\Table"
-Cohesion: 0.18
-Nodes (5): CategoriesTable, CitiesTable, PostsTable, ProvincesTable, Filament\Tables\Table
+Cohesion: 0.08
+Nodes (20): AiGenerationJobResource, AiGenerationJobsTable, ApifyAccountResource, ApifyAccountsTable, CategoryResource, CategoriesTable, CityResource, CitiesTable (+12 more)
 
 ### Community 185 - "Analisis Project DISEKITAR"
 Cohesion: 0.12
@@ -764,17 +769,17 @@ Nodes (16): 10. Insight dari Graphify, 11. Ringkasan Eksekutif, 1. Identitas & V
 Cohesion: 0.12
 Nodes (16): AI May Suggest, AI Must NOT, AI Responsibilities, Communication Rules, Decision Authority, DISEKITAR Task Role Matrix, Documentation Rules, Escalation Rules (+8 more)
 
-### Community 187 - "Wi"
-Cohesion: 0.17
-Nodes (17): Rd(), $a(), closest(), Fx(), $h(), Ha(), ik(), jx() (+9 more)
+### Community 187 - "En"
+Cohesion: 0.11
+Nodes (24): Ra(), Ao(), apply(), as(), At(), En(), fs(), go() (+16 more)
 
-### Community 188 - "fn"
-Cohesion: 0.22
-Nodes (17): An(), Ce(), ei(), fn(), Ft(), Ie(), Le(), ni() (+9 more)
+### Community 188 - "Nn"
+Cohesion: 0.29
+Nodes (7): aa(), gr(), mr(), Nn(), sr(), ue(), Yt()
 
-### Community 189 - "fn"
-Cohesion: 0.24
-Nodes (17): Ce(), ei(), fn(), Ft(), Ie(), Le(), ni(), oe() (+9 more)
+### Community 189 - "columns/select.js"
+Cohesion: 0.10
+Nodes (26): applyDisabledState(), Ce(), disable(), ei(), en(), enable(), fn(), Ft() (+18 more)
 
 ### Community 190 - "Google Maps Data Extractor v2 (Node.js & Apify Edition)"
 Cohesion: 0.12
@@ -792,37 +797,33 @@ Nodes (14): Development Principles, Development Status Legend, DISEKITAR Develop
 Cohesion: 0.13
 Nodes (15): AI Coding Guidelines, Cache Strategy, CDN Ready, Cloud-Native Ready Philosophy, Database Strategy, Design Principles, File Storage Strategy, Horizontal Scaling (+7 more)
 
-### Community 194 - "closeDropdown"
-Cohesion: 0.30
-Nodes (14): closeDropdown(), constructor(), destroy(), focusNextOption(), focusPreviousOption(), getVisibleOptions(), handleDropdownKeydown(), handleSelectButtonKeydown() (+6 more)
+### Community 194 - "pagination.blade.php"
+Cohesion: 0.50
+Nodes (3): gotoPage({{ $page }}, , nextPage(, previousPage(
 
-### Community 195 - "closeDropdown"
-Cohesion: 0.30
-Nodes (14): closeDropdown(), constructor(), destroy(), focusNextOption(), focusPreviousOption(), getVisibleOptions(), handleDropdownKeydown(), handleSelectButtonKeydown() (+6 more)
+### Community 195 - "nr"
+Cohesion: 0.50
+Nodes (4): Dt(), ir(), nr(), rt()
 
 ### Community 196 - "FE‑001 — Public Frontend Foundation"
 Cohesion: 0.15
 Nodes (12): Controller, Docs, FE‑001 — Public Frontend Foundation, Files Changed, Goal, History, Livewire, Notes (+4 more)
 
-### Community 197 - "renderOptions"
-Cohesion: 0.37
-Nodes (13): createOptionElement(), deferPositionDropdown(), filterOptions(), handleSearch(), hideLoadingState(), openDropdown(), populateLabelRepositoryFromOptions(), positionDropdown() (+5 more)
+### Community 197 - "extra"
+Cohesion: 0.67
+Nodes (3): extra, laravel, dont-discover
 
-### Community 198 - "renderOptions"
-Cohesion: 0.37
-Nodes (13): createOptionElement(), deferPositionDropdown(), filterOptions(), handleSearch(), hideLoadingState(), openDropdown(), populateLabelRepositoryFromOptions(), positionDropdown() (+5 more)
-
-### Community 199 - "ar"
-Cohesion: 0.18
-Nodes (13): ar(), beforeDatasetDraw(), getMinDaysInFirstWeek(), getMinimumDaysInFirstWeek(), getStartOfWeek(), getWeekendDays(), getWeekendWeekdays(), getWeekSettings() (+5 more)
+### Community 199 - "constructor"
+Cohesion: 0.05
+Nodes (59): alpha(), Bc(), bg(), chartOptionScopes(), co(), constructor(), darken(), desaturate() (+51 more)
 
 ### Community 200 - "Phase 1 — Core CMS"
 Cohesion: 0.17
 Nodes (12): Category Module, Features, Features, Features, Features, Features, Gallery Module, Location Module (+4 more)
 
-### Community 201 - "i"
-Cohesion: 0.18
-Nodes (12): E(), b(), Dt(), Fe(), g(), He(), i(), ir() (+4 more)
+### Community 201 - "P"
+Cohesion: 0.50
+Nodes (4): E(), b(), g(), P()
 
 ### Community 202 - "Core Content"
 Cohesion: 0.18
@@ -836,10 +837,6 @@ Nodes (7): getAccounts(), getStats(), program, runInteractiveMenu(), DEFAULT_ACT
 Cohesion: 0.22
 Nodes (9): Discovery Features, Features, Features, Features, Features, Interactive Map, Nearby, Recommendation (+1 more)
 
-### Community 205 - "No"
-Cohesion: 0.36
-Nodes (9): addInner(), mapInner(), No(), Nu(), off(), on(), once(), Ru() (+1 more)
-
 ### Community 206 - "README.md"
 Cohesion: 0.22
 Nodes (8): About Laravel, Code of Conduct, Contributing, Laravel Sponsors, Learning Laravel, License, Premium Partners, Security Vulnerabilities
@@ -847,10 +844,6 @@ Nodes (8): About Laravel, Code of Conduct, Contributing, Laravel Sponsors, Learn
 ### Community 207 - "Production Readiness Checklist"
 Cohesion: 0.25
 Nodes (8): Application, Database, Infrastructure, Monitoring, Performance, Production Readiness Checklist, Security, SEO
-
-### Community 208 - "scrapePlacePhotos"
-Cohesion: 0.43
-Nodes (6): apify-client, apify-client, getNextRotatedAccount(), getDuckDuckGoVQD(), isValidImageUrl(), scrapePlacePhotos()
 
 ### Community 209 - "Phase 0 — Foundation"
 Cohesion: 0.29
@@ -889,8 +882,8 @@ Cohesion: 0.40
 Nodes (5): Category Page, Detail Page, Homepage, Phase 2 — Public Website, Search
 
 ### Community 218 - "DISEKITAR — Task Board"
-Cohesion: 0.40
-Nodes (4): DISEKITAR — Task Board, Done, Notes, Now / Next
+Cohesion: 0.25
+Nodes (7): 1. Fondasi & CMS (Filament Admin), 2. AI Content Generation Engine, 3. Frontend & Desain Editorial (Livewire & Tailwind), DISEKITAR — Task Board, Done (21 - 23 Agustus 2026), Notes, Now / Next
 
 ### Community 219 - "Phase 5 — Business Platform"
 Cohesion: 0.50
@@ -916,20 +909,28 @@ Nodes (4): Development, Environment, Production, Staging
 Cohesion: 0.50
 Nodes (3): plugin, $schema, .opencode/plugins/graphify.js
 
+### Community 243 - "Milestone: Editorial Platform & AI Automation Engine (21 - 23 Agustus 2026)"
+Cohesion: 0.33
+Nodes (5): 1. Google Maps Extractor & Multi-Format Importer (21 - 22 Agustus), 2. Batch AI Parallel Content Generation (22 - 23 Agustus), 3. Editorial UI/UX & Dark Mode (22 - 23 Agustus), DISEKITAR — Milestone & Progress Log, Milestone: Editorial Platform & AI Automation Engine (21 - 23 Agustus 2026)
+
+### Community 256 - "yP"
+Cohesion: 0.08
+Nodes (31): attrs(), bi(), build(), cc(), cO(), cS(), cX(), Ex() (+23 more)
+
 ## Knowledge Gaps
-- **1009 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `name`, `type` (+1004 more)
+- **1022 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `name`, `type` (+1017 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `o()` connect `o` to `code-editor.js`, `components/chart.js`, `rich-editor.js`, `stat/chart.js`, `.slice`, `constructor`, `facet`, `draw`, `markdown-editor.js`, `_update`, `W`, `create`, `fromObject`, `slice`, `date-time-picker.js`, `resolve`, `_update`, `.forEach`, `create`, `reduce`, `getContext`, `by`, `notifications.js`, `support.js`, `S`, `updateElements`, `isHorizontal`, `fd`, `sliceDoc`, `hd`, `l`, `get`, `A`, `u`, `E`, `inRange`, `constructor`, `constructor`, `n`, `Cn`, `Im`, `dl`, `fn`, `fn`, `i`, `match`, `_calculateBarIndexPixels`, `_each`, `ar`, `constructor`, `i`, `file-upload.js`, `No`, `t`, `addEventListener`, `add`, `Si`, `Xt`, `r`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **Why does `l()` connect `l` to `code-editor.js`, `components/chart.js`, `rich-editor.js`, `stat/chart.js`, `.slice`, `constructor`, `facet`, `draw`, `markdown-editor.js`, `W`, `create`, `fromObject`, `slice`, `resolve`, `_update`, `o`, `.forEach`, `create`, `reduce`, `getContext`, `y`, `dx`, `by`, `S`, `updateElements`, `isHorizontal`, `vd`, `addElementByRule`, `ne`, `lineAt`, `E`, `inRange`, `constructor`, `n`, `Im`, `dl`, `echo.js`, `i`, `match`, `xt`, `fn`, `ar`, `file-upload.js`, `tables.js`, `Si`, `Xt`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `scrapeGooglePlaces()` connect `db/index.js` to `src/index.js`, `exporters/index.js`, `scrapePlacePhotos`, `Im`, `server/index.js`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+- **Why does `o()` connect `o` to `yP`, `code-editor.js`, `rich-editor.js`, `_notify`, `components/chart.js`, `update`, `field`, `draw`, `stat/chart.js`, `_update`, `prop`, `create`, `fromObject`, `advance`, `constructor`, `_update`, `resolve`, `e`, `slice`, `A`, `jy`, `notifications.js`, `next`, `updateElements`, `_each`, `get`, `parse`, `f`, `l`, `t`, `fn`, `E`, `inRange`, `ar`, `Oc`, `n`, `Cn`, `fn`, `Si`, `dl`, `En`, `columns/select.js`, `facet`, `nr`, `constructor`, `constructor`, `constructor`, `file-upload.js`, `ei`, `t`, `N`, `S`, `.slice`, `Xt`, `r`?**
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
+- **Why does `l()` connect `l` to `_notify`, `components/chart.js`, `rich-editor.js`, `stat/chart.js`, `.forEach`, `update`, `draw`, `markdown-editor.js`, `_update`, `prop`, `create`, `fromObject`, `advance`, `constructor`, `resolve`, `o`, `slice`, `A`, `y`, `dx`, `jy`, `next`, `updateElements`, `parse`, `f`, `marks`, `parse`, `t`, `fn`, `inRange`, `ar`, `Oc`, `n`, `fn`, `dl`, `echo.js`, `facet`, `find`, `constructor`, `constructor`, `ei`, `file-upload.js`, `tables.js`, `.slice`, `Xt`?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
+- **Why does `scrapeGooglePlaces()` connect `db/index.js` to `src/index.js`, `scrapePlacePhotos`, `exporters/index.js`, `Oc`, `server/index.js`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **Are the 186 inferred relationships involving `o()` (e.g. with `Be()` and `i()`) actually correct?**
   _`o()` has 186 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 153 inferred relationships involving `t()` (e.g. with `add()` and `addCompletions()`) actually correct?**
