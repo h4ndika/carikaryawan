@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ApifyAccount;
 use App\Models\Post;
 use App\Models\PostImage;
-use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -16,83 +15,64 @@ class PhotoScraperService
     protected const APIFY_PHOTO_ACTOR = 'solidcode/google-maps-photos-scraper';
 
     /**
-     * Scrape place photos concurrently across multiple sources (DuckDuckGo, Bing, and optional Apify).
+     * Scrape place photos using sequential multi-tier fallback identical to tools/google-map-extractor:
+     * Priority 1: DuckDuckGo Images API
+     * Priority 2: Bing Images HTML Scraping (if < 3 images)
+     * Priority 3: Apify Actor Fallback (if 0 images & placeId is valid ChIJ...)
      *
-     * @param string $query (e.g. "Warung Kopi Klotok Sleman Yogyakarta")
+     * @param string $query (e.g. "Hotel Tarzan Marriott On Penida Bali")
      * @param int $limit Max photos to return
      * @param array $options ['place_id' => '...', 'apify_token' => '...', 'existing_photos' => []]
      * @return array List of valid absolute image URLs
      */
-    public function scrapePhotos(string $query, int $limit = 12, array $options = []): array
+    public function scrapePhotos(string $query, int $limit = 8, array $options = []): array
     {
         $query = trim(preg_replace('/\s+/', ' ', $query));
         if (empty($query)) {
             return $options['existing_photos'] ?? [];
         }
 
-        $allImages = $options['existing_photos'] ?? [];
+        $images = $options['existing_photos'] ?? [];
 
-        // ── Parallel Search Scrapers (Bing + DuckDuckGo via concurrent HTTP Pool) ──
+        // ── Strategy 1: DuckDuckGo Images API (Priority 1) ─────────────────
         try {
-            $responses = Http::pool(fn (Pool $pool) => [
-                $pool->as('bing')
-                    ->withoutVerifying()
-                    ->withHeaders([
-                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                        'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-                    ])
-                    ->timeout(12)
-                    ->get('https://www.bing.com/images/search', [
-                        'q' => $query,
-                        'form' => 'HDRSC2',
-                        'first' => '1',
-                    ]),
-
-                $pool->as('ddg_page')
-                    ->withoutVerifying()
-                    ->withHeaders([
-                        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                    ])
-                    ->timeout(10)
-                    ->get('https://duckduckgo.com/', [
-                        'q' => $query,
-                        'iax' => 'images',
-                        'ia' => 'images',
-                    ]),
-            ]);
-
-            // Parse Bing images
-            if (isset($responses['bing']) && $responses['bing']->successful()) {
-                $html = $responses['bing']->body();
-                if (preg_match_all('/murl&quot;:&quot;(https?:\/\/[^&"]+)&quot;/i', $html, $matches)) {
-                    foreach ($matches[1] as $url) {
-                        if ($this->isValidImageUrl($url) && !in_array($url, $allImages)) {
-                            $allImages[] = $url;
-                        }
-                    }
-                }
-            }
-
-            // Parse DDG VQD and fetch DDG images
-            if (isset($responses['ddg_page']) && $responses['ddg_page']->successful()) {
-                $ddgBody = $responses['ddg_page']->body();
-                if (preg_match('/vqd=["\']?([^"\'\s&]+)/i', $ddgBody, $vMatches)) {
-                    $vqd = $vMatches[1];
-                    $ddgImages = $this->fetchDdgImagesWithVqd($query, $vqd, $limit);
-                    foreach ($ddgImages as $url) {
-                        if (!in_array($url, $allImages)) {
-                            $allImages[] = $url;
+            $vqd = $this->getDuckDuckGoVQD($query);
+            if ($vqd) {
+                $ddgImages = $this->fetchDdgImagesWithVqd($query, $vqd, $limit);
+                foreach ($ddgImages as $img) {
+                    if (!in_array($img, $images)) {
+                        $images[] = $img;
+                        if (count($images) >= $limit) {
+                            return array_slice(array_values(array_unique($images)), 0, $limit);
                         }
                     }
                 }
             }
         } catch (Throwable $e) {
-            Log::debug("Parallel photo scrape notice for '{$query}': " . $e->getMessage());
+            Log::debug("DuckDuckGo photo scrape notice for '{$query}': " . $e->getMessage());
         }
 
-        // ── Apify Photo Scraper (Optional fallback if still < 3 images) ──
+        // ── Strategy 2: Bing Images HTML Scraping (Priority 2, if < 3 images) ──
+        if (count($images) < 3) {
+            try {
+                $bingImages = $this->scrapeFromBing($query, $limit);
+                foreach ($bingImages as $img) {
+                    if (!in_array($img, $images)) {
+                        $images[] = $img;
+                        if (count($images) >= $limit) {
+                            return array_slice(array_values(array_unique($images)), 0, $limit);
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                Log::debug("Bing photo scrape notice for '{$query}': " . $e->getMessage());
+            }
+        }
+
+        // ── Strategy 3: Apify Actor Fallback (solidcode/google-maps-photos-scraper) ──
+        // Only called if search engines yielded 0 photos and placeId is present
         $placeId = $options['place_id'] ?? null;
-        if (count($allImages) < 3 && !empty($placeId) && str_starts_with($placeId, 'ChI')) {
+        if (empty($images) && !empty($placeId) && str_starts_with($placeId, 'ChI')) {
             try {
                 $token = $options['apify_token'] ?? null;
                 if (!$token) {
@@ -103,15 +83,20 @@ class PhotoScraperService
                 if ($token) {
                     $apifyImages = $this->scrapeFromApifyActor($placeId, $token, $limit);
                     foreach ($apifyImages as $img) {
-                        if (!in_array($img, $allImages)) {
-                            $allImages[] = $img;
+                        if (!in_array($img, $images)) {
+                            $images[] = $img;
+                            if (count($images) >= $limit) {
+                                break;
+                            }
                         }
                     }
                 }
-            } catch (Throwable) {}
+            } catch (Throwable $e) {
+                Log::debug("Apify photo scrape notice for placeId '{$placeId}': " . $e->getMessage());
+            }
         }
 
-        return array_slice(array_values(array_unique($allImages)), 0, $limit);
+        return array_slice(array_values(array_unique($images)), 0, $limit);
     }
 
     /**
@@ -119,12 +104,23 @@ class PhotoScraperService
      */
     public function scrapeAndAttachForPost(
         Post $post,
-        int $limit = 12,
+        int $limit = 8,
         bool $replaceExisting = false,
         bool $publishOnComplete = false
     ): array {
-        // Build an accurate, descriptive location search query
-        $queryParts = [$post->title];
+        // Build an accurate, descriptive location search query with category context
+        $queryParts = [];
+
+        // Add category prefix if not already present in the title
+        if ($post->category?->name) {
+            $catName = trim($post->category->name);
+            if (!str_contains(strtolower($post->title), strtolower($catName))) {
+                $queryParts[] = $catName;
+            }
+        }
+
+        $queryParts[] = $post->title;
+
         if ($post->city?->name) {
             $queryParts[] = $post->city->name;
         }
@@ -155,6 +151,7 @@ class PhotoScraperService
                 'success' => false,
                 'message' => "Tidak ditemukan foto baru untuk: {$post->title}",
                 'count' => 0,
+                'total' => count($existingImages),
             ];
         }
 
@@ -212,15 +209,41 @@ class PhotoScraperService
     }
 
     /**
+     * Obtain VQD token required for DuckDuckGo image searches
+     */
+    protected function getDuckDuckGoVQD(string $query): ?string
+    {
+        try {
+            $url = 'https://duckduckgo.com/?q=' . urlencode($query) . '&iax=images&ia=images';
+            $response = Http::withoutVerifying()->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            ])->timeout(10)->get($url);
+
+            if (!$response->successful()) {
+                return null;
+            }
+
+            $body = $response->body();
+            if (preg_match('/vqd=["\']?([^"\'\s&]+)/i', $body, $matches)) {
+                return $matches[1];
+            }
+
+            return null;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
      * Fetch DDG images using VQD
      */
     protected function fetchDdgImagesWithVqd(string $query, string $vqd, int $limit): array
     {
         $response = Http::withoutVerifying()->withHeaders([
-            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept' => 'application/json',
             'Referer' => 'https://duckduckgo.com/',
-        ])->timeout(10)->get(self::DDG_IMAGE_SEARCH_URL, [
+        ])->timeout(12)->get(self::DDG_IMAGE_SEARCH_URL, [
             'l' => 'id-id',
             'o' => 'json',
             'q' => $query,
@@ -239,7 +262,8 @@ class PhotoScraperService
 
         foreach ($results as $item) {
             $url = $item['image'] ?? $item['thumbnail'] ?? null;
-            if ($url && $this->isValidImageUrl($url)) {
+            $title = $item['title'] ?? '';
+            if ($url && $this->isValidImageUrl($url, $title)) {
                 $images[] = $url;
                 if (count($images) >= $limit) {
                     break;
@@ -251,7 +275,40 @@ class PhotoScraperService
     }
 
     /**
-     * Apify actor photo scraper
+     * Bing Images HTML scraper (Same as tools/google-map-extractor)
+     */
+    protected function scrapeFromBing(string $query, int $limit): array
+    {
+        $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&form=HDRSC2&first=1';
+        $response = Http::withoutVerifying()->withHeaders([
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+        ])->timeout(12)->get($bingUrl);
+
+        if (!$response->successful()) {
+            return [];
+        }
+
+        $html = $response->body();
+        $images = [];
+
+        // Match murl:"https://..."
+        if (preg_match_all('/murl&quot;:&quot;(https?:\/\/[^&"]+)&quot;/i', $html, $matches)) {
+            foreach ($matches[1] as $url) {
+                if ($this->isValidImageUrl($url)) {
+                    $images[] = $url;
+                    if (count($images) >= $limit) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $images;
+    }
+
+    /**
+     * Apify actor photo fallback (solidcode/google-maps-photos-scraper)
      */
     protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
     {
@@ -299,9 +356,9 @@ class PhotoScraperService
     }
 
     /**
-     * Validate image URL to avoid broken/icon URLs
+     * Strict validation for photo URLs to filter out cartoons, clipart, icons, vectors, and wallpapers.
      */
-    public function isValidImageUrl(?string $url): bool
+    public function isValidImageUrl(?string $url, string $contextTitle = ''): bool
     {
         if (empty($url) || !is_string($url)) {
             return false;
@@ -311,11 +368,28 @@ class PhotoScraperService
             return false;
         }
 
-        $lower = strtolower($url);
-        if (str_contains($lower, 'favicon') || str_contains($lower, 'logo') || str_contains($lower, 'icon.png')) {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
         }
 
-        return (bool) filter_var($url, FILTER_VALIDATE_URL);
+        $lower = strtolower($url . ' ' . $contextTitle);
+
+        // Blacklisted keywords & domains for non-venue/cartoon/clipart/stock artifacts
+        $blacklisted = [
+            'favicon', 'logo', 'icon.', 'icon-', '.ico', '.svg', '.gif',
+            'disney', 'cartoon', 'fandom.com', 'wikia.nocookie', 'anime',
+            'clipart', 'vector', 'drawing', 'coloring-page', 'coloring_page',
+            'pngwing', 'pngtree', 'freepik', 'cleanpng', 'stickers',
+            'deviantart', 'fanart', 'pngimg', 'clipartkey', 'pinclipart',
+            'wallpapercave', 'wallpaperflare', 'alphacoders', 'desktopnexus'
+        ];
+
+        foreach ($blacklisted as $bad) {
+            if (str_contains($lower, $bad)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
