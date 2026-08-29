@@ -348,19 +348,19 @@ class PhotoScraperService
     }
 
     /**
-     * Apify actor photo fallback (solidcode/google-maps-photos-scraper)
+     * Apify actor photo scraper (thescrappa/google-maps-photos-scraper)
      */
     protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
     {
-        $cleanActor = str_replace('/', '~', self::APIFY_PHOTO_ACTOR);
-        $url = "https://api.apify.com/v2/acts/{$cleanActor}/runs";
+        // Use actor ID directly for thescrappa actor
+        $actorId = 'tLcUdNvmqkibhufg4';
+        $url = "https://api.apify.com/v2/acts/{$actorId}/runs";
 
         $runRes = Http::withoutVerifying()->withToken($token)->timeout(25)->post($url, [
-            'concurrentPlaces' => 1,
-            'imageSize' => 'medium',
-            'language' => 'id',
-            'maxPhotosPerPlace' => $limit,
-            'placeIds' => [$placeId],
+            'searchQuery' => '', // Empty since we have placeId
+            'placeId' => $placeId,
+            'maxImages' => $limit,
+            'includeStreetView' => false, // Exclude street view photos
         ]);
 
         if (!$runRes->successful()) {
@@ -386,7 +386,8 @@ class PhotoScraperService
         $images = [];
 
         foreach ($items as $item) {
-            $imgUrl = $item['imageUrl'] ?? $item['url'] ?? $item['image'] ?? $item['photoUrl'] ?? null;
+            // Handle both photo_url_large and photo_url fields from thescrappa actor
+            $imgUrl = $item['photo_url_large'] ?? $item['photo_url'] ?? null;
             if ($imgUrl && $this->isValidImageUrl($imgUrl)) {
                 $images[] = $imgUrl;
             }

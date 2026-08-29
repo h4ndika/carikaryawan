@@ -2,7 +2,8 @@
 import { ApifyClient } from 'apify-client';
 
 const DDG_IMAGE_SEARCH_URL = 'https://duckduckgo.com/i.js';
-const APIFY_PHOTO_ACTOR = 'solidcode/google-maps-photos-scraper';
+const APIFY_PHOTO_ACTOR = 'thescrappa/google-maps-photos-scraper';
+const APIFY_PHOTO_ACTOR_ID = 'tLcUdNvmqkibhufg4';
 
 /**
  * Scrape place photos with multi-tier fallback
@@ -14,24 +15,25 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
   const cleanQuery = query.trim().replace(/\s+/g, ' ');
   const images = new Set();
 
-  // ── Strategy 1: Apify Actor (solidcode/google-maps-photos-scraper) - Priority 1 ──
+  // ── Strategy 1: Apify Actor (thescrappa/google-maps-photos-scraper) - Priority 1 ──
   const placeId = options.placeId;
   if (placeId && typeof placeId === 'string' && placeId.startsWith('ChI')) {
     try {
       const token = options.apifyToken || process.env.APIFY_TOKEN;
       if (token) {
         const client = new ApifyClient({ token });
+        
+        console.log(`Apify (thescrappa) scraping for place_id: ${placeId}`);
+        
+        // thescrappa actor expects searchQuery and placeId
         const actorInput = {
-          concurrentPlaces: 2,
-          imageSize: 'medium',
-          language: 'id',
-          maxPhotosPerPlace: limit || 8,
-          photoCategories: ['all'],
-          placeIds: [placeId],
+          searchQuery: '', // Empty since we have placeId
+          placeId: placeId,
+          maxImages: limit || 8,
+          includeStreetView: false, // Exclude street view photos
         };
 
-        console.log(`Apify scraping for place_id: ${placeId}`);
-        const run = await client.actor(APIFY_PHOTO_ACTOR).call(actorInput, {
+        const run = await client.actor(APIFY_PHOTO_ACTOR_ID).call(actorInput, {
           memory: 2048,
           timeout: 90,
         });
@@ -39,8 +41,10 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
         if (run.status === 'SUCCEEDED') {
           const dataset = await client.dataset(run.defaultDatasetId).listItems({ clean: true });
           const items = dataset.items || [];
-          for (const it of items) {
-            const photoUrl = it.imageUrl || it.url || it.image || it.photoUrl;
+          
+          for (const item of items) {
+            // Handle both photo_url_large and photo_url fields
+            const photoUrl = item.photo_url_large || item.photo_url;
             if (photoUrl && isValidImageUrl(photoUrl)) {
               images.add(photoUrl);
               if (images.size >= limit) {
