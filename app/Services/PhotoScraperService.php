@@ -292,14 +292,21 @@ class PhotoScraperService
     }
 
     /**
-     * Bing Images HTML scraper with strict iusc JSON parsing
+     * Bing Images HTML scraper - simplified pattern matching tools/photoScraper.js
      */
     protected function scrapeFromBing(string $query, int $limit, string $targetTitle = ''): array
     {
-        $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&cc=ID&setlang=id-ID&form=HDRSC2&first=1';
+        $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&form=HDRSC2&first=1';
+        
+        // Match headers from successful Node.js implementation
         $response = Http::withoutVerifying()->withHeaders([
             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept-Encoding' => 'gzip, deflate, br',
+            'DNT' => '1',
+            'Connection' => 'keep-alive',
+            'Upgrade-Insecure-Requests' => '1',
         ])->timeout(12)->get($bingUrl);
 
         if (!$response->successful()) {
@@ -309,24 +316,24 @@ class PhotoScraperService
         $html = $response->body();
         $images = [];
 
-        // Parse structured image card JSON from 'iusc' elements
-        if (preg_match_all('/class="iusc"[^>]*m="([^"]+)"/i', $html, $matches)) {
-            foreach ($matches[1] as $rawJson) {
-                $decoded = html_entity_decode($rawJson, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $data = json_decode($decoded, true);
-                if (!$data || empty($data['murl'])) {
+        // Simple regex pattern matching tools implementation
+        if (preg_match_all('/murl&quot;:&quot;(https?:\/\/[^&"]+)&quot;/i', $html, $matches)) {
+            foreach ($matches[1] as $url) {
+                // Basic validation only (like tools)
+                if (!$this->isValidImageUrl($url)) {
                     continue;
                 }
-
-                $url = $data['murl'];
-                $itemTitle = $data['t'] ?? $data['desc'] ?? '';
-
-                if (!$this->isValidImageUrl($url, $itemTitle)) {
-                    continue;
-                }
-
-                if (!empty($targetTitle) && !$this->isResultSemanticallyRelevant($targetTitle, $itemTitle, $url)) {
-                    continue;
+                
+                // Optional: semantic filtering if target title provided
+                if (!empty($targetTitle)) {
+                    // Extract title/context from surrounding HTML if available
+                    $pattern = '/' . preg_quote($url, '/') . '.*?&quot;t&quot;:&quot;([^"]+)&quot;/s';
+                    if (preg_match($pattern, $html, $titleMatch)) {
+                        $itemTitle = html_entity_decode($titleMatch[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                        if (!$this->isResultSemanticallyRelevant($targetTitle, $itemTitle, $url)) {
+                            continue;
+                        }
+                    }
                 }
 
                 $images[] = $url;
@@ -407,8 +414,8 @@ class PhotoScraperService
         $haystack = strtolower($resultTitle . ' ' . $resultUrl);
 
         if (!empty($distinctiveWords)) {
+            // First pass: strict whole-word match
             foreach ($distinctiveWords as $dw) {
-                // Whole-word or distinctive substring match (min 4 chars)
                 if (strlen($dw) >= 4 && str_contains($haystack, $dw)) {
                     return true;
                 }
@@ -416,6 +423,20 @@ class PhotoScraperService
                     return true;
                 }
             }
+            
+            // Second pass: relaxed partial match for unique/long words (≥6 chars)
+            // This helps with unique venue names that might have slight variations
+            foreach ($distinctiveWords as $dw) {
+                if (strlen($dw) >= 6) {
+                    // Allow 70% substring match for unique long words
+                    $minMatch = max(4, (int)(strlen($dw) * 0.7));
+                    $substring = substr($dw, 0, $minMatch);
+                    if (str_contains($haystack, $substring)) {
+                        return true;
+                    }
+                }
+            }
+            
             return false;
         }
 
