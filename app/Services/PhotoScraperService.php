@@ -55,7 +55,8 @@ class PhotoScraperService
         // ── Strategy 2: Bing Images HTML Scraping (Priority 2, if < 3 images) ──
         if (count($images) < 3) {
             try {
-                $bingImages = $this->scrapeFromBing($query, $limit);
+                $targetTitle = $options['target_title'] ?? '';
+                $bingImages = $this->scrapeFromBing($query, $limit, $targetTitle);
                 foreach ($bingImages as $img) {
                     if (!in_array($img, $images)) {
                         $images[] = $img;
@@ -148,6 +149,7 @@ class PhotoScraperService
 
         $options = [
             'place_id' => $post->place_id,
+            'target_title' => $post->title,
             'existing_photos' => $existingImages,
         ];
 
@@ -290,9 +292,9 @@ class PhotoScraperService
     }
 
     /**
-     * Bing Images HTML scraper
+     * Bing Images HTML scraper with strict iusc JSON parsing
      */
-    protected function scrapeFromBing(string $query, int $limit): array
+    protected function scrapeFromBing(string $query, int $limit, string $targetTitle = ''): array
     {
         $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&cc=ID&setlang=id-ID&form=HDRSC2&first=1';
         $response = Http::withoutVerifying()->withHeaders([
@@ -307,14 +309,29 @@ class PhotoScraperService
         $html = $response->body();
         $images = [];
 
-        // Match murl:"https://..."
-        if (preg_match_all('/murl&quot;:&quot;(https?:\/\/[^&"]+)&quot;/i', $html, $matches)) {
-            foreach ($matches[1] as $url) {
-                if ($this->isValidImageUrl($url)) {
-                    $images[] = $url;
-                    if (count($images) >= $limit) {
-                        break;
-                    }
+        // Parse structured image card JSON from 'iusc' elements
+        if (preg_match_all('/class="iusc"[^>]*m="([^"]+)"/i', $html, $matches)) {
+            foreach ($matches[1] as $rawJson) {
+                $decoded = html_entity_decode($rawJson, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $data = json_decode($decoded, true);
+                if (!$data || empty($data['murl'])) {
+                    continue;
+                }
+
+                $url = $data['murl'];
+                $itemTitle = $data['t'] ?? $data['desc'] ?? '';
+
+                if (!$this->isValidImageUrl($url, $itemTitle)) {
+                    continue;
+                }
+
+                if (!empty($targetTitle) && !$this->isResultSemanticallyRelevant($targetTitle, $itemTitle, $url)) {
+                    continue;
+                }
+
+                $images[] = $url;
+                if (count($images) >= $limit) {
+                    break;
                 }
             }
         }
@@ -371,6 +388,42 @@ class PhotoScraperService
     }
 
     /**
+     * Check if a search result title/URL is semantically relevant to the venue name.
+     */
+    public function isResultSemanticallyRelevant(string $venueTitle, string $resultTitle, string $resultUrl = ''): bool
+    {
+        $cleanVenue = strtolower(trim(preg_replace('/[^a-zA-Z0-9\s]/', ' ', $venueTitle)));
+        $venueWords = array_filter(explode(' ', $cleanVenue), fn ($w) => strlen($w) >= 3);
+
+        // Generic stopwords that don't uniquely identify the place
+        $stopwords = [
+            'hotel', 'cafe', 'kafe', 'resto', 'restoran', 'villa', 'resort', 'homestay',
+            'guest', 'house', 'guesthouse', 'warung', 'kopi', 'coffee', 'shop', 'the', 'and', 'bar',
+            'jalan', 'kab', 'kabupaten', 'kota', 'provinsi', 'indonesia', 'tempat', 'wisata',
+            'space', 'lounge', 'dining', 'kitchen', 'spot', 'center', 'room', 'rooms', 'kan', 'dan'
+        ];
+
+        $distinctiveWords = array_values(array_diff($venueWords, $stopwords));
+        $haystack = strtolower($resultTitle . ' ' . $resultUrl);
+
+        if (!empty($distinctiveWords)) {
+            foreach ($distinctiveWords as $dw) {
+                // Whole-word or distinctive substring match (min 4 chars)
+                if (strlen($dw) >= 4 && str_contains($haystack, $dw)) {
+                    return true;
+                }
+                if (preg_match('/\b' . preg_quote($dw, '/') . '\b/i', $haystack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // If venue has only generic words (e.g. "The Coffee Bar"), match the combined clean title
+        return str_contains($haystack, $cleanVenue);
+    }
+
+    /**
      * Strict validation for photo URLs to filter out cars, engines, auction marketplaces, cartoons, clipart, vectors, and wallpapers.
      */
     public function isValidImageUrl(?string $url, string $contextTitle = ''): bool
@@ -420,17 +473,16 @@ class PhotoScraperService
             'hondacars', 'nboxforlife', 'autotrader', 'caranddriver', 'motor1', 'autoevolution',
             'aucfree', 'afimg', 'ameba', 'celica', 'auction', 'lelang',
 
-            // Marketplaces & Auction Sites (Non-venue second hand items)
+            // Marketplaces, E-commerce, Supplements & Apparel
+            'shopify.com', 'myshopify', 'nutrition', 'supplement', 'protein', 'gymflooring',
             'yimg.jp', 'mercdn.net', 'mercari', 'yahoo.co.jp', 'rakuten', 'dmm.co.jp',
             'tokopedia', 'shopee', 'lazada', 'bukalapak', 'ebay', 'amazon', 'aliexpress',
             'alibaba', 'carousell', 'olx.co.id', 'blibli', 'zalora',
+            't-shirt', 'kaos', 'baju', 'sepatu', 'jaket', 'dress', 'clothing', 'apparel',
 
             // Gossip / Celebrity / Foreign Cricket news
             'zeenews', 'timesnownews', 'scoopwhoop', 'ndtvimg', 'uccricket', 'cricbuzz',
             'espncricinfo', 'crictracker', 'sportskeeda', 'virat-kohli', 'karan-johar', 'bollywood',
-
-            // Clothing & apparel items
-            't-shirt', 'kaos', 'baju', 'sepatu', 'jaket', 'dress'
         ];
 
         foreach ($blacklisted as $bad) {
