@@ -180,9 +180,9 @@ class PhotoScraperService
 
         $totalPhotosNow = PostImage::where('post_id', $post->id)->count();
 
-        // Update post thumbnail if currently empty
+        // Update post thumbnail if currently empty or if replaceExisting is enabled
         $updateData = [];
-        if (empty($post->thumbnail) && !empty($photos[0])) {
+        if ((empty($post->thumbnail) || $replaceExisting) && !empty($photos[0])) {
             $updateData['thumbnail'] = $photos[0];
         }
 
