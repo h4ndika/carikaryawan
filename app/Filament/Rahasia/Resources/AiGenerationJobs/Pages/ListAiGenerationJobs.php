@@ -42,32 +42,32 @@ class ListAiGenerationJobs extends ListRecords
                 ->icon('heroicon-o-bolt')
                 ->color('success')
                 ->modalHeading('Proses Antrean AI Secara Bersamaan')
-                ->modalDescription('Memproses beberapa post sekaligus secara paralel (5-10 post bersamaan) menggunakan multi-thread API call untuk kecepatan maksimal.')
+                ->modalDescription('Memproses beberapa post sekaligus secara paralel (hingga 25 post bersamaan) menggunakan multi-thread API call untuk kecepatan maksimal.')
                 ->form([
                     \Filament\Forms\Components\Select::make('limit')
                         ->label('Jumlah Antrean yang Diproses')
                         ->options([
-                            '5' => '5 Post',
-                            '10' => '10 Post (Rekomendasi)',
-                            '20' => '20 Post',
+                            '10' => '10 Post',
+                            '25' => '25 Post (Rekomendasi)',
                             '50' => '50 Post',
+                            '100' => '100 Post',
                         ])
-                        ->default('10')
+                        ->default('25')
                         ->required(),
                     \Filament\Forms\Components\Select::make('concurrency')
                         ->label('Kecepatan Paralel (Simultan)')
                         ->options([
-                            '5' => '5 Post Sekaligus',
-                            '10' => '10 Post Sekaligus (Cepat / Rekomendasi)',
-                            '15' => '15 Post Sekaligus (Sangat Cepat)',
+                            '10' => '10 Post Sekaligus',
+                            '25' => '25 Post Sekaligus (Sangat Cepat / Rekomendasi)',
+                            '50' => '50 Post Sekaligus (Ultra Cepat)',
                         ])
-                        ->default('10')
+                        ->default('25')
                         ->required()
                         ->helperText('Jumlah post yang dikirim ke AI dalam satu detik yang sama.'),
                 ])
                 ->action(function (array $data) {
-                    $limit = (int) ($data['limit'] ?? 10);
-                    $concurrency = (int) ($data['concurrency'] ?? 10);
+                    $limit = (int) ($data['limit'] ?? 25);
+                    $concurrency = (int) ($data['concurrency'] ?? 25);
 
                     $pendingJobs = AiGenerationJob::where('status', 'pending')
                         ->orderBy('id', 'asc')
@@ -87,7 +87,7 @@ class ListAiGenerationJobs extends ListRecords
                     }
 
                     // Dispatch ke Laravel Queue Table (diproses oleh php artisan queue:work)
-                    foreach (array_chunk($pendingJobs, 10) as $chunkIds) {
+                    foreach (array_chunk($pendingJobs, 25) as $chunkIds) {
                         \App\Jobs\ProcessBatchAiQueueJob::dispatch($chunkIds, $concurrency);
                     }
 

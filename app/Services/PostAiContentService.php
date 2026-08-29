@@ -140,9 +140,9 @@ class PostAiContentService
     }
 
     /**
-     * Process multiple AiGenerationJob items concurrently in parallel batches (e.g. 10 at once).
+     * Process multiple AiGenerationJob items concurrently in parallel batches (e.g. 25 at once).
      */
-    public function generateBatchConcurrent(Collection|array $aiJobs, int $concurrency = 10): array
+    public function generateBatchConcurrent(Collection|array $aiJobs, int $concurrency = 25): array
     {
         if (is_array($aiJobs)) {
             $aiJobs = AiGenerationJob::with('post.category', 'post.city', 'post.province')->whereIn('id', collect($aiJobs)->pluck('id'))->get();

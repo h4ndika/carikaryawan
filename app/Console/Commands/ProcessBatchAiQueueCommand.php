@@ -14,8 +14,8 @@ class ProcessBatchAiQueueCommand extends Command
      * @var string
      */
     protected $signature = 'ai:process-batch 
-                            {--limit=10 : Jumlah maksimal antrean yang diproses} 
-                            {--concurrency=10 : Jumlah request simultan/paralel ke AI}';
+                            {--limit=25 : Jumlah maksimal antrean yang diproses} 
+                            {--concurrency=25 : Jumlah request simultan/paralel ke AI}';
 
     /**
      * The console command description.
