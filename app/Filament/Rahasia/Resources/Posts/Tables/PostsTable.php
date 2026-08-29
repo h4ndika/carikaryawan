@@ -16,6 +16,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -171,6 +172,26 @@ class PostsTable
                 SelectFilter::make('province_id')
                     ->relationship('province', 'name')
                     ->label('Province'),
+
+                Filter::make('created_at')
+                    ->label('Tanggal Dibuat')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Dibuat Dari Tanggal'),
+                        DatePicker::make('created_until')
+                            ->label('Sampai Tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'] ?? null,
+                                fn (Builder $q, $date): Builder => $q->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'] ?? null,
+                                fn (Builder $q, $date): Builder => $q->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->recordActions([
                 Action::make('scrapePhoto')
