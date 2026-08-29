@@ -16,9 +16,9 @@ class PhotoScraperService
 
     /**
      * Scrape place photos using sequential multi-tier fallback:
-     * Priority 1: DuckDuckGo Images API
-     * Priority 2: Bing Images HTML Scraping (if < 3 images)
-     * Priority 3: Apify Actor Fallback (if 0 images & placeId is valid ChIJ...)
+     * Priority 1: Apify Actor (Google Maps Places Photos)
+     * Priority 2: DuckDuckGo Images API
+     * Priority 3: Bing Images HTML Scraping
      *
      * @param string $query (e.g. "Kafe foresta coffee Bandung Indonesia")
      * @param int $limit Max photos to return
@@ -34,25 +34,53 @@ class PhotoScraperService
 
         $images = $options['existing_photos'] ?? [];
 
-        // ── Strategy 1: DuckDuckGo Images API (Priority 1) ─────────────────
-        try {
-            $vqd = $this->getDuckDuckGoVQD($query);
-            if ($vqd) {
-                $ddgImages = $this->fetchDdgImagesWithVqd($query, $vqd, $limit);
-                foreach ($ddgImages as $img) {
-                    if (!in_array($img, $images)) {
-                        $images[] = $img;
-                        if (count($images) >= $limit) {
-                            return array_slice(array_values(array_unique($images)), 0, $limit);
+        // ── Strategy 1: Apify Actor (Google Maps Photos) - Priority 1 ──
+        $placeId = $options['place_id'] ?? null;
+        if (!empty($placeId) && str_starts_with($placeId, 'ChI')) {
+            try {
+                $token = $options['apify_token'] ?? null;
+                if (!$token) {
+                    $acc = ApifyAccount::getNextActiveAccount();
+                    $token = $acc?->token ?? config('services.apify.token') ?? env('APIFY_TOKEN');
+                }
+
+                if ($token) {
+                    $apifyImages = $this->scrapeFromApifyActor($placeId, $token, $limit);
+                    foreach ($apifyImages as $img) {
+                        if (!in_array($img, $images)) {
+                            $images[] = $img;
+                            if (count($images) >= $limit) {
+                                return array_slice(array_values(array_unique($images)), 0, $limit);
+                            }
                         }
                     }
                 }
+            } catch (Throwable $e) {
+                Log::debug("Apify photo scrape error for placeId '{$placeId}': " . $e->getMessage());
             }
-        } catch (Throwable $e) {
-            Log::debug("DuckDuckGo photo scrape notice for '{$query}': " . $e->getMessage());
         }
 
-        // ── Strategy 2: Bing Images HTML Scraping (Priority 2, if < 3 images) ──
+        // ── Strategy 2: DuckDuckGo Images API - Priority 2 ──
+        if (count($images) < 3) {
+            try {
+                $vqd = $this->getDuckDuckGoVQD($query);
+                if ($vqd) {
+                    $ddgImages = $this->fetchDdgImagesWithVqd($query, $vqd, $limit);
+                    foreach ($ddgImages as $img) {
+                        if (!in_array($img, $images)) {
+                            $images[] = $img;
+                            if (count($images) >= $limit) {
+                                return array_slice(array_values(array_unique($images)), 0, $limit);
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                Log::debug("DuckDuckGo photo scrape notice for '{$query}': " . $e->getMessage());
+            }
+        }
+
+        // ── Strategy 3: Bing Images HTML Scraping - Priority 3 ──
         if (count($images) < 3) {
             try {
                 $targetTitle = $options['target_title'] ?? '';
@@ -67,33 +95,6 @@ class PhotoScraperService
                 }
             } catch (Throwable $e) {
                 Log::debug("Bing photo scrape notice for '{$query}': " . $e->getMessage());
-            }
-        }
-
-        // ── Strategy 3: Apify Actor Fallback (solidcode/google-maps-photos-scraper) ──
-        // Only called if search engines yielded 0 photos and placeId is present
-        $placeId = $options['place_id'] ?? null;
-        if (empty($images) && !empty($placeId) && str_starts_with($placeId, 'ChI')) {
-            try {
-                $token = $options['apify_token'] ?? null;
-                if (!$token) {
-                    $acc = ApifyAccount::getNextActiveAccount();
-                    $token = $acc?->token ?? config('services.apify.token') ?? env('APIFY_TOKEN');
-                }
-
-                if ($token) {
-                    $apifyImages = $this->scrapeFromApifyActor($placeId, $token, $limit);
-                    foreach ($apifyImages as $img) {
-                        if (!in_array($img, $images)) {
-                            $images[] = $img;
-                            if (count($images) >= $limit) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (Throwable $e) {
-                Log::debug("Apify photo scrape notice for placeId '{$placeId}': " . $e->getMessage());
             }
         }
 

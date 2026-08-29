@@ -6,7 +6,7 @@ const APIFY_PHOTO_ACTOR = 'solidcode/google-maps-photos-scraper';
 
 /**
  * Scrape place photos with multi-tier fallback
- * Priority: 1. DuckDuckGo API -> 2. Bing Images HTML -> 3. Apify Actor
+ * Priority: 1. Apify Google Maps Photos -> 2. DuckDuckGo API -> 3. Bing Images HTML
  */
 export async function scrapePlacePhotos(query, limit = 8, options = {}) {
   if (!query || typeof query !== 'string' || !query.trim()) return [];
@@ -14,44 +14,92 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
   const cleanQuery = query.trim().replace(/\s+/g, ' ');
   const images = new Set();
 
-  // ── Strategy 1: DuckDuckGo Images API (Priority 1) ───────────
-  try {
-    const vqd = await getDuckDuckGoVQD(cleanQuery);
-    if (vqd) {
-      const params = new URLSearchParams({
-        l: 'id-id',
-        o: 'json',
-        q: cleanQuery,
-        vqd: vqd,
-        f: ',,,',
-        p: '1',
-      });
+  // ── Strategy 1: Apify Actor (solidcode/google-maps-photos-scraper) - Priority 1 ──
+  const placeId = options.placeId;
+  if (placeId && typeof placeId === 'string' && placeId.startsWith('ChI')) {
+    try {
+      const token = options.apifyToken || process.env.APIFY_TOKEN;
+      if (token) {
+        const client = new ApifyClient({ token });
+        const actorInput = {
+          concurrentPlaces: 2,
+          imageSize: 'medium',
+          language: 'id',
+          maxPhotosPerPlace: limit || 8,
+          photoCategories: ['all'],
+          placeIds: [placeId],
+        };
 
-      const res = await fetch(`${DDG_IMAGE_SEARCH_URL}?${params.toString()}`, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Accept': 'application/json',
-          'Referer': 'https://duckduckgo.com/',
-        },
-      });
+        console.log(`Apify scraping for place_id: ${placeId}`);
+        const run = await client.actor(APIFY_PHOTO_ACTOR).call(actorInput, {
+          memory: 2048,
+          timeout: 90,
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        const results = data.results || [];
-        for (const item of results) {
-          const imgUrl = item.image || item.thumbnail;
-          if (imgUrl && isValidImageUrl(imgUrl)) {
-            images.add(imgUrl);
-            if (images.size >= limit) break;
+        if (run.status === 'SUCCEEDED') {
+          const dataset = await client.dataset(run.defaultDatasetId).listItems({ clean: true });
+          const items = dataset.items || [];
+          for (const it of items) {
+            const photoUrl = it.imageUrl || it.url || it.image || it.photoUrl;
+            if (photoUrl && isValidImageUrl(photoUrl)) {
+              images.add(photoUrl);
+              if (images.size >= limit) {
+                console.log(`Apify success: ${images.size} photos`);
+                return Array.from(images);
+              }
+            }
           }
+          console.log(`Apify returned ${images.size} photos`);
+        } else {
+          console.log(`Apify status: ${run.status}`);
         }
       }
+    } catch (apifyErr) {
+      console.log('Apify error, fallback to DuckDuckGo:', apifyErr.message);
     }
-  } catch (err) {
-    console.log('DuckDuckGo fallback to Bing');
   }
 
-  // ── Strategy 2: Bing Images HTML Scraping (Priority 2) ───────
+  // ── Strategy 2: DuckDuckGo Images API (Priority 2) ───────────
+  if (images.size < 3) {
+    try {
+      const vqd = await getDuckDuckGoVQD(cleanQuery);
+      if (vqd) {
+        const params = new URLSearchParams({
+          l: 'id-id',
+          o: 'json',
+          q: cleanQuery,
+          vqd: vqd,
+          f: ',,,',
+          p: '1',
+        });
+
+        const res = await fetch(`${DDG_IMAGE_SEARCH_URL}?${params.toString()}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Referer': 'https://duckduckgo.com/',
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const results = data.results || [];
+          for (const item of results) {
+            const imgUrl = item.image || item.thumbnail;
+            if (imgUrl && isValidImageUrl(imgUrl)) {
+              images.add(imgUrl);
+              if (images.size >= limit) break;
+            }
+          }
+          console.log(`DuckDuckGo returned ${images.size} total photos`);
+        }
+      }
+    } catch (err) {
+      console.log('DuckDuckGo fallback to Bing');
+    }
+  }
+
+  // ── Strategy 3: Bing Images HTML Scraping (Priority 3) ───────
   if (images.size < 3) {
     try {
       const bingUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(cleanQuery)}&form=HDRSC2&first=1`;
@@ -72,46 +120,10 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
             if (images.size >= limit) break;
           }
         }
+        console.log(`Bing returned ${images.size} total photos`);
       }
     } catch (err) {
       console.log('Bing scrape error:', err.message);
-    }
-  }
-
-  // ── Strategy 3: Apify Actor Fallback ──
-  if (images.size === 0 && options.placeId && typeof options.placeId === 'string' && options.placeId.startsWith('ChI')) {
-    try {
-      const token = options.apifyToken || process.env.APIFY_TOKEN;
-      if (token) {
-        const client = new ApifyClient({ token });
-        const actorInput = {
-          concurrentPlaces: 2,
-          imageSize: 'medium',
-          language: 'id',
-          maxPhotosPerPlace: limit || 6,
-          photoCategories: ['all'],
-          placeIds: [options.placeId],
-        };
-
-        const run = await client.actor(APIFY_PHOTO_ACTOR).call(actorInput, {
-          memory: 2048,
-          timeout: 60,
-        });
-
-        if (run.status === 'SUCCEEDED') {
-          const dataset = await client.dataset(run.defaultDatasetId).listItems({ clean: true });
-          const items = dataset.items || [];
-          for (const it of items) {
-            const photoUrl = it.imageUrl || it.url || it.image || it.photoUrl;
-            if (photoUrl && isValidImageUrl(photoUrl)) {
-              images.add(photoUrl);
-              if (images.size >= limit) break;
-            }
-          }
-        }
-      }
-    } catch (apifyErr) {
-      console.log('Apify error:', apifyErr.message);
     }
   }
 
