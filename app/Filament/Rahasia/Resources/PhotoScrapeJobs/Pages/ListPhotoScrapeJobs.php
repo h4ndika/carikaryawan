@@ -82,6 +82,23 @@ class ListPhotoScrapeJobs extends ListRecords
                         ->success()
                         ->send();
                 }),
+
+            Action::make('clearCompleted')
+                ->label('Bersihkan Riwayat Selesai')
+                ->icon('heroicon-o-trash')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading('Bersihkan Riwayat Job Selesai')
+                ->modalDescription('Apakah Anda yakin ingin menghapus semua data antrean yang statusnya Selesai?')
+                ->modalSubmitActionLabel('Ya, Hapus Selesai')
+                ->action(function () {
+                    $deleted = PhotoScrapeJob::where('status', 'completed')->delete();
+
+                    Notification::make()
+                        ->title("{$deleted} riwayat antrean foto selesai berhasil dibersihkan")
+                        ->success()
+                        ->send();
+                }),
         ];
     }
 }
