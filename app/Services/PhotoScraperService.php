@@ -15,12 +15,12 @@ class PhotoScraperService
     protected const APIFY_PHOTO_ACTOR = 'solidcode/google-maps-photos-scraper';
 
     /**
-     * Scrape place photos using sequential multi-tier fallback identical to tools/google-map-extractor:
+     * Scrape place photos using sequential multi-tier fallback:
      * Priority 1: DuckDuckGo Images API
      * Priority 2: Bing Images HTML Scraping (if < 3 images)
      * Priority 3: Apify Actor Fallback (if 0 images & placeId is valid ChIJ...)
      *
-     * @param string $query (e.g. "Hotel Tarzan Marriott On Penida Bali")
+     * @param string $query (e.g. "Kafe foresta coffee Bandung Indonesia")
      * @param int $limit Max photos to return
      * @param array $options ['place_id' => '...', 'apify_token' => '...', 'existing_photos' => []]
      * @return array List of valid absolute image URLs
@@ -108,7 +108,10 @@ class PhotoScraperService
         bool $replaceExisting = false,
         bool $publishOnComplete = false
     ): array {
-        // Build an accurate, descriptive location search query with category context
+        // Normalize city & province name (strip KOTA, KAB., KABUPATEN, PROVINSI)
+        $cleanCity = trim(preg_replace('/^(KOTA|KAB\.|KABUPATEN)\s+/i', '', $post->city?->name ?? ''));
+        $cleanProv = trim(preg_replace('/^(PROV\.|PROVINSI)\s+/i', '', $post->province?->name ?? ''));
+
         $queryParts = [];
 
         // Add category prefix if not already present in the title
@@ -121,20 +124,24 @@ class PhotoScraperService
 
         $queryParts[] = $post->title;
 
-        if ($post->city?->name) {
-            $queryParts[] = $post->city->name;
+        if (!empty($cleanCity)) {
+            $queryParts[] = $cleanCity;
         }
-        if ($post->province?->name && (!$post->city || !str_contains($post->city->name, $post->province->name))) {
-            $queryParts[] = $post->province->name;
+
+        if (!empty($cleanProv) && strtolower($cleanProv) !== strtolower($cleanCity)) {
+            $queryParts[] = $cleanProv;
         }
+
+        // Anchor query to Indonesia to avoid foreign keywords/markets
+        $queryParts[] = 'Indonesia';
 
         $query = implode(' ', $queryParts);
 
         // Keep existing images if not replacing
         $existingImages = [];
         if (!$replaceExisting) {
-            $existingImages = $post->images()->pluck('image_url')->filter()->values()->all();
-            if (!empty($post->thumbnail) && !in_array($post->thumbnail, $existingImages)) {
+            $existingImages = $post->images()->pluck('image_url')->filter(fn ($u) => $this->isValidImageUrl($u))->values()->all();
+            if (!empty($post->thumbnail) && $this->isValidImageUrl($post->thumbnail) && !in_array($post->thumbnail, $existingImages)) {
                 $existingImages[] = $post->thumbnail;
             }
         }
@@ -159,6 +166,12 @@ class PhotoScraperService
             PostImage::where('post_id', $post->id)->delete();
             $existingCount = 0;
         } else {
+            // Delete previously saved invalid images if any
+            foreach ($post->images as $existingImage) {
+                if (!$this->isValidImageUrl($existingImage->image_url)) {
+                    $existingImage->delete();
+                }
+            }
             $existingCount = PostImage::where('post_id', $post->id)->count();
         }
 
@@ -180,9 +193,9 @@ class PhotoScraperService
 
         $totalPhotosNow = PostImage::where('post_id', $post->id)->count();
 
-        // Update post thumbnail if currently empty or if replaceExisting is enabled
+        // Update post thumbnail if currently empty or replacing
         $updateData = [];
-        if ((empty($post->thumbnail) || $replaceExisting) && !empty($photos[0])) {
+        if ((empty($post->thumbnail) || $replaceExisting || !$this->isValidImageUrl($post->thumbnail)) && !empty($photos[0])) {
             $updateData['thumbnail'] = $photos[0];
         }
 
@@ -214,9 +227,10 @@ class PhotoScraperService
     protected function getDuckDuckGoVQD(string $query): ?string
     {
         try {
-            $url = 'https://duckduckgo.com/?q=' . urlencode($query) . '&iax=images&ia=images';
+            $url = 'https://duckduckgo.com/?q=' . urlencode($query) . '&kl=id-id&kad=id_ID&iax=images&ia=images';
             $response = Http::withoutVerifying()->withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
             ])->timeout(10)->get($url);
 
             if (!$response->successful()) {
@@ -245,6 +259,7 @@ class PhotoScraperService
             'Referer' => 'https://duckduckgo.com/',
         ])->timeout(12)->get(self::DDG_IMAGE_SEARCH_URL, [
             'l' => 'id-id',
+            'kl' => 'id-id',
             'o' => 'json',
             'q' => $query,
             'vqd' => $vqd,
@@ -275,11 +290,11 @@ class PhotoScraperService
     }
 
     /**
-     * Bing Images HTML scraper (Same as tools/google-map-extractor)
+     * Bing Images HTML scraper
      */
     protected function scrapeFromBing(string $query, int $limit): array
     {
-        $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&form=HDRSC2&first=1';
+        $bingUrl = 'https://www.bing.com/images/search?q=' . urlencode($query) . '&cc=ID&setlang=id-ID&form=HDRSC2&first=1';
         $response = Http::withoutVerifying()->withHeaders([
             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -356,7 +371,7 @@ class PhotoScraperService
     }
 
     /**
-     * Strict validation for photo URLs to filter out cartoons, clipart, icons, vectors, and wallpapers.
+     * Strict validation for photo URLs to filter out cars, engines, auction marketplaces, cartoons, clipart, vectors, and wallpapers.
      */
     public function isValidImageUrl(?string $url, string $contextTitle = ''): bool
     {
@@ -372,16 +387,50 @@ class PhotoScraperService
             return false;
         }
 
+        $host = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
+        if (str_ends_with($host, '.jp') || str_contains($host, '.jp/')) {
+            return false;
+        }
+
         $lower = strtolower($url . ' ' . $contextTitle);
 
-        // Blacklisted keywords & domains for non-venue/cartoon/clipart/stock artifacts
+        // Blacklisted keywords & domains for irrelevant non-venue artifacts
         $blacklisted = [
-            'favicon', 'logo', 'icon.', 'icon-', '.ico', '.svg', '.gif',
-            'disney', 'cartoon', 'fandom.com', 'wikia.nocookie', 'anime',
+            // Generic graphics, logos & icons
+            'favicon', 'logo', 'icon.', 'icon-', '.ico', '.svg', '.gif', 'og-', 'og_image',
+            'avatar', 'placeholder', 'no-image', 'no_image', 'default-',
+            
+            // Cartoons, Anime, Games & Pets
+            'disney', 'cartoon', 'fandom.com', 'wikia.nocookie', 'anime', 'manga', 'battlecat', 'wikitide',
             'clipart', 'vector', 'drawing', 'coloring-page', 'coloring_page',
+            'cats.com', 'petpress.net', 'catway.net', 'catbreedselector', 'dogtime', 'thesprucepets',
+            'cat-breed', 'kitten', 'puppy',
+
+            // Stock photo & Wallpaper platforms
+            'pinimg.com', 'pinterest.com', 'craiyon.com', 'wallpapers.com',
             'pngwing', 'pngtree', 'freepik', 'cleanpng', 'stickers',
             'deviantart', 'fanart', 'pngimg', 'clipartkey', 'pinclipart',
-            'wallpapercave', 'wallpaperflare', 'alphacoders', 'desktopnexus'
+            'wallpapercave', 'wallpaperflare', 'alphacoders', 'desktopnexus',
+            'danbooru', 'zerochan', 'pixiv', 'flaticon', 'vexels',
+            'vecteezy', 'vectorstock', 'shutterstock', 'istockphoto', 'dreamstime', '123rf', 'depositphotos',
+
+            // Automotive, Engines, Auctions & Cars
+            'honda', 'n-box', 'nbox', 'toyota', 'daihatsu', 'suzuki', 'mitsubishi',
+            'yamaha', 'kawasaki', 'engine', 'sparepart', 'mesin-mobil', 'mobil-', 'motor-',
+            'hondacars', 'nboxforlife', 'autotrader', 'caranddriver', 'motor1', 'autoevolution',
+            'aucfree', 'afimg', 'ameba', 'celica', 'auction', 'lelang',
+
+            // Marketplaces & Auction Sites (Non-venue second hand items)
+            'yimg.jp', 'mercdn.net', 'mercari', 'yahoo.co.jp', 'rakuten', 'dmm.co.jp',
+            'tokopedia', 'shopee', 'lazada', 'bukalapak', 'ebay', 'amazon', 'aliexpress',
+            'alibaba', 'carousell', 'olx.co.id', 'blibli', 'zalora',
+
+            // Gossip / Celebrity / Foreign Cricket news
+            'zeenews', 'timesnownews', 'scoopwhoop', 'ndtvimg', 'uccricket', 'cricbuzz',
+            'espncricinfo', 'crictracker', 'sportskeeda', 'virat-kohli', 'karan-johar', 'bollywood',
+
+            // Clothing & apparel items
+            't-shirt', 'kaos', 'baju', 'sepatu', 'jaket', 'dress'
         ];
 
         foreach ($blacklisted as $bad) {
