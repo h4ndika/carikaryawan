@@ -77,6 +77,128 @@
       font-size: 14px;
     }
 
+    .filter-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-header h3 {
+      font-size: 16px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      background: white;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-filter {
+      padding: 10px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-filter:hover {
+      background: #5568d3;
+    }
+
+    .btn-reset {
+      padding: 10px 24px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-reset:hover {
+      background: #5a6268;
+    }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 16px;
+      font-size: 13px;
+    }
+
+    .filter-tag button {
+      background: none;
+      border: none;
+      color: #1976d2;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+    }
+
     .table-container {
       background: white;
       border-radius: 12px;
@@ -300,6 +422,121 @@
       <p>Total <%= total %> post • Halaman <%= currentPage %> dari <%= totalPages %></p>
     </div>
 
+    <!-- Filter Panel -->
+    <div class="filter-panel">
+      <div class="filter-header">
+        <h3>🔍 Filter Post</h3>
+      </div>
+
+      <form method="GET" action="/" id="filterForm">
+        <input type="hidden" name="page" value="1">
+        
+        <div class="filter-grid">
+          <!-- Status Foto -->
+          <div class="filter-group">
+            <label for="photo_status">Status Foto</label>
+            <select name="photo_status" id="photo_status">
+              <option value="">Semua</option>
+              <option value="<=1" <%= filters.photo_status === '<=1' ? 'selected' : '' %>>Foto ≤ 1 (Kurang)</option>
+              <option value=">1" <%= filters.photo_status === '>1' ? 'selected' : '' %>>Foto > 1 (Cukup)</option>
+            </select>
+          </div>
+
+          <!-- Status Post -->
+          <div class="filter-group">
+            <label for="status">Status Post</label>
+            <select name="status" id="status">
+              <option value="">Semua</option>
+              <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+              <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+            </select>
+          </div>
+
+          <!-- Category -->
+          <div class="filter-group">
+            <label for="category_id">Kategori</label>
+            <select name="category_id" id="category_id">
+              <option value="">Semua Kategori</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= filters.category_id == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Province -->
+          <div class="filter-group">
+            <label for="province_id">Provinsi</label>
+            <select name="province_id" id="province_id">
+              <option value="">Semua Provinsi</option>
+              <% provinces.forEach(prov => { %>
+                <option value="<%= prov.id %>" <%= filters.province_id == prov.id ? 'selected' : '' %>><%= prov.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- City -->
+          <div class="filter-group">
+            <label for="city_id">Kota</label>
+            <select name="city_id" id="city_id">
+              <option value="">Semua Kota</option>
+              <% cities.forEach(city => { %>
+                <option value="<%= city.id %>" <%= filters.city_id == city.id ? 'selected' : '' %>><%= city.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Date From -->
+          <div class="filter-group">
+            <label for="date_from">Dari Tanggal</label>
+            <input type="date" name="date_from" id="date_from" value="<%= filters.date_from %>">
+          </div>
+
+          <!-- Date To -->
+          <div class="filter-group">
+            <label for="date_to">Sampai Tanggal</label>
+            <input type="date" name="date_to" id="date_to" value="<%= filters.date_to %>">
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn-reset" onclick="resetFilters()">Reset Filter</button>
+          <button type="submit" class="btn-filter">Terapkan Filter</button>
+        </div>
+      </form>
+
+      <!-- Active Filters Display -->
+      <% 
+        const activeFilters = [];
+        if (filters.photo_status) activeFilters.push({ key: 'photo_status', label: 'Status Foto: ' + (filters.photo_status === '<=1' ? '≤ 1' : '> 1') });
+        if (filters.status) activeFilters.push({ key: 'status', label: 'Status: ' + filters.status });
+        if (filters.category_id) {
+          const cat = categories.find(c => c.id == filters.category_id);
+          if (cat) activeFilters.push({ key: 'category_id', label: 'Kategori: ' + cat.name });
+        }
+        if (filters.province_id) {
+          const prov = provinces.find(p => p.id == filters.province_id);
+          if (prov) activeFilters.push({ key: 'province_id', label: 'Provinsi: ' + prov.name });
+        }
+        if (filters.city_id) {
+          const city = cities.find(c => c.id == filters.city_id);
+          if (city) activeFilters.push({ key: 'city_id', label: 'Kota: ' + city.name });
+        }
+        if (filters.date_from) activeFilters.push({ key: 'date_from', label: 'Dari: ' + filters.date_from });
+        if (filters.date_to) activeFilters.push({ key: 'date_to', label: 'Sampai: ' + filters.date_to });
+      %>
+      
+      <% if (activeFilters.length > 0) { %>
+        <div class="active-filters">
+          <% activeFilters.forEach(filter => { %>
+            <span class="filter-tag">
+              <%= filter.label %>
+              <button onclick="removeFilter('<%= filter.key %>')" title="Hapus filter">×</button>
+            </span>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
     <div id="alertContainer"></div>
 
     <div class="table-container">
@@ -431,6 +668,17 @@
       } finally {
         loading.classList.remove('active');
       }
+    }
+
+    function resetFilters() {
+      window.location.href = '/';
+    }
+
+    function removeFilter(filterKey) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete(filterKey);
+      url.searchParams.set('page', '1');
+      window.location.href = url.toString();
     }
   </script>
 </body>

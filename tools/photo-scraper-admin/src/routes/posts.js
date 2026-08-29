@@ -12,13 +12,61 @@ router.get('/', requireAuth, async (req, res) => {
     const limit = 20;
     const offset = (page - 1) * limit;
 
-    // Get total count
-    const [countResult] = await db.query('SELECT COUNT(*) as total FROM posts');
+    // Get filter parameters
+    const filters = {
+      status: req.query.status || '',
+      category_id: req.query.category_id || '',
+      city_id: req.query.city_id || '',
+      province_id: req.query.province_id || '',
+      photo_status: req.query.photo_status || '',
+      date_from: req.query.date_from || '',
+      date_to: req.query.date_to || '',
+    };
+
+    // Build WHERE clause
+    const whereClauses = [];
+    const queryParams = [];
+
+    if (filters.status) {
+      whereClauses.push('p.status = ?');
+      queryParams.push(filters.status);
+    }
+
+    if (filters.category_id) {
+      whereClauses.push('p.category_id = ?');
+      queryParams.push(filters.category_id);
+    }
+
+    if (filters.city_id) {
+      whereClauses.push('p.city_id = ?');
+      queryParams.push(filters.city_id);
+    }
+
+    if (filters.province_id) {
+      whereClauses.push('p.province_id = ?');
+      queryParams.push(filters.province_id);
+    }
+
+    if (filters.date_from) {
+      whereClauses.push('DATE(p.created_at) >= ?');
+      queryParams.push(filters.date_from);
+    }
+
+    if (filters.date_to) {
+      whereClauses.push('DATE(p.created_at) <= ?');
+      queryParams.push(filters.date_to);
+    }
+
+    const whereSQL = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
+
+    // Get total count with filters
+    const countQuery = `SELECT COUNT(*) as total FROM posts p ${whereSQL}`;
+    const [countResult] = await db.query(countQuery, queryParams);
     const total = countResult[0].total;
     const totalPages = Math.ceil(total / limit);
 
-    // Get posts with relations
-    const [posts] = await db.query(`
+    // Get posts with relations and filters
+    const postsQuery = `
       SELECT 
         p.id,
         p.title,
@@ -34,15 +82,35 @@ router.get('/', requireAuth, async (req, res) => {
       LEFT JOIN categories c ON p.category_id = c.id
       LEFT JOIN cities ci ON p.city_id = ci.id
       LEFT JOIN provinces pr ON p.province_id = pr.id
+      ${whereSQL}
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
-    `, [limit, offset]);
+    `;
+    
+    const [posts] = await db.query(postsQuery, [...queryParams, limit, offset]);
+
+    // Apply photo status filter (after fetch because it's computed)
+    let filteredPosts = posts;
+    if (filters.photo_status === '<=1') {
+      filteredPosts = posts.filter(p => p.images_count <= 1);
+    } else if (filters.photo_status === '>1') {
+      filteredPosts = posts.filter(p => p.images_count > 1);
+    }
+
+    // Get filter options
+    const [categories] = await db.query('SELECT id, name FROM categories ORDER BY name ASC');
+    const [provinces] = await db.query('SELECT id, name FROM provinces ORDER BY name ASC');
+    const [cities] = await db.query('SELECT id, name FROM cities ORDER BY name ASC');
 
     res.render('posts/index', {
-      posts,
+      posts: filteredPosts,
       currentPage: page,
       totalPages,
-      total,
+      total: filteredPosts.length,
+      filters,
+      categories,
+      provinces,
+      cities,
     });
   } catch (error) {
     console.error('Posts list error:', error);
