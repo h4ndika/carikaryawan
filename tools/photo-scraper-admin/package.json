@@ -1,0 +1,26 @@
+{
+  "name": "photo-scraper-admin",
+  "version": "1.0.0",
+  "description": "Standalone Photo Scraper Admin Panel for Disekitar",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "keywords": ["photo-scraper", "admin-panel", "disekitar"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mysql2": "^3.6.5",
+    "bcryptjs": "^2.4.3",
+    "ejs": "^3.1.9",
+    "dotenv": "^16.3.1",
+    "apify-client": "^2.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
