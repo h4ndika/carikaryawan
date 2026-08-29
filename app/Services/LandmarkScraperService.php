@@ -53,49 +53,119 @@ class LandmarkScraperService
 Kamu adalah sistem kurasi geospasial dan landmark terpercaya untuk Indonesia.
 Tugasmu adalah menghasilkan data daftar landmark dan titik transit paling penting, strategis, dan populer di wilayah kota yang diminta.
 
-Format output WAJIB HANYA berupa JSON Array murni valid tanpa markdown backticks, tanpa kata pengantar atau penutup.
+Format output WAJIB HANYA berupa JSON Object murni yang valid tanpa markdown code fences, tanpa kata pengantar atau penutup.
 
-Struktur JSON setiap item:
-[
-  {
-    "name": "Nama Lengkap Landmark (misal: Stasiun Bandung)",
-    "type": "transit_station | airport | tourist_attraction | shopping_mall | university | public_square | cultural_landmark",
-    "latitude": -6.9144444,
-    "longitude": 107.6025,
-    "default_radius_km": 3.0,
-    "description": "Deskripsi editorial informatif 2-3 kalimat mengenai landmark ini dan daya tariknya.",
-    "meta_title": "Tempat Menarik di Sekitar [Nama Landmark] ([Nama Kota]) — DISEKITAR",
-    "meta_description": "Rekomendasi hotel, kafe, dan kuliner terdekat dalam radius [radius] km di sekitar [Nama Landmark], [Nama Kota]."
-  }
-]
+Format struktur JSON:
+{
+  "landmarks": [
+    {
+      "name": "Nama Lengkap Landmark (misal: Stasiun Bandung)",
+      "type": "transit_station | airport | tourist_attraction | shopping_mall | university | public_square | cultural_landmark",
+      "latitude": -6.9144444,
+      "longitude": 107.6025,
+      "default_radius_km": 3.0,
+      "description": "Deskripsi editorial informatif 2-3 kalimat mengenai landmark ini dan daya tariknya.",
+      "meta_title": "Tempat Menarik di Sekitar [Nama Landmark] ([Nama Kota]) — DISEKITAR",
+      "meta_description": "Rekomendasi hotel, kafe, dan kuliner terdekat dalam radius [radius] km di sekitar [Nama Landmark], [Nama Kota]."
+    }
+  ]
+}
 PROMPT;
 
         $userPrompt = "Berikan {$limit} landmark paling populer & strategis di {$cityName}, Provinsi {$provinceName}, Indonesia. {$focusTypesStr} Pastikan koordinat latitude dan longitude akurat.";
 
         try {
-            $response = OpenAI::chat()->create([
-                'model' => config('openai.model', 'gpt-4o-mini'),
-                'messages' => [
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => $userPrompt],
-                ],
-                'temperature' => 0.2,
-            ]);
+            $baseUri = config('openai.base_uri') ?: 'https://api.openai.com/v1';
+            if (!str_starts_with($baseUri, 'http://') && !str_starts_with($baseUri, 'https://')) {
+                $baseUri = 'https://' . $baseUri;
+            }
+            $endpoint = rtrim($baseUri, '/') . '/chat/completions';
 
-            $rawContent = trim($response->choices[0]->message->content ?? '');
+            $apiKey = config('openai.api_key');
+            $headers = [
+                'Authorization' => "Bearer {$apiKey}",
+                'Content-Type' => 'application/json',
+            ];
 
-            // Clean markdown codeblocks if AI wraps it
-            $cleanedJson = preg_replace('/^```(?:json)?\s*/i', '', $rawContent);
-            $cleanedJson = preg_replace('/\s*```$/', '', $cleanedJson);
+            if ($org = config('openai.organization')) {
+                $headers['OpenAI-Organization'] = $org;
+            }
+            if ($project = config('openai.project')) {
+                $headers['OpenAI-Project'] = $project;
+            }
 
-            $decoded = json_decode(trim($cleanedJson), true);
+            $model = config('openai.model_landmark') ?: config('openai.model', 'gpt-4o-mini');
 
-            if (!is_array($decoded) || empty($decoded)) {
-                throw new RuntimeException("Gagal membaca struktur JSON dari response AI: " . Str::limit($rawContent, 200));
+            $httpResponse = Http::withHeaders($headers)
+                ->timeout(120)
+                ->post($endpoint, [
+                    'model' => $model,
+                    'messages' => [
+                        ['role' => 'system', 'content' => $systemPrompt],
+                        ['role' => 'user', 'content' => $userPrompt],
+                    ],
+                    'temperature' => 0.2,
+                    'stream' => false,
+                ]);
+
+            if (!$httpResponse->successful()) {
+                $err = $httpResponse->json('error.message') ?? $httpResponse->body();
+                throw new RuntimeException("API AI Error ({$httpResponse->status()}): " . Str::limit($err, 300));
+            }
+
+            $rawContent = $this->parseAiResponseContent($httpResponse->body());
+
+            // 1. Clean reasoning tags if any
+            $cleaned = preg_replace('/<think>[\s\S]*?<\/think>/i', '', $rawContent);
+            $cleaned = preg_replace('/<thought>[\s\S]*?<\/thought>/i', '', $cleaned);
+
+            // 2. Remove all markdown code fences
+            $cleaned = preg_replace('/```(?:json)?/i', '', $cleaned);
+            $cleaned = str_replace('```', '', $cleaned);
+
+            // 3. Extract JSON array or object between first and last bracket/brace
+            $firstBracket = strpos($cleaned, '[');
+            $firstBrace = strpos($cleaned, '{');
+
+            if ($firstBracket !== false && ($firstBrace === false || $firstBracket < $firstBrace)) {
+                $lastBracket = strrpos($cleaned, ']');
+                if ($lastBracket !== false && $lastBracket > $firstBracket) {
+                    $cleaned = substr($cleaned, $firstBracket, $lastBracket - $firstBracket + 1);
+                }
+            } elseif ($firstBrace !== false) {
+                $lastBrace = strrpos($cleaned, '}');
+                if ($lastBrace !== false && $lastBrace > $firstBrace) {
+                    $cleaned = substr($cleaned, $firstBrace, $lastBrace - $firstBrace + 1);
+                }
+            }
+
+            // 4. Fix trailing commas before closing brackets/braces
+            $cleaned = preg_replace('/,\s*([\]}])/m', '$1', $cleaned);
+
+            $decoded = json_decode(trim($cleaned), true);
+
+            // Normalize decoded structure
+            $items = [];
+            if (is_array($decoded)) {
+                if (isset($decoded['landmarks']) && is_array($decoded['landmarks'])) {
+                    $items = $decoded['landmarks'];
+                } elseif (isset($decoded[0])) {
+                    $items = $decoded;
+                }
+            }
+
+            if (empty($items)) {
+                $jsonErr = json_last_error_msg();
+                Log::warning('Landmark AI Parse Failed', [
+                    'raw' => $rawContent,
+                    'cleaned' => $cleaned,
+                    'json_error' => $jsonErr,
+                ]);
+                throw new RuntimeException("Gagal membaca struktur JSON dari response AI ({$jsonErr}): " . Str::limit($rawContent, 200));
             }
 
             $results = [];
-            foreach ($decoded as $item) {
+            foreach ($items as $item) {
                 if (empty($item['name']) || !isset($item['latitude']) || !isset($item['longitude'])) {
                     continue;
                 }
@@ -457,4 +527,54 @@ QL;
             'total' => count($landmarks),
         ];
     }
+
+    /**
+     * Extract full content text from standard OpenAI JSON response or SSE text/event-stream chunks.
+     */
+    public function parseAiResponseContent(string $rawBody): string
+    {
+        $rawBody = trim($rawBody);
+        if ($rawBody === '') {
+            return '';
+        }
+
+        // Standard single JSON payload
+        if (str_starts_with($rawBody, '{')) {
+            $json = json_decode($rawBody, true);
+            if (isset($json['choices'][0]['message']['content'])) {
+                return (string) $json['choices'][0]['message']['content'];
+            }
+            if (isset($json['choices'][0]['text'])) {
+                return (string) $json['choices'][0]['text'];
+            }
+        }
+
+        // SSE text/event-stream chunks (data: {...}\n\ndata: {...})
+        $assembled = '';
+        $lines = preg_split('/\r\n|\r|\n/', $rawBody);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!str_starts_with($line, 'data:')) {
+                continue;
+            }
+            $dataStr = trim(substr($line, 5));
+            if ($dataStr === '[DONE]' || $dataStr === '') {
+                continue;
+            }
+            $chunk = json_decode($dataStr, true);
+            if (!is_array($chunk)) {
+                continue;
+            }
+            if (isset($chunk['choices'][0]['delta']['content'])) {
+                $assembled .= $chunk['choices'][0]['delta']['content'];
+            } elseif (isset($chunk['choices'][0]['text'])) {
+                $assembled .= $chunk['choices'][0]['text'];
+            } elseif (isset($chunk['choices'][0]['message']['content'])) {
+                $assembled .= $chunk['choices'][0]['message']['content'];
+            }
+        }
+
+        return trim($assembled);
+    }
 }
+

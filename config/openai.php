@@ -48,6 +48,7 @@ return [
     | Contoh: gpt-4o-mini, deepseek-chat, llama-3.3-70b-versatile
     */
     'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+    'model_landmark' => env('OPENAI_MODEL_LANDMARK', env('OPENAI_MODEL', 'gpt-4o-mini')),
 
     /*
     |--------------------------------------------------------------------------

@@ -131,18 +131,46 @@ class PostAiContentService
     {
         $finalPrompt = $this->buildPrompt($post, $additionalPrompt);
 
-        $response = OpenAI::chat()->create([
-            'model' => config('openai.model', 'gpt-4o-mini'),
-            'messages' => [
-                ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
-                ['role' => 'user', 'content' => $finalPrompt],
-            ],
-            'temperature' => 0.7,
-            'max_tokens' => 3000,
-            'stream' => false,
-        ]);
+        $baseUri = config('openai.base_uri') ?: 'https://api.openai.com/v1';
+        if (!str_starts_with($baseUri, 'http://') && !str_starts_with($baseUri, 'https://')) {
+            $baseUri = 'https://' . $baseUri;
+        }
+        $endpoint = rtrim($baseUri, '/') . '/chat/completions';
 
-        $rawGenerated = $response->choices[0]->message->content ?? '';
+        $apiKey = config('openai.api_key');
+        $headers = [
+            'Authorization' => "Bearer {$apiKey}",
+            'Content-Type' => 'application/json',
+        ];
+
+        if ($org = config('openai.organization')) {
+            $headers['OpenAI-Organization'] = $org;
+        }
+        if ($project = config('openai.project')) {
+            $headers['OpenAI-Project'] = $project;
+        }
+
+        $model = config('openai.model', 'gpt-4o-mini');
+
+        $httpResponse = Http::withHeaders($headers)
+            ->timeout(180)
+            ->post($endpoint, [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
+                    ['role' => 'user', 'content' => $finalPrompt],
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 3000,
+                'stream' => false,
+            ]);
+
+        if (!$httpResponse->successful()) {
+            $err = $httpResponse->json('error.message') ?? $httpResponse->body();
+            throw new RuntimeException("API AI Error ({$httpResponse->status()}): " . Str::limit($err, 300));
+        }
+
+        $rawGenerated = $this->parseAiResponseContent($httpResponse->body());
 
         return $this->applyGeneratedContent($post, $rawGenerated, $publishOnComplete);
     }
@@ -262,8 +290,7 @@ class PostAiContentService
                 }
 
                 try {
-                    $jsonBody = $res->json();
-                    $rawGenerated = $jsonBody['choices'][0]['message']['content'] ?? '';
+                    $rawGenerated = self::parseAiResponseContent($res->body());
 
                     $this->applyGeneratedContent($job->post, $rawGenerated, (bool) $job->publish_on_complete);
 
@@ -288,6 +315,55 @@ class PostAiContentService
             'completed' => $completed,
             'failed' => $failed,
         ];
+    }
+
+    /**
+     * Extract full content text from standard OpenAI JSON response or SSE text/event-stream chunks.
+     */
+    public static function parseAiResponseContent(string $rawBody): string
+    {
+        $rawBody = trim($rawBody);
+        if ($rawBody === '') {
+            return '';
+        }
+
+        // Standard single JSON payload
+        if (str_starts_with($rawBody, '{')) {
+            $json = json_decode($rawBody, true);
+            if (isset($json['choices'][0]['message']['content'])) {
+                return (string) $json['choices'][0]['message']['content'];
+            }
+            if (isset($json['choices'][0]['text'])) {
+                return (string) $json['choices'][0]['text'];
+            }
+        }
+
+        // SSE text/event-stream chunks (data: {...}\n\ndata: {...})
+        $assembled = '';
+        $lines = preg_split('/\r\n|\r|\n/', $rawBody);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (!str_starts_with($line, 'data:')) {
+                continue;
+            }
+            $dataStr = trim(substr($line, 5));
+            if ($dataStr === '[DONE]' || $dataStr === '') {
+                continue;
+            }
+            $chunk = json_decode($dataStr, true);
+            if (!is_array($chunk)) {
+                continue;
+            }
+            if (isset($chunk['choices'][0]['delta']['content'])) {
+                $assembled .= $chunk['choices'][0]['delta']['content'];
+            } elseif (isset($chunk['choices'][0]['text'])) {
+                $assembled .= $chunk['choices'][0]['text'];
+            } elseif (isset($chunk['choices'][0]['message']['content'])) {
+                $assembled .= $chunk['choices'][0]['message']['content'];
+            }
+        }
+
+        return trim($assembled);
     }
 
     /**

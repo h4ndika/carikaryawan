@@ -185,10 +185,36 @@ class GoogleMapsImportService
                 $this->stats['imported']++;
             }
 
+            // Extract all Google Maps image URLs
+            $mapsImages = self::extractImageUrls($data);
+
+            // Parallel multi-source scraping (Bing, DuckDuckGo, Apify) to enrich photos
+            $combinedImages = $mapsImages;
+            if (!empty($data['title'])) {
+                try {
+                    $photoScraper = app(PhotoScraperService::class);
+                    $queryStr = $data['title'];
+                    if (!empty($data['address'])) {
+                        $queryStr .= ' ' . $data['address'];
+                    }
+                    $combinedImages = $photoScraper->scrapePhotos($queryStr, 12, [
+                        'place_id' => $data['placeId'] ?? null,
+                        'existing_photos' => $mapsImages,
+                    ]);
+                } catch (\Throwable) {
+                    $combinedImages = $mapsImages;
+                }
+            }
+
             // Save related data
             if ($postId) {
-                $this->savePostImages($postId, $data['imageUrls'] ?? []);
+                $this->savePostImages($postId, $combinedImages);
                 $this->savePostDetails($postId, $data);
+
+                // Ensure post thumbnail is set if currently empty
+                if (!empty($combinedImages[0])) {
+                    Post::where('id', $postId)->whereNull('thumbnail')->update(['thumbnail' => $combinedImages[0]]);
+                }
             }
 
         } catch (\Exception $e) {
@@ -253,7 +279,7 @@ class GoogleMapsImportService
             'cid' => $data['cid'] ?? null,
 
             // Use first image as thumbnail
-            'thumbnail' => $data['imageUrls'][0] ?? null,
+            'thumbnail' => self::extractImageUrls($data)[0] ?? null,
         ];
     }
 
@@ -514,10 +540,62 @@ class GoogleMapsImportService
     }
 
     /**
-     * Get current statistics
+     * Extract normalized image URLs from various Apify/Google Maps data structures.
      */
-    public function getStats(): array
+    public static function extractImageUrls(array $data): array
     {
-        return $this->stats;
+        $list = [];
+
+        // Check all possible photo keys in Apify / Google Places data
+        $candidates = [
+            $data['imageUrls'] ?? null,
+            $data['images'] ?? null,
+            $data['photos'] ?? null,
+            $data['placePhotos'] ?? null,
+            $data['photoUrls'] ?? null,
+            $data['imageUrl'] ?? null,
+            $data['image'] ?? null,
+            $data['photo'] ?? null,
+            $data['featuredImage'] ?? null,
+            $data['coverImage'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (empty($candidate)) {
+                continue;
+            }
+
+            if (is_string($candidate)) {
+                // If it's a JSON string, try decoding it
+                if (str_starts_with($candidate, '[') || str_starts_with($candidate, '{')) {
+                    $decoded = json_decode($candidate, true);
+                    if (is_array($decoded)) {
+                        $candidate = $decoded;
+                    }
+                }
+            }
+
+            if (is_array($candidate)) {
+                foreach ($candidate as $item) {
+                    if (is_string($item) && filter_var($item, FILTER_VALIDATE_URL)) {
+                        $list[] = $item;
+                    } elseif (is_array($item)) {
+                        $url = $item['url'] ?? $item['imageUrl'] ?? $item['photoUrl'] ?? $item['image'] ?? $item['link'] ?? null;
+                        if ($url && is_string($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+                            $list[] = $url;
+                        }
+                    }
+                }
+            } elseif (is_string($candidate) && filter_var($candidate, FILTER_VALIDATE_URL)) {
+                $list[] = $candidate;
+            }
+        }
+
+        return array_values(array_unique(array_filter($list, function ($url) {
+            if (!is_string($url) || str_starts_with($url, 'data:')) return false;
+            $lower = strtolower($url);
+            return !str_contains($lower, 'favicon') && !str_contains($lower, 'logo');
+        })));
     }
 }
+
