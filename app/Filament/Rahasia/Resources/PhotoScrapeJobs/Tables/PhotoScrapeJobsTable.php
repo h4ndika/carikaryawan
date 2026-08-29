@@ -8,11 +8,14 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class PhotoScrapeJobsTable
@@ -55,7 +58,7 @@ class PhotoScrapeJobsTable
                 TextColumn::make('photos_count')
                     ->label('Foto Didapat')
                     ->badge()
-                    ->color(fn (int $state): string => $state > 0 ? 'success' : 'gray'),
+                    ->color(fn (int $state): string => $state > 1 ? 'success' : ($state === 1 ? 'warning' : 'danger')),
 
                 TextColumn::make('limit')
                     ->label('Target Foto')
@@ -96,6 +99,27 @@ class PhotoScrapeJobsTable
                         'completed' => 'Selesai',
                         'failed' => 'Gagal',
                     ]),
+
+                Filter::make('photos_count')
+                    ->form([
+                        Select::make('photos_range')
+                            ->label('Foto Didapat')
+                            ->options([
+                                'lte_1' => '<= 1 Foto (Kurang / Gagal)',
+                                'gt_1' => '> 1 Foto (Lengkap / Berhasil)',
+                            ]),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                ($data['photos_range'] ?? null) === 'lte_1',
+                                fn (Builder $q) => $q->where('photos_count', '<=', 1)
+                            )
+                            ->when(
+                                ($data['photos_range'] ?? null) === 'gt_1',
+                                fn (Builder $q) => $q->where('photos_count', '>', 1)
+                            );
+                    }),
             ])
             ->recordActions([
                 Action::make('retry')
