@@ -83,31 +83,39 @@ class PostAiContentService
         $plainText = strip_tags($cleanContent);
         $excerpt = $post->excerpt ?: Str::limit($plainText, 160);
 
-        // Update Post
-        $updateData = [
-            'content' => $cleanContent,
-            'excerpt' => $excerpt,
-        ];
+        \Illuminate\Support\Facades\DB::transaction(function () use ($post, $cleanContent, $excerpt, $publishOnComplete, $detailsArray) {
+            // Update Post
+            $updateData = [
+                'content' => $cleanContent,
+                'excerpt' => $excerpt,
+            ];
 
-        if ($publishOnComplete) {
-            $updateData['status'] = 'published';
-            if (is_null($post->published_at)) {
-                $updateData['published_at'] = now();
+            if ($publishOnComplete) {
+                $updateData['status'] = 'published';
+                if (is_null($post->published_at)) {
+                    $updateData['published_at'] = now();
+                }
             }
-        }
 
-        $post->update($updateData);
+            $post->update($updateData);
 
-        // Sync Details
-        if (!empty($detailsArray)) {
-            $post->details()->delete();
-            foreach ($detailsArray as $detail) {
-                $post->details()->create([
-                    'meta_key' => $detail['meta_key'],
-                    'meta_value' => $detail['meta_value'],
-                ]);
+            // Sync Details using single batch insert
+            if (!empty($detailsArray)) {
+                \App\Models\PostDetail::where('post_id', $post->id)->forceDelete();
+                $now = now();
+                $insertRows = [];
+                foreach ($detailsArray as $detail) {
+                    $insertRows[] = [
+                        'post_id' => $post->id,
+                        'meta_key' => (string) $detail['meta_key'],
+                        'meta_value' => (string) $detail['meta_value'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+                \App\Models\PostDetail::insert($insertRows);
             }
-        }
+        });
 
         return [
             'content' => $cleanContent,
@@ -184,14 +192,12 @@ class PostAiContentService
         $chunks = $aiJobs->chunk(max(1, $concurrency));
 
         foreach ($chunks as $chunk) {
-            // Mark all jobs in this chunk as processing
-            foreach ($chunk as $job) {
-                $job->update([
-                    'status' => 'processing',
-                    'started_at' => now(),
-                    'error_message' => null,
-                ]);
-            }
+            // Mark all jobs in this chunk as processing in ONE fast query
+            AiGenerationJob::whereIn('id', $chunk->pluck('id'))->update([
+                'status' => 'processing',
+                'started_at' => now(),
+                'error_message' => null,
+            ]);
 
             // Dispatch concurrent requests via HTTP Pool
             $responses = Http::pool(function (Pool $pool) use ($chunk, $endpoint, $headers, $model) {
@@ -292,12 +298,12 @@ class PostAiContentService
         $text = $raw;
 
         // 1. Remove reasoning / thought tags (<think>...</think>, <thought>...</thought>, including unclosed ones)
-        $text = preg_replace('/<think>.*?(?:<\/think>|$)/is', '', $text);
-        $text = preg_replace('/<thought>.*?(?:<\/thought>|$)/is', '', $text);
+        $text = preg_replace('/<think>[\s\S]*?(?:<\/think>|$)/i', '', $text);
+        $text = preg_replace('/<thought>[\s\S]*?(?:<\/thought>|$)/i', '', $text);
 
         // 2. Remove markdown code fences
         $text = preg_replace('/^```(?:html)?\s*/i', '', $text);
-        $text = preg_replace('/```$/', '', $text);
+        $text = preg_replace('/\s*```$/', '', $text);
 
         // 3. Extract JSON details before cleaning HTML
         $detailsArray = [];
@@ -311,10 +317,10 @@ class PostAiContentService
                     ];
                 }
             }
-            $text = preg_replace('/<json>.*?(?:<\/json>|$)/is', '', $text);
+            $text = preg_replace('/<json>[\s\S]*?(?:<\/json>|$)/is', '', $text);
         }
 
-        // 4. Strip English reasoning preambles or conversational filler before the first real HTML heading or paragraph
+        // 4. Strip reasoning preambles or conversational filler before the first real HTML heading or paragraph
         if (preg_match('/(<h[1-3][^>]*>[\s\S]*?<\/h[1-3]>)/i', $text, $headingMatch, PREG_OFFSET_CAPTURE)) {
             $headingPos = $headingMatch[0][1];
             $text = substr($text, $headingPos);
@@ -326,10 +332,7 @@ class PostAiContentService
             }
         }
 
-        // 5. Bersihkan sisa-sisa pola reasoning umum jika masih terselip di awal
-        $text = preg_replace('/^(?:\s*(?:Okay,?\s+so|Alright,?\s+|Thinking Process|The user wants|The user is asking|I will write|I need to|First,?\s+I\'ll|Let\'s create|Let\'s break down|We need to|Here is|Here\'s|Berikut adalah|Tentu|Baiklah|Sure|Certainly)[^\n<]*\n+)+/is', '', $text);
-
-        // 6. Remove conversational closing sentences
+        // 5. Remove conversational closing sentences
         $closingPatterns = [
             '/<p>\s*(?:Semoga|Hope this|Let me know|Demikian|Sekian).*?<\/p>\s*$/is',
             '/(?:Semoga bermanfaat|Hope this helps|Let me know if you need).*$/is',
