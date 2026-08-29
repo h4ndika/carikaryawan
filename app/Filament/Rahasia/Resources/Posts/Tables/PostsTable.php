@@ -66,7 +66,18 @@ class PostsTable
                         default => 'danger',
                     })
                     ->formatStateUsing(fn (int $state): string => "{$state} Foto")
-                    ->tooltip(fn (Post $record) => $record->images()->count() <= 1 ? 'Foto masih kurang (< 2 foto)' : 'Foto lengkap'),
+                    ->tooltip('Klik untuk melihat galeri foto')
+                    ->action(
+                        Action::make('previewPhotos')
+                            ->modalHeading(fn (Post $record) => "Galeri Foto: {$record->title}")
+                            ->modalWidth('4xl')
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Tutup')
+                            ->modalContent(fn (Post $record) => view('filament.components.post-photos-preview-modal', [
+                                'post' => $record,
+                                'images' => $record->images()->orderBy('order')->get(),
+                            ]))
+                    ),
 
                 TextColumn::make('excerpt')
                     ->searchable()
