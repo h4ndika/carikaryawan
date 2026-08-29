@@ -66,12 +66,26 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
                     publishOnComplete: (bool) $job->publish_on_complete
                 );
 
-                $job->update([
-                    'status' => 'completed',
-                    'photos_count' => $result['count'] ?? 0,
-                    'error_message' => empty($result['count']) ? ($result['message'] ?? '0 foto ditemukan') : null,
-                    'finished_at' => now(),
-                ]);
+                $count = $result['count'] ?? 0;
+                $total = $result['total'] ?? $count;
+
+                if ($total <= 1) {
+                    $job->update([
+                        'status' => 'failed',
+                        'photos_count' => $count,
+                        'error_message' => $count === 0 
+                            ? 'Tidak ada foto yang ditemukan dari semua sumber.' 
+                            : 'Hanya 1 foto ditemukan (minimal 2 foto agar valid).',
+                        'finished_at' => now(),
+                    ]);
+                } else {
+                    $job->update([
+                        'status' => 'completed',
+                        'photos_count' => $count,
+                        'error_message' => null,
+                        'finished_at' => now(),
+                    ]);
+                }
             } catch (Throwable $e) {
                 Log::error("Photo scrape failed for Job #{$job->id} (Post #{$post->id}): " . $e->getMessage());
                 $job->update([

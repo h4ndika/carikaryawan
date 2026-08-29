@@ -181,13 +181,15 @@ class PhotoScraperService
             $insertedCount++;
         }
 
+        $totalPhotosNow = PostImage::where('post_id', $post->id)->count();
+
         // Update post thumbnail if currently empty
         $updateData = [];
         if (empty($post->thumbnail) && !empty($photos[0])) {
             $updateData['thumbnail'] = $photos[0];
         }
 
-        if ($publishOnComplete) {
+        if ($publishOnComplete && $totalPhotosNow >= 2) {
             $updateData['status'] = 'published';
             if (empty($post->published_at)) {
                 $updateData['published_at'] = now();
@@ -198,11 +200,11 @@ class PhotoScraperService
             $post->update($updateData);
         }
 
-        $totalPhotosNow = PostImage::where('post_id', $post->id)->count();
-
         return [
-            'success' => true,
-            'message' => "Berhasil menambahkan {$insertedCount} foto baru (Total: {$totalPhotosNow} foto).",
+            'success' => $totalPhotosNow >= 2,
+            'message' => $totalPhotosNow >= 2 
+                ? "Berhasil menambahkan {$insertedCount} foto baru (Total: {$totalPhotosNow} foto)."
+                : "Foto masih kurang (hanya {$totalPhotosNow} foto).",
             'count' => $insertedCount,
             'total' => $totalPhotosNow,
             'photos' => $photos,
