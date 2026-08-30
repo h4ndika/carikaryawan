@@ -157,9 +157,9 @@ class PhotoScraperService
 
         $totalPhotosNow = PostImage::where('post_id', $post->id)->count();
 
-        // Update post thumbnail if currently empty or replacing
+        // Always update post thumbnail with the first scraped photo
         $updateData = [];
-        if ((empty($post->thumbnail) || $replaceExisting || !$this->isValidImageUrl($post->thumbnail)) && !empty($photos[0])) {
+        if (!empty($photos[0])) {
             $updateData['thumbnail'] = $photos[0];
         }
 
