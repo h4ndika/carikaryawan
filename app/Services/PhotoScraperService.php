@@ -359,7 +359,12 @@ class PhotoScraperService
         $images = [];
 
         foreach ($items as $item) {
-            $imgUrl = $item['photoUrl'] ?? $item['photo_url_large'] ?? $item['photo_url'] ?? $item['url'] ?? $item['imageUrl'] ?? $item['thumbnailUrl'] ?? null;
+            // Ignore non-photo records if type is specified
+            if (isset($item['type']) && $item['type'] !== 'photo') {
+                continue;
+            }
+
+            $imgUrl = $item['imageUrl'] ?? $item['photoUrl'] ?? $item['photo_url_large'] ?? $item['photo_url'] ?? $item['thumbnailUrl'] ?? $item['url'] ?? null;
             if ($imgUrl && $this->isValidImageUrl($imgUrl)) {
                 $images[] = $imgUrl;
             }

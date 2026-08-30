@@ -60,7 +60,10 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
           const items = dataset.items || [];
           
           for (const item of items) {
-            const photoUrl = item.photoUrl || item.photo_url_large || item.photo_url || item.url || item.imageUrl || item.thumbnailUrl;
+            // Ignore non-photo records if type is specified
+            if (item.type && item.type !== 'photo') continue;
+
+            const photoUrl = item.imageUrl || item.photoUrl || item.photo_url_large || item.photo_url || item.thumbnailUrl || item.url;
             if (photoUrl && isValidImageUrl(photoUrl)) {
               images.add(photoUrl);
               if (images.size >= limit) {
