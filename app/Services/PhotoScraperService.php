@@ -126,6 +126,18 @@ class PhotoScraperService
             ];
         }
 
+        return $this->attachPhotosToPost($post, $photos, $replaceExisting, $publishOnComplete);
+    }
+
+    /**
+     * Attach an array of photo URLs to a Post and post_images table.
+     */
+    public function attachPhotosToPost(
+        Post $post,
+        array $photos,
+        bool $replaceExisting = false,
+        bool $publishOnComplete = false
+    ): array {
         if ($replaceExisting) {
             PostImage::where('post_id', $post->id)->delete();
             $existingCount = 0;
@@ -175,13 +187,12 @@ class PhotoScraperService
         }
 
         return [
-            'success' => $totalPhotosNow >= 2,
-            'message' => $totalPhotosNow >= 2 
+            'success' => $totalPhotosNow >= 1,
+            'message' => $totalPhotosNow >= 1 
                 ? "Berhasil menambahkan {$insertedCount} foto baru (Total: {$totalPhotosNow} foto)."
-                : "Foto masih kurang (hanya {$totalPhotosNow} foto).",
+                : "Hanya tersimpan {$totalPhotosNow} foto.",
             'count' => $insertedCount,
             'total' => $totalPhotosNow,
-            'photos' => $photos,
         ];
     }
 
@@ -309,20 +320,40 @@ class PhotoScraperService
     }
 
     /**
-     * Apify actor photo scraper (lurkapi/google-maps-photos-and-videos-scraper)
+     * Get active Apify token from database or config.
      */
-    protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
+    public function getApifyToken(): ?string
     {
+        $acc = ApifyAccount::getNextActiveAccount();
+        return $acc?->token ?? config('services.apify.token') ?? env('APIFY_TOKEN');
+    }
+
+    /**
+     * Scrape multiple places in parallel using 1 Apify actor run.
+     *
+     * @param array<string> $placeIds
+     * @param string $token
+     * @param int $limitPerPlace
+     * @return array<string, array<string>> Keyed by place_id => array of photo URLs
+     */
+    public function scrapeBatchFromApifyActor(array $placeIds, string $token, int $limitPerPlace = 8): array
+    {
+        $placeIds = array_values(array_filter(array_unique($placeIds)));
+        if (empty($placeIds)) {
+            return [];
+        }
+
         $actorId = 'KpQF2B9mcQFkExt8X';
-        $url = "https://api.apify.com/v2/acts/{$actorId}/run-sync-get-dataset-items?timeout=90&memory=2048";
+        $timeout = max(120, count($placeIds) * 15);
+        $url = "https://api.apify.com/v2/acts/{$actorId}/run-sync-get-dataset-items?timeout={$timeout}&memory=2048";
 
         $response = Http::withoutVerifying()->withToken($token)
-            ->timeout(105)
+            ->timeout($timeout + 20)
             ->post($url, [
                 'categories' => ['all'],
                 'imageSize' => 'large',
-                'maxPhotosPerPlace' => $limit ?: 8,
-                'maxPlacesPerSearch' => 1,
+                'maxPhotosPerPlace' => $limitPerPlace ?: 8,
+                'maxPlacesPerSearch' => count($placeIds),
                 'outputDimensions' => true,
                 'outputGps' => true,
                 'outputInternalCategoryCode' => false,
@@ -335,11 +366,11 @@ class PhotoScraperService
                 'outputThumbnailUrl' => true,
                 'outputUploadDate' => true,
                 'outputUploadedByOwner' => true,
-                'placeIds' => [$placeId],
+                'placeIds' => $placeIds,
             ]);
 
         if (!$response->successful()) {
-            Log::warning("Apify actor run failed for place_id {$placeId}: " . $response->body());
+            Log::warning("Apify batch actor run failed for " . count($placeIds) . " places: " . $response->body());
             return [];
         }
 
@@ -348,30 +379,51 @@ class PhotoScraperService
             return [];
         }
 
-        // If items are nested inside 'items' key
         if (isset($items['items']) && is_array($items['items'])) {
             $items = $items['items'];
         }
 
-        $images = [];
+        $result = [];
+        foreach ($placeIds as $pid) {
+            $result[$pid] = [];
+        }
 
         foreach ($items as $item) {
             if (!is_array($item)) {
                 continue;
             }
 
-            // Ignore non-photo records if type is specified
             if (isset($item['type']) && $item['type'] !== 'photo') {
                 continue;
             }
 
+            $itemPlaceId = $item['placeId'] ?? null;
             $imgUrl = $item['imageUrl'] ?? $item['photoUrl'] ?? $item['photo_url_large'] ?? $item['photo_url'] ?? $item['thumbnailUrl'] ?? $item['url'] ?? null;
+
             if ($imgUrl && $this->isValidImageUrl($imgUrl)) {
-                $images[] = $imgUrl;
+                if ($itemPlaceId && isset($result[$itemPlaceId])) {
+                    if (count($result[$itemPlaceId]) < $limitPerPlace && !in_array($imgUrl, $result[$itemPlaceId])) {
+                        $result[$itemPlaceId][] = $imgUrl;
+                    }
+                } elseif (count($placeIds) === 1) {
+                    $pid = $placeIds[0];
+                    if (count($result[$pid]) < $limitPerPlace && !in_array($imgUrl, $result[$pid])) {
+                        $result[$pid][] = $imgUrl;
+                    }
+                }
             }
         }
 
-        return $images;
+        return $result;
+    }
+
+    /**
+     * Apify actor photo scraper (lurkapi/google-maps-photos-and-videos-scraper)
+     */
+    protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
+    {
+        $batch = $this->scrapeBatchFromApifyActor([$placeId], $token, $limit);
+        return $batch[$placeId] ?? [];
     }
 
     /**

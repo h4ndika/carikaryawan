@@ -98,13 +98,13 @@ class ListPhotoScrapeJobs extends ListRecords
                         'finished_at' => null,
                     ]);
 
-                    foreach (array_chunk($jobIds, 25) as $chunkIds) {
+                    foreach (array_chunk($jobIds, 10) as $chunkIds) {
                         ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                     }
 
                     Notification::make()
                         ->title('Antrean Berhasil Dijalankan')
-                        ->body(count($jobIds) . ' antrean foto telah dikembalikan ke status pending dan dimasukkan ke worker.')
+                        ->body(count($jobIds) . ' antrean foto telah dikembalikan ke status pending dan dimasukkan ke worker (diproses 10 pararel).')
                         ->success()
                         ->send();
                 }),
@@ -115,7 +115,7 @@ class ListPhotoScrapeJobs extends ListRecords
                 ->color('warning')
                 ->requiresConfirmation()
                 ->modalHeading('Ulangi Semua Job Gagal')
-                ->modalDescription('Apakah Anda yakin ingin mengembalikan semua job yang berstatus Gagal menjadi Pending dan memprosesnya?')
+                ->modalDescription('Apakah Anda yakin ingin mengembalikan semua job yang berstatus Gagal menjadi Pending dan memprosesnya secara pararel?')
                 ->modalSubmitActionLabel('Ya, Ulangi Semua Gagal')
                 ->action(function () {
                     $failedJobIds = PhotoScrapeJob::where('status', 'failed')->pluck('id')->all();
@@ -136,7 +136,7 @@ class ListPhotoScrapeJobs extends ListRecords
                         'finished_at' => null,
                     ]);
 
-                    foreach (array_chunk($failedJobIds, 25) as $chunkIds) {
+                    foreach (array_chunk($failedJobIds, 10) as $chunkIds) {
                         ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                     }
 

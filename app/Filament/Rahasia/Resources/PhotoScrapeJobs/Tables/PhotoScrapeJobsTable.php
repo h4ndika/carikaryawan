@@ -181,13 +181,13 @@ class PhotoScrapeJobsTable
                                 'finished_at' => null,
                             ]);
 
-                            foreach (array_chunk($jobIds, 25) as $chunkIds) {
+                            foreach (array_chunk($jobIds, 10) as $chunkIds) {
                                 ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                             }
 
                             Notification::make()
                                 ->title('Job Berhasil Dimasukkan ke Antrean')
-                                ->body("{$count} job terpilih diubah statusnya menjadi pending dan dimasukkan ke worker.")
+                                ->body("{$count} job terpilih diubah statusnya menjadi pending dan dimasukkan ke worker (diproses 10 pararel).")
                                 ->success()
                                 ->send();
                         }),
