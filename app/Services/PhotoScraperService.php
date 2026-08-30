@@ -344,37 +344,66 @@ class PhotoScraperService
         }
 
         $actorId = 'KpQF2B9mcQFkExt8X';
-        $timeout = max(120, count($placeIds) * 15);
-        $url = "https://api.apify.com/v2/acts/{$actorId}/run-sync-get-dataset-items?timeout={$timeout}&memory=2048";
+        $runUrl = "https://api.apify.com/v2/acts/{$actorId}/runs";
 
-        $response = Http::withoutVerifying()->withToken($token)
-            ->timeout($timeout + 20)
-            ->post($url, [
-                'categories' => ['all'],
-                'imageSize' => 'large',
-                'maxPhotosPerPlace' => $limitPerPlace ?: 8,
-                'maxPlacesPerSearch' => count($placeIds),
-                'outputDimensions' => true,
-                'outputGps' => true,
-                'outputInternalCategoryCode' => false,
-                'outputPlaceIds' => true,
-                'outputPlaceName' => true,
-                'outputPlaceUrl' => true,
-                'outputScrapedAt' => true,
-                'outputSearchKeyword' => true,
-                'outputSource' => true,
-                'outputThumbnailUrl' => true,
-                'outputUploadDate' => true,
-                'outputUploadedByOwner' => true,
-                'placeIds' => $placeIds,
-            ]);
+        $runRes = Http::withoutVerifying()->withToken($token)->timeout(30)->post($runUrl, [
+            'categories' => ['all'],
+            'imageSize' => 'large',
+            'maxPhotosPerPlace' => $limitPerPlace ?: 8,
+            'maxPlacesPerSearch' => count($placeIds),
+            'outputDimensions' => true,
+            'outputGps' => true,
+            'outputInternalCategoryCode' => false,
+            'outputPlaceIds' => true,
+            'outputPlaceName' => true,
+            'outputPlaceUrl' => true,
+            'outputScrapedAt' => true,
+            'outputSearchKeyword' => true,
+            'outputSource' => true,
+            'outputThumbnailUrl' => true,
+            'outputUploadDate' => true,
+            'outputUploadedByOwner' => true,
+            'placeIds' => $placeIds,
+        ]);
 
-        if (!$response->successful()) {
-            Log::warning("Apify batch actor run failed for " . count($placeIds) . " places: " . $response->body());
+        if (!$runRes->successful()) {
+            Log::warning("Apify run start failed for " . count($placeIds) . " places: " . $runRes->body());
             return [];
         }
 
-        $items = $response->json();
+        $runData = $runRes->json('data') ?? [];
+        $runId = $runData['id'] ?? null;
+        $datasetId = $runData['defaultDatasetId'] ?? null;
+
+        if (!$runId || !$datasetId) {
+            return [];
+        }
+
+        // Poll status until SUCCEEDED (max 120s)
+        $maxWaitSeconds = 120;
+        $startTime = time();
+        $status = $runData['status'] ?? 'RUNNING';
+
+        while (in_array($status, ['READY', 'RUNNING']) && (time() - $startTime) < $maxWaitSeconds) {
+            sleep(3);
+            $statusRes = Http::withoutVerifying()->withToken($token)->timeout(15)->get("https://api.apify.com/v2/acts/{$actorId}/runs/{$runId}");
+            if ($statusRes->successful()) {
+                $status = $statusRes->json('data.status') ?? $status;
+            }
+        }
+
+        if ($status !== 'SUCCEEDED') {
+            Log::warning("Apify run {$runId} finished with status: {$status}");
+            return [];
+        }
+
+        $dataRes = Http::withoutVerifying()->withToken($token)->timeout(30)->get("https://api.apify.com/v2/datasets/{$datasetId}/items?clean=true");
+        if (!$dataRes->successful()) {
+            Log::warning("Apify dataset {$datasetId} fetch failed: " . $dataRes->body());
+            return [];
+        }
+
+        $items = $dataRes->json();
         if (!is_array($items)) {
             return [];
         }
