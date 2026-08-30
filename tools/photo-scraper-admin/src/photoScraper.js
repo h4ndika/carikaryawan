@@ -1,8 +1,8 @@
 // Photo Scraper Service - sama persis dengan google-map-extractor/photoScraper.js
 import { ApifyClient } from 'apify-client';
 
-const APIFY_PHOTO_ACTOR = 'thescrappa/google-maps-photos-scraper';
-const APIFY_PHOTO_ACTOR_ID = 'gLbfii9Nq4H7auMnN';
+const APIFY_PHOTO_ACTOR = 'lurkapi/google-maps-photos-and-videos-scraper';
+const APIFY_PHOTO_ACTOR_ID = 'KpQF2B9mcQFkExt8X';
 
 /**
  * Scrape place photos with Apify only
@@ -21,7 +21,7 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
   const images = new Set();
   const placeId = options.placeId;
 
-  // ── Apify Actor (thescrappa/google-maps-photos-scraper) - Only source ──
+  // ── Apify Actor (lurkapi/google-maps-photos-and-videos-scraper) - Only source ──
   if (placeId && typeof placeId === 'string' && placeId.startsWith('ChI')) {
     try {
       const token = options.apifyToken || process.env.APIFY_TOKEN;
@@ -31,8 +31,23 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
         console.log(`Apify scraping for place_id: ${placeId}`);
         
         const actorInput = {
-          business_id: placeId,
-          use_cache: true,
+          categories: ['all'],
+          imageSize: 'large',
+          maxPhotosPerPlace: limit || 8,
+          maxPlacesPerSearch: 1,
+          outputDimensions: true,
+          outputGps: true,
+          outputInternalCategoryCode: false,
+          outputPlaceIds: true,
+          outputPlaceName: true,
+          outputPlaceUrl: true,
+          outputScrapedAt: true,
+          outputSearchKeyword: true,
+          outputSource: true,
+          outputThumbnailUrl: true,
+          outputUploadDate: true,
+          outputUploadedByOwner: true,
+          placeIds: [placeId],
         };
 
         const run = await client.actor(APIFY_PHOTO_ACTOR_ID).call(actorInput, {
@@ -45,7 +60,7 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
           const items = dataset.items || [];
           
           for (const item of items) {
-            const photoUrl = item.photo_url_large || item.photo_url;
+            const photoUrl = item.photoUrl || item.photo_url_large || item.photo_url || item.url || item.imageUrl || item.thumbnailUrl;
             if (photoUrl && isValidImageUrl(photoUrl)) {
               images.add(photoUrl);
               if (images.size >= limit) {
