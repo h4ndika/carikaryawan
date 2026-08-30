@@ -69,19 +69,17 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
                 $count = $result['count'] ?? 0;
                 $total = $result['total'] ?? $count;
 
-                if ($total <= 1) {
+                if ($total < 1) {
                     $job->update([
                         'status' => 'failed',
                         'photos_count' => $count,
-                        'error_message' => $count === 0 
-                            ? 'Tidak ada foto yang ditemukan dari semua sumber.' 
-                            : 'Hanya 1 foto ditemukan (minimal 2 foto agar valid).',
+                        'error_message' => 'Tidak ada foto yang ditemukan dari semua sumber.',
                         'finished_at' => now(),
                     ]);
                 } else {
                     $job->update([
                         'status' => 'completed',
-                        'photos_count' => $count,
+                        'photos_count' => $total,
                         'error_message' => null,
                         'finished_at' => now(),
                     ]);

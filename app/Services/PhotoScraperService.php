@@ -314,51 +314,52 @@ class PhotoScraperService
     protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
     {
         $actorId = 'KpQF2B9mcQFkExt8X';
-        $url = "https://api.apify.com/v2/acts/{$actorId}/runs";
+        $url = "https://api.apify.com/v2/acts/{$actorId}/run-sync-get-dataset-items?timeout=90&memory=2048";
 
-        $runRes = Http::withoutVerifying()->withToken($token)->timeout(25)->post($url, [
-            'categories' => ['all'],
-            'imageSize' => 'large',
-            'maxPhotosPerPlace' => $limit,
-            'maxPlacesPerSearch' => 1,
-            'outputDimensions' => true,
-            'outputGps' => true,
-            'outputInternalCategoryCode' => false,
-            'outputPlaceIds' => true,
-            'outputPlaceName' => true,
-            'outputPlaceUrl' => true,
-            'outputScrapedAt' => true,
-            'outputSearchKeyword' => true,
-            'outputSource' => true,
-            'outputThumbnailUrl' => true,
-            'outputUploadDate' => true,
-            'outputUploadedByOwner' => true,
-            'placeIds' => [$placeId],
-        ]);
+        $response = Http::withoutVerifying()->withToken($token)
+            ->timeout(105)
+            ->post($url, [
+                'categories' => ['all'],
+                'imageSize' => 'large',
+                'maxPhotosPerPlace' => $limit ?: 8,
+                'maxPlacesPerSearch' => 1,
+                'outputDimensions' => true,
+                'outputGps' => true,
+                'outputInternalCategoryCode' => false,
+                'outputPlaceIds' => true,
+                'outputPlaceName' => true,
+                'outputPlaceUrl' => true,
+                'outputScrapedAt' => true,
+                'outputSearchKeyword' => true,
+                'outputSource' => true,
+                'outputThumbnailUrl' => true,
+                'outputUploadDate' => true,
+                'outputUploadedByOwner' => true,
+                'placeIds' => [$placeId],
+            ]);
 
-        if (!$runRes->successful()) {
+        if (!$response->successful()) {
+            Log::warning("Apify actor run failed for place_id {$placeId}: " . $response->body());
             return [];
         }
 
-        $datasetId = $runRes->json('data.defaultDatasetId');
-        if (!$datasetId) {
+        $items = $response->json();
+        if (!is_array($items)) {
             return [];
         }
 
-        sleep(4);
-
-        $dataRes = Http::withoutVerifying()->withToken($token)
-            ->timeout(25)
-            ->get("https://api.apify.com/v2/datasets/{$datasetId}/items?clean=true&limit={$limit}");
-
-        if (!$dataRes->successful()) {
-            return [];
+        // If items are nested inside 'items' key
+        if (isset($items['items']) && is_array($items['items'])) {
+            $items = $items['items'];
         }
 
-        $items = $dataRes->json() ?? [];
         $images = [];
 
         foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
             // Ignore non-photo records if type is specified
             if (isset($item['type']) && $item['type'] !== 'photo') {
                 continue;
