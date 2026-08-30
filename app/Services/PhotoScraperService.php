@@ -15,12 +15,10 @@ class PhotoScraperService
     protected const APIFY_PHOTO_ACTOR = 'solidcode/google-maps-photos-scraper';
 
     /**
-     * Scrape place photos using sequential multi-tier fallback:
-     * Priority 1: Apify Actor (Google Maps Places Photos)
-     * Priority 2: DuckDuckGo Images API
-     * Priority 3: Bing Images HTML Scraping
+     * Scrape place photos using Apify only (no unreliable search engines)
+     * Priority 1: Apify Actor (Google Maps Places Photos) - Only source
      *
-     * @param string $query (e.g. "Kafe foresta coffee Bandung Indonesia")
+     * @param string $query (kept for compatibility, unused)
      * @param int $limit Max photos to return
      * @param array $options ['place_id' => '...', 'apify_token' => '...', 'existing_photos' => []]
      * @return array List of valid absolute image URLs
@@ -34,7 +32,7 @@ class PhotoScraperService
 
         $images = $options['existing_photos'] ?? [];
 
-        // ── Strategy 1: Apify Actor (Google Maps Photos) - Priority 1 ──
+        // ── Apify Actor (Google Maps Photos) - Only source ──
         $placeId = $options['place_id'] ?? null;
         if (!empty($placeId) && str_starts_with($placeId, 'ChI')) {
             try {
@@ -56,45 +54,8 @@ class PhotoScraperService
                     }
                 }
             } catch (Throwable $e) {
-                Log::debug("Apify photo scrape error for placeId '{$placeId}': " . $e->getMessage());
-            }
-        }
-
-        // ── Strategy 2: DuckDuckGo Images API - Priority 2 ──
-        if (count($images) < 3) {
-            try {
-                $vqd = $this->getDuckDuckGoVQD($query);
-                if ($vqd) {
-                    $ddgImages = $this->fetchDdgImagesWithVqd($query, $vqd, $limit);
-                    foreach ($ddgImages as $img) {
-                        if (!in_array($img, $images)) {
-                            $images[] = $img;
-                            if (count($images) >= $limit) {
-                                return array_slice(array_values(array_unique($images)), 0, $limit);
-                            }
-                        }
-                    }
-                }
-            } catch (Throwable $e) {
-                Log::debug("DuckDuckGo photo scrape notice for '{$query}': " . $e->getMessage());
-            }
-        }
-
-        // ── Strategy 3: Bing Images HTML Scraping - Priority 3 ──
-        if (count($images) < 3) {
-            try {
-                $targetTitle = $options['target_title'] ?? '';
-                $bingImages = $this->scrapeFromBing($query, $limit, $targetTitle);
-                foreach ($bingImages as $img) {
-                    if (!in_array($img, $images)) {
-                        $images[] = $img;
-                        if (count($images) >= $limit) {
-                            return array_slice(array_values(array_unique($images)), 0, $limit);
-                        }
-                    }
-                }
-            } catch (Throwable $e) {
-                Log::debug("Bing photo scrape notice for '{$query}': " . $e->getMessage());
+                Log::warning("Apify photo scrape failed for placeId '{$placeId}': " . $e->getMessage());
+                return $options['existing_photos'] ?? [];
             }
         }
 
