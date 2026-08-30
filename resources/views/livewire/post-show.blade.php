@@ -81,6 +81,7 @@
                             class="block w-full cursor-zoom-in group">
                         <img src="{{ $mainImg }}" 
                              alt="{{ $post->title }}" 
+                             referrerpolicy="no-referrer"
                              data-fallbacks='@json($fallbackGalleryUrls)'
                              onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                              class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
@@ -132,6 +133,7 @@
                                             class="block w-full aspect-[4/3] cursor-zoom-in relative">
                                         <img src="{{ $img->image_url }}" 
                                              alt="{{ $img->caption ?: $post->title }}" 
+                                             referrerpolicy="no-referrer"
                                              data-hide-on-error="true"
                                              onerror="const f=this.closest('figure'); if(f){ const p=f.parentElement; f.remove(); if(p && p.querySelectorAll('figure').length===0){ p.closest('section')?.remove(); } }"
                                              class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
@@ -478,6 +480,7 @@
                                 @if ($nearbyThumb)
                                     <img src="{{ $nearbyThumb }}" 
                                          alt="{{ $nearby->title }}" 
+                                         referrerpolicy="no-referrer"
                                          data-fallbacks='@json($nearby->fallback_image_urls ?? [])'
                                          onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -552,6 +555,7 @@
                                 @if ($itemThumb)
                                     <img src="{{ $itemThumb }}" 
                                          alt="{{ $item->title }}" 
+                                         referrerpolicy="no-referrer"
                                          data-fallbacks='@json($fallbackItemUrls)'
                                          onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -602,6 +606,7 @@
             </button>
             <img src="{{ $lightbox }}"
                  alt="Preview Foto"
+                 referrerpolicy="no-referrer"
                  onerror="this.onerror=null; this.src='/images/placeholder.svg';"
                  class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
                  wire:click.stop>
