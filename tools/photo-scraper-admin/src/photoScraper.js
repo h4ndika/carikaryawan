@@ -2,7 +2,7 @@
 import { ApifyClient } from 'apify-client';
 
 const APIFY_PHOTO_ACTOR = 'thescrappa/google-maps-photos-scraper';
-const APIFY_PHOTO_ACTOR_ID = 'tLcUdNvmqkibhufg4';
+const APIFY_PHOTO_ACTOR_ID = 'gLbfii9Nq4H7auMnN';
 
 /**
  * Scrape place photos with Apify only

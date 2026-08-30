@@ -314,7 +314,7 @@ class PhotoScraperService
     protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
     {
         // Use actor ID directly for thescrappa actor
-        $actorId = 'tLcUdNvmqkibhufg4';
+        $actorId = 'gLbfii9Nq4H7auMnN';
         $url = "https://api.apify.com/v2/acts/{$actorId}/runs";
 
         $runRes = Http::withoutVerifying()->withToken($token)->timeout(25)->post($url, [
