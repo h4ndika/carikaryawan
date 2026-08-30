@@ -190,10 +190,10 @@ router.post('/posts/:id/scrape-photos', requireAuth, async (req, res) => {
       insertedCount++;
     }
 
-    // Update post thumbnail if empty
+    // Update post thumbnail with the first scraped photo
     if (photos.length > 0) {
       await db.query(
-        'UPDATE posts SET thumbnail = ?, updated_at = NOW() WHERE id = ? AND (thumbnail IS NULL OR thumbnail = "")',
+        'UPDATE posts SET thumbnail = ?, updated_at = NOW() WHERE id = ?',
         [photos[0], postId]
       );
     }
