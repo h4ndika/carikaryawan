@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
   <title>Foto <%= post.title %> - Photo Scraper Admin</title>
   <style>
     * {
@@ -202,7 +203,7 @@
       <div class="photos-grid">
         <% photos.forEach((photo, index) => { %>
           <div class="photo-card">
-            <img src="<%= photo.image_url %>" alt="<%= photo.caption || post.title %>" onclick="openLightbox('<%= photo.image_url %>')">
+            <img src="<%= photo.image_url %>" alt="<%= photo.caption || post.title %>" referrerpolicy="no-referrer" loading="lazy" onclick="openLightbox('<%= photo.image_url %>')">
             <div class="photo-card-body">
               <strong>Foto #<%= index + 1 %></strong>
               <div class="photo-url"><%= photo.image_url %></div>
@@ -215,7 +216,7 @@
 
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-    <img id="lightboxImg" src="" alt="">
+    <img id="lightboxImg" src="" alt="" referrerpolicy="no-referrer">
   </div>
 
   <script>
