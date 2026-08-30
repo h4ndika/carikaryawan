@@ -169,13 +169,25 @@ class PhotoScrapeJobsTable
                             $jobIds = $records->pluck('id')->all();
                             $count = count($jobIds);
 
+                            if ($count === 0) {
+                                return;
+                            }
+
+                            // Reset selected jobs to pending and clear errors
+                            PhotoScrapeJob::whereIn('id', $jobIds)->update([
+                                'status' => 'pending',
+                                'error_message' => null,
+                                'started_at' => null,
+                                'finished_at' => null,
+                            ]);
+
                             foreach (array_chunk($jobIds, 25) as $chunkIds) {
                                 ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                             }
 
                             Notification::make()
                                 ->title('Job Berhasil Dimasukkan ke Antrean')
-                                ->body("{$count} job terpilih dimasukkan ke antrean worker.")
+                                ->body("{$count} job terpilih diubah statusnya menjadi pending dan dimasukkan ke worker.")
                                 ->success()
                                 ->send();
                         }),

@@ -43,8 +43,17 @@ class ListPhotoScrapeJobs extends ListRecords
                 ->icon('heroicon-o-bolt')
                 ->color('success')
                 ->modalHeading('Jalankan Antrean Scrape Foto')
-                ->modalDescription('Memproses post dalam antrean pending menggunakan background job.')
+                ->modalDescription('Memproses job scrape foto dalam antrean menggunakan background worker.')
                 ->form([
+                    Select::make('target_status')
+                        ->label('Status yang Diproses')
+                        ->options([
+                            'all_unfinished' => 'Pending & Gagal (Ulangi yang Belum Berhasil)',
+                            'pending' => 'Hanya Status Pending',
+                            'failed' => 'Hanya Status Gagal',
+                        ])
+                        ->default('all_unfinished')
+                        ->required(),
                     Select::make('limit')
                         ->label('Jumlah Antrean yang Diproses')
                         ->options([
@@ -52,25 +61,42 @@ class ListPhotoScrapeJobs extends ListRecords
                             '25' => '25 Post (Rekomendasi)',
                             '50' => '50 Post',
                             '100' => '100 Post',
+                            '250' => '250 Post',
                         ])
                         ->default('25')
                         ->required(),
                 ])
                 ->action(function (array $data) {
                     $limit = (int) ($data['limit'] ?? 25);
-                    $jobIds = PhotoScrapeJob::where('status', 'pending')
-                        ->limit($limit)
-                        ->pluck('id')
-                        ->all();
+                    $targetStatus = $data['target_status'] ?? 'all_unfinished';
+
+                    $query = PhotoScrapeJob::query();
+                    if ($targetStatus === 'pending') {
+                        $query->where('status', 'pending');
+                    } elseif ($targetStatus === 'failed') {
+                        $query->where('status', 'failed');
+                    } else {
+                        $query->whereIn('status', ['pending', 'failed', 'processing']);
+                    }
+
+                    $jobIds = $query->limit($limit)->pluck('id')->all();
 
                     if (empty($jobIds)) {
                         Notification::make()
                             ->title('Tidak Ada Antrean')
-                            ->body('Tidak ada job scrape foto dengan status pending.')
+                            ->body('Tidak ditemukan job dengan status yang dipilih.')
                             ->warning()
                             ->send();
                         return;
                     }
+
+                    // Reset all selected jobs to pending status and clear errors
+                    PhotoScrapeJob::whereIn('id', $jobIds)->update([
+                        'status' => 'pending',
+                        'error_message' => null,
+                        'started_at' => null,
+                        'finished_at' => null,
+                    ]);
 
                     foreach (array_chunk($jobIds, 25) as $chunkIds) {
                         ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
@@ -78,7 +104,45 @@ class ListPhotoScrapeJobs extends ListRecords
 
                     Notification::make()
                         ->title('Antrean Berhasil Dijalankan')
-                        ->body(count($jobIds) . ' antrean foto telah dimasukkan ke background worker.')
+                        ->body(count($jobIds) . ' antrean foto telah dikembalikan ke status pending dan dimasukkan ke worker.')
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('retryAllFailed')
+                ->label('Ulangi Semua Gagal')
+                ->icon('heroicon-o-arrow-path')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading('Ulangi Semua Job Gagal')
+                ->modalDescription('Apakah Anda yakin ingin mengembalikan semua job yang berstatus Gagal menjadi Pending dan memprosesnya?')
+                ->modalSubmitActionLabel('Ya, Ulangi Semua Gagal')
+                ->action(function () {
+                    $failedJobIds = PhotoScrapeJob::where('status', 'failed')->pluck('id')->all();
+
+                    if (empty($failedJobIds)) {
+                        Notification::make()
+                            ->title('Tidak Ada Job Gagal')
+                            ->body('Semua job sudah selesai atau tidak ada yang berstatus gagal.')
+                            ->info()
+                            ->send();
+                        return;
+                    }
+
+                    PhotoScrapeJob::whereIn('id', $failedJobIds)->update([
+                        'status' => 'pending',
+                        'error_message' => null,
+                        'started_at' => null,
+                        'finished_at' => null,
+                    ]);
+
+                    foreach (array_chunk($failedJobIds, 25) as $chunkIds) {
+                        ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
+                    }
+
+                    Notification::make()
+                        ->title('Job Gagal Berhasil Di-queue Ulang')
+                        ->body(count($failedJobIds) . ' job gagal telah diubah statusnya menjadi pending dan dimasukkan ke worker.')
                         ->success()
                         ->send();
                 }),
