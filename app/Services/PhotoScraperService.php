@@ -318,10 +318,8 @@ class PhotoScraperService
         $url = "https://api.apify.com/v2/acts/{$actorId}/runs";
 
         $runRes = Http::withoutVerifying()->withToken($token)->timeout(25)->post($url, [
-            'searchQuery' => '', // Empty since we have placeId
-            'placeId' => $placeId,
-            'maxImages' => $limit,
-            'includeStreetView' => false, // Exclude street view photos
+            'business_id' => $placeId,
+            'use_cache' => true,
         ]);
 
         if (!$runRes->successful()) {

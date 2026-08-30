@@ -31,10 +31,8 @@ export async function scrapePlacePhotos(query, limit = 8, options = {}) {
         console.log(`Apify scraping for place_id: ${placeId}`);
         
         const actorInput = {
-          searchQuery: '',
-          placeId: placeId,
-          maxImages: limit || 8,
-          includeStreetView: false,
+          business_id: placeId,
+          use_cache: true,
         };
 
         const run = await client.actor(APIFY_PHOTO_ACTOR_ID).call(actorInput, {
