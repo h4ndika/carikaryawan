@@ -115,9 +115,12 @@
                     {!! $post->content !!}
                 </article>
 
+                <!-- Ad Slot: Di Atas Galeri -->
+                <x-ad-slot slotName="ad_post_before_gallery" />
+
                 <!-- Photo Gallery Grid (if available) -->
                 @if ($post->images && $post->images->isNotEmpty())
-                    <section class="mt-12 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
+                    <section class="mt-8 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                         <div class="mb-6 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                             <h2 class="font-serif-title text-xl font-bold text-zinc-950 dark:text-zinc-50">Galeri & Suasana</h2>
                         </div>
@@ -159,6 +162,9 @@
             <!-- Right Column: Location Card & Place Details (4 cols) -->
             <aside class="lg:col-span-4 space-y-8 sticky top-24">
                 
+                <!-- Ad Slot: Sidebar Atas Detail Post -->
+                <x-ad-slot slotName="ad_post_sidebar_top" class="!mt-0 !mb-6" />
+
                 <!-- Place Summary Card -->
                 <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-6">
                     <div class="pb-4 border-b border-zinc-100 dark:border-zinc-800">

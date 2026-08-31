@@ -129,6 +129,9 @@
         </section>
         @endif
 
+        <!-- Ad Slot: Bawah Hero -->
+        <x-ad-slot slotName="ad_home_hero" />
+
         <!-- Category Filter Tabs -->
         @include('partials.category-tabs', ['categories' => $categories])
 
@@ -183,6 +186,9 @@
                     </h3>
                     @include('partials.editor-picks', ['posts' => $posts->take(4)])
                 </div>
+
+                <!-- Ad Slot: Sidebar Beranda -->
+                <x-ad-slot slotName="ad_home_sidebar" />
 
                 <!-- Direktori Kota Terkurasi -->
                 @if (isset($cities) && $cities->count() > 0)

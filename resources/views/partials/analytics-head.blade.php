@@ -7,7 +7,14 @@
     $umamiId = trim((string) \App\Models\Setting::get('umami_website_id', ''));
     $umamiSrc = trim((string) \App\Models\Setting::get('umami_script_url', 'https://cloud.umami.is/script.js'));
     $customHead = trim((string) \App\Models\Setting::get('custom_head_scripts', ''));
+    $adsenseEnabled = (bool) \App\Models\Setting::get('adsense_enabled', false);
+    $adsenseClientId = trim((string) \App\Models\Setting::get('adsense_client_id', ''));
 @endphp
+
+@if ($adsenseEnabled && !empty($adsenseClientId))
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
+@endif
 
 @if ($gaEnabled && !empty($gaId))
     <!-- Google tag (gtag.js) -->

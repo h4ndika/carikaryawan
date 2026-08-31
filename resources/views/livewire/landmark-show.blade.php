@@ -382,6 +382,9 @@
                     --}}
                 </div>
 
+                <!-- Ad Slot: Sidebar Landmark -->
+                <x-ad-slot slotName="ad_landmark_sidebar" />
+
                 <!-- Landmark Lain di Kota Ini -->
                 @if (isset($otherLandmarks) && $otherLandmarks->isNotEmpty())
                     <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">

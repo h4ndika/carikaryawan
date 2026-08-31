@@ -66,6 +66,9 @@
             </div>
         </section>
 
+        <!-- Ad Slot: Bawah Filter Pencarian -->
+        <x-ad-slot slotName="ad_search_top" />
+
         <!-- Results Stream -->
         @if ($posts->isEmpty())
             <div class="rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-14 text-center">

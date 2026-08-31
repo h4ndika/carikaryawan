@@ -13,6 +13,19 @@ Route::get('/', Home::class)->name('home');
 Route::get('/cari', Search::class)->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
+// Google AdSense ads.txt
+Route::get('/ads.txt', function () {
+    $content = \App\Models\Setting::get('ads_txt_content', '');
+    if (empty($content)) {
+        $pubId = \App\Models\Setting::get('adsense_client_id', '');
+        $pubNumber = preg_replace('/[^0-9]/', '', $pubId);
+        if (!empty($pubNumber)) {
+            $content = "google.com, pub-{$pubNumber}, DIRECT, f08c47fec0942fa0";
+        }
+    }
+    return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('ads.txt');
+
 // Landmark SEO routes (must be before generic /{category} routes)
 Route::get('/disekitar/{landmark:slug}', LandmarkShow::class)->name('landmark.show');
 Route::get('/{category}/disekitar/{landmark:slug}', LandmarkShow::class)->name('category.landmark.show');

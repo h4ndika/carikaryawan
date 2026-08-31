@@ -242,6 +242,9 @@
                 </div>
                 @endif
 
+                <!-- Ad Slot: Sidebar Kategori -->
+                <x-ad-slot slotName="ad_category_sidebar" />
+
                 <!-- Direktori Kota Terkurasi -->
                 @if (isset($cities) && $cities->count() > 0)
                 <div class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
