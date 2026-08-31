@@ -130,7 +130,7 @@
         @endif
 
         <!-- Ad Slot: Bawah Hero -->
-        <x-ad-slot slotName="ad_home_hero" />
+        <x-ad-slot slotName="ad_home_hero" class="!my-0 mb-12" />
 
         <!-- Category Filter Tabs -->
         @include('partials.category-tabs', ['categories' => $categories])
