@@ -21,15 +21,7 @@ class SitemapController extends Controller
             'priority' => '1.0',
         ];
 
-        // 2. Search Page
-        $urls[] = [
-            'loc' => route('search'),
-            'lastmod' => now()->toAtomString(),
-            'changefreq' => 'weekly',
-            'priority' => '0.5',
-        ];
-
-        // 3. Category Index Pages
+        // 2. Category Index Pages
         $categories = Category::query()->orderBy('name')->get(['id', 'name', 'slug', 'updated_at']);
         foreach ($categories as $cat) {
             $urls[] = [
