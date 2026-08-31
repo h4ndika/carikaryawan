@@ -8,18 +8,17 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\EmbeddedSchema;
+use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
-class ManageAnalyticsSettings extends Page implements HasForms
+class ManageAnalyticsSettings extends Page
 {
-    use InteractsWithForms;
-
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
 
     protected static ?string $navigationLabel = 'Analytics & Tracking';
@@ -29,8 +28,6 @@ class ManageAnalyticsSettings extends Page implements HasForms
     protected static ?string $slug = 'settings/analytics';
 
     protected static ?int $navigationSort = 99;
-
-    protected string $view = 'filament.rahasia.pages.manage-analytics-settings';
 
     public ?array $data = [];
 
@@ -49,10 +46,14 @@ class ManageAnalyticsSettings extends Page implements HasForms
         ]);
     }
 
+    public function defaultForm(Schema $schema): Schema
+    {
+        return $schema->statePath('data');
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->statePath('data')
             ->components([
                 Section::make('Google Analytics 4 (GA4)')
                     ->description('Lacak kunjungan, perilaku pengguna, dan konversi dengan Google Analytics 4.')
@@ -60,7 +61,7 @@ class ManageAnalyticsSettings extends Page implements HasForms
                     ->schema([
                         Toggle::make('ga_enabled')
                             ->label('Aktifkan Google Analytics 4')
-                            ->helperText('Jika diaktifkan, gtag.js akan dimuat di tag <head>.'),
+                            ->helperText('Jika diaktifkan, tag gtag.js akan dimuat di <head>.'),
 
                         TextInput::make('ga_measurement_id')
                             ->label('Measurement ID (G-XXXXXXXXXX)')
@@ -125,13 +126,21 @@ class ManageAnalyticsSettings extends Page implements HasForms
             ]);
     }
 
-    protected function getFormActions(): array
+    public function content(Schema $schema): Schema
     {
-        return [
-            Action::make('save')
-                ->label('Simpan Pengaturan')
-                ->submit('save'),
-        ];
+        return $schema
+            ->components([
+                Form::make([EmbeddedSchema::make('form')])
+                    ->id('form')
+                    ->livewireSubmitHandler('save')
+                    ->footer([
+                        Actions::make([
+                            Action::make('save')
+                                ->label('Simpan Pengaturan')
+                                ->submit('save'),
+                        ]),
+                    ]),
+            ]);
     }
 
     public function save(): void
