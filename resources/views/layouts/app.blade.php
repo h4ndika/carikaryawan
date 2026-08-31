@@ -72,8 +72,11 @@
             <script type="application/ld+json">{!! $jsonLd !!}</script>
         @endif
     @endif
+
+    @include('partials.analytics-head')
 </head>
 <body class="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-900 dark:selection:bg-amber-500 selection:text-white dark:selection:text-zinc-950">
+    @include('partials.analytics-body-start')
     <div class="min-h-screen flex flex-col">
         <!-- Top Editorial Masthead & Navigation -->
         <header class="bg-white dark:bg-zinc-900/95 dark:backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 sticky top-0 z-50 transition-colors duration-200">
@@ -243,5 +246,6 @@
     </script>
 
     @livewireScripts
+    @include('partials.analytics-footer')
 </body>
 </html>
