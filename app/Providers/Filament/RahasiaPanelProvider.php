@@ -30,6 +30,7 @@ class RahasiaPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->favicon(asset('favicon.ico'))
             ->discoverResources(in: app_path('Filament/Rahasia/Resources'), for: 'App\Filament\Rahasia\Resources')
             ->discoverPages(in: app_path('Filament/Rahasia/Pages'), for: 'App\Filament\Rahasia\Pages')
             ->pages([
