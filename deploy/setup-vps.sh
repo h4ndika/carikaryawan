@@ -138,8 +138,13 @@ nginx -t && systemctl reload nginx
 
 echo -e "\n${YELLOW}▶ Step 9: Cloning / Preparing Project Directory...${NC}"
 mkdir -p /var/www
+mkdir -p /root/.ssh
+[ -f /root/.ssh/id_ed25519 ] || (cp -f /home/*/.ssh/id_ed25519* /root/.ssh/ 2>/dev/null || true)
+chmod 700 /root/.ssh 2>/dev/null || true
+chmod 600 /root/.ssh/id_ed25519 2>/dev/null || true
+ssh-keyscan -t ed25519,rsa github.com >> /root/.ssh/known_hosts 2>/dev/null || true
 if [ ! -d "${APP_DIR}" ]; then
-  git clone https://github.com/h4ndika/disekitar.git ${APP_DIR}
+  git clone git@github.com:h4ndika/disekitar.git ${APP_DIR}
 else
   cd ${APP_DIR} && git pull origin main
 fi
