@@ -56,13 +56,12 @@
         })();
     </script>
 
-    <!-- Fonts & Icons (Non-blocking & Preconnected) -->
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -127,9 +126,10 @@
                 <div class="flex items-center gap-3">
                     <a href="{{ route('search') }}" 
                        wire:navigate 
+                       aria-label="Cari tempat dan cerita"
                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition-colors"
                        title="Cari cerita atau tempat">
-                        <i class="fa-solid fa-magnifying-glass text-zinc-500 dark:text-zinc-400 text-xs"></i>
+                        <i class="fa-solid fa-magnifying-glass text-zinc-500 dark:text-zinc-400 text-xs" aria-hidden="true"></i>
                         <span class="hidden sm:inline">Cari tempat & cerita...</span>
                     </a>
 
