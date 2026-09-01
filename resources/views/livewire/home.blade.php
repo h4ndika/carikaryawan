@@ -29,7 +29,9 @@
                                      data-fallbacks='@json($fallbackFeaturedUrls ?? [])'
                                      onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                     loading="lazy">
+                                     loading="eager"
+                                     fetchpriority="high"
+                                     decoding="async">
                                 @if ($featuredSource = $featuredPost->primary_image_source)
                                     <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-medium text-white/90 tracking-wide pointer-events-none">
                                         Foto: {{ $featuredSource }}

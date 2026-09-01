@@ -84,7 +84,10 @@
                              referrerpolicy="no-referrer"
                              data-fallbacks='@json($fallbackGalleryUrls)'
                              onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                             class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]">
+                             class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]"
+                             loading="eager"
+                             fetchpriority="high"
+                             decoding="async">
                         <div class="absolute bottom-4 right-4 flex items-center gap-2">
                             @if ($mainSource)
                                 <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90">
