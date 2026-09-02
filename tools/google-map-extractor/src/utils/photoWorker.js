@@ -67,11 +67,11 @@ export function enqueueSinglePlace(placeId) {
   return enqueuePlacesForPhotoEnrichment([Number(placeId)]);
 }
 
-const BATCH_SIZE = 10; // Process 10 places in parallel concurrently
+const BATCH_SIZE = 5; // Process 5 places in parallel concurrently (Apify free tier limit)
 const BATCH_DELAY_MS = 1500; // Polite delay between batches
 
 /**
- * Background loop that processes pending items in concurrent batches of 10
+ * Background loop that processes pending items in concurrent batches of 5
  */
 async function startWorkerLoop(broadcastCallback) {
   if (isRunning) return;
