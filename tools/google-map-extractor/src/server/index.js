@@ -435,6 +435,38 @@ async function handleApi(req, res) {
       }
     }
 
+    // GET /api/proxy-image — Proxy external images to bypass hotlink/referer restrictions
+    if (matchRoute(method, url, 'GET', '/api/proxy-image')) {
+      const q = queryParams(url);
+      const targetUrl = q.url;
+      if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        return res.end('Bad URL');
+      }
+      try {
+        const response = await fetch(targetUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          },
+        });
+        if (!response.ok) {
+          res.writeHead(response.status, { 'Content-Type': 'text/plain' });
+          return res.end(`Failed: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const buffer = Buffer.from(await response.arrayBuffer());
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=86400',
+        });
+        return res.end(buffer);
+      } catch (err) {
+        res.writeHead(502, { 'Content-Type': 'text/plain' });
+        return res.end(err.message);
+      }
+    }
+
     // GET /api/locations — Indonesian Provinces, Cities & Regencies for autocomplete/Select2
     if (matchRoute(method, url, 'GET', '/api/locations')) {
       const q = queryParams(url);

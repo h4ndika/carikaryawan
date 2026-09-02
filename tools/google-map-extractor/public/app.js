@@ -1085,8 +1085,8 @@ function showPlaceDetail(place) {
     const renderPhotos = (photosList) => {
         if (photosList.length > 0) {
             photosContainer.innerHTML = photosList.map(imgUrl => `
-                <a href="${esc(imgUrl)}" target="_blank" class="photo-thumb-link">
-                    <img src="${esc(imgUrl)}" class="photo-thumb" alt="Place photo" loading="lazy" onerror="this.parentElement.style.display='none'">
+                <a href="${esc(imgUrl)}" target="_blank" class="photo-thumb-link" rel="noreferrer">
+                    <img src="${esc(imgUrl)}" class="photo-thumb" alt="Place photo" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='/api/proxy-image?url='+encodeURIComponent(this.src);}else{this.parentElement.style.display='none';}">
                 </a>
             `).join('');
         } else {
