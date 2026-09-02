@@ -228,6 +228,18 @@ export function deleteAccount(id) {
   return db.prepare('DELETE FROM apify_accounts WHERE id = ?').run(Number(id)).changes > 0;
 }
 
+export function getActiveAccounts(limit = null) {
+  let query = `
+    SELECT * FROM apify_accounts
+    WHERE status = 'active'
+    ORDER BY usage_count ASC, (last_used_at IS NULL) DESC, last_used_at ASC
+  `;
+  if (limit && Number.isInteger(Number(limit))) {
+    query += ` LIMIT ${Number(limit)}`;
+  }
+  return db.prepare(query).all().map(toCamel);
+}
+
 /**
  * Pick the next active account for scraping: lowest usage_count, then oldest
  * last_used_at (never-used accounts first). Increments its usage_count and
@@ -844,6 +856,7 @@ export default {
   saveAccount,
   updateAccount,
   deleteAccount,
+  getActiveAccounts,
   getNextRotatedAccount,
   incrementAccountUsage,
   setAccountStatus,

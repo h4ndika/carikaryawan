@@ -7,6 +7,8 @@ import {
   enqueuePlacesForPhotoEnrichment,
   getTaskPlaces,
   getPlacesMissingPhotos,
+  getActiveAccounts,
+  incrementAccountUsage,
 } from '../db/index.js';
 import { scrapePlacePhotos } from './photoScraper.js';
 import { logger } from './logger.js';
@@ -67,11 +69,41 @@ export function enqueueSinglePlace(placeId) {
   return enqueuePlacesForPhotoEnrichment([Number(placeId)]);
 }
 
-const BATCH_SIZE = 5; // Process 5 places in parallel concurrently (Apify free tier limit)
 const BATCH_DELAY_MS = 1500; // Polite delay between batches
 
 /**
- * Background loop that processes pending items in concurrent batches of 5
+ * Helper to process a single queue item with a specific Apify token
+ */
+async function processQueueItem(item, token) {
+  const placeQuery = `${item.title || ''} ${item.address || ''}`.trim();
+  if (!placeQuery) {
+    updateQueueItemStatus(item.queueId, 'completed');
+    return { item, count: 0, success: true };
+  }
+
+  try {
+    const photos = await scrapePlacePhotos(placeQuery, 6, {
+      placeId: item.googlePlaceId,
+      token,
+    });
+    if (photos && photos.length > 0) {
+      updatePlacePhotos(item.placeId, photos);
+      updateQueueItemStatus(item.queueId, 'completed');
+      return { item, count: photos.length, success: true };
+    } else {
+      updateQueueItemStatus(item.queueId, 'completed');
+      return { item, count: 0, success: true };
+    }
+  } catch (err) {
+    updateQueueItemStatus(item.queueId, 'failed', err.message);
+    return { item, count: 0, success: false, error: err.message };
+  }
+}
+
+/**
+ * Background loop that processes pending items in parallel.
+ * - If 2 or more active Apify accounts exist: fetches 10 items (5 on API #1, 5 on API #2) concurrently.
+ * - If 1 active account exists: fetches 5 items on 1 API concurrently.
  */
 async function startWorkerLoop(broadcastCallback) {
   if (isRunning) return;
@@ -91,46 +123,52 @@ async function startWorkerLoop(broadcastCallback) {
 
   const processBatch = async () => {
     try {
-      // Fetch 10 places at once from SQLite queue
-      const pendingItems = getPendingPhotoQueue(BATCH_SIZE);
+      const activeAccounts = getActiveAccounts();
+      const hasMultipleAccounts = activeAccounts.length >= 2;
+      const batchLimit = hasMultipleAccounts ? 10 : 5;
+
+      const pendingItems = getPendingPhotoQueue(batchLimit);
       if (pendingItems.length === 0) {
         // Idle: check again in 3 seconds
         loopTimeout = setTimeout(processBatch, 3000);
         return;
       }
 
-      // Mark all 10 items as 'processing' in SQLite
+      // Mark all fetched items as 'processing' in SQLite
       for (const item of pendingItems) {
         updateQueueItemStatus(item.queueId, 'processing');
       }
 
-      onLog('info', `[PhotoWorker] 🚀 Processing batch of ${pendingItems.length} places concurrently...`);
+      let tasks = [];
 
-      // Execute all 10 place photo lookups in parallel via Promise.allSettled
-      const tasks = pendingItems.map(async (item) => {
-        const placeQuery = `${item.title || ''} ${item.address || ''}`.trim();
-        if (!placeQuery) {
-          updateQueueItemStatus(item.queueId, 'completed');
-          return { item, count: 0 };
-        }
+      if (hasMultipleAccounts) {
+        const acc1 = activeAccounts[0];
+        const acc2 = activeAccounts[1];
+        incrementAccountUsage(acc1.id);
+        incrementAccountUsage(acc2.id);
 
-        try {
-          const photos = await scrapePlacePhotos(placeQuery, 6, {
-            placeId: item.googlePlaceId,
-          });
-          if (photos && photos.length > 0) {
-            updatePlacePhotos(item.placeId, photos);
-            updateQueueItemStatus(item.queueId, 'completed');
-            return { item, count: photos.length, success: true };
-          } else {
-            updateQueueItemStatus(item.queueId, 'completed');
-            return { item, count: 0, success: true };
-          }
-        } catch (err) {
-          updateQueueItemStatus(item.queueId, 'failed', err.message);
-          return { item, count: 0, success: false, error: err.message };
+        const subBatch1 = pendingItems.slice(0, 5);
+        const subBatch2 = pendingItems.slice(5);
+
+        onLog(
+          'info',
+          `[PhotoWorker] 🚀 Processing ${pendingItems.length} places parallel across 2 Apify accounts (${acc1.email.split('@')[0]}: ${subBatch1.length}, ${acc2.email.split('@')[0]}: ${subBatch2.length})...`
+        );
+
+        tasks = [
+          ...subBatch1.map((item) => processQueueItem(item, acc1.token)),
+          ...subBatch2.map((item) => processQueueItem(item, acc2.token)),
+        ];
+      } else {
+        const singleAcc = activeAccounts.length === 1 ? activeAccounts[0] : null;
+        if (singleAcc) {
+          incrementAccountUsage(singleAcc.id);
         }
-      });
+        const token = singleAcc ? singleAcc.token : process.env.APIFY_TOKEN;
+
+        onLog('info', `[PhotoWorker] 🚀 Processing batch of ${pendingItems.length} places with 1 Apify account...`);
+        tasks = pendingItems.map((item) => processQueueItem(item, token));
+      }
 
       const results = await Promise.allSettled(tasks);
       let successCount = 0;
@@ -145,7 +183,7 @@ async function startWorkerLoop(broadcastCallback) {
 
       onLog('success', `[PhotoWorker] ✔ Batch complete: Enriched ${totalPhotos} photos for ${successCount}/${pendingItems.length} places.`);
 
-      // Delay before next concurrent batch
+      // Delay before next batch
       await new Promise((r) => setTimeout(r, BATCH_DELAY_MS));
     } catch (loopErr) {
       onLog('error', `[PhotoWorker] Batch processing error: ${loopErr.message}`);
