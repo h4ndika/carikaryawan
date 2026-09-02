@@ -2,7 +2,7 @@
 // Uses the Node.js native `node:sqlite` (DatabaseSync) — no external dependencies.
 // All row-returning helpers return camelCase objects (and JSON fields are parsed back).
 import { DatabaseSync } from 'node:sqlite';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -359,14 +359,39 @@ export function getTaskById(id) {
   return taskFromId(Number(id));
 }
 
-/** Delete a task and all of its scraped places. */
+/** Delete a task, its photo enrichment queue items, scraped places, and task record. */
 export function deleteTask(id) {
   if (!Number.isInteger(Number(id))) throw new TypeError('deleteTask: id must be an integer');
+  const taskId = Number(id);
+  const task = getTaskById(taskId);
+
   db.exec('BEGIN');
   try {
-    db.prepare('DELETE FROM scraped_places WHERE task_id = ?').run(Number(id));
-    const res = db.prepare('DELETE FROM scrape_tasks WHERE id = ?').run(Number(id));
+    // 1. Delete from photo_enrichment_queue for all places belonging to this task
+    db.prepare(`
+      DELETE FROM photo_enrichment_queue 
+      WHERE place_id IN (SELECT id FROM scraped_places WHERE task_id = ?)
+    `).run(taskId);
+
+    // 2. Delete all scraped places belonging to this task
+    db.prepare('DELETE FROM scraped_places WHERE task_id = ?').run(taskId);
+
+    // 3. Delete the scrape task record
+    const res = db.prepare('DELETE FROM scrape_tasks WHERE id = ?').run(taskId);
+
     db.exec('COMMIT');
+
+    // 4. Clean up any physical export files associated with the task
+    if (task && Array.isArray(task.exportFiles)) {
+      for (const filePath of task.exportFiles) {
+        try {
+          if (filePath && existsSync(filePath)) {
+            unlinkSync(filePath);
+          }
+        } catch {}
+      }
+    }
+
     return res.changes > 0;
   } catch (err) {
     db.exec('ROLLBACK');
