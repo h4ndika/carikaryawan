@@ -81,12 +81,9 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
 
         if (!empty($placeIds)) {
             try {
-                $token = $photoService->getApifyToken();
-                if ($token) {
-                    // Maximum limit requested among jobs
-                    $maxLimit = $jobs->max('limit') ?: 8;
-                    $scrapedPhotosByPlaceId = $photoService->scrapeBatchFromApifyActor($placeIds, $token, $maxLimit);
-                }
+                // Maximum limit requested among jobs
+                $maxLimit = $jobs->max('limit') ?: 8;
+                $scrapedPhotosByPlaceId = $photoService->scrapeBatchFromApifyActor($placeIds, null, $maxLimit);
             } catch (Throwable $e) {
                 Log::warning("Batch Apify parallel scrape error: " . $e->getMessage());
             }

@@ -320,23 +320,35 @@ class PhotoScraperService
     }
 
     /**
+     * Get next active Apify account and token from database or config.
+     *
+     * @return array{0: ?ApifyAccount, 1: ?string}
+     */
+    public function getApifyAccountAndToken(): array
+    {
+        $acc = ApifyAccount::getNextActiveAccount();
+        $token = $acc?->token ?? config('services.apify.token') ?? env('APIFY_TOKEN');
+        return [$acc, $token];
+    }
+
+    /**
      * Get active Apify token from database or config.
      */
     public function getApifyToken(): ?string
     {
-        $acc = ApifyAccount::getNextActiveAccount();
-        return $acc?->token ?? config('services.apify.token') ?? env('APIFY_TOKEN');
+        [, $token] = $this->getApifyAccountAndToken();
+        return $token;
     }
 
     /**
      * Scrape multiple places in parallel using 1 Apify actor run.
      *
      * @param array<string> $placeIds
-     * @param string $token
+     * @param ?string $token
      * @param int $limitPerPlace
      * @return array<string, array<string>> Keyed by place_id => array of photo URLs
      */
-    public function scrapeBatchFromApifyActor(array $placeIds, string $token, int $limitPerPlace = 8): array
+    public function scrapeBatchFromApifyActor(array $placeIds, ?string $token = null, int $limitPerPlace = 8): array
     {
         $placeIds = array_values(array_filter(array_unique($placeIds)));
         if (empty($placeIds)) {
@@ -346,28 +358,96 @@ class PhotoScraperService
         $actorId = 'KpQF2B9mcQFkExt8X';
         $runUrl = "https://api.apify.com/v2/acts/{$actorId}/runs";
 
-        $runRes = Http::withoutVerifying()->withToken($token)->timeout(30)->post($runUrl, [
-            'categories' => ['all'],
-            'imageSize' => 'large',
-            'maxPhotosPerPlace' => $limitPerPlace ?: 8,
-            'maxPlacesPerSearch' => count($placeIds),
-            'outputDimensions' => true,
-            'outputGps' => true,
-            'outputInternalCategoryCode' => false,
-            'outputPlaceIds' => true,
-            'outputPlaceName' => true,
-            'outputPlaceUrl' => true,
-            'outputScrapedAt' => true,
-            'outputSearchKeyword' => true,
-            'outputSource' => true,
-            'outputThumbnailUrl' => true,
-            'outputUploadDate' => true,
-            'outputUploadedByOwner' => true,
-            'placeIds' => $placeIds,
-        ]);
+        $maxAttempts = 3;
+        $attempt = 0;
+        $runRes = null;
+        $account = null;
 
-        if (!$runRes->successful()) {
-            Log::warning("Apify run start failed for " . count($placeIds) . " places: " . $runRes->body());
+        while ($attempt < $maxAttempts) {
+            $attempt++;
+
+            if (!$token) {
+                [$account, $token] = $this->getApifyAccountAndToken();
+            } elseif (!$account) {
+                $account = ApifyAccount::where('token', $token)->first();
+            }
+
+            if (!$token) {
+                Log::warning("Apify scrape skipped: No active token available.");
+                return [];
+            }
+
+            try {
+                $runRes = Http::withoutVerifying()
+                    ->withToken($token)
+                    ->connectTimeout(15)
+                    ->timeout(35)
+                    ->post($runUrl, [
+                        'categories' => ['all'],
+                        'imageSize' => 'large',
+                        'maxPhotosPerPlace' => $limitPerPlace ?: 8,
+                        'maxPlacesPerSearch' => count($placeIds),
+                        'outputDimensions' => true,
+                        'outputGps' => true,
+                        'outputInternalCategoryCode' => false,
+                        'outputPlaceIds' => true,
+                        'outputPlaceName' => true,
+                        'outputPlaceUrl' => true,
+                        'outputScrapedAt' => true,
+                        'outputSearchKeyword' => true,
+                        'outputSource' => true,
+                        'outputThumbnailUrl' => true,
+                        'outputUploadDate' => true,
+                        'outputUploadedByOwner' => true,
+                        'placeIds' => $placeIds,
+                    ]);
+            } catch (Throwable $e) {
+                Log::warning("Apify run start connection error (attempt {$attempt}): " . $e->getMessage());
+                sleep(2);
+                continue;
+            }
+
+            if ($runRes->successful()) {
+                if ($account) {
+                    $account->recordUsage();
+                }
+                break;
+            }
+
+            $body = $runRes->body();
+            Log::warning("Apify run start failed for " . count($placeIds) . " places (attempt {$attempt}): " . $body);
+
+            $isLimitExceeded = str_contains($body, 'hard limit exceeded') ||
+                               str_contains($body, 'rate-limit-exceeded') ||
+                               str_contains($body, 'Monthly usage') ||
+                               $runRes->status() === 402;
+            $isInvalidToken = $runRes->status() === 401 || str_contains($body, 'token-is-not-valid');
+
+            if ($account) {
+                if ($isLimitExceeded) {
+                    $account->update([
+                        'status' => 'exhausted',
+                        'notes' => 'Limit kuota habis: ' . now()->format('Y-m-d H:i'),
+                    ]);
+                } elseif ($isInvalidToken) {
+                    $account->update([
+                        'status' => 'invalid',
+                        'notes' => 'Token invalid: ' . now()->format('Y-m-d H:i'),
+                    ]);
+                }
+            }
+
+            if ($isLimitExceeded || $isInvalidToken) {
+                $token = null;
+                $account = null;
+                sleep(1);
+                continue;
+            }
+
+            return [];
+        }
+
+        if (!$runRes || !$runRes->successful()) {
             return [];
         }
 
@@ -379,16 +459,25 @@ class PhotoScraperService
             return [];
         }
 
-        // Poll status until SUCCEEDED (max 120s)
-        $maxWaitSeconds = 120;
+        // Poll status until SUCCEEDED (max 300s / 5 minutes)
+        $maxWaitSeconds = 300;
         $startTime = time();
         $status = $runData['status'] ?? 'RUNNING';
 
         while (in_array($status, ['READY', 'RUNNING']) && (time() - $startTime) < $maxWaitSeconds) {
-            sleep(3);
-            $statusRes = Http::withoutVerifying()->withToken($token)->timeout(15)->get("https://api.apify.com/v2/acts/{$actorId}/runs/{$runId}");
-            if ($statusRes->successful()) {
-                $status = $statusRes->json('data.status') ?? $status;
+            sleep(4);
+            try {
+                $statusRes = Http::withoutVerifying()
+                    ->withToken($token)
+                    ->connectTimeout(15)
+                    ->timeout(30)
+                    ->get("https://api.apify.com/v2/acts/{$actorId}/runs/{$runId}");
+
+                if ($statusRes->successful()) {
+                    $status = $statusRes->json('data.status') ?? $status;
+                }
+            } catch (Throwable $e) {
+                Log::debug("Apify poll hiccup for {$runId}, retrying: " . $e->getMessage());
             }
         }
 
@@ -397,7 +486,17 @@ class PhotoScraperService
             return [];
         }
 
-        $dataRes = Http::withoutVerifying()->withToken($token)->timeout(30)->get("https://api.apify.com/v2/datasets/{$datasetId}/items?clean=true");
+        try {
+            $dataRes = Http::withoutVerifying()
+                ->withToken($token)
+                ->connectTimeout(15)
+                ->timeout(45)
+                ->get("https://api.apify.com/v2/datasets/{$datasetId}/items?clean=true");
+        } catch (Throwable $e) {
+            Log::warning("Apify dataset {$datasetId} fetch error: " . $e->getMessage());
+            return [];
+        }
+
         if (!$dataRes->successful()) {
             Log::warning("Apify dataset {$datasetId} fetch failed: " . $dataRes->body());
             return [];
@@ -449,7 +548,7 @@ class PhotoScraperService
     /**
      * Apify actor photo scraper (lurkapi/google-maps-photos-and-videos-scraper)
      */
-    protected function scrapeFromApifyActor(string $placeId, string $token, int $limit): array
+    protected function scrapeFromApifyActor(string $placeId, ?string $token = null, int $limit = 8): array
     {
         $batch = $this->scrapeBatchFromApifyActor([$placeId], $token, $limit);
         return $batch[$placeId] ?? [];
