@@ -6,7 +6,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { google } from 'googleapis';
 import 'dotenv/config';
 import { logger } from './utils/logger.js';
-import { saveAccount } from './db/index.js';
+import { saveAccount, getAccounts } from './db/index.js';
 import { authorize } from './auth.js';
 import { getLatestOtp } from './getOtp.js';
 import { findSystemBrowserExecutable } from './accountCreator.js';
@@ -42,6 +42,26 @@ export async function loadGithubAccounts() {
   }
 
   return accounts;
+}
+
+/**
+ * Load GitHub accounts and filter out those already registered in SQLite
+ */
+export async function getUnregisteredGithubAccounts() {
+  const allGithub = await loadGithubAccounts();
+  const dbAccounts = getAccounts();
+  const registeredEmails = new Set(
+    dbAccounts.map((a) => (a.email || '').toLowerCase().trim()).filter(Boolean)
+  );
+  const registeredUsernames = new Set(
+    dbAccounts.map((a) => (a.username || '').toLowerCase().trim()).filter(Boolean)
+  );
+
+  return allGithub.filter((gh) => {
+    const emailMatch = gh.email && registeredEmails.has(gh.email.toLowerCase().trim());
+    const userMatch = gh.username && registeredUsernames.has(gh.username.toLowerCase().trim());
+    return !emailMatch && !userMatch;
+  });
 }
 
 /**
@@ -101,11 +121,11 @@ export async function createApifyAccountWithGithub(options = {}) {
   // 2. Select GitHub account
   let targetAccount = options.account;
   if (!targetAccount) {
-    const allGithub = await loadGithubAccounts();
-    if (!allGithub.length) {
-      throw new Error('No accounts found in github_accounts.txt!');
+    const unregistered = await getUnregisteredGithubAccounts();
+    if (!unregistered.length) {
+      throw new Error('Semua akun GitHub di github_accounts.txt sudah terdaftar di database Apify!');
     }
-    targetAccount = allGithub[Math.floor(Math.random() * allGithub.length)];
+    targetAccount = unregistered[0];
   }
 
   logger.step(2, 7, `Selected GitHub account: ${targetAccount.username} (${targetAccount.email})`);

@@ -8,7 +8,7 @@ import path from 'node:path';
 import { logger } from './utils/logger.js';
 import { scrapeGooglePlaces } from './scraper.js';
 import { createApifyAccount } from './accountCreator.js';
-import { createApifyAccountWithGithub, loadGithubAccounts } from './accountCreatorGithub.js';
+import { createApifyAccountWithGithub, loadGithubAccounts, getUnregisteredGithubAccounts } from './accountCreatorGithub.js';
 import { exportData } from './exporters/index.js';
 import { startServer } from './server/index.js';
 import { getAccounts, getStats } from './db/index.js';
@@ -180,7 +180,46 @@ async function runInteractiveMenu() {
   }
 
   if (action === 'create_account_github') {
-    const { headless } = await inquirer.prompt([
+    let unregistered = [];
+    let allGithub = [];
+    try {
+      allGithub = await loadGithubAccounts();
+      unregistered = await getUnregisteredGithubAccounts();
+    } catch (err) {
+      logger.error(`Gagal membaca file akun GitHub: ${err.message}`);
+      return runInteractiveMenu();
+    }
+
+    const totalCount = allGithub.length;
+    const unregisteredCount = unregistered.length;
+    const registeredCount = totalCount - unregisteredCount;
+
+    console.log('\n' + '─'.repeat(55));
+    logger.info(`📊 Info Akun GitHub (src/github_accounts.txt):`);
+    logger.info(`   • Total akun di file   : ${totalCount}`);
+    logger.info(`   • Sudah terdaftar Apify: ${registeredCount}`);
+    logger.info(`   • Belum registrasi     : ${unregisteredCount}`);
+    console.log('─'.repeat(55) + '\n');
+
+    if (unregisteredCount === 0) {
+      logger.warn('Semua akun GitHub dari file github_accounts.txt sudah terdaftar di database Apify!');
+      return runInteractiveMenu();
+    }
+
+    const { accountCount, headless } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'accountCount',
+        message: `Berapa akun yang ingin dibuat? (1 - ${unregisteredCount}):`,
+        default: '1',
+        validate: (val) => {
+          const num = parseInt(val, 10);
+          if (isNaN(num) || num < 1 || num > unregisteredCount) {
+            return `Masukkan angka valid antara 1 dan ${unregisteredCount}!`;
+          }
+          return true;
+        },
+      },
       {
         type: 'confirm',
         name: 'headless',
@@ -189,7 +228,28 @@ async function runInteractiveMenu() {
       },
     ]);
 
-    await createApifyAccountWithGithub({ headless });
+    const toCreate = parseInt(accountCount, 10);
+    logger.info(`🚀 Memulai pendaftaran ${toCreate} akun Apify via GitHub OAuth...\n`);
+
+    let successCount = 0;
+    for (let i = 0; i < toCreate; i++) {
+      const targetAcc = unregistered[i];
+      logger.banner(`[Akun ${i + 1}/${toCreate}] Mendaftarkan: ${targetAcc.username} (${targetAcc.email})`);
+      try {
+        await createApifyAccountWithGithub({ headless, account: targetAcc });
+        successCount++;
+        logger.success(`✔ [Akun ${i + 1}/${toCreate}] Berhasil membuat akun Apify untuk ${targetAcc.email}`);
+      } catch (err) {
+        logger.error(`✖ [Akun ${i + 1}/${toCreate}] Gagal untuk ${targetAcc.email}: ${err.message}`);
+      }
+
+      if (i < toCreate - 1) {
+        logger.info('Menunggu jeda 5 detik sebelum akun berikutnya...');
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      }
+    }
+
+    logger.banner(`SELESAI! Berhasil mendaftarkan ${successCount} dari ${toCreate} akun Apify.`);
     return runInteractiveMenu();
   }
 
