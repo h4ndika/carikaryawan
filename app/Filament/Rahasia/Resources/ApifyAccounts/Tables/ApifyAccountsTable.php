@@ -66,6 +66,11 @@ class ApifyAccountsTable
                     ->placeholder('Belum pernah')
                     ->sortable(),
 
+                TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+
                 TextColumn::make('notes')
                     ->label('Catatan')
                     ->limit(25)
