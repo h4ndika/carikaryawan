@@ -9,11 +9,13 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ApifyAccountsTable
 {
@@ -112,6 +114,74 @@ class ApifyAccountsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    Action::make('activateBulk')
+                        ->label('Aktifkan Terpilih')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->accessSelectedRecords()
+                        ->requiresConfirmation()
+                        ->modalHeading('Aktifkan Akun Apify Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status semua akun yang dipilih menjadi Aktif?')
+                        ->modalSubmitActionLabel('Ya, Aktifkan')
+                        ->action(function (Collection $records) {
+                            $count = $records->count();
+                            $records->each->update(['status' => 'active']);
+
+                            Notification::make()
+                                ->title('Status Akun Diaktifkan')
+                                ->body("{$count} akun Apify berhasil diubah menjadi Aktif.")
+                                ->success()
+                                ->send();
+                        }),
+
+                    Action::make('deactivateBulk')
+                        ->label('Nonaktifkan Terpilih')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->accessSelectedRecords()
+                        ->requiresConfirmation()
+                        ->modalHeading('Nonaktifkan Akun Apify Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin mengubah status semua akun yang dipilih menjadi Nonaktif?')
+                        ->modalSubmitActionLabel('Ya, Nonaktifkan')
+                        ->action(function (Collection $records) {
+                            $count = $records->count();
+                            $records->each->update(['status' => 'disabled']);
+
+                            Notification::make()
+                                ->title('Status Akun Dinonaktifkan')
+                                ->body("{$count} akun Apify berhasil dinonaktifkan.")
+                                ->warning()
+                                ->send();
+                        }),
+
+                    Action::make('changeStatusBulk')
+                        ->label('Ubah Status...')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->color('primary')
+                        ->accessSelectedRecords()
+                        ->form([
+                            Select::make('status')
+                                ->label('Pilih Status Baru')
+                                ->options([
+                                    'active' => 'Aktif (Siap Pakai)',
+                                    'disabled' => 'Nonaktif',
+                                    'exhausted' => 'Limit Habis (Exhausted)',
+                                    'invalid' => 'Tidak Valid / Error',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $count = $records->count();
+                            $status = $data['status'];
+                            $records->each->update(['status' => $status]);
+
+                            Notification::make()
+                                ->title('Status Akun Berhasil Diperbarui')
+                                ->body("{$count} akun Apify berhasil diperbarui statusnya.")
+                                ->success()
+                                ->send();
+                        }),
+
                     DeleteBulkAction::make(),
                 ]),
             ]);
