@@ -227,6 +227,43 @@
                 background: #f59e0b;
                 transition: width 0.3s ease;
             }
+            .device-box {
+                padding: 0.85rem 0.5rem;
+                border-radius: 0.5rem;
+                background: #f4f4f5;
+                border: 1px solid #e4e4e7;
+                text-align: center;
+                transition: all 0.2s ease;
+            }
+            .dark .device-box {
+                background: #27272a;
+                border-color: #3f3f46;
+            }
+            .device-name {
+                font-size: 0.75rem;
+                font-weight: 500;
+                color: #71717a;
+            }
+            .dark .device-name {
+                color: #a1a1aa;
+            }
+            .device-percentage {
+                font-size: 1.15rem;
+                font-weight: 700;
+                margin-top: 0.15rem;
+                color: #18181b;
+            }
+            .dark .device-percentage {
+                color: #fafafa;
+            }
+            .device-count {
+                font-size: 0.7rem;
+                color: #a1a1aa;
+                margin-top: 0.1rem;
+            }
+            .dark .device-count {
+                color: #71717a;
+            }
         </style>
 
         @php
@@ -464,25 +501,25 @@
                     <p style="margin: 0 0 1rem 0; font-size: 0.8125rem; color: #71717a;">Distribusi perangkat yang digunakan pembaca.</p>
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
-                        <div style="padding: 0.75rem; border-radius: 0.5rem; background: #f4f4f5;" class="dark:bg-zinc-800">
+                        <div class="device-box">
                             <x-heroicon-o-device-phone-mobile style="width: 24px; height: 24px; margin: 0 auto 0.35rem auto; color: #f59e0b;" />
-                            <div style="font-size: 0.75rem; color: #71717a;">Mobile</div>
-                            <div style="font-size: 1.15rem; font-weight: 700; margin-top: 0.15rem;">{{ $devices['mobile']['percentage'] }}%</div>
-                            <div style="font-size: 0.7rem; color: #a1a1aa;">{{ number_format($devices['mobile']['count']) }}</div>
+                            <div class="device-name">Mobile</div>
+                            <div class="device-percentage">{{ $devices['mobile']['percentage'] }}%</div>
+                            <div class="device-count">{{ number_format($devices['mobile']['count']) }}</div>
                         </div>
 
-                        <div style="padding: 0.75rem; border-radius: 0.5rem; background: #f4f4f5;" class="dark:bg-zinc-800">
+                        <div class="device-box">
                             <x-heroicon-o-computer-desktop style="width: 24px; height: 24px; margin: 0 auto 0.35rem auto; color: #3b82f6;" />
-                            <div style="font-size: 0.75rem; color: #71717a;">Desktop</div>
-                            <div style="font-size: 1.15rem; font-weight: 700; margin-top: 0.15rem;">{{ $devices['desktop']['percentage'] }}%</div>
-                            <div style="font-size: 0.7rem; color: #a1a1aa;">{{ number_format($devices['desktop']['count']) }}</div>
+                            <div class="device-name">Desktop</div>
+                            <div class="device-percentage">{{ $devices['desktop']['percentage'] }}%</div>
+                            <div class="device-count">{{ number_format($devices['desktop']['count']) }}</div>
                         </div>
 
-                        <div style="padding: 0.75rem; border-radius: 0.5rem; background: #f4f4f5;" class="dark:bg-zinc-800">
+                        <div class="device-box">
                             <x-heroicon-o-device-tablet style="width: 24px; height: 24px; margin: 0 auto 0.35rem auto; color: #10b981;" />
-                            <div style="font-size: 0.75rem; color: #71717a;">Tablet</div>
-                            <div style="font-size: 1.15rem; font-weight: 700; margin-top: 0.15rem;">{{ $devices['tablet']['percentage'] }}%</div>
-                            <div style="font-size: 0.7rem; color: #a1a1aa;">{{ number_format($devices['tablet']['count']) }}</div>
+                            <div class="device-name">Tablet</div>
+                            <div class="device-percentage">{{ $devices['tablet']['percentage'] }}%</div>
+                            <div class="device-count">{{ number_format($devices['tablet']['count']) }}</div>
                         </div>
                     </div>
                 </div>
