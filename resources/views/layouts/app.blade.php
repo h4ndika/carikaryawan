@@ -189,33 +189,48 @@
         <footer class="mt-20 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                 <div class="grid gap-10 md:grid-cols-12 items-start">
-                    <div class="md:col-span-6 space-y-3">
+                    <div class="md:col-span-5 space-y-3">
                         <span class="font-serif-title text-2xl font-bold text-zinc-950 dark:text-zinc-50">disekitar.</span>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
                             Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa, dan dinamika kehidupan kota di Indonesia.
                         </p>
+                        <div class="pt-1 text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-4">
+                            <a href="mailto:redaksi@disekitar.com" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-envelope text-amber-500"></i> redaksi@disekitar.com
+                            </a>
+                        </div>
                     </div>
 
                     <div class="md:col-span-3 space-y-2">
-                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Navigasi</h4>
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Eksplorasi</h4>
                         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a></li>
                             <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Pencarian Cerita</a></li>
-                            <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 dark:hover:text-white transition-colors">Peta Situs</a></li>
+                            <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 dark:hover:text-white transition-colors">Peta Situs (Sitemap)</a></li>
                         </ul>
                     </div>
 
-                    <div class="md:col-span-3 space-y-2">
-                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Tentang</h4>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                            Setiap tempat memiliki cerita. Kami mendokumentasikan sudut-sudut menarik untuk menemani perjalananmu.
-                        </p>
+                    <div class="md:col-span-4 space-y-2">
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Kebijakan & Redaksi</h4>
+                        <ul class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-zinc-600 dark:text-zinc-400">
+                            <li><a href="{{ route('page.about') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Tentang Kami</a></li>
+                            <li><a href="{{ route('page.contact') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Hubungi Kami</a></li>
+                            <li><a href="{{ route('page.privacy') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Kebijakan Privasi</a></li>
+                            <li><a href="{{ route('page.terms') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                            <li class="col-span-2"><a href="{{ route('page.disclaimer') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Penafian (Disclaimer)</a></li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400 dark:text-zinc-500">
                     <p>&copy; {{ date('Y') }} DISEKITAR. Hak cipta dilindungi.</p>
-                    <p>Kurasi Cerita & Tempat Indonesia</p>
+                    <div class="flex items-center gap-4">
+                        <a href="{{ route('page.privacy') }}" wire:navigate class="hover:underline">Privasi</a>
+                        <span>&bull;</span>
+                        <a href="{{ route('page.terms') }}" wire:navigate class="hover:underline">Ketentuan</a>
+                        <span>&bull;</span>
+                        <a href="{{ route('page.contact') }}" wire:navigate class="hover:underline">Kontak</a>
+                    </div>
                 </div>
             </div>
         </footer>

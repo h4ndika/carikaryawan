@@ -21,6 +21,17 @@ class SitemapController extends Controller
             'priority' => '1.0',
         ];
 
+        // 1b. Mandatory Policy & Legal Pages
+        $policyRoutes = ['page.about', 'page.privacy', 'page.terms', 'page.contact', 'page.disclaimer'];
+        foreach ($policyRoutes as $routeName) {
+            $urls[] = [
+                'loc' => route($routeName),
+                'lastmod' => now()->toAtomString(),
+                'changefreq' => 'monthly',
+                'priority' => '0.8',
+            ];
+        }
+
         // 2. Category Index Pages
         $categories = Category::query()->orderBy('name')->get(['id', 'name', 'slug', 'updated_at']);
         foreach ($categories as $cat) {

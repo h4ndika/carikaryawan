@@ -3,6 +3,7 @@
 use App\Http\Controllers\SitemapController;
 use App\Livewire\Home;
 use App\Livewire\LandmarkShow;
+use App\Livewire\PageShow;
 use App\Livewire\PostList;
 use App\Livewire\PostShow;
 use App\Livewire\Search;
@@ -12,6 +13,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Home::class)->name('home');
 Route::get('/cari', Search::class)->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Mandatory Legal & Editorial Policy Routes
+Route::get('/tentang-kami', PageShow::class)->name('page.about')->defaults('page', 'tentang-kami');
+Route::get('/kebijakan-privasi', PageShow::class)->name('page.privacy')->defaults('page', 'kebijakan-privasi');
+Route::get('/syarat-ketentuan', PageShow::class)->name('page.terms')->defaults('page', 'syarat-ketentuan');
+Route::get('/kontak', PageShow::class)->name('page.contact')->defaults('page', 'kontak');
+Route::get('/disclaimer', PageShow::class)->name('page.disclaimer')->defaults('page', 'disclaimer');
+
+// English & Common URL Aliases (for Google Reviewer / External Crawlers)
+Route::redirect('/about', '/tentang-kami');
+Route::redirect('/about-us', '/tentang-kami');
+Route::redirect('/privacy', '/kebijakan-privasi');
+Route::redirect('/privacy-policy', '/kebijakan-privasi');
+Route::redirect('/terms', '/syarat-ketentuan');
+Route::redirect('/terms-of-service', '/syarat-ketentuan');
+Route::redirect('/contact', '/kontak');
+Route::redirect('/contact-us', '/kontak');
 
 // Google AdSense ads.txt
 Route::get('/ads.txt', function () {
