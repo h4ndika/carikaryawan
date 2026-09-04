@@ -144,12 +144,45 @@ class AnalyticsDashboard extends Page
     }
 
     /**
-     * Get daily visitor chart data (for Line Chart)
+     * Get visitor chart data (Hourly if single day, Daily if multi-day)
      */
     public function getDailyChartData(): array
     {
         $start = Carbon::parse($this->startDate);
         $end = Carbon::parse($this->endDate);
+
+        // Jika hanya 1 hari (Hari Ini, Kemarin, atau custom tanggal tunggal), tampilkan grafik per jam (00:00 - 23:00)
+        if ($start->isSameDay($end)) {
+            $dbData = PageView::query()
+                ->select(
+                    DB::raw('HOUR(created_at) as hour_num'),
+                    DB::raw('COUNT(*) as total_views'),
+                    DB::raw('COUNT(DISTINCT ip_hash) as unique_visitors')
+                )
+                ->where('viewed_date', $this->startDate)
+                ->groupBy(DB::raw('HOUR(created_at)'))
+                ->orderBy('hour_num', 'asc')
+                ->get()
+                ->keyBy(fn ($item) => (int) $item->hour_num);
+
+            $labels = [];
+            $viewsSeries = [];
+            $visitorsSeries = [];
+
+            for ($h = 0; $h <= 23; $h++) {
+                $labels[] = sprintf('%02d:00', $h);
+                $row = $dbData->get($h);
+                $viewsSeries[] = $row ? (int) $row->total_views : 0;
+                $visitorsSeries[] = $row ? (int) $row->unique_visitors : 0;
+            }
+
+            return [
+                'labels' => $labels,
+                'views' => $viewsSeries,
+                'visitors' => $visitorsSeries,
+                'is_hourly' => true,
+            ];
+        }
 
         $dbData = PageView::query()
             ->select(
@@ -183,6 +216,7 @@ class AnalyticsDashboard extends Page
             'labels' => $labels,
             'views' => $viewsSeries,
             'visitors' => $visitorsSeries,
+            'is_hourly' => false,
         ];
     }
 

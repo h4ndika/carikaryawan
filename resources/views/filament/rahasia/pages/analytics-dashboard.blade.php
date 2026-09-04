@@ -369,8 +369,12 @@
         <div class="analytics-card" style="padding: 1.5rem;">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <div>
-                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Grafik Pengunjung Per Hari</h3>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #71717a;">Perbandingan jumlah pengunjung unik dan total pageviews harian.</p>
+                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600;">
+                        {{ $this->startDate === $this->endDate ? 'Grafik Pengunjung Per Jam' : 'Grafik Pengunjung Per Hari' }}
+                    </h3>
+                    <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #71717a;">
+                        {{ $this->startDate === $this->endDate ? 'Statistik perbandingan pageviews dan pengunjung unik per jam (00:00 - 23:00).' : 'Perbandingan jumlah pengunjung unik dan total pageviews harian.' }}
+                    </p>
                 </div>
 
                 {{-- Chart legend labels --}}
@@ -619,6 +623,8 @@
                                             },
                                             ticks: {
                                                 color: textColor,
+                                                autoSkip: true,
+                                                maxTicksLimit: 12,
                                                 font: {
                                                     size: 11
                                                 }
