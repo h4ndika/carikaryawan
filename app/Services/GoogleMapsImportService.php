@@ -28,6 +28,7 @@ class GoogleMapsImportService
     protected ?int $overrideCityId = null;
     protected ?int $overrideProvinceId = null;
     protected string $defaultStatus = 'draft';
+    protected bool $enrichPhotos = false;
 
     /**
      * Import directly from an array of Google Maps records (e.g. from Apify Crawler)
@@ -38,6 +39,9 @@ class GoogleMapsImportService
 
         if (isset($options['skip_duplicates'])) {
             $this->skipDuplicates = (bool) $options['skip_duplicates'];
+        }
+        if (isset($options['enrich_photos'])) {
+            $this->enrichPhotos = (bool) $options['enrich_photos'];
         }
         if (isset($options['category_id'])) {
             $this->defaultCategoryId = (int) $options['category_id'];
@@ -188,9 +192,9 @@ class GoogleMapsImportService
             // Extract all Google Maps image URLs
             $mapsImages = self::extractImageUrls($data);
 
-            // Parallel multi-source scraping (Bing, DuckDuckGo, Apify) to enrich photos
+            // Optional multi-source scraping to enrich photos (disabled by default to prevent slow requests)
             $combinedImages = $mapsImages;
-            if (!empty($data['title'])) {
+            if ($this->enrichPhotos && !empty($data['title'])) {
                 try {
                     $photoScraper = app(PhotoScraperService::class);
                     $queryStr = $data['title'];
@@ -523,6 +527,15 @@ class GoogleMapsImportService
     public function setDefaultCategoryId(?int $categoryId): self
     {
         $this->defaultCategoryId = $categoryId;
+        return $this;
+    }
+
+    /**
+     * Set enrich photos flag (external photo scraping)
+     */
+    public function setEnrichPhotos(bool $enrich): self
+    {
+        $this->enrichPhotos = $enrich;
         return $this;
     }
 
