@@ -189,7 +189,7 @@
         <footer class="mt-20 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                 <div class="grid gap-10 md:grid-cols-12 items-start">
-                    <div class="md:col-span-5 space-y-3">
+                    <div class="md:col-span-6 space-y-3">
                         <span class="font-serif-title text-2xl font-bold text-zinc-950 dark:text-zinc-50">disekitar.</span>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
                             Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa, dan dinamika kehidupan kota di Indonesia.
@@ -210,14 +210,14 @@
                         </ul>
                     </div>
 
-                    <div class="md:col-span-4 space-y-2">
+                    <div class="md:col-span-3 space-y-2">
                         <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Kebijakan & Redaksi</h4>
-                        <ul class="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-zinc-600 dark:text-zinc-400">
+                        <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="{{ route('page.about') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Tentang Kami</a></li>
                             <li><a href="{{ route('page.contact') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Hubungi Kami</a></li>
                             <li><a href="{{ route('page.privacy') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Kebijakan Privasi</a></li>
                             <li><a href="{{ route('page.terms') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Syarat & Ketentuan</a></li>
-                            <li class="col-span-2"><a href="{{ route('page.disclaimer') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Penafian (Disclaimer)</a></li>
+                            <li><a href="{{ route('page.disclaimer') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Penafian (Disclaimer)</a></li>
                         </ul>
                     </div>
                 </div>
