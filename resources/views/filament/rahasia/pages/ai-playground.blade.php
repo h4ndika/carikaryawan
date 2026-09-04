@@ -1,18 +1,226 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <style>
+        .ai-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            .ai-container {
+                grid-template-columns: 360px 1fr;
+            }
+        }
+        .ai-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .dark .ai-card {
+            background: #111827;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .ai-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.35rem;
+        }
+        .dark .ai-label {
+            color: #d1d5db;
+        }
+        .ai-hint {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.3rem;
+        }
+        .dark .ai-hint {
+            color: #9ca3af;
+        }
+        .ai-input, .ai-select, .ai-textarea {
+            width: 100%;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            color: #111827;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-sizing: border-box;
+        }
+        .dark .ai-input, .dark .ai-select, .dark .ai-textarea {
+            border-color: rgba(255, 255, 255, 0.15);
+            background-color: #1f2937;
+            color: #f9fafb;
+        }
+        .ai-input:focus, .ai-select:focus, .ai-textarea:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        }
+        .ai-chat-feed {
+            min-height: 440px;
+            max-height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        .ai-bubble-user {
+            align-self: flex-end;
+            max-width: 85%;
+            background-color: #f59e0b;
+            color: #ffffff;
+            border-radius: 1rem 1rem 0.25rem 1rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .ai-bubble-assistant {
+            align-self: flex-start;
+            max-width: 90%;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            border-radius: 1rem 1rem 1rem 0.25rem;
+            padding: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .dark .ai-bubble-assistant {
+            background-color: #1f2937;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #f3f4f6;
+        }
+        .ai-bubble-error {
+            background-color: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+        .dark .ai-bubble-error {
+            background-color: rgba(127, 29, 29, 0.3);
+            border-color: #991b1b;
+            color: #fca5a5;
+        }
+        .ai-icon-sm {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            min-height: 18px !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .ai-icon-md {
+            width: 24px !important;
+            height: 24px !important;
+            min-width: 24px !important;
+            min-height: 24px !important;
+            display: inline-block;
+        }
+        .ai-icon-lg {
+            width: 48px !important;
+            height: 48px !important;
+            min-width: 48px !important;
+            min-height: 48px !important;
+            display: inline-block;
+        }
+        .ai-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #f59e0b;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .ai-btn-primary:hover {
+            background-color: #d97706;
+        }
+        .ai-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .ai-btn-danger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            background-color: #fee2e2;
+            color: #dc2626;
+            font-weight: 500;
+            font-size: 0.8125rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .dark .ai-btn-danger {
+            background-color: rgba(153, 27, 27, 0.3);
+            color: #f87171;
+        }
+        .ai-btn-danger:hover {
+            background-color: #fecaca;
+        }
+        .dark .ai-btn-danger:hover {
+            background-color: rgba(153, 27, 27, 0.5);
+        }
+        .ai-btn-copy {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+        }
+        .dark .ai-btn-copy {
+            color: #9ca3af;
+        }
+        .ai-btn-copy:hover {
+            color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+        .ai-spin {
+            animation: ai-spin-anim 1s linear infinite;
+        }
+        @keyframes ai-spin-anim {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <div class="ai-container">
         {{-- Sidebar Panel: Konfigurasi Model & Instruksi --}}
-        <div class="lg:col-span-4 space-y-6">
-            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-gray-900">
-                <div class="flex items-center gap-2 pb-4 mb-4 border-b border-gray-200 dark:border-white/10">
-                    <x-heroicon-o-adjustments-horizontal class="w-5 h-5 text-amber-500" />
-                    <h3 class="font-semibold text-gray-900 dark:text-white text-base">Konfigurasi Model</h3>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div class="ai-card">
+                <div style="display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.75rem; margin-bottom: 1rem; border-bottom: 1px solid #e5e7eb;">
+                    <div style="color: #f59e0b;">
+                        <x-heroicon-o-adjustments-horizontal class="ai-icon-md" />
+                    </div>
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 600; color: inherit;">Konfigurasi Model</h3>
                 </div>
 
-                <div class="space-y-4 text-sm">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
                     {{-- Provider Selection --}}
                     <div>
-                        <label class="block font-medium text-gray-700 dark:text-gray-300 mb-1">AI Provider</label>
-                        <select wire:model.live="provider" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-white/10 dark:bg-gray-800 dark:text-white">
+                        <label class="ai-label">AI Provider</label>
+                        <select wire:model.live="provider" class="ai-select">
                             <option value="openai">OpenAI / 9router (Default)</option>
                             <option value="gemini">Google Gemini</option>
                             <option value="anthropic">Anthropic (Claude)</option>
@@ -21,21 +229,20 @@
                             <option value="ollama">Ollama (Local)</option>
                             <option value="openrouter">OpenRouter</option>
                         </select>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Menggunakan engine resmi Laravel AI SDK.</p>
+                        <div class="ai-hint">Engine resmi Laravel AI SDK.</div>
                     </div>
 
                     {{-- Model Name Input --}}
                     <div>
-                        <label class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Model</label>
-                        <input type="text" wire:model.live="model" placeholder="Contoh: Content-blog, gpt-4o, gemini-2.5-flash"
-                            class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-white/10 dark:bg-gray-800 dark:text-white" />
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sesuai model yang aktif pada endpoint provider.</p>
+                        <label class="ai-label">Nama Model</label>
+                        <input type="text" wire:model.live="model" placeholder="Contoh: Content-blog, gpt-4o, gemini-2.5-flash" class="ai-input" />
+                        <div class="ai-hint">Model pada endpoint provider.</div>
                     </div>
 
                     {{-- Quick Template --}}
                     <div>
-                        <label class="block font-medium text-gray-700 dark:text-gray-300 mb-1">Template Instruksi Cepat</label>
-                        <select wire:model.live="template" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-white/10 dark:bg-gray-800 dark:text-white">
+                        <label class="ai-label">Template Instruksi Cepat</label>
+                        <select wire:model.live="template" class="ai-select">
                             <option value="">-- Pilih Template --</option>
                             <option value="article">Artikel Ulasan & Wisata (SEO)</option>
                             <option value="seo">Meta Title & Description Generator</option>
@@ -46,16 +253,14 @@
 
                     {{-- System Instructions --}}
                     <div>
-                        <label class="block font-medium text-gray-700 dark:text-gray-300 mb-1">System Prompt / Instruksi</label>
-                        <textarea wire:model.defer="systemPrompt" rows="4"
-                            class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-white/10 dark:bg-gray-800 dark:text-white font-mono text-xs"></textarea>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Aturan karakter atau kepribadian agen AI.</p>
+                        <label class="ai-label">System Prompt / Instruksi</label>
+                        <textarea wire:model.defer="systemPrompt" rows="4" class="ai-textarea" style="font-family: monospace; font-size: 0.75rem;"></textarea>
+                        <div class="ai-hint">Karakter atau aturan prompt model.</div>
                     </div>
 
-                    <div class="pt-2">
-                        <button type="button" wire:click="clearMessages"
-                            class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/50 transition">
-                            <x-heroicon-o-trash class="w-4 h-4" />
+                    <div style="padding-top: 0.5rem;">
+                        <button type="button" wire:click="clearMessages" class="ai-btn-danger">
+                            <x-heroicon-o-trash class="ai-icon-sm" />
                             Bersihkan Riwayat Chat
                         </button>
                     </div>
@@ -64,103 +269,105 @@
         </div>
 
         {{-- Main Chat Area --}}
-        <div class="lg:col-span-8 flex flex-col space-y-4">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
             {{-- Message Feed --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-gray-900 min-h-[420px] max-h-[620px] overflow-y-auto flex flex-col space-y-4">
-                @if (empty($messages))
-                    <div class="flex-1 flex flex-col items-center justify-center text-center p-8 text-gray-500 dark:text-gray-400">
-                        <div class="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-500 mb-3">
-                            <x-heroicon-o-sparkles class="w-8 h-8" />
-                        </div>
-                        <h4 class="font-semibold text-gray-900 dark:text-white text-base">AI Playground Siap</h4>
-                        <p class="text-sm mt-1 max-w-sm">Tulis prompt di bawah atau pilih template untuk menguji performa dan respons model AI dengan Laravel AI SDK.</p>
-                    </div>
-                @else
-                    @foreach ($messages as $index => $msg)
-                        @if ($msg['role'] === 'user')
-                            {{-- User message --}}
-                            <div class="flex justify-end">
-                                <div class="max-w-[85%] rounded-2xl rounded-tr-sm bg-amber-500 text-white px-4 py-3 text-sm shadow-sm">
-                                    <div class="flex items-center justify-between gap-4 mb-1 text-xs text-amber-100 font-medium">
-                                        <span>User</span>
-                                        <span>{{ $msg['timestamp'] ?? '' }}</span>
-                                    </div>
-                                    <div class="whitespace-pre-wrap leading-relaxed">{{ $msg['content'] }}</div>
-                                </div>
+            <div class="ai-card" style="padding: 0;">
+                <div class="ai-chat-feed">
+                    @if (empty($messages))
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2.5rem 1rem; color: #6b7280;">
+                            <div style="width: 64px; height: 64px; border-radius: 9999px; background-color: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; color: #f59e0b; margin-bottom: 1rem;">
+                                <x-heroicon-o-sparkles class="ai-icon-lg" />
                             </div>
-                        @else
-                            {{-- Assistant message --}}
-                            <div class="flex justify-start">
-                                <div class="max-w-[90%] rounded-2xl rounded-tl-sm {{ !empty($msg['is_error']) ? 'bg-red-50 border border-red-200 text-red-900 dark:bg-red-950/40 dark:border-red-800 dark:text-red-200' : 'bg-gray-50 border border-gray-200 text-gray-900 dark:bg-gray-800/80 dark:border-white/10 dark:text-gray-100' }} p-4 text-sm shadow-sm">
-                                    <div class="flex items-center justify-between gap-4 mb-2 pb-2 border-b border-gray-200/60 dark:border-white/10 text-xs text-gray-500 dark:text-gray-400">
-                                        <div class="flex items-center gap-1.5 font-medium">
-                                            <x-heroicon-s-sparkles class="w-4 h-4 {{ !empty($msg['is_error']) ? 'text-red-500' : 'text-amber-500' }}" />
-                                            <span>AI Assistant</span>
-                                            @if (!empty($msg['model']))
-                                                <span class="px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 text-[11px] font-mono">
-                                                    {{ $msg['model'] }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            @if (!empty($msg['duration']))
-                                                <span title="Waktu respons">⚡ {{ $msg['duration'] }}</span>
-                                            @endif
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 600; color: inherit;">AI Playground Siap</h4>
+                            <p style="margin: 0; font-size: 0.875rem; max-width: 380px;">Tulis pertanyaan atau prompt di bawah untuk menguji respon model AI melalui Laravel AI SDK.</p>
+                        </div>
+                    @else
+                        @foreach ($messages as $index => $msg)
+                            @if ($msg['role'] === 'user')
+                                {{-- User message --}}
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <div class="ai-bubble-user">
+                                        <div style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.35rem; font-size: 0.75rem; opacity: 0.9;">
+                                            <span style="font-weight: 600;">User</span>
                                             <span>{{ $msg['timestamp'] ?? '' }}</span>
                                         </div>
+                                        <div style="white-space: pre-wrap; word-break: break-word;">{{ $msg['content'] }}</div>
                                     </div>
-
-                                    <div class="whitespace-pre-wrap leading-relaxed select-text">{{ $msg['content'] }}</div>
-
-                                    @if (!empty($msg['tokens']))
-                                        <div class="mt-3 pt-2 border-t border-gray-200/60 dark:border-white/10 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                            <div class="flex items-center gap-3 font-mono text-[11px]">
-                                                <span>Tokens: {{ $msg['tokens']['total'] ?? 0 }} (In: {{ $msg['tokens']['prompt'] ?? 0 }}, Out: {{ $msg['tokens']['completion'] ?? 0 }})</span>
-                                            </div>
-                                            <button type="button"
-                                                x-data="{ copied: false }"
-                                                x-on:click="navigator.clipboard.writeText(@js($msg['content'])); copied = true; setTimeout(() => copied = false, 2000)"
-                                                class="inline-flex items-center gap-1 text-gray-600 hover:text-amber-600 dark:text-gray-300 dark:hover:text-amber-400 transition">
-                                                <x-heroicon-o-clipboard-document class="w-3.5 h-3.5" />
-                                                <span x-text="copied ? 'Disalin!' : 'Salin'">Salin</span>
-                                            </button>
-                                        </div>
-                                    @endif
                                 </div>
-                            </div>
-                        @endif
-                    @endforeach
-                @endif
+                            @else
+                                {{-- Assistant message --}}
+                                <div style="display: flex; justify-content: flex-start;">
+                                    <div class="ai-bubble-assistant {{ !empty($msg['is_error']) ? 'ai-bubble-error' : '' }}">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 163, 175, 0.2); font-size: 0.75rem; color: #6b7280;">
+                                            <div style="display: flex; align-items: center; gap: 0.35rem; font-weight: 600;">
+                                                <x-heroicon-s-sparkles class="ai-icon-sm" style="color: {{ !empty($msg['is_error']) ? '#ef4444' : '#f59e0b' }};" />
+                                                <span>AI Assistant</span>
+                                                @if (!empty($msg['model']))
+                                                    <span style="padding: 0.15rem 0.4rem; border-radius: 0.25rem; background: rgba(156, 163, 175, 0.2); font-family: monospace; font-size: 0.7rem;">
+                                                        {{ $msg['model'] }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                @if (!empty($msg['duration']))
+                                                    <span>⚡ {{ $msg['duration'] }}</span>
+                                                @endif
+                                                <span>{{ $msg['timestamp'] ?? '' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style="white-space: pre-wrap; word-break: break-word;">{{ $msg['content'] }}</div>
+
+                                        @if (!empty($msg['tokens']))
+                                            <div style="margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid rgba(156, 163, 175, 0.2); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+                                                <div style="font-family: monospace; font-size: 0.7rem; color: #6b7280;">
+                                                    Tokens: {{ $msg['tokens']['total'] ?? 0 }} (In: {{ $msg['tokens']['prompt'] ?? 0 }}, Out: {{ $msg['tokens']['completion'] ?? 0 }})
+                                                </div>
+                                                <button type="button"
+                                                    x-data="{ copied: false }"
+                                                    x-on:click="navigator.clipboard.writeText(@js($msg['content'])); copied = true; setTimeout(() => copied = false, 2000)"
+                                                    class="ai-btn-copy">
+                                                    <x-heroicon-o-clipboard-document class="ai-icon-sm" />
+                                                    <span x-text="copied ? 'Disalin!' : 'Salin'">Salin</span>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endif
+                </div>
             </div>
 
             {{-- Input Area --}}
-            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-gray-900">
-                <form wire:submit="sendMessage" class="space-y-3">
+            <div class="ai-card">
+                <form wire:submit="sendMessage" style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <div>
                         <textarea
                             wire:model="userPrompt"
                             rows="3"
-                            placeholder="Tulis prompt atau pertanyaan di sini... (Klik tombol 'Kirim Prompt' untuk menjalankan)"
-                            class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 dark:border-white/10 dark:bg-gray-800 dark:text-white"
+                            placeholder="Tulis prompt atau pertanyaan di sini... Tekan tombol 'Kirim Prompt'"
+                            class="ai-textarea"
                             required></textarea>
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div class="ai-hint" style="margin: 0;">
                             Didukung resmi oleh <strong>Laravel AI SDK</strong>.
                         </div>
 
                         <button type="submit"
                             wire:loading.attr="disabled"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-sm transition shadow-sm disabled:opacity-50">
-                            <span wire:loading.remove wire:target="sendMessage" class="inline-flex items-center gap-2">
-                                <x-heroicon-m-paper-airplane class="w-4 h-4" />
+                            class="ai-btn-primary">
+                            <span wire:loading.remove wire:target="sendMessage" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <x-heroicon-m-paper-airplane class="ai-icon-sm" />
                                 Kirim Prompt
                             </span>
-                            <span wire:loading wire:target="sendMessage" class="inline-flex items-center gap-2">
-                                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            <span wire:loading wire:target="sendMessage" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                <svg class="ai-icon-sm ai-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                 </svg>
                                 Memproses AI...
                             </span>
