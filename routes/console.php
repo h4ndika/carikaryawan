@@ -13,3 +13,5 @@ Schedule::command('ai:process-batch --limit=10 --concurrency=10')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
+
+
