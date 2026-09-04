@@ -25,7 +25,7 @@ class AiPlayground extends Page
 
     protected string $view = 'filament.rahasia.pages.ai-playground';
 
-    public string $provider = 'openai';
+    public string $provider = 'openai-compatible';
 
     public string $model = '';
 
@@ -41,7 +41,7 @@ class AiPlayground extends Page
 
     public function mount(): void
     {
-        $this->provider = config('ai.default', 'openai');
+        $this->provider = config('ai.default', 'openai-compatible');
         $this->model = (string) config('openai.model', 'Content-blog');
     }
 

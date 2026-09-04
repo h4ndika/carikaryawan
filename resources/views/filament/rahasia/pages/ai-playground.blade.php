@@ -221,7 +221,8 @@
                     <div>
                         <label class="ai-label">AI Provider</label>
                         <select wire:model.live="provider" class="ai-select">
-                            <option value="openai">OpenAI / 9router (Default)</option>
+                            <option value="openai-compatible">9router / OpenAI Compatible (Default)</option>
+                            <option value="openai">OpenAI Official (Responses API)</option>
                             <option value="gemini">Google Gemini</option>
                             <option value="anthropic">Anthropic (Claude)</option>
                             <option value="groq">Groq</option>

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => 'openai',
+    'default' => env('AI_DEFAULT_PROVIDER', 'openai-compatible'),
     'default_for_images' => 'gemini',
     'default_for_audio' => 'openai',
     'default_for_transcription' => 'openai',
@@ -129,14 +129,14 @@ return [
         'openai' => [
             'driver' => 'openai',
             'key' => env('OPENAI_API_KEY'),
-            'url' => env('OPENAI_URL', env('OPENAI_BASE_URL') ? (str_starts_with(env('OPENAI_BASE_URL'), 'http') ? env('OPENAI_BASE_URL') : 'https://' . env('OPENAI_BASE_URL')) : 'https://api.openai.com/v1'),
+            'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
             'store' => env('OPENAI_STORE', true),
         ],
 
         'openai-compatible' => [
             'driver' => 'openai-compatible',
-            'url' => env('OPENAI_COMPATIBLE_URL'),
-            'key' => env('OPENAI_COMPATIBLE_API_KEY'),
+            'url' => env('OPENAI_COMPATIBLE_URL', env('OPENAI_BASE_URL') ? (str_starts_with(env('OPENAI_BASE_URL'), 'http') ? env('OPENAI_BASE_URL') : 'https://' . env('OPENAI_BASE_URL')) : 'https://ai.disekitar.com/v1'),
+            'key' => env('OPENAI_COMPATIBLE_API_KEY', env('OPENAI_API_KEY')),
         ],
 
         'openrouter' => [
