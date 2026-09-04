@@ -151,6 +151,15 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+        .ai-btn-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .ai-btn-primary [wire\:loading],
+        .ai-btn-primary [wire\:loading\.inline-flex] {
+            display: none;
+        }
         .ai-btn-danger {
             display: inline-flex;
             align-items: center;
@@ -360,17 +369,18 @@
 
                         <button type="submit"
                             wire:loading.attr="disabled"
+                            wire:target="sendMessage"
                             class="ai-btn-primary">
-                            <span wire:loading.remove wire:target="sendMessage" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <span wire:loading.remove wire:target="sendMessage" class="ai-btn-content">
                                 <x-heroicon-m-paper-airplane class="ai-icon-sm" />
-                                Kirim Prompt
+                                <span>Kirim Prompt</span>
                             </span>
-                            <span wire:loading wire:target="sendMessage" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                            <span wire:loading.inline-flex wire:target="sendMessage" class="ai-btn-content">
                                 <svg class="ai-icon-sm ai-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                 </svg>
-                                Memproses AI...
+                                <span>Memproses AI...</span>
                             </span>
                         </button>
                     </div>
