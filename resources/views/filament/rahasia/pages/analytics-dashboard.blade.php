@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="analytics-container" x-data="analyticsDashboard()" x-init="initChart()">
+    <div class="analytics-container">
         {{-- Scoped Styles for Analytics Dashboard --}}
         <style>
             .analytics-container {
@@ -386,8 +386,10 @@
                 </div>
             </div>
 
-            <div style="position: relative; height: 320px; width: 100%;">
-                <canvas id="dailyAnalyticsChart"></canvas>
+            <div wire:ignore
+                 x-data="dailyAnalyticsChart(@js($chartData))"
+                 style="position: relative; height: 320px; width: 100%;">
+                <canvas x-ref="canvas"></canvas>
             </div>
         </div>
 
@@ -530,32 +532,58 @@
     {{-- Load Chart.js and Alpine Component --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        function analyticsDashboard() {
+        function dailyAnalyticsChart(initialData) {
             return {
                 chart: null,
-                initChart() {
-                    const ctx = document.getElementById('dailyAnalyticsChart');
+                initialData: initialData,
+                init() {
+                    const renderAfterReady = () => {
+                        this.$nextTick(() => {
+                            this.render(this.initialData);
+                        });
+                    };
+
+                    if (window.Chart) {
+                        renderAfterReady();
+                    } else {
+                        const checkInterval = setInterval(() => {
+                            if (window.Chart) {
+                                clearInterval(checkInterval);
+                                renderAfterReady();
+                            }
+                        }, 50);
+                    }
+
+                    window.addEventListener('analytics-updated', (e) => {
+                        if (e.detail && e.detail.chartData) {
+                            this.update(e.detail.chartData);
+                        }
+                    });
+                },
+                render(data) {
+                    const canvas = this.$refs.canvas;
+                    if (!canvas) return;
+
+                    const ctx = canvas.getContext('2d');
                     if (!ctx) return;
 
-                    const chartData = @json($chartData);
+                    if (this.chart) {
+                        this.chart.destroy();
+                        this.chart = null;
+                    }
 
-                    // Check if dark mode
                     const isDark = document.documentElement.classList.contains('dark');
                     const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
                     const textColor = isDark ? '#a1a1aa' : '#71717a';
 
-                    if (this.chart) {
-                        this.chart.destroy();
-                    }
-
                     this.chart = new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: chartData.labels,
+                            labels: data.labels || [],
                             datasets: [
                                 {
                                     label: 'Total Pageviews',
-                                    data: chartData.views,
+                                    data: data.views || [],
                                     borderColor: '#f59e0b',
                                     backgroundColor: 'rgba(245, 158, 11, 0.12)',
                                     borderWidth: 2.5,
@@ -567,7 +595,7 @@
                                 },
                                 {
                                     label: 'Pengunjung Unik',
-                                    data: chartData.visitors,
+                                    data: data.visitors || [],
                                     borderColor: '#3b82f6',
                                     backgroundColor: 'rgba(59, 130, 246, 0.08)',
                                     borderWidth: 2,
@@ -582,6 +610,9 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            animation: {
+                                duration: 300
+                            },
                             interaction: {
                                 mode: 'index',
                                 intersect: false,
@@ -616,6 +647,7 @@
                                 },
                                 y: {
                                     beginAtZero: true,
+                                    suggestedMax: 5,
                                     grid: {
                                         color: gridColor,
                                         drawBorder: false,
@@ -623,6 +655,7 @@
                                     ticks: {
                                         color: textColor,
                                         precision: 0,
+                                        stepSize: 1,
                                         font: {
                                             size: 11
                                         }
@@ -631,13 +664,16 @@
                             }
                         }
                     });
-
-                    // Listen for Livewire updates
-                    window.addEventListener('analytics-updated', () => {
-                        setTimeout(() => {
-                            this.initChart();
-                        }, 100);
-                    });
+                },
+                update(newData) {
+                    if (!this.chart) {
+                        this.render(newData);
+                        return;
+                    }
+                    this.chart.data.labels = newData.labels || [];
+                    this.chart.data.datasets[0].data = newData.views || [];
+                    this.chart.data.datasets[1].data = newData.visitors || [];
+                    this.chart.update();
                 }
             };
         }

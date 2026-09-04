@@ -78,19 +78,19 @@ class AnalyticsDashboard extends Page
                 break;
         }
 
-        $this->dispatch('analytics-updated');
+        $this->dispatch('analytics-updated', chartData: $this->getDailyChartData());
     }
 
     public function updatedStartDate(): void
     {
         $this->period = 'custom';
-        $this->dispatch('analytics-updated');
+        $this->dispatch('analytics-updated', chartData: $this->getDailyChartData());
     }
 
     public function updatedEndDate(): void
     {
         $this->period = 'custom';
-        $this->dispatch('analytics-updated');
+        $this->dispatch('analytics-updated', chartData: $this->getDailyChartData());
     }
 
     /**
