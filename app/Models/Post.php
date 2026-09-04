@@ -34,9 +34,15 @@ class Post extends Model
         'longitude' => 'decimal:8',
         'rating' => 'decimal:2',
         'reviews_count' => 'integer',
+        'views_count' => 'integer',
         'affiliate_links' => 'array',
         'published_at' => 'datetime',
     ];
+
+    public function pageViews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PageView::class);
+    }
 
     /**
      * Determine if the post has any active affiliate links.
