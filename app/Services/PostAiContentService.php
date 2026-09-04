@@ -12,6 +12,7 @@ use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use OpenAI\Laravel\Facades\OpenAI;
+use RuntimeException;
 use Throwable;
 
 class PostAiContentService
