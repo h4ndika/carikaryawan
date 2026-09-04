@@ -533,147 +533,147 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
         function dailyAnalyticsChart(initialData) {
+            let chart = null;
+            let currentData = initialData || { labels: [], views: [], visitors: [] };
+
             return {
-                chart: null,
-                initialData: initialData,
                 init() {
-                    const renderAfterReady = () => {
+                    const start = () => {
                         this.$nextTick(() => {
-                            this.render(this.initialData);
+                            const canvas = this.$refs.canvas;
+                            if (!canvas) return;
+
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+
+                            if (chart) {
+                                chart.destroy();
+                                chart = null;
+                            }
+
+                            const isDark = document.documentElement.classList.contains('dark');
+                            const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+                            const textColor = isDark ? '#a1a1aa' : '#71717a';
+
+                            chart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: currentData.labels || [],
+                                    datasets: [
+                                        {
+                                            label: 'Total Pageviews',
+                                            data: currentData.views || [],
+                                            borderColor: '#f59e0b',
+                                            backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                                            borderWidth: 2.5,
+                                            pointRadius: 3.5,
+                                            pointHoverRadius: 6,
+                                            pointBackgroundColor: '#f59e0b',
+                                            fill: true,
+                                            tension: 0.35,
+                                        },
+                                        {
+                                            label: 'Pengunjung Unik',
+                                            data: currentData.visitors || [],
+                                            borderColor: '#3b82f6',
+                                            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                                            borderWidth: 2,
+                                            pointRadius: 3,
+                                            pointHoverRadius: 5,
+                                            pointBackgroundColor: '#3b82f6',
+                                            fill: true,
+                                            tension: 0.35,
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    animation: {
+                                        duration: 300
+                                    },
+                                    interaction: {
+                                        mode: 'index',
+                                        intersect: false,
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                        tooltip: {
+                                            backgroundColor: isDark ? '#27272a' : '#18181b',
+                                            titleColor: '#fafafa',
+                                            bodyColor: '#fafafa',
+                                            borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+                                            borderWidth: 1,
+                                            padding: 10,
+                                            cornerRadius: 8,
+                                            boxPadding: 4,
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                color: gridColor,
+                                                drawBorder: false,
+                                            },
+                                            ticks: {
+                                                color: textColor,
+                                                font: {
+                                                    size: 11
+                                                }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            suggestedMax: 5,
+                                            grid: {
+                                                color: gridColor,
+                                                drawBorder: false,
+                                            },
+                                            ticks: {
+                                                color: textColor,
+                                                precision: 0,
+                                                stepSize: 1,
+                                                font: {
+                                                    size: 11
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
                         });
                     };
 
                     if (window.Chart) {
-                        renderAfterReady();
+                        start();
                     } else {
-                        const checkInterval = setInterval(() => {
+                        const interval = setInterval(() => {
                             if (window.Chart) {
-                                clearInterval(checkInterval);
-                                renderAfterReady();
+                                clearInterval(interval);
+                                start();
                             }
                         }, 50);
                     }
 
                     window.addEventListener('analytics-updated', (e) => {
                         if (e.detail && e.detail.chartData) {
-                            this.update(e.detail.chartData);
-                        }
-                    });
-                },
-                render(data) {
-                    const canvas = this.$refs.canvas;
-                    if (!canvas) return;
-
-                    const ctx = canvas.getContext('2d');
-                    if (!ctx) return;
-
-                    if (this.chart) {
-                        this.chart.destroy();
-                        this.chart = null;
-                    }
-
-                    const isDark = document.documentElement.classList.contains('dark');
-                    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
-                    const textColor = isDark ? '#a1a1aa' : '#71717a';
-
-                    this.chart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels || [],
-                            datasets: [
-                                {
-                                    label: 'Total Pageviews',
-                                    data: data.views || [],
-                                    borderColor: '#f59e0b',
-                                    backgroundColor: 'rgba(245, 158, 11, 0.12)',
-                                    borderWidth: 2.5,
-                                    pointRadius: 3.5,
-                                    pointHoverRadius: 6,
-                                    pointBackgroundColor: '#f59e0b',
-                                    fill: true,
-                                    tension: 0.35,
-                                },
-                                {
-                                    label: 'Pengunjung Unik',
-                                    data: data.visitors || [],
-                                    borderColor: '#3b82f6',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.08)',
-                                    borderWidth: 2,
-                                    pointRadius: 3,
-                                    pointHoverRadius: 5,
-                                    pointBackgroundColor: '#3b82f6',
-                                    fill: true,
-                                    tension: 0.35,
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            animation: {
-                                duration: 300
-                            },
-                            interaction: {
-                                mode: 'index',
-                                intersect: false,
-                            },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    backgroundColor: isDark ? '#27272a' : '#18181b',
-                                    titleColor: '#fafafa',
-                                    bodyColor: '#fafafa',
-                                    borderColor: isDark ? '#3f3f46' : '#e4e4e7',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    boxPadding: 4,
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    grid: {
-                                        color: gridColor,
-                                        drawBorder: false,
-                                    },
-                                    ticks: {
-                                        color: textColor,
-                                        font: {
-                                            size: 11
-                                        }
-                                    }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    suggestedMax: 5,
-                                    grid: {
-                                        color: gridColor,
-                                        drawBorder: false,
-                                    },
-                                    ticks: {
-                                        color: textColor,
-                                        precision: 0,
-                                        stepSize: 1,
-                                        font: {
-                                            size: 11
-                                        }
-                                    }
-                                }
+                            currentData = e.detail.chartData;
+                            if (chart) {
+                                chart.data.labels = currentData.labels || [];
+                                chart.data.datasets[0].data = currentData.views || [];
+                                chart.data.datasets[1].data = currentData.visitors || [];
+                                chart.update();
                             }
                         }
                     });
                 },
-                update(newData) {
-                    if (!this.chart) {
-                        this.render(newData);
-                        return;
+                destroy() {
+                    if (chart) {
+                        chart.destroy();
+                        chart = null;
                     }
-                    this.chart.data.labels = newData.labels || [];
-                    this.chart.data.datasets[0].data = newData.views || [];
-                    this.chart.data.datasets[1].data = newData.visitors || [];
-                    this.chart.update();
                 }
             };
         }
