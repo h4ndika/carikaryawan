@@ -74,6 +74,8 @@ class ListPosts extends ListRecords
 
                     $service->setSkipDuplicates((bool) ($data['skip_duplicates'] ?? false));
 
+                    @set_time_limit(300);
+
                     $stats = $service->importFromFile($absoluteFilePath);
 
                     // Clean up temporary uploaded file
