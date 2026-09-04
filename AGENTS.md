@@ -14,6 +14,7 @@ Rules:
 ## Multi-Agent Git Workflow Rules
 Setiap kali mendelegasikan tugas ke agent (Frontend, Backend, dll.):
 1. **Awal Pekerjaan**: Agent WAJIB menjalankan `git pull origin main` terlebih dahulu sebelum mulai bekerja atau membuat branch.
-2. **Branching**: Pekerjaan dilakukan pada branch khusus (misal: `feat/backend-...`, `feat/frontend-...`).
-3. **Akhir Pekerjaan**: Agent melakukan commit dan `git push origin <nama-branch>`.
-4. **Pull Request**: Buat Pull Request (PR) ke branch `main` (misal menggunakan `gh pr create` jika GitHub CLI tersedia). Jangan langsung merge ke `main`, user (human) yang akan melakukan review dan merge secara manual.
+2. **Branching & PR**:
+   - Untuk fitur baru / perubahan besar: Pekerjaan dilakukan pada branch khusus (misal: `feat/backend-...`, `feat/frontend-...`), push branch, dan buat Pull Request (PR) ke branch `main`.
+   - Untuk perbaikan kecil / bugfix minor: Boleh langsung commit dan `git push origin main` tanpa perlu membuat branch dan PR baru.
+3. **Deployment**: Setelah ada update di `main`, lakukan sinkronisasi (`git pull origin main && php artisan optimize:clear`) di VPS.
