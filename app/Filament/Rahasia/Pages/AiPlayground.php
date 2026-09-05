@@ -3,11 +3,15 @@
 namespace App\Filament\Rahasia\Pages;
 
 use App\Ai\Tools\DisekitarDatabaseTool;
+use App\Models\AiChatSession;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
 use Laravel\Ai\AnonymousAgent;
+use Laravel\Ai\Messages\Message;
+use Laravel\Ai\Messages\MessageRole;
 use UnitEnum;
 
 class AiPlayground extends Page
@@ -42,10 +46,92 @@ class AiPlayground extends Page
 
     public string $template = '';
 
+    public ?int $currentSessionId = null;
+
+    public array $sessionsList = [];
+
+    public bool $isGenerating = false;
+
+    public ?string $pendingPrompt = null;
+
     public function mount(): void
     {
         $this->provider = config('ai.default', 'openai-compatible');
         $this->model = (string) config('openai.model', 'Content-blog');
+        $this->loadSessionsList();
+    }
+
+    public function loadSessionsList(): void
+    {
+        $this->sessionsList = AiChatSession::query()
+            ->orderByDesc('updated_at')
+            ->take(30)
+            ->get(['id', 'title', 'updated_at', 'model'])
+            ->map(fn ($s) => [
+                'id' => $s->id,
+                'title' => $s->title,
+                'model' => $s->model,
+                'updated_at' => $s->updated_at?->diffForHumans() ?? '',
+            ])
+            ->toArray();
+    }
+
+    public function newSession(): void
+    {
+        $this->currentSessionId = null;
+        $this->messages = [];
+        $this->errorMessage = null;
+        $this->userPrompt = '';
+        $this->isGenerating = false;
+        $this->pendingPrompt = null;
+
+        Notification::make()
+            ->title('Sesi chat baru dimulai')
+            ->info()
+            ->send();
+    }
+
+    public function selectSession(int $id): void
+    {
+        $session = AiChatSession::find($id);
+
+        if (! $session) {
+            Notification::make()
+                ->title('Sesi chat tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $this->currentSessionId = $session->id;
+        $this->provider = $session->provider ?: $this->provider;
+        $this->model = $session->model ?: $this->model;
+        $this->systemPrompt = $session->system_prompt ?? $this->systemPrompt;
+        $this->enableDatabaseAccess = (bool) $session->enable_database_access;
+        $this->messages = $session->messages ?? [];
+        $this->errorMessage = null;
+        $this->userPrompt = '';
+        $this->isGenerating = false;
+        $this->pendingPrompt = null;
+
+        $this->dispatch('chat-scrolled');
+    }
+
+    public function deleteSession(int $id): void
+    {
+        AiChatSession::where('id', $id)->delete();
+
+        if ($this->currentSessionId === $id) {
+            $this->currentSessionId = null;
+            $this->messages = [];
+        }
+
+        $this->loadSessionsList();
+
+        Notification::make()
+            ->title('Sesi chat dihapus')
+            ->success()
+            ->send();
     }
 
     public function updatedProvider(string $val): void
@@ -92,7 +178,10 @@ class AiPlayground extends Page
         }
     }
 
-    public function sendMessage(): void
+    /**
+     * Phase 1: User sends prompt. Instantly append to chat, clear textarea, and flag generating state.
+     */
+    public function submitPrompt(): void
     {
         $promptText = trim($this->userPrompt);
 
@@ -104,6 +193,10 @@ class AiPlayground extends Page
             return;
         }
 
+        if ($this->isGenerating) {
+            return;
+        }
+
         $this->errorMessage = null;
 
         $this->messages[] = [
@@ -112,8 +205,24 @@ class AiPlayground extends Page
             'timestamp' => now()->format('H:i:s'),
         ];
 
+        $this->pendingPrompt = $promptText;
         $this->userPrompt = '';
+        $this->isGenerating = true;
 
+        $this->dispatch('chat-scrolled');
+    }
+
+    /**
+     * Phase 2: Called right after UI render to process AI backend response and auto-update session.
+     */
+    public function processAiResponse(): void
+    {
+        if (! $this->isGenerating || empty($this->pendingPrompt)) {
+            $this->isGenerating = false;
+            return;
+        }
+
+        $promptText = $this->pendingPrompt;
         $startTime = microtime(true);
 
         try {
@@ -122,14 +231,31 @@ class AiPlayground extends Page
 
             if ($this->enableDatabaseAccess) {
                 $tools[] = new DisekitarDatabaseTool();
-                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil. Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
+                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil. Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat dalam format Markdown. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
             }
 
             $instructions = (!empty($this->systemPrompt) ? $this->systemPrompt : 'You are a helpful AI assistant.') . $dbInstructions;
 
+            // Build conversation history (up to last 10 messages for conversational continuity)
+            $history = [];
+            $previousMessages = array_slice($this->messages, 0, -1);
+            $recentMessages = array_slice($previousMessages, -10);
+
+            foreach ($recentMessages as $msg) {
+                if (!empty($msg['is_error'])) {
+                    continue;
+                }
+                if (in_array($msg['role'] ?? '', ['user', 'assistant']) && !empty($msg['content'])) {
+                    $role = $msg['role'] === 'user'
+                        ? MessageRole::User
+                        : MessageRole::Assistant;
+                    $history[] = new Message($role, $msg['content']);
+                }
+            }
+
             $agent = new AnonymousAgent(
                 instructions: $instructions,
-                messages: [],
+                messages: $history,
                 tools: $tools
             );
 
@@ -176,10 +302,8 @@ class AiPlayground extends Page
                 'timestamp' => now()->format('H:i:s'),
             ];
 
-            Notification::make()
-                ->title('Respons AI Berhasil Dihasilkan')
-                ->success()
-                ->send();
+            // Save or update session in database
+            $this->saveSession($promptText);
 
         } catch (\Throwable $e) {
             $duration = round(microtime(true) - $startTime, 2);
@@ -200,6 +324,44 @@ class AiPlayground extends Page
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
+        } finally {
+            $this->isGenerating = false;
+            $this->pendingPrompt = null;
+            $this->dispatch('chat-scrolled');
+        }
+    }
+
+    protected function saveSession(string $firstPrompt): void
+    {
+        try {
+            if ($this->currentSessionId) {
+                $session = AiChatSession::find($this->currentSessionId);
+                if ($session) {
+                    $session->update([
+                        'provider' => $this->provider,
+                        'model' => $this->model,
+                        'system_prompt' => $this->systemPrompt,
+                        'enable_database_access' => $this->enableDatabaseAccess,
+                        'messages' => $this->messages,
+                    ]);
+                }
+            } else {
+                $session = AiChatSession::create([
+                    'user_id' => auth()->id(),
+                    'title' => Str::limit($firstPrompt, 45, '...'),
+                    'provider' => $this->provider,
+                    'model' => $this->model,
+                    'system_prompt' => $this->systemPrompt,
+                    'enable_database_access' => $this->enableDatabaseAccess,
+                    'messages' => $this->messages,
+                ]);
+
+                $this->currentSessionId = $session->id;
+            }
+
+            $this->loadSessionsList();
+        } catch (\Throwable $e) {
+            // Silently ignore session save error so chat isn't disrupted
         }
     }
 
@@ -207,6 +369,12 @@ class AiPlayground extends Page
     {
         $this->messages = [];
         $this->errorMessage = null;
+        $this->isGenerating = false;
+        $this->pendingPrompt = null;
+
+        if ($this->currentSessionId) {
+            AiChatSession::where('id', $this->currentSessionId)->update(['messages' => []]);
+        }
 
         Notification::make()
             ->title('Riwayat percakapan dibersihkan')
