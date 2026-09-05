@@ -1279,7 +1279,7 @@
                                         @if(!empty($chart['description']))
                                             <div style="font-size: 0.75rem; color: #9ca3af;">{{ $chart['description'] }}</div>
                                         @endif
-                                        <div class="ai-chart-canvas-box">
+                                        <div class="ai-chart-canvas-box" wire:ignore wire:key="report-chart-box-{{ $index }}">
                                             <canvas id="report-chart-{{ $index }}"></canvas>
                                         </div>
                                     </div>
@@ -1396,35 +1396,44 @@
                 init() {
                     window.addEventListener('resize', () => {
                         this.chartInstances.forEach(c => {
-                            try { c.resize(); } catch(e) {}
+                            try {
+                                if (c && !c.destroyed && c.ctx) {
+                                    c.resize();
+                                }
+                            } catch(e) {}
                         });
                     });
-                    this.$nextTick(() => {
+                    setTimeout(() => {
                         this.initCharts();
-                    });
+                    }, 50);
                 },
 
                 switchTab(tab) {
                     this.currentTab = tab;
                     if (tab === 'dashboard') {
-                        this.$nextTick(() => {
+                        setTimeout(() => {
                             this.initCharts();
-                        });
+                        }, 50);
                     }
                 },
 
                 updateReport(newReport) {
                     this.currentReport = newReport;
                     this.currentTab = 'dashboard';
-                    this.$nextTick(() => {
+                    setTimeout(() => {
                         this.initCharts();
-                    });
+                    }, 50);
                 },
 
                 initCharts() {
                     // Destroy previous chart instances cleanly
                     this.chartInstances.forEach(chart => {
-                        try { chart.destroy(); } catch (e) {}
+                        try {
+                            if (chart) {
+                                chart.stop();
+                                chart.destroy();
+                            }
+                        } catch (e) {}
                     });
                     this.chartInstances = [];
 
@@ -1433,7 +1442,7 @@
                     }
 
                     if (typeof Chart === 'undefined') {
-                        setTimeout(() => this.initCharts(), 250);
+                        setTimeout(() => this.initCharts(), 200);
                         return;
                     }
 
@@ -1445,7 +1454,15 @@
                         const canvas = document.getElementById(`report-chart-${idx}`);
                         if (!canvas) return;
 
-                        const ctx = canvas.getContext('2d');
+                        // Ensure any chart instance already attached to this canvas is stopped and destroyed
+                        try {
+                            const existing = typeof Chart.getChart === 'function' ? Chart.getChart(canvas) : null;
+                            if (existing) {
+                                existing.stop();
+                                existing.destroy();
+                            }
+                        } catch (e) {}
+
                         const type = chartConfig.type || 'bar';
 
                         const datasets = (chartConfig.datasets || []).map((ds, dsIdx) => {
@@ -1474,48 +1491,50 @@
                         const textColor = isDark ? '#9ca3af' : '#4b5563';
                         const gridColor = isDark ? 'rgba(75, 85, 99, 0.25)' : 'rgba(229, 231, 235, 0.9)';
 
-                        const chartInstance = new Chart(ctx, {
-                            type: type,
-                            data: {
-                                labels: chartConfig.labels || [],
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                animation: {
-                                    duration: 350
+                        try {
+                            const chartInstance = new Chart(canvas, {
+                                type: type,
+                                data: {
+                                    labels: chartConfig.labels || [],
+                                    datasets: datasets
                                 },
-                                plugins: {
-                                    legend: {
-                                        display: type === 'doughnut' || type === 'pie' || datasets.length > 1,
-                                        position: 'bottom',
-                                        labels: {
-                                            boxWidth: 12,
-                                            color: textColor,
-                                            font: { size: 11, weight: '600' }
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    animation: false,
+                                    plugins: {
+                                        legend: {
+                                            display: type === 'doughnut' || type === 'pie' || datasets.length > 1,
+                                            position: 'bottom',
+                                            labels: {
+                                                boxWidth: 12,
+                                                color: textColor,
+                                                font: { size: 11, weight: '600' }
+                                            }
+                                        },
+                                        tooltip: {
+                                            padding: 8,
+                                            cornerRadius: 6
                                         }
                                     },
-                                    tooltip: {
-                                        padding: 8,
-                                        cornerRadius: 6
-                                    }
-                                },
-                                scales: (type === 'doughnut' || type === 'pie') ? {} : {
-                                    y: {
-                                        beginAtZero: true,
-                                        ticks: { color: textColor, font: { size: 10 } },
-                                        grid: { color: gridColor }
-                                    },
-                                    x: {
-                                        ticks: { color: textColor, font: { size: 10 } },
-                                        grid: { display: false }
+                                    scales: (type === 'doughnut' || type === 'pie') ? {} : {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: { color: textColor, font: { size: 10 } },
+                                            grid: { color: gridColor }
+                                        },
+                                        x: {
+                                            ticks: { color: textColor, font: { size: 10 } },
+                                            grid: { display: false }
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
 
-                        this.chartInstances.push(chartInstance);
+                            this.chartInstances.push(chartInstance);
+                        } catch (err) {
+                            console.warn('Failed to initialize chart', idx, err);
+                        }
                     });
                 }
             };
