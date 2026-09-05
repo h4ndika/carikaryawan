@@ -155,7 +155,7 @@ class AiPlayground extends Page
     {
         switch ($val) {
             case 'analytics':
-                $this->systemPrompt = "Kamu adalah analis data cerdas untuk direktori DiSekitar. Gunakan tool database yang tersedia untuk memeriksa data riil (posts, cities, categories, views) dan jawab dengan angka/informasi akurat.";
+                $this->systemPrompt = "Kamu adalah analis data cerdas untuk direktori DiSekitar. Gunakan tool database yang tersedia untuk memeriksa data riil (posts, cities, categories, landmarks, page_views) dan jawab dengan angka/informasi akurat.";
                 $this->userPrompt = "Berapa jumlah post di kota Bandung?";
                 $this->enableDatabaseAccess = true;
                 break;
@@ -231,7 +231,7 @@ class AiPlayground extends Page
 
             if ($this->enableDatabaseAccess) {
                 $tools[] = new DisekitarDatabaseTool();
-                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil. Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat dalam format Markdown. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
+                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, landmarks, page_views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil. Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat dalam format Markdown. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
             }
 
             $instructions = (!empty($this->systemPrompt) ? $this->systemPrompt : 'You are a helpful AI assistant.') . $dbInstructions;

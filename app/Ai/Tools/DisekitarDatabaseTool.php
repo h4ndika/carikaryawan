@@ -19,6 +19,7 @@ The available tables and key columns are:
 - cities: id, name, slug, province_id
 - provinces: id, name, slug
 - post_details: id, post_id, field_name, field_value
+- landmarks: id, city_id, province_id, name, slug, type, latitude, longitude, default_radius_km
 - page_views: id, url, ip_hash, user_agent, device_type ('mobile','desktop','tablet'), visited_at
 - ai_queues: id, post_id, status ('pending','processing','completed','failed'), error, created_at
 - photo_scrape_jobs: id, post_id, status ('pending','processing','completed','failed'), photos_count, created_at

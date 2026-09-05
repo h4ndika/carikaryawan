@@ -472,7 +472,7 @@
                             <input type="checkbox" wire:model.live="enableDatabaseAccess" style="width: 1.15rem; height: 1.15rem; accent-color: #f59e0b; cursor: pointer;">
                         </label>
                         <div class="ai-hint" style="margin: 0; font-size: 0.72rem; line-height: 1.35;">
-                            AI membaca data real-time DiSekitar (jumlah post, kota, kategori, views, rating) via safe read-only SQL tool.
+                            AI membaca data real-time DiSekitar (posts, cities, categories, landmarks, page_views) via safe read-only SQL tool.
                         </div>
                     </div>
 
@@ -694,7 +694,8 @@
                             <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah post di kota Bandung?')" class="ai-chip">📍 Total post Bandung</button>
                             <button type="button" wire:click="$set('userPrompt', 'Tampilkan 5 kota dengan jumlah postingan terbanyak')" class="ai-chip">🏆 Top 5 Kota</button>
                             <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah postingan berdasarkan kategori?')" class="ai-chip">📂 Post per Kategori</button>
-                            <button type="button" wire:click="$set('userPrompt', 'Berapa total pengunjung halaman hari ini?')" class="ai-chip">📈 Views Hari Ini</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Tampilkan landmark apa saja yang ada di kota Jakarta Selatan')" class="ai-chip">🏛️ Landmark Jakarta</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Berapa total pengunjung page_views hari ini?')" class="ai-chip">📈 Views Hari Ini</button>
                         </div>
                     @endif
 
