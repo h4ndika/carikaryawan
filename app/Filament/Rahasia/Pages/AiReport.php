@@ -30,7 +30,7 @@ class AiReport extends Page
 
     public string $provider = 'openai-compatible';
 
-    public string $model = '';
+    public string $model = 'Content-blog';
 
     public string $userPrompt = '';
 
@@ -212,7 +212,7 @@ class AiReport extends Page
             );
 
             $selectedProvider = $this->provider;
-            $selectedModel = ! empty($this->model) ? trim($this->model) : null;
+            $selectedModel = ! empty(trim($this->model)) ? trim($this->model) : 'Content-blog';
 
             $response = $agent->prompt(
                 prompt: $promptText,

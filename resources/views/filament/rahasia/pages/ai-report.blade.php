@@ -102,6 +102,51 @@
             border-color: rgba(16, 185, 129, 0.3);
         }
 
+        .ai-model-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #f3f4f6;
+            padding: 0.2rem 0.5rem 0.2rem 0.65rem;
+            border-radius: 9999px;
+            border: 1px solid #e5e7eb;
+        }
+        .dark .ai-model-control {
+            background: #1f2937;
+            border-color: #374151;
+        }
+        .ai-model-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .dark .ai-model-label {
+            color: #9ca3af;
+        }
+        .ai-model-input {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            color: #111827;
+            width: 140px;
+            outline: none;
+            transition: all 0.15s;
+        }
+        .dark .ai-model-input {
+            background: #111827;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        .ai-model-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 1px #f59e0b;
+        }
+
         /* Form Controls */
         .ai-prompt-area {
             position: relative;
@@ -746,9 +791,18 @@
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                     <span class="ai-badge ai-badge-success">⚡ Database Live</span>
-                    <span class="ai-badge">{{ $model ?: 'Content-blog' }}</span>
+                    <div class="ai-model-control">
+                        <span class="ai-model-label">Model:</span>
+                        <input 
+                            type="text" 
+                            wire:model="model" 
+                            placeholder="Content-blog" 
+                            class="ai-model-input"
+                            title="Nama Model AI (default: Content-blog)"
+                        />
+                    </div>
                 </div>
             </div>
 
