@@ -814,20 +814,22 @@
                         rows="3"
                         placeholder="Contoh: Buatkan laporan komparasi views dan sebaran postingan kota di Jawa Barat, tampilkan ranking kota terbaik dan rekomendasi strategi boosting..."
                         class="ai-textarea"
-                        :disabled="$wire.isGenerating"
+                        x-on:keydown.enter="if(!$event.shiftKey) { $event.preventDefault(); $wire.submitPrompt(); }"
+                        wire:loading.attr="disabled"
+                        wire:target="submitPrompt"
                     ></textarea>
 
                     <div class="ai-prompt-actions">
                         <button 
                             type="submit"
                             wire:loading.attr="disabled"
-                            :disabled="$wire.isGenerating"
+                            wire:target="submitPrompt"
                             class="ai-btn-submit"
                         >
-                            <span wire:loading.remove wire:target="submitPrompt, processAiReport">
+                            <span wire:loading.remove wire:target="submitPrompt">
                                 🚀 Buat Laporan
                             </span>
-                            <span wire:loading wire:target="submitPrompt, processAiReport">
+                            <span wire:loading wire:target="submitPrompt">
                                 ⏳ Sedang Menganalisis...
                             </span>
                         </button>
@@ -936,41 +938,41 @@
             {{-- MAIN REPORT CONTENT AREA --}}
             <div class="ai-report-main">
 
-                {{-- LOADING / GENERATING STATE --}}
-                <div x-show="$wire.isGenerating" x-cloak class="ai-loading-box">
-                    <svg class="ai-spin-icon" fill="none" viewBox="0 0 24 24">
-                        <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem;">AI Sedang Menyusun Laporan Eksekutif</div>
-                    <div style="font-size: 0.8125rem; color: #6b7280; max-width: 480px; margin: 0 auto;">
-                        Menghubungi AI Agent, mengeksekusi SQL live database DiSekitar, dan merender visual cards, charts, & data tables...
-                    </div>
-
-                    {{-- Automatically dispatch processing to backend right after render --}}
-                    <div x-data x-init="$nextTick(() => { $wire.processAiReport(); })"></div>
-                </div>
-
-                {{-- ERROR BANNER --}}
-                @if($errorMessage)
-                    <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; border-radius: 0.75rem; padding: 1rem; font-size: 0.8125rem;">
-                        <strong>Terjadi Kesalahan:</strong> {{ $errorMessage }}
-                    </div>
-                @endif
-
-                {{-- EMPTY STATE --}}
-                @if(! $report && ! $isGenerating)
-                    <div class="ai-box" style="text-align: center; padding: 3.5rem 1.5rem; border-style: dashed;">
-                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📑</div>
-                        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">Belum Ada Laporan Aktif</div>
-                        <div style="font-size: 0.8125rem; color: #6b7280; max-width: 420px; margin: 0 auto;">
-                            Pilih laporan dari daftar riwayat di sebelah kiri, atau ketik pertanyaan analisis di formulir atas untuk membuat laporan baru.
+                {{-- LOADING / GENERATING STATE (NATIVE LIVEWIRE) --}}
+                <div wire:loading wire:target="submitPrompt" style="width: 100%;">
+                    <div class="ai-loading-box">
+                        <svg class="ai-spin-icon" fill="none" viewBox="0 0 24 24">
+                            <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem;">AI Sedang Menyusun Laporan Eksekutif</div>
+                        <div style="font-size: 0.8125rem; color: #6b7280; max-width: 480px; margin: 0 auto;">
+                            Menghubungi AI Agent, mengeksekusi SQL live database DiSekitar, dan merender visual cards, charts, & data tables...
                         </div>
                     </div>
-                @endif
+                </div>
 
-                {{-- LOADED REPORT DASHBOARD --}}
-                @if($report && ! $isGenerating)
+                <div wire:loading.remove wire:target="submitPrompt">
+                    {{-- ERROR BANNER --}}
+                    @if($errorMessage)
+                        <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; border-radius: 0.75rem; padding: 1rem; font-size: 0.8125rem; margin-bottom: 1rem;">
+                            <strong>Terjadi Kesalahan:</strong> {{ $errorMessage }}
+                        </div>
+                    @endif
+
+                    {{-- EMPTY STATE --}}
+                    @if(! $report)
+                        <div class="ai-box" style="text-align: center; padding: 3.5rem 1.5rem; border-style: dashed;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">📑</div>
+                            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">Belum Ada Laporan Aktif</div>
+                            <div style="font-size: 0.8125rem; color: #6b7280; max-width: 420px; margin: 0 auto;">
+                                Pilih laporan dari daftar riwayat di sebelah kiri, atau ketik pertanyaan analisis di formulir atas untuk membuat laporan baru.
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- LOADED REPORT DASHBOARD --}}
+                    @if($report)
                     {{-- Report Top Bar --}}
                     <div class="ai-report-topbar">
                         <div class="ai-report-headings">
@@ -1168,6 +1170,7 @@
                         </div>
                     </div>
                 @endif
+                </div>
 
             </div>
 

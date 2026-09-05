@@ -181,20 +181,9 @@ class AiReport extends Page
         }
 
         $this->errorMessage = null;
-        $this->pendingPrompt = $promptText;
         $this->isGenerating = true;
+        @set_time_limit(180);
 
-        $this->dispatch('report-generation-started');
-    }
-
-    public function processAiReport(): void
-    {
-        if (! $this->isGenerating || empty($this->pendingPrompt)) {
-            $this->isGenerating = false;
-            return;
-        }
-
-        $promptText = $this->pendingPrompt;
         $startTime = microtime(true);
 
         try {
@@ -295,7 +284,6 @@ class AiReport extends Page
                 ->send();
         } finally {
             $this->isGenerating = false;
-            $this->pendingPrompt = null;
         }
     }
 
