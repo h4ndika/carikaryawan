@@ -6,46 +6,706 @@
     @endassets
 
     <style>
-        /* Print Stylesheet for Professional PDF / Print Export */
+        /* Scoped Vanilla CSS for AI Report Dashboard */
+        .ai-report-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            font-family: inherit;
+            color: #1f2937;
+        }
+        .dark .ai-report-wrap {
+            color: #f3f4f6;
+        }
+
+        /* Top Prompt Section */
+        .ai-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .dark .ai-box {
+            background: #111827;
+            border-color: #1f2937;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .ai-box-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .ai-box-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.5rem;
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .dark .ai-box-icon {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+        .ai-title-text {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        .dark .ai-title-text {
+            color: #ffffff;
+        }
+        .ai-subtitle-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        .dark .ai-subtitle-text {
+            color: #9ca3af;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .dark .ai-badge {
+            background: #1f2937;
+            color: #d1d5db;
+        }
+        .ai-badge-success {
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+        .dark .ai-badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Form Controls */
+        .ai-prompt-area {
+            position: relative;
+            margin-bottom: 0.75rem;
+        }
+        .ai-textarea {
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #111827;
+            padding: 0.85rem 1rem 3rem 1rem;
+            font-size: 0.875rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            resize: vertical;
+        }
+        .dark .ai-textarea {
+            background: #1f2937;
+            border-color: #374151;
+            color: #ffffff;
+        }
+        .ai-textarea:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        }
+
+        .ai-prompt-actions {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 0.75rem;
+        }
+        .ai-btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #d97706;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .ai-btn-submit:hover {
+            background: #b45309;
+        }
+        .ai-btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Prompt Suggestions Pills */
+        .ai-pills-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+        }
+        .ai-pill-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.3rem 0.65rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .dark .ai-pill-btn {
+            background: #1f2937;
+            color: #d1d5db;
+            border-color: #374151;
+        }
+        .ai-pill-btn:hover {
+            background: #e5e7eb;
+            color: #111827;
+        }
+        .dark .ai-pill-btn:hover {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        /* 2-Column Split: Sidebar History + Main Dashboard */
+        .ai-dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 1024px) {
+            .ai-dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* History Sidebar */
+        .ai-history-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .dark .ai-history-card {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dark .ai-history-header {
+            border-color: #1f2937;
+        }
+        .ai-history-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+        }
+        .dark .ai-history-title {
+            color: #9ca3af;
+        }
+        .ai-btn-new {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #d97706;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .dark .ai-btn-new {
+            color: #fbbf24;
+        }
+        .ai-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+        .ai-history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+            color: #374151;
+        }
+        .dark .ai-history-item {
+            color: #d1d5db;
+        }
+        .ai-history-item:hover {
+            background: #f9fafb;
+        }
+        .dark .ai-history-item:hover {
+            background: #1f2937;
+        }
+        .ai-history-item.active {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #b45309;
+            font-weight: 600;
+        }
+        .dark .ai-history-item.active {
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        /* Main Report Area */
+        .ai-report-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Top Action Bar of the Report */
+        .ai-report-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .dark .ai-report-topbar {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-report-headings h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+        }
+        .dark .ai-report-headings h2 {
+            color: #ffffff;
+        }
+        .ai-report-headings p {
+            font-size: 0.8125rem;
+            color: #6b7280;
+            margin: 0.25rem 0 0 0;
+        }
+        .dark .ai-report-headings p {
+            color: #9ca3af;
+        }
+
+        .ai-report-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .ai-btn-print {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.85rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .dark .ai-btn-print {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+        .ai-btn-print:hover {
+            background: #334155;
+        }
+        .dark .ai-btn-print:hover {
+            background: #e2e8f0;
+        }
+
+        /* Tabs */
+        .ai-tab-group {
+            display: inline-flex;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            gap: 0.25rem;
+        }
+        .dark .ai-tab-group {
+            background: #1f2937;
+        }
+        .ai-tab-btn {
+            border: none;
+            background: transparent;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.15s;
+        }
+        .dark .ai-tab-btn {
+            color: #9ca3af;
+        }
+        .ai-tab-btn.active {
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .dark .ai-tab-btn.active {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        /* Executive Summary Card */
+        .ai-summary-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .dark .ai-summary-card {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-card-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #374151;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .dark .ai-card-title {
+            color: #e5e7eb;
+            border-color: #1f2937;
+        }
+        .ai-summary-content {
+            font-size: 0.875rem;
+            line-height: 1.65;
+            color: #374151;
+        }
+        .dark .ai-summary-content {
+            color: #d1d5db;
+        }
+        .ai-summary-content p {
+            margin-bottom: 0.85rem;
+        }
+        .ai-summary-content ul, .ai-summary-content ol {
+            margin: 0.5rem 0 0.85rem 1.25rem;
+        }
+        .ai-summary-content li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* KPI Stat Cards Grid */
+        .ai-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .ai-kpi-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.15rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .dark .ai-kpi-card {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-kpi-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .dark .ai-kpi-top {
+            color: #9ca3af;
+        }
+        .ai-kpi-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 9999px;
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .ai-kpi-badge.positive {
+            background: #dcfce7;
+            color: #15803d;
+        }
+        .dark .ai-kpi-badge.positive {
+            background: rgba(22, 101, 52, 0.3);
+            color: #4ade80;
+        }
+        .ai-kpi-badge.negative {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .dark .ai-kpi-badge.negative {
+            background: rgba(153, 27, 27, 0.3);
+            color: #f87171;
+        }
+        .ai-kpi-val {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.02em;
+        }
+        .dark .ai-kpi-val {
+            color: #ffffff;
+        }
+        .ai-kpi-desc {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Dynamic Charts Grid */
+        .ai-chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.25rem;
+        }
+        .ai-chart-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .dark .ai-chart-card {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .ai-chart-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+        .dark .ai-chart-title {
+            color: #ffffff;
+        }
+        .ai-chart-canvas-box {
+            position: relative;
+            height: 260px;
+            width: 100%;
+        }
+
+        /* Dynamic Table Container */
+        .ai-table-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .dark .ai-table-card {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-table-scroll {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .dark .ai-table-scroll {
+            border-color: #1f2937;
+        }
+        .ai-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            text-align: left;
+        }
+        .ai-data-table th {
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 700;
+            padding: 0.65rem 0.85rem;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+        .dark .ai-data-table th {
+            background: #1f2937;
+            color: #e5e7eb;
+            border-color: #374151;
+        }
+        .ai-data-table td {
+            padding: 0.6rem 0.85rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #1f2937;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .dark .ai-data-table td {
+            border-color: #1f2937;
+            color: #d1d5db;
+        }
+        .ai-data-table tr:hover {
+            background: #f9fafb;
+        }
+        .dark .ai-data-table tr:hover {
+            background: #1a2234;
+        }
+
+        /* Recommendations Action Plan */
+        .ai-rec-card {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 1rem;
+            padding: 1.25rem;
+        }
+        .dark .ai-rec-card {
+            background: rgba(245, 158, 11, 0.08);
+            border-color: rgba(245, 158, 11, 0.25);
+        }
+        .ai-rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            margin-top: 0.75rem;
+        }
+        .ai-rec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            background: #ffffff;
+            border: 1px solid #fde68a;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.8125rem;
+            color: #1f2937;
+        }
+        .dark .ai-rec-item {
+            background: #111827;
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #f3f4f6;
+        }
+        .ai-rec-num {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 9999px;
+            background: #d97706;
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        /* Loading Animation */
+        .ai-loading-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+        }
+        .dark .ai-loading-box {
+            background: #111827;
+            border-color: #1f2937;
+        }
+        .ai-spin-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            margin: 0 auto 1rem auto;
+            color: #d97706;
+            animation: ai-spin 1s linear infinite;
+        }
+        @keyframes ai-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Print Specific CSS */
         @media print {
             body {
                 background: #ffffff !important;
-                color: #0f172a !important;
-                font-size: 11pt !important;
+                color: #000000 !important;
             }
-            .fi-sidebar,
-            .fi-topbar,
-            .fi-header,
-            .no-print,
-            button,
-            nav,
-            aside,
-            .fi-modal {
+            .fi-sidebar, .fi-topbar, .fi-header, .no-print, nav, button, aside {
                 display: none !important;
             }
-            .fi-main,
-            .fi-page,
-            .fi-content {
+            .fi-main, .fi-content {
                 padding: 0 !important;
                 margin: 0 !important;
-                max-width: 100% !important;
                 width: 100% !important;
             }
             .print-only {
                 display: block !important;
             }
-            .report-card,
-            .report-chart-container,
-            .report-table-container {
-                page-break-inside: avoid !important;
+            .ai-summary-card, .ai-kpi-card, .ai-chart-card, .ai-table-card, .ai-rec-card {
                 break-inside: avoid !important;
                 box-shadow: none !important;
-                border: 1px solid #e2e8f0 !important;
-                margin-bottom: 1.5rem !important;
+                border: 1px solid #cccccc !important;
+                margin-bottom: 1rem !important;
+                background: #ffffff !important;
+                color: #000000 !important;
             }
-            .chart-canvas {
-                max-height: 280px !important;
-                width: 100% !important;
+            .ai-chart-canvas-box {
+                max-height: 240px !important;
             }
         }
         @media screen {
@@ -59,105 +719,95 @@
         x-data="aiReportManager(@js($report))"
         x-init="initCharts()"
         @report-loaded.window="updateReport($event.detail.report)"
-        class="space-y-6"
+        class="ai-report-wrap"
     >
-        {{-- Print Official Header (Visible ONLY when printing to PDF / Paper) --}}
-        <div class="print-only border-b-2 border-slate-900 pb-4 mb-6">
-            <div class="flex items-center justify-between">
+        {{-- Official Print Header (Visible ONLY when printing / PDF) --}}
+        <div class="print-only" style="border-bottom: 2px solid #000; padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
-                    <h1 class="text-2xl font-black tracking-tight text-slate-900 uppercase">DiSekitar Intelligence Report</h1>
-                    <p class="text-xs text-slate-600">Dokumen Analisis Eksekutif & Laporan Intelijen Data Platform DiSekitar</p>
+                    <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; text-transform: uppercase;">DiSekitar Intelligence Report</h1>
+                    <p style="font-size: 0.75rem; color: #555; margin: 0.25rem 0 0 0;">Dokumen Laporan Eksekutif & Intelijen Data Platform</p>
                 </div>
-                <div class="text-right text-xs text-slate-600">
-                    <p class="font-semibold text-slate-900">Tanggal Cetak: {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
-                    <p>Model AI: {{ $model ?: 'Content-blog' }} ({{ $provider }})</p>
+                <div style="text-align: right; font-size: 0.75rem; color: #555;">
+                    <p style="margin: 0; font-weight: 700; color: #000;">Tanggal: {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
+                    <p style="margin: 0.15rem 0 0 0;">Model: {{ $model ?: 'Content-blog' }} ({{ $provider }})</p>
                 </div>
             </div>
         </div>
 
-        {{-- PROMPT INPUT BAR (Screen Only) --}}
-        <div class="no-print bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-lg">
-                        📊
-                    </div>
+        {{-- PROMPT INPUT BAR --}}
+        <div class="no-print ai-box">
+            <div class="ai-box-header">
+                <div class="ai-box-title">
+                    <div class="ai-box-icon">📊</div>
                     <div>
-                        <h2 class="text-base font-semibold text-gray-900 dark:text-white">AI Executive Report Generator</h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Ketik instruksi analisis, AI akan query database live & merender dashboard laporan lengkap.</p>
+                        <div class="ai-title-text">AI Executive Report Generator</div>
+                        <div class="ai-subtitle-text">Instruksikan analisis data, AI mengeksekusi SQL live & menyusun laporan dashboard eksekutif.</div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 text-xs">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
-                        ⚡ Database Connected
-                    </span>
-                    <span class="text-gray-500 dark:text-gray-400 font-mono">
-                        {{ $model ?: 'Default Model' }}
-                    </span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="ai-badge ai-badge-success">⚡ Database Live</span>
+                    <span class="ai-badge">{{ $model ?: 'Content-blog' }}</span>
                 </div>
             </div>
 
-            {{-- Prompt Form --}}
-            <form wire:submit.prevent="submitPrompt" class="space-y-3">
-                <div class="relative">
+            {{-- Form Input --}}
+            <form wire:submit.prevent="submitPrompt">
+                <div class="ai-prompt-area">
                     <textarea 
                         wire:model="userPrompt"
                         rows="3"
                         placeholder="Contoh: Buatkan laporan komparasi views dan sebaran postingan kota di Jawa Barat, tampilkan ranking kota terbaik dan rekomendasi strategi boosting..."
-                        class="w-full text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white p-3.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition placeholder-gray-400 dark:placeholder-gray-500 resize-y"
+                        class="ai-textarea"
                         :disabled="$wire.isGenerating"
                     ></textarea>
 
-                    <div class="absolute right-3 bottom-3 flex items-center gap-2">
+                    <div class="ai-prompt-actions">
                         <button 
                             type="submit"
                             wire:loading.attr="disabled"
                             :disabled="$wire.isGenerating"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 active:bg-primary-700 text-white text-xs font-semibold rounded-lg shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="ai-btn-submit"
                         >
                             <span wire:loading.remove wire:target="submitPrompt, processAiReport">
-                                🚀 Generate Report
+                                🚀 Buat Laporan
                             </span>
-                            <span wire:loading wire:target="submitPrompt, processAiReport" class="inline-flex items-center gap-2">
-                                <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                </svg>
-                                Sedang Analisis...
+                            <span wire:loading wire:target="submitPrompt, processAiReport">
+                                ⏳ Sedang Menganalisis...
                             </span>
                         </button>
                     </div>
                 </div>
 
                 {{-- Template Suggestions --}}
-                <div class="flex items-center gap-2 flex-wrap text-xs text-gray-500 dark:text-gray-400">
-                    <span class="font-medium text-gray-700 dark:text-gray-300">💡 Ide Prompt:</span>
+                <div class="ai-pills-row">
+                    <span style="font-weight: 600; font-size: 0.75rem;">💡 Ide Prompt:</span>
                     <button 
                         type="button" 
                         wire:click="applyTemplate('Buatkan laporan performa views dan ranking 10 kota dengan postingan terbanyak di Indonesia')"
-                        class="px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
+                        class="ai-pill-btn"
                     >
                         🏆 Ranking Kota Teratas
                     </button>
                     <button 
                         type="button" 
                         wire:click="applyTemplate('Analisis kota mana yang memiliki listing tinggi namun views masih rendah dan butuh strategi boosting')"
-                        class="px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
+                        class="ai-pill-btn"
                     >
                         📈 Analisis Prioritas Boosting
                     </button>
                     <button 
                         type="button" 
                         wire:click="applyTemplate('Laporan audit sebaran landmarks kota dan korelasi rating listing disekitarnya')"
-                        class="px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
+                        class="ai-pill-btn"
                     >
                         🏛️ Audit Landmarks & Rating
                     </button>
                     <button 
                         type="button" 
                         wire:click="applyTemplate('Ringkasan statistik kunjungan (page_views) hari ini dan postingan terpopuler')"
-                        class="px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
+                        class="ai-pill-btn"
                     >
                         👀 Traffic Hari Ini
                     </button>
@@ -165,54 +815,44 @@
             </form>
         </div>
 
-        {{-- MAIN LAYOUT: SIDEBAR HISTORY + DASHBOARD CONTENT --}}
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {{-- MAIN DASHBOARD LAYOUT: SIDEBAR + CONTENT --}}
+        <div class="ai-dashboard-layout">
 
-            {{-- LEFT SIDEBAR: RIWAYAT LAPORAN (Screen Only) --}}
-            <div class="no-print lg:col-span-1 space-y-4">
-                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 shadow-sm space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            📁 Riwayat Laporan ({{ count($reportsList) }})
-                        </h3>
-                        <button 
-                            type="button"
-                            wire:click="newReport"
-                            class="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium"
-                        >
-                            + Baru
-                        </button>
+            {{-- SIDEBAR: RIWAYAT LAPORAN --}}
+            <div class="no-print">
+                <div class="ai-history-card">
+                    <div class="ai-history-header">
+                        <span class="ai-history-title">📁 Riwayat Laporan ({{ count($reportsList) }})</span>
+                        <button type="button" wire:click="newReport" class="ai-btn-new">+ Baru</button>
                     </div>
 
                     @if(empty($reportsList))
-                        <div class="text-center py-6 text-xs text-gray-400">
+                        <div style="text-align: center; padding: 2rem 0; font-size: 0.75rem; color: #9ca3af;">
                             Belum ada laporan tersimpan.
                         </div>
                     @else
-                        <div class="space-y-1.5 max-h-[580px] overflow-y-auto pr-1">
+                        <div class="ai-history-list">
                             @foreach($reportsList as $r)
                                 <div 
-                                    class="group flex items-center justify-between p-2.5 rounded-xl text-xs transition cursor-pointer {{ $currentReportId === $r['id'] ? 'bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800 font-semibold text-primary-700 dark:text-primary-300' : 'hover:bg-gray-100 dark:hover:bg-gray-800/60 text-gray-700 dark:text-gray-300 border border-transparent' }}"
+                                    class="ai-history-item {{ $currentReportId === $r['id'] ? 'active' : '' }}"
                                     wire:click="selectReport({{ $r['id'] }})"
                                 >
-                                    <div class="min-w-0 flex-1 pr-2">
-                                        <p class="truncate">{{ $r['title'] }}</p>
-                                        <div class="flex items-center gap-1.5 text-[10px] text-gray-400 mt-0.5">
-                                            <span>{{ $r['created_at'] }}</span>
-                                            <span>•</span>
-                                            <span class="truncate">{{ $r['model'] }}</span>
+                                    <div style="min-width: 0; flex: 1; padding-right: 0.5rem;">
+                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8125rem;">
+                                            {{ $r['title'] }}
+                                        </div>
+                                        <div style="font-size: 0.68rem; color: #9ca3af; margin-top: 0.15rem;">
+                                            {{ $r['created_at'] }}
                                         </div>
                                     </div>
                                     <button 
                                         type="button"
                                         wire:click.stop="deleteReport({{ $r['id'] }})"
                                         wire:confirm="Yakin ingin menghapus laporan ini?"
-                                        class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition p-1"
-                                        title="Hapus laporan"
+                                        style="background: transparent; border: none; color: #9ca3af; cursor: pointer; padding: 0.2rem;"
+                                        title="Hapus"
                                     >
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
+                                        🗑️
                                     </button>
                                 </div>
                             @endforeach
@@ -220,301 +860,258 @@
                     @endif
                 </div>
 
-                {{-- Quick Metadata Widget if report loaded --}}
                 @if($report)
-                    <div class="bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 text-xs text-gray-600 dark:text-gray-400 space-y-2">
-                        <div class="font-semibold text-gray-800 dark:text-gray-200">ℹ️ Info Eksekusi</div>
-                        <div class="flex justify-between">
-                            <span>Waktu Generate:</span>
-                            <span class="font-mono text-gray-900 dark:text-white">{{ $duration ? $duration . 's' : '-' }}</span>
+                    <div class="ai-box" style="margin-top: 1rem; font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                        <div style="font-weight: 700;">ℹ️ Metadata Eksekusi</div>
+                        <div style="display: flex; justify-content: space-between; color: #6b7280;">
+                            <span>Durasi:</span>
+                            <span style="font-family: monospace; font-weight: 600;">{{ $duration ? $duration . 's' : '-' }}</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div style="display: flex; justify-content: space-between; color: #6b7280;">
                             <span>Total Tokens:</span>
-                            <span class="font-mono text-gray-900 dark:text-white">{{ $tokens['total'] ?? '-' }}</span>
+                            <span style="font-family: monospace; font-weight: 600;">{{ $tokens['total'] ?? '-' }}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span>SQL Queries:</span>
-                            <span class="font-mono text-gray-900 dark:text-white">{{ count($toolCalls) }} query</span>
+                        <div style="display: flex; justify-content: space-between; color: #6b7280;">
+                            <span>Tool SQL Queries:</span>
+                            <span style="font-family: monospace; font-weight: 600;">{{ count($toolCalls) }} query</span>
                         </div>
                     </div>
                 @endif
             </div>
 
-            {{-- RIGHT MAIN AREA: REPORT DASHBOARD & COMPONENTS --}}
-            <div class="lg:col-span-3 space-y-6">
+            {{-- MAIN REPORT CONTENT AREA --}}
+            <div class="ai-report-main">
 
-                {{-- LOADING GENERATING STATE --}}
-                <div 
-                    x-show="$wire.isGenerating"
-                    x-cloak
-                    class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 text-center space-y-4 shadow-sm"
-                >
-                    <div class="inline-flex p-4 rounded-full bg-primary-500/10 text-primary-600 dark:text-primary-400 animate-pulse">
-                        <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                        </svg>
-                    </div>
-                    <div class="space-y-1">
-                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">AI Sedang Menyusun Laporan Eksekutif</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                            Menghubungi AI Agent, mengeksekusi multi-step query database live DiSekitar, dan merender komponen visual...
-                        </p>
+                {{-- LOADING / GENERATING STATE --}}
+                <div x-show="$wire.isGenerating" x-cloak class="ai-loading-box">
+                    <svg class="ai-spin-icon" fill="none" viewBox="0 0 24 24">
+                        <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem;">AI Sedang Menyusun Laporan Eksekutif</div>
+                    <div style="font-size: 0.8125rem; color: #6b7280; max-width: 480px; margin: 0 auto;">
+                        Menghubungi AI Agent, mengeksekusi SQL live database DiSekitar, dan merender visual cards, charts, & data tables...
                     </div>
 
                     {{-- Automatically dispatch processing to backend right after render --}}
                     <div x-data x-init="$nextTick(() => { $wire.processAiReport(); })"></div>
                 </div>
 
-                {{-- ERROR MESSAGE --}}
+                {{-- ERROR BANNER --}}
                 @if($errorMessage)
-                    <div class="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-xs">
-                        <p class="font-semibold">Terjadi Kesalahan:</p>
-                        <p>{{ $errorMessage }}</p>
+                    <div style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; border-radius: 0.75rem; padding: 1rem; font-size: 0.8125rem;">
+                        <strong>Terjadi Kesalahan:</strong> {{ $errorMessage }}
                     </div>
                 @endif
 
-                {{-- EMPTY STATE IF NO REPORT --}}
+                {{-- EMPTY STATE --}}
                 @if(! $report && ! $isGenerating)
-                    <div class="bg-white dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-800 rounded-2xl p-12 text-center space-y-3">
-                        <div class="text-4xl">📑</div>
-                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Belum Ada Laporan Aktif</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                            Pilih laporan dari riwayat di sebelah kiri, atau masukkan prompt di atas untuk membuat analisis intelijen data baru secara instan.
-                        </p>
+                    <div class="ai-box" style="text-align: center; padding: 3.5rem 1.5rem; border-style: dashed;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📑</div>
+                        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">Belum Ada Laporan Aktif</div>
+                        <div style="font-size: 0.8125rem; color: #6b7280; max-width: 420px; margin: 0 auto;">
+                            Pilih laporan dari daftar riwayat di sebelah kiri, atau ketik pertanyaan analisis di formulir atas untuk membuat laporan baru.
+                        </div>
                     </div>
                 @endif
 
-                {{-- REPORT DASHBOARD CONTAINER --}}
+                {{-- LOADED REPORT DASHBOARD --}}
                 @if($report && ! $isGenerating)
-                    <div class="space-y-6">
-
-                        {{-- REPORT HEADER & ACTION BAR --}}
-                        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
-                                        {{ $report['title'] ?? 'Laporan Eksekutif DiSekitar' }}
-                                    </h2>
-                                    @if(!empty($report['period_or_scope']))
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                            📍 {{ $report['period_or_scope'] }}
-                                        </span>
-                                    @endif
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $report['subtitle'] ?? 'Analisis intelijen data platform berbasis data riil DiSekitar' }}
-                                </p>
+                    {{-- Report Top Bar --}}
+                    <div class="ai-report-topbar">
+                        <div class="ai-report-headings">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <h2>{{ $report['title'] ?? 'Laporan Eksekutif DiSekitar' }}</h2>
+                                @if(!empty($report['period_or_scope']))
+                                    <span class="ai-badge">📍 {{ $report['period_or_scope'] }}</span>
+                                @endif
                             </div>
-
-                            {{-- Action Buttons --}}
-                            <div class="no-print flex items-center gap-2 flex-wrap">
-                                {{-- PRINT / PDF EXPORT BUTTON --}}
-                                <button 
-                                    type="button" 
-                                    onclick="window.print()"
-                                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-xl shadow-sm transition cursor-pointer"
-                                    title="Cetak atau Ekspor sebagai PDF"
-                                >
-                                    <span>🖨️</span>
-                                    <span>Cetak / Export PDF</span>
-                                </button>
-
-                                {{-- TAB CONTROLS --}}
-                                <div class="inline-flex rounded-xl bg-gray-100 dark:bg-gray-800 p-1 text-xs">
-                                    <button 
-                                        type="button"
-                                        wire:click="$set('activeTab', 'dashboard')"
-                                        class="px-3 py-1.5 rounded-lg font-medium transition {{ $activeTab === 'dashboard' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900' }}"
-                                    >
-                                        📊 Dashboard
-                                    </button>
-                                    <button 
-                                        type="button"
-                                        wire:click="$set('activeTab', 'raw')"
-                                        class="px-3 py-1.5 rounded-lg font-medium transition {{ $activeTab === 'raw' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900' }}"
-                                    >
-                                        📝 Markdown
-                                    </button>
-                                    <button 
-                                        type="button"
-                                        wire:click="$set('activeTab', 'tools')"
-                                        class="px-3 py-1.5 rounded-lg font-medium transition {{ $activeTab === 'tools' ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900' }}"
-                                    >
-                                        🛠️ Query SQL ({{ count($toolCalls) }})
-                                    </button>
-                                </div>
-                            </div>
+                            <p>{{ $report['subtitle'] ?? 'Analisis intelijen platform berbasis data riil DiSekitar' }}</p>
                         </div>
 
-                        {{-- TAB 1: DASHBOARD VIEW --}}
-                        <div x-show="$wire.activeTab === 'dashboard'" class="space-y-6">
+                        <div class="no-print ai-report-actions">
+                            {{-- Print / Export PDF Button --}}
+                            <button type="button" onclick="window.print()" class="ai-btn-print">
+                                <span>🖨️</span>
+                                <span>Cetak / Export PDF</span>
+                            </button>
 
-                            {{-- 1. EXECUTIVE SUMMARY --}}
-                            @if(!empty($report['executive_summary']))
-                                <div class="report-card bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-3">
-                                    <div class="flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
-                                        <span class="text-lg">📋</span>
-                                        <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-                                            Executive Summary & Temuan Kunci
-                                        </h3>
-                                    </div>
-                                    <div class="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
-                                        {!! \Illuminate\Support\Str::markdown($report['executive_summary']) !!}
-                                    </div>
+                            {{-- Tab Switcher --}}
+                            <div class="ai-tab-group">
+                                <button 
+                                    type="button" 
+                                    wire:click="$set('activeTab', 'dashboard')" 
+                                    class="ai-tab-btn {{ $activeTab === 'dashboard' ? 'active' : '' }}"
+                                >
+                                    📊 Dashboard
+                                </button>
+                                <button 
+                                    type="button" 
+                                    wire:click="$set('activeTab', 'raw')" 
+                                    class="ai-tab-btn {{ $activeTab === 'raw' ? 'active' : '' }}"
+                                >
+                                    📝 Markdown
+                                </button>
+                                <button 
+                                    type="button" 
+                                    wire:click="$set('activeTab', 'tools')" 
+                                    class="ai-tab-btn {{ $activeTab === 'tools' ? 'active' : '' }}"
+                                >
+                                    🛠️ SQL ({{ count($toolCalls) }})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- TAB 1: DASHBOARD --}}
+                    <div x-show="$wire.activeTab === 'dashboard'" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        
+                        {{-- 1. Executive Summary --}}
+                        @if(!empty($report['executive_summary']))
+                            <div class="ai-summary-card">
+                                <div class="ai-card-title">
+                                    <span>📋</span>
+                                    <span>Executive Summary & Temuan Kunci</span>
                                 </div>
-                            @endif
-
-                            {{-- 2. DYNAMIC STAT CARDS GRID (If Present) --}}
-                            @if(!empty($report['cards']) && count($report['cards']) > 0)
-                                <div class="report-card grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ min(4, count($report['cards'])) }} gap-4">
-                                    @foreach($report['cards'] as $card)
-                                        @php
-                                            $color = $card['color'] ?? 'blue';
-                                            $badgeType = $card['badge_type'] ?? 'neutral';
-                                        @endphp
-                                        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm space-y-2">
-                                            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                                <span class="font-medium truncate">{{ $card['label'] ?? 'Metrik' }}</span>
-                                                @if(!empty($card['badge']))
-                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $badgeType === 'positive' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : ($badgeType === 'negative' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400') }}">
-                                                        {{ $card['badge'] }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                                                {{ $card['value'] ?? '0' }}
-                                            </div>
-                                            @if(!empty($card['description']))
-                                                <p class="text-[11px] text-gray-400 leading-tight">
-                                                    {{ $card['description'] }}
-                                                </p>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                                <div class="ai-summary-content">
+                                    {!! \Illuminate\Support\Str::markdown($report['executive_summary']) !!}
                                 </div>
-                            @endif
+                            </div>
+                        @endif
 
-                            {{-- 3. DYNAMIC CHARTS (If Present) --}}
-                            @if(!empty($report['charts']) && count($report['charts']) > 0)
-                                <div class="grid grid-cols-1 {{ count($report['charts']) > 1 ? 'lg:grid-cols-2' : '' }} gap-6">
-                                    @foreach($report['charts'] as $index => $chart)
-                                        <div class="report-chart-container bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm space-y-3">
-                                            <div class="flex items-center justify-between">
-                                                <div>
-                                                    <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                                                        {{ $chart['title'] ?? 'Grafik Analisis' }}
-                                                    </h4>
-                                                    @if(!empty($chart['description']))
-                                                        <p class="text-xs text-gray-400">{{ $chart['description'] }}</p>
-                                                    @endif
-                                                </div>
-                                                <span class="text-xs uppercase font-mono px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">
-                                                    {{ $chart['type'] ?? 'bar' }}
+                        {{-- 2. KPI Stat Cards --}}
+                        @if(!empty($report['cards']) && count($report['cards']) > 0)
+                            <div class="ai-kpi-grid">
+                                @foreach($report['cards'] as $card)
+                                    @php
+                                        $badgeType = $card['badge_type'] ?? 'neutral';
+                                    @endphp
+                                    <div class="ai-kpi-card">
+                                        <div class="ai-kpi-top">
+                                            <span>{{ $card['label'] ?? 'Metrik' }}</span>
+                                            @if(!empty($card['badge']))
+                                                <span class="ai-kpi-badge {{ $badgeType }}">
+                                                    {{ $card['badge'] }}
                                                 </span>
-                                            </div>
-                                            <div class="relative h-64 w-full">
-                                                <canvas id="report-chart-{{ $index }}" class="chart-canvas"></canvas>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
-                            {{-- 4. DYNAMIC DATA TABLES (If Present) --}}
-                            @if(!empty($report['tables']) && count($report['tables']) > 0)
-                                @foreach($report['tables'] as $table)
-                                    <div class="report-table-container bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm space-y-3 overflow-hidden">
-                                        <div>
-                                            <h4 class="text-sm font-bold text-gray-900 dark:text-white">
-                                                {{ $table['title'] ?? 'Tabel Data' }}
-                                            </h4>
-                                            @if(!empty($table['description']))
-                                                <p class="text-xs text-gray-400">{{ $table['description'] }}</p>
                                             @endif
                                         </div>
+                                        <div class="ai-kpi-val">{{ $card['value'] ?? '0' }}</div>
+                                        @if(!empty($card['description']))
+                                            <div class="ai-kpi-desc">{{ $card['description'] }}</div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
 
-                                        <div class="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
-                                            <table class="w-full text-left text-xs">
-                                                @if(!empty($table['headers']))
-                                                    <thead class="bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-300 font-semibold border-b border-gray-200 dark:border-gray-700">
-                                                        <tr>
-                                                            @foreach($table['headers'] as $header)
-                                                                <th class="py-3 px-4">{{ $header }}</th>
-                                                            @endforeach
-                                                        </tr>
-                                                    </thead>
-                                                @endif
-                                                <tbody class="divide-y divide-gray-100 dark:divide-gray-800/60">
-                                                    @foreach($table['rows'] ?? [] as $row)
-                                                        <tr class="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition">
-                                                            @foreach($row as $cell)
-                                                                <td class="py-3 px-4 text-gray-800 dark:text-gray-200 font-mono">{{ $cell }}</td>
-                                                            @endforeach
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                        {{-- 3. Dynamic Charts --}}
+                        @if(!empty($report['charts']) && count($report['charts']) > 0)
+                            <div class="ai-chart-grid">
+                                @foreach($report['charts'] as $index => $chart)
+                                    <div class="ai-chart-card">
+                                        <div class="ai-chart-header">
+                                            <h4 class="ai-chart-title">{{ $chart['title'] ?? 'Grafik Analisis' }}</h4>
+                                            <span class="ai-badge" style="text-transform: uppercase;">{{ $chart['type'] ?? 'bar' }}</span>
+                                        </div>
+                                        @if(!empty($chart['description']))
+                                            <div style="font-size: 0.75rem; color: #9ca3af;">{{ $chart['description'] }}</div>
+                                        @endif
+                                        <div class="ai-chart-canvas-box">
+                                            <canvas id="report-chart-{{ $index }}"></canvas>
                                         </div>
                                     </div>
                                 @endforeach
-                            @endif
+                            </div>
+                        @endif
 
-                            {{-- 5. STRATEGIC RECOMMENDATIONS / ACTION PLAN (If Present) --}}
-                            @if(!empty($report['recommendations']) && count($report['recommendations']) > 0)
-                                <div class="report-card bg-gradient-to-br from-primary-500/5 to-indigo-500/5 border border-primary-200 dark:border-primary-900/40 rounded-2xl p-6 shadow-sm space-y-4">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-lg">🎯</span>
-                                        <h3 class="text-sm font-bold text-primary-900 dark:text-primary-300 uppercase tracking-wider">
-                                            Rekomendasi Strategis & Action Plan
-                                        </h3>
+                        {{-- 4. Dynamic Tables --}}
+                        @if(!empty($report['tables']) && count($report['tables']) > 0)
+                            @foreach($report['tables'] as $table)
+                                <div class="ai-table-card">
+                                    <div class="ai-chart-header">
+                                        <h4 class="ai-chart-title">{{ $table['title'] ?? 'Tabel Data' }}</h4>
                                     </div>
-                                    <div class="space-y-2.5">
-                                        @foreach($report['recommendations'] as $idx => $rec)
-                                            <div class="flex items-start gap-3 p-3 rounded-xl bg-white/80 dark:bg-gray-900/80 border border-primary-100 dark:border-primary-900/30 text-xs text-gray-800 dark:text-gray-200">
-                                                <div class="w-5 h-5 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                                    {{ $idx + 1 }}
-                                                </div>
-                                                <div class="leading-relaxed">
-                                                    {{ $rec }}
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                    @if(!empty($table['description']))
+                                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">{{ $table['description'] }}</div>
+                                    @endif
+
+                                    <div class="ai-table-scroll">
+                                        <table class="ai-data-table">
+                                            @if(!empty($table['headers']))
+                                                <thead>
+                                                    <tr>
+                                                        @foreach($table['headers'] as $header)
+                                                            <th>{{ $header }}</th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                            @endif
+                                            <tbody>
+                                                @foreach($table['rows'] ?? [] as $row)
+                                                    <tr>
+                                                        @foreach($row as $cell)
+                                                            <td>{{ $cell }}</td>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                            @endif
+                            @endforeach
+                        @endif
 
-                        </div>
-
-                        {{-- TAB 2: RAW TEXT / MARKDOWN VIEW --}}
-                        <div x-show="$wire.activeTab === 'raw'" x-cloak class="space-y-4">
-                            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
-                                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Teks Mentah Hasil Generasi AI</h4>
-                                <pre class="text-xs font-mono p-4 rounded-xl bg-gray-50 dark:bg-gray-800 overflow-x-auto text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{{ $rawText }}</pre>
+                        {{-- 5. Recommendations --}}
+                        @if(!empty($report['recommendations']) && count($report['recommendations']) > 0)
+                            <div class="ai-rec-card">
+                                <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.875rem;">
+                                    <span>🎯</span>
+                                    <span>Rekomendasi Strategis & Action Plan</span>
+                                </div>
+                                <div class="ai-rec-list">
+                                    @foreach($report['recommendations'] as $idx => $rec)
+                                        <div class="ai-rec-item">
+                                            <div class="ai-rec-num">{{ $idx + 1 }}</div>
+                                            <div style="line-height: 1.5;">{{ $rec }}</div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
-                        {{-- TAB 3: SQL TOOL CALLS VIEW --}}
-                        <div x-show="$wire.activeTab === 'tools'" x-cloak class="space-y-4">
-                            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-4">
-                                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500">Query SQL yang Dieksekusi Pada Database Live</h4>
-                                @if(empty($toolCalls))
-                                    <p class="text-xs text-gray-400">Tidak ada query yang dieksekusi.</p>
-                                @else
-                                    <div class="space-y-3">
-                                        @foreach($toolCalls as $idx => $tc)
-                                            <div class="p-3.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 text-xs space-y-1.5">
-                                                <div class="font-semibold text-primary-600 dark:text-primary-400 font-mono">
-                                                    Query #{{ $idx + 1 }} ({{ $tc['name'] }})
-                                                </div>
-                                                <pre class="text-[11px] font-mono p-2.5 rounded bg-gray-900 text-emerald-400 overflow-x-auto whitespace-pre-wrap">{{ $tc['arguments']['query'] ?? json_encode($tc['arguments']) }}</pre>
+                    </div>
+
+                    {{-- TAB 2: RAW TEXT / MARKDOWN --}}
+                    <div x-show="$wire.activeTab === 'raw'" x-cloak>
+                        <div class="ai-box">
+                            <div style="font-weight: 700; font-size: 0.8125rem; margin-bottom: 0.75rem; text-transform: uppercase;">
+                                Teks Mentah Hasil Generasi AI
+                            </div>
+                            <pre style="background: #f3f4f6; color: #111827; padding: 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-family: monospace; white-space: pre-wrap; overflow-x: auto;" class="dark:bg-gray-800 dark:text-gray-100">{{ $rawText }}</pre>
+                        </div>
+                    </div>
+
+                    {{-- TAB 3: SQL TOOL CALLS --}}
+                    <div x-show="$wire.activeTab === 'tools'" x-cloak>
+                        <div class="ai-box">
+                            <div style="font-weight: 700; font-size: 0.8125rem; margin-bottom: 0.75rem; text-transform: uppercase;">
+                                Query SQL yang Dieksekusi Pada Database Live
+                            </div>
+                            @if(empty($toolCalls))
+                                <div style="font-size: 0.75rem; color: #9ca3af;">Tidak ada query yang dieksekusi.</div>
+                            @else
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    @foreach($toolCalls as $idx => $tc)
+                                        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; font-size: 0.75rem;" class="dark:border-gray-800">
+                                            <div style="font-weight: 700; color: #d97706; margin-bottom: 0.35rem; font-family: monospace;">
+                                                Query #{{ $idx + 1 }} ({{ $tc['name'] }})
                                             </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
+                                            <pre style="background: #111827; color: #34d399; padding: 0.65rem; border-radius: 0.375rem; font-family: monospace; font-size: 0.75rem; white-space: pre-wrap; margin: 0; overflow-x: auto;">{{ $tc['arguments']['query'] ?? json_encode($tc['arguments']) }}</pre>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
-
                     </div>
                 @endif
 
@@ -524,20 +1121,12 @@
 
     </div>
 
-    {{-- Script Engine for Dynamic Chart.js and Markdown rendering --}}
+    {{-- Script Engine for Dynamic Chart.js and Alpine --}}
     <script>
         function aiReportManager(initialReport) {
             return {
                 chartInstances: [],
                 currentReport: initialReport,
-
-                renderMarkdown(text) {
-                    if (!text) return '';
-                    if (typeof marked !== 'undefined') {
-                        return marked.parse(text);
-                    }
-                    return text.replace(/\n/g, '<br>');
-                },
 
                 updateReport(newReport) {
                     this.currentReport = newReport;
@@ -547,7 +1136,7 @@
                 },
 
                 initCharts() {
-                    // Destroy previous chart instances
+                    // Destroy previous chart instances to avoid canvas overlap
                     this.chartInstances.forEach(chart => chart.destroy());
                     this.chartInstances = [];
 
@@ -571,7 +1160,6 @@
                         const ctx = canvas.getContext('2d');
                         const type = chartConfig.type || 'bar';
 
-                        // Prepare datasets
                         const datasets = (chartConfig.datasets || []).map((ds, dsIdx) => {
                             let bg = ds.backgroundColor;
                             let border = ds.borderColor;
@@ -594,6 +1182,10 @@
                             };
                         });
 
+                        const isDark = document.documentElement.classList.contains('dark');
+                        const textColor = isDark ? '#9ca3af' : '#6b7280';
+                        const gridColor = isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.8)';
+
                         const chartInstance = new Chart(ctx, {
                             type: type,
                             data: {
@@ -609,20 +1201,23 @@
                                         position: 'bottom',
                                         labels: {
                                             boxWidth: 12,
+                                            color: textColor,
                                             font: { size: 11 }
                                         }
                                     },
                                     tooltip: {
-                                        padding: 10,
-                                        cornerRadius: 8
+                                        padding: 8,
+                                        cornerRadius: 6
                                     }
                                 },
                                 scales: (type === 'doughnut' || type === 'pie') ? {} : {
                                     y: {
                                         beginAtZero: true,
-                                        grid: { color: 'rgba(156, 163, 175, 0.15)' }
+                                        ticks: { color: textColor },
+                                        grid: { color: gridColor }
                                     },
                                     x: {
+                                        ticks: { color: textColor },
                                         grid: { display: false }
                                     }
                                 }
@@ -634,14 +1229,5 @@
                 }
             };
         }
-
-        // Handle auto phase-2 processing right after form submit starts
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('report-generation-started', () => {
-                setTimeout(() => {
-                    Livewire.dispatch('processAiReport');
-                }, 100);
-            });
-        });
     </script>
 </x-filament-panels::page>
