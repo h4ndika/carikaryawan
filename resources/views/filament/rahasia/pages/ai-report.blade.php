@@ -822,12 +822,21 @@
         /* Print Specific CSS: Clean Crisp Executive Document */
         @media print {
             @page {
-                margin: 12mm 15mm;
+                margin: 8mm 12mm;
                 size: A4 portrait;
             }
 
+            :root, html, html.dark {
+                color-scheme: light !important;
+            }
+
             /* 1. Force all body and Filament wrapper layers to pure crisp white */
-            html, html.dark, body, .fi-body, .fi-layout, .fi-main, .fi-content, .fi-page, .ai-report-wrap, .ai-report-main, .ai-dashboard-layout {
+            *, *::before, *::after {
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+
+            html, html.dark, body, body.fi-body, div.fi-layout, div.fi-main-ctn, main.fi-main, div.fi-content, div.fi-page, .ai-report-wrap, .ai-report-main, .ai-dashboard-layout, .ai-dashboard-content {
                 background: #ffffff !important;
                 background-color: #ffffff !important;
                 color: #111827 !important;
@@ -835,7 +844,8 @@
                 margin: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                box-shadow: none !important;
+                min-height: 0 !important;
+                border: none !important;
             }
 
             /* 2. Hide all non-printable UI elements */
@@ -1191,7 +1201,7 @@
 
                         <div class="no-print ai-report-actions">
                             {{-- Print / Export PDF Button --}}
-                            <button type="button" onclick="window.print()" class="ai-btn-print">
+                            <button type="button" @click="printReport()" class="ai-btn-print">
                                 <span>🖨️</span>
                                 <span>Cetak / Export PDF</span>
                             </button>
@@ -1392,6 +1402,7 @@
                 currentTab: 'dashboard',
                 chartInstances: [],
                 currentReport: initialReport,
+                wasDark: false,
 
                 init() {
                     window.addEventListener('resize', () => {
@@ -1403,9 +1414,35 @@
                             } catch(e) {}
                         });
                     });
+
+                    // Automatically remove dark mode before printing so browser PDF renders pure white
+                    window.addEventListener('beforeprint', () => {
+                        if (document.documentElement.classList.contains('dark')) {
+                            this.wasDark = true;
+                            document.documentElement.classList.remove('dark');
+                        }
+                    });
+
+                    window.addEventListener('afterprint', () => {
+                        if (this.wasDark) {
+                            document.documentElement.classList.add('dark');
+                            this.wasDark = false;
+                        }
+                    });
+
                     setTimeout(() => {
                         this.initCharts();
                     }, 50);
+                },
+
+                printReport() {
+                    if (document.documentElement.classList.contains('dark')) {
+                        this.wasDark = true;
+                        document.documentElement.classList.remove('dark');
+                    }
+                    setTimeout(() => {
+                        window.print();
+                    }, 60);
                 },
 
                 switchTab(tab) {
