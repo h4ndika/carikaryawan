@@ -9,7 +9,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
-use Laravel\Ai\AnonymousAgent;
+use App\Ai\DisekitarAgent;
 use Laravel\Ai\Messages\Message;
 use Laravel\Ai\Messages\MessageRole;
 use UnitEnum;
@@ -253,7 +253,7 @@ class AiPlayground extends Page
                 }
             }
 
-            $agent = new AnonymousAgent(
+            $agent = new DisekitarAgent(
                 instructions: $instructions,
                 messages: $history,
                 tools: $tools
@@ -271,6 +271,16 @@ class AiPlayground extends Page
 
             $duration = round(microtime(true) - $startTime, 2);
             $outputText = (string) $response;
+
+            // Fallback: If outputText is empty but a step generated text, fallback to step text
+            if (empty(trim($outputText))) {
+                foreach (array_reverse($response->steps ?? []) as $step) {
+                    if (!empty(trim($step->text ?? ''))) {
+                        $outputText = $step->text;
+                        break;
+                    }
+                }
+            }
 
             $promptTokens = $response->usage->promptTokens ?? 0;
             $completionTokens = $response->usage->completionTokens ?? 0;
