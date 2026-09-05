@@ -205,6 +205,21 @@
             color: #f59e0b;
             background-color: rgba(245, 158, 11, 0.1);
         }
+        .ai-chip {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #d97706;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .ai-chip:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+        }
         .ai-spin {
             animation: ai-spin-anim 1s linear infinite;
         }
@@ -226,6 +241,20 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {{-- Live Database Access Toggle --}}
+                    <div style="padding: 0.75rem; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 0.5rem;">
+                        <label class="ai-label" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 0.25rem;">
+                            <span style="display: flex; align-items: center; gap: 0.4rem; font-weight: 600; color: #d97706;">
+                                <x-heroicon-s-circle-stack class="ai-icon-sm" />
+                                <span>Akses Database Live</span>
+                            </span>
+                            <input type="checkbox" wire:model.live="enableDatabaseAccess" style="width: 1.15rem; height: 1.15rem; accent-color: #f59e0b; cursor: pointer;">
+                        </label>
+                        <div class="ai-hint" style="margin: 0; font-size: 0.72rem; line-height: 1.4;">
+                            AI membaca data real-time DiSekitar (jumlah post, kota, kategori, statistik) menggunakan safe read-only SQL tool.
+                        </div>
+                    </div>
+
                     {{-- Provider Selection --}}
                     <div>
                         <label class="ai-label">AI Provider</label>
@@ -254,6 +283,7 @@
                         <label class="ai-label">Template Instruksi Cepat</label>
                         <select wire:model.live="template" class="ai-select">
                             <option value="">-- Pilih Template --</option>
+                            <option value="analytics">📊 Tanya Data / Statistik Database (Live)</option>
                             <option value="article">Artikel Ulasan & Wisata (SEO)</option>
                             <option value="seo">Meta Title & Description Generator</option>
                             <option value="summary">Ringkasan Tempat & Highlight</option>
@@ -326,6 +356,25 @@
                                             </div>
                                         </div>
 
+                                        @if (!empty($msg['tool_calls']))
+                                            <div style="margin-bottom: 0.75rem; padding: 0.45rem 0.65rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 0.375rem; font-size: 0.75rem; color: #059669;" x-data="{ showToolDetail: false }">
+                                                <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" x-on:click="showToolDetail = !showToolDetail">
+                                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-weight: 600;">
+                                                        <x-heroicon-m-circle-stack class="ai-icon-sm" style="color: #059669;" />
+                                                        <span>Data diverifikasi live dari Database DiSekitar</span>
+                                                    </span>
+                                                    <span style="font-size: 0.7rem; text-decoration: underline; color: #047857;" x-text="showToolDetail ? 'Tutup Detail Query' : 'Lihat Query Database'"></span>
+                                                </div>
+                                                <div x-show="showToolDetail" x-cloak style="margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px dashed rgba(16, 185, 129, 0.2); font-family: monospace; font-size: 0.7rem; color: #065f46;">
+                                                    @foreach ($msg['tool_calls'] as $tc)
+                                                        <div style="margin-bottom: 0.25rem;">
+                                                            <span style="font-weight: bold; color: #047857;">Query:</span> {{ $tc['arguments']['query'] ?? json_encode($tc['arguments']) }}
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
                                         <div style="white-space: pre-wrap; word-break: break-word;">{{ $msg['content'] }}</div>
 
                                         @if (!empty($msg['tokens']))
@@ -353,6 +402,16 @@
             {{-- Input Area --}}
             <div class="ai-card">
                 <form wire:submit="sendMessage" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @if ($enableDatabaseAccess)
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; padding-bottom: 0.25rem;">
+                            <span style="font-size: 0.72rem; color: #6b7280; font-weight: 500;">Contoh Pertanyaan Data:</span>
+                            <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah post di kota Bandung?')" class="ai-chip">📍 Total post Bandung</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Tampilkan 5 kota dengan jumlah postingan terbanyak')" class="ai-chip">🏆 Top 5 Kota</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah postingan berdasarkan kategori?')" class="ai-chip">📂 Post per Kategori</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Berapa total pengunjung halaman hari ini?')" class="ai-chip">📈 Views Hari Ini</button>
+                        </div>
+                    @endif
+
                     <div>
                         <textarea
                             wire:model="userPrompt"

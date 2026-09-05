@@ -2,6 +2,7 @@
 
 namespace App\Filament\Rahasia\Pages;
 
+use App\Ai\Tools\DisekitarDatabaseTool;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -32,6 +33,8 @@ class AiPlayground extends Page
     public string $systemPrompt = 'Kamu adalah asisten AI yang cerdas, faktual, dan ramah untuk platform ulasan & rekomendasi lokal DiSekitar.';
 
     public string $userPrompt = '';
+
+    public bool $enableDatabaseAccess = true;
 
     public array $messages = [];
 
@@ -65,6 +68,11 @@ class AiPlayground extends Page
     public function updatedTemplate(string $val): void
     {
         switch ($val) {
+            case 'analytics':
+                $this->systemPrompt = "Kamu adalah analis data cerdas untuk direktori DiSekitar. Gunakan tool database yang tersedia untuk memeriksa data riil (posts, cities, categories, views) dan jawab dengan angka/informasi akurat.";
+                $this->userPrompt = "Berapa jumlah post di kota Bandung?";
+                $this->enableDatabaseAccess = true;
+                break;
             case 'article':
                 $this->systemPrompt = "Kamu adalah content writer profesional & pakar SEO untuk platform direktori wisata & kuliner DiSekitar.\nTulis artikel yang komprehensif, menarik, dan informatif dengan gaya bahasa casual semi-formal.";
                 $this->userPrompt = "Tolong buatkan ulasan menarik dan rekomendasi lengkap untuk: [Nama Tempat, Kota]. Cantumkan keunggulan tempat, tips berkunjung, dan perkiraan suasana.";
@@ -109,14 +117,20 @@ class AiPlayground extends Page
         $startTime = microtime(true);
 
         try {
-            $instructions = !empty($this->systemPrompt)
-                ? $this->systemPrompt
-                : 'You are a helpful AI assistant.';
+            $tools = [];
+            $dbInstructions = '';
+
+            if ($this->enableDatabaseAccess) {
+                $tools[] = new DisekitarDatabaseTool();
+                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil. Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
+            }
+
+            $instructions = (!empty($this->systemPrompt) ? $this->systemPrompt : 'You are a helpful AI assistant.') . $dbInstructions;
 
             $agent = new AnonymousAgent(
                 instructions: $instructions,
                 messages: [],
-                tools: []
+                tools: $tools
             );
 
             $selectedProvider = $this->provider;
@@ -136,11 +150,23 @@ class AiPlayground extends Page
             $completionTokens = $response->usage->completionTokens ?? 0;
             $totalTokens = $response->usage->totalTokens ?? ($promptTokens + $completionTokens);
 
+            // Extract tool calls if executed
+            $toolCalls = [];
+            foreach (($response->steps ?? []) as $step) {
+                foreach (($step->toolCalls ?? []) as $tc) {
+                    $toolCalls[] = [
+                        'name' => $tc->name,
+                        'arguments' => $tc->arguments,
+                    ];
+                }
+            }
+
             $this->messages[] = [
                 'role' => 'assistant',
                 'content' => $outputText,
                 'provider' => $selectedProvider,
                 'model' => $selectedModel ?? ($response->meta->model ?? 'default'),
+                'tool_calls' => $toolCalls,
                 'tokens' => [
                     'prompt' => $promptTokens,
                     'completion' => $completionTokens,
