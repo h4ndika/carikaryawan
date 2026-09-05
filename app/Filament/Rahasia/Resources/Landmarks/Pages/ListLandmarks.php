@@ -60,7 +60,7 @@ class ListLandmarks extends ListRecords
                     TextInput::make('limit')
                         ->label('Target Jumlah Landmark')
                         ->numeric()
-                        ->default(15)
+                        ->default(50)
                         ->minValue(3)
                         ->maxValue(50)
                         ->required()
