@@ -334,7 +334,17 @@
         .ai-report-main {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.5rem;
+            min-width: 0;
+        }
+
+        .ai-dashboard-content {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1.75rem !important;
+        }
+        .ai-dashboard-content[style*="display: none"] {
+            display: none !important;
         }
 
         /* Top Action Bar of the Report */
@@ -724,33 +734,228 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Print Specific CSS */
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .ai-dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+            .ai-history-list {
+                max-height: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ai-box {
+                padding: 1rem;
+            }
+            .ai-box-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.65rem;
+            }
+            .ai-prompt-area {
+                margin-bottom: 0.5rem;
+            }
+            .ai-prompt-actions {
+                position: static;
+                margin-top: 0.65rem;
+                display: flex;
+                justify-content: flex-end;
+            }
+            .ai-textarea {
+                padding: 0.75rem 0.85rem;
+            }
+            .ai-report-topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            .ai-report-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            .ai-btn-print {
+                justify-content: center;
+                width: 100%;
+            }
+            .ai-tab-group {
+                width: 100%;
+                display: flex;
+            }
+            .ai-tab-btn {
+                flex: 1;
+                text-align: center;
+            }
+            .ai-chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .ai-chart-canvas-box {
+                height: 230px;
+            }
+            .ai-table-card {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .ai-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            .ai-kpi-card {
+                padding: 0.85rem;
+            }
+            .ai-kpi-val {
+                font-size: 1.35rem;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .ai-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Print Specific CSS: Clean Crisp Executive Document */
         @media print {
-            body {
+            @page {
+                margin: 12mm 15mm;
+                size: A4 portrait;
+            }
+
+            /* 1. Force all body and Filament wrapper layers to pure crisp white */
+            html, html.dark, body, .fi-body, .fi-layout, .fi-main, .fi-content, .fi-page, .ai-report-wrap, .ai-report-main, .ai-dashboard-layout {
                 background: #ffffff !important;
-                color: #000000 !important;
-            }
-            .fi-sidebar, .fi-topbar, .fi-header, .no-print, nav, button, aside {
-                display: none !important;
-            }
-            .fi-main, .fi-content {
+                background-color: #ffffff !important;
+                color: #111827 !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
             }
+
+            /* 2. Hide all non-printable UI elements */
+            .fi-sidebar, .fi-topbar, .fi-header, .no-print, nav, button, aside, .ai-prompt-area, .ai-box, .ai-history-card, .ai-history-header, .ai-tab-group, .ai-btn-print, .ai-model-control {
+                display: none !important;
+            }
+
             .print-only {
                 display: block !important;
             }
-            .ai-summary-card, .ai-kpi-card, .ai-chart-card, .ai-table-card, .ai-rec-card {
-                break-inside: avoid !important;
-                box-shadow: none !important;
-                border: 1px solid #cccccc !important;
-                margin-bottom: 1rem !important;
+
+            /* 3. Force all report components to clean white paper theme */
+            .ai-report-topbar,
+            .ai-summary-card,
+            .ai-kpi-card,
+            .ai-chart-card,
+            .ai-table-card,
+            .ai-rec-card,
+            .ai-rec-item {
                 background: #ffffff !important;
-                color: #000000 !important;
+                background-color: #ffffff !important;
+                color: #111827 !important;
+                border: 1px solid #d1d5db !important;
+                box-shadow: none !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                margin-bottom: 1.25rem !important;
+                border-radius: 0.5rem !important;
+            }
+
+            /* 4. High-contrast typography for executive print */
+            .ai-report-headings h2,
+            .ai-card-title,
+            .ai-chart-title,
+            .ai-kpi-val,
+            .ai-title-text,
+            h1, h2, h3, h4, h5, h6, strong, b {
+                color: #111827 !important;
+            }
+
+            .ai-summary-content,
+            .ai-summary-content p,
+            .ai-summary-content li,
+            .ai-report-headings p,
+            .ai-kpi-top,
+            .ai-kpi-desc,
+            .ai-rec-item {
+                color: #374151 !important;
+            }
+
+            /* 5. Print Grid Layouts */
+            .ai-dashboard-layout {
+                display: block !important;
+                width: 100% !important;
+            }
+            .ai-dashboard-content {
+                display: block !important;
+                width: 100% !important;
+                gap: 0 !important;
+            }
+            .ai-kpi-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 0.75rem !important;
+                margin-bottom: 1.25rem !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ai-kpi-card {
+                margin-bottom: 0 !important;
+            }
+            .ai-chart-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 1rem !important;
+                margin-bottom: 1.25rem !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ai-chart-card {
+                margin-bottom: 0 !important;
             }
             .ai-chart-canvas-box {
-                max-height: 240px !important;
+                height: 200px !important;
+                max-height: 200px !important;
+            }
+
+            /* 6. Clean Tables in Print */
+            .ai-table-scroll {
+                border: 1px solid #d1d5db !important;
+                overflow: visible !important;
+            }
+            .ai-data-table {
+                width: 100% !important;
+            }
+            .ai-data-table th {
+                background: #f3f4f6 !important;
+                color: #111827 !important;
+                font-weight: 700 !important;
+                border-bottom: 2px solid #9ca3af !important;
+                padding: 0.5rem 0.65rem !important;
+            }
+            .ai-data-table td {
+                background: #ffffff !important;
+                color: #111827 !important;
+                border-bottom: 1px solid #e5e7eb !important;
+                padding: 0.45rem 0.65rem !important;
+            }
+
+            /* 7. Action Plan & Badges in Print */
+            .ai-badge, .ai-kpi-badge {
+                border: 1px solid #d1d5db !important;
+                background: #f3f4f6 !important;
+                color: #111827 !important;
+            }
+            .ai-rec-num {
+                background: #d97706 !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
         @media screen {
@@ -762,7 +967,6 @@
 
     <div 
         x-data="aiReportManager(@js($report))"
-        x-init="initCharts()"
         @report-loaded.window="updateReport($event.detail.report)"
         class="ai-report-wrap"
     >
@@ -996,22 +1200,25 @@
                             <div class="ai-tab-group">
                                 <button 
                                     type="button" 
-                                    wire:click="$set('activeTab', 'dashboard')" 
-                                    class="ai-tab-btn {{ $activeTab === 'dashboard' ? 'active' : '' }}"
+                                    @click="switchTab('dashboard')" 
+                                    class="ai-tab-btn"
+                                    :class="{ 'active': currentTab === 'dashboard' }"
                                 >
                                     📊 Dashboard
                                 </button>
                                 <button 
                                     type="button" 
-                                    wire:click="$set('activeTab', 'raw')" 
-                                    class="ai-tab-btn {{ $activeTab === 'raw' ? 'active' : '' }}"
+                                    @click="switchTab('raw')" 
+                                    class="ai-tab-btn"
+                                    :class="{ 'active': currentTab === 'raw' }"
                                 >
                                     📝 Markdown
                                 </button>
                                 <button 
                                     type="button" 
-                                    wire:click="$set('activeTab', 'tools')" 
-                                    class="ai-tab-btn {{ $activeTab === 'tools' ? 'active' : '' }}"
+                                    @click="switchTab('tools')" 
+                                    class="ai-tab-btn"
+                                    :class="{ 'active': currentTab === 'tools' }"
                                 >
                                     🛠️ SQL ({{ count($toolCalls) }})
                                 </button>
@@ -1020,7 +1227,7 @@
                     </div>
 
                     {{-- TAB 1: DASHBOARD --}}
-                    <div x-show="$wire.activeTab === 'dashboard'" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    <div x-show="currentTab === 'dashboard'" class="ai-dashboard-content">
                         
                         {{-- 1. Executive Summary --}}
                         @if(!empty($report['executive_summary']))
@@ -1138,7 +1345,7 @@
                     </div>
 
                     {{-- TAB 2: RAW TEXT / MARKDOWN --}}
-                    <div x-show="$wire.activeTab === 'raw'" x-cloak>
+                    <div x-show="currentTab === 'raw'" x-cloak>
                         <div class="ai-box">
                             <div style="font-weight: 700; font-size: 0.8125rem; margin-bottom: 0.75rem; text-transform: uppercase;">
                                 Teks Mentah Hasil Generasi AI
@@ -1148,7 +1355,7 @@
                     </div>
 
                     {{-- TAB 3: SQL TOOL CALLS --}}
-                    <div x-show="$wire.activeTab === 'tools'" x-cloak>
+                    <div x-show="currentTab === 'tools'" x-cloak>
                         <div class="ai-box">
                             <div style="font-weight: 700; font-size: 0.8125rem; margin-bottom: 0.75rem; text-transform: uppercase;">
                                 Query SQL yang Dieksekusi Pada Database Live
@@ -1182,19 +1389,43 @@
     <script>
         function aiReportManager(initialReport) {
             return {
+                currentTab: 'dashboard',
                 chartInstances: [],
                 currentReport: initialReport,
 
+                init() {
+                    window.addEventListener('resize', () => {
+                        this.chartInstances.forEach(c => {
+                            try { c.resize(); } catch(e) {}
+                        });
+                    });
+                    this.$nextTick(() => {
+                        this.initCharts();
+                    });
+                },
+
+                switchTab(tab) {
+                    this.currentTab = tab;
+                    if (tab === 'dashboard') {
+                        this.$nextTick(() => {
+                            this.initCharts();
+                        });
+                    }
+                },
+
                 updateReport(newReport) {
                     this.currentReport = newReport;
+                    this.currentTab = 'dashboard';
                     this.$nextTick(() => {
                         this.initCharts();
                     });
                 },
 
                 initCharts() {
-                    // Destroy previous chart instances to avoid canvas overlap
-                    this.chartInstances.forEach(chart => chart.destroy());
+                    // Destroy previous chart instances cleanly
+                    this.chartInstances.forEach(chart => {
+                        try { chart.destroy(); } catch (e) {}
+                    });
                     this.chartInstances = [];
 
                     if (!this.currentReport || !this.currentReport.charts || !this.currentReport.charts.length) {
@@ -1202,7 +1433,7 @@
                     }
 
                     if (typeof Chart === 'undefined') {
-                        setTimeout(() => this.initCharts(), 300);
+                        setTimeout(() => this.initCharts(), 250);
                         return;
                     }
 
@@ -1240,8 +1471,8 @@
                         });
 
                         const isDark = document.documentElement.classList.contains('dark');
-                        const textColor = isDark ? '#9ca3af' : '#6b7280';
-                        const gridColor = isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.8)';
+                        const textColor = isDark ? '#9ca3af' : '#4b5563';
+                        const gridColor = isDark ? 'rgba(75, 85, 99, 0.25)' : 'rgba(229, 231, 235, 0.9)';
 
                         const chartInstance = new Chart(ctx, {
                             type: type,
@@ -1252,6 +1483,9 @@
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                animation: {
+                                    duration: 350
+                                },
                                 plugins: {
                                     legend: {
                                         display: type === 'doughnut' || type === 'pie' || datasets.length > 1,
@@ -1259,7 +1493,7 @@
                                         labels: {
                                             boxWidth: 12,
                                             color: textColor,
-                                            font: { size: 11 }
+                                            font: { size: 11, weight: '600' }
                                         }
                                     },
                                     tooltip: {
@@ -1270,11 +1504,11 @@
                                 scales: (type === 'doughnut' || type === 'pie') ? {} : {
                                     y: {
                                         beginAtZero: true,
-                                        ticks: { color: textColor },
+                                        ticks: { color: textColor, font: { size: 10 } },
                                         grid: { color: gridColor }
                                     },
                                     x: {
-                                        ticks: { color: textColor },
+                                        ticks: { color: textColor, font: { size: 10 } },
                                         grid: { display: false }
                                     }
                                 }
