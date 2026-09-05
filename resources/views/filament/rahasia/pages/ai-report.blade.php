@@ -822,30 +822,43 @@
         /* Print Specific CSS: Clean Crisp Executive Document */
         @media print {
             @page {
-                margin: 8mm 12mm;
                 size: A4 portrait;
+                margin: 15mm 18mm 15mm 18mm !important;
             }
 
             :root, html, html.dark {
                 color-scheme: light !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
             }
 
-            /* 1. Force all body and Filament wrapper layers to pure crisp white */
+            /* Default reset: strip dark backgrounds and heavy box shadows from all elements */
             *, *::before, *::after {
+                background-color: transparent !important;
+                background-image: none !important;
                 box-shadow: none !important;
                 text-shadow: none !important;
             }
 
-            html, html.dark, body, body.fi-body, div.fi-layout, div.fi-main-ctn, main.fi-main, div.fi-content, div.fi-page, .ai-report-wrap, .ai-report-main, .ai-dashboard-layout, .ai-dashboard-content {
+            /* 1. Force all body and Filament wrapper layers to pure crisp white */
+            html, html.dark, body, body.fi-body, 
+            div.fi-layout, div.fi-main-ctn, main.fi-main, div.fi-content, div.fi-page, 
+            .ai-report-wrap, .ai-report-main, .ai-dashboard-layout, .ai-dashboard-content {
                 background: #ffffff !important;
                 background-color: #ffffff !important;
-                color: #111827 !important;
+                color: #0f172a !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 min-height: 0 !important;
                 border: none !important;
+            }
+
+            /* Ample breathing room so margins never feel cramped at page edges */
+            .ai-report-wrap {
+                box-sizing: border-box !important;
+                padding: 0 4mm !important;
             }
 
             /* 2. Hide all non-printable UI elements */
@@ -857,33 +870,50 @@
                 display: block !important;
             }
 
-            /* 3. Force all report components to clean white paper theme */
-            .ai-report-topbar,
+            /* 3. Report Header in Print: clean document title with underline */
+            .ai-report-topbar {
+                background: transparent !important;
+                background-color: transparent !important;
+                border: none !important;
+                border-bottom: 2px solid #0f172a !important;
+                border-radius: 0 !important;
+                padding: 0 0 10px 0 !important;
+                margin-bottom: 16px !important;
+                box-shadow: none !important;
+            }
+
+            /* 4. Force all report components to clean white paper theme with subtle borders */
             .ai-summary-card,
-            .ai-kpi-card,
             .ai-chart-card,
             .ai-table-card,
             .ai-rec-card,
             .ai-rec-item {
                 background: #ffffff !important;
                 background-color: #ffffff !important;
-                color: #111827 !important;
-                border: 1px solid #d1d5db !important;
+                color: #0f172a !important;
+                border: 1px solid #e2e8f0 !important;
                 box-shadow: none !important;
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
-                margin-bottom: 1.25rem !important;
-                border-radius: 0.5rem !important;
+                margin-bottom: 14px !important;
+                border-radius: 6px !important;
+                padding: 14px 18px !important;
             }
 
-            /* 4. High-contrast typography for executive print */
+            /* 5. High-contrast typography for executive print */
             .ai-report-headings h2,
             .ai-card-title,
             .ai-chart-title,
             .ai-kpi-val,
             .ai-title-text,
             h1, h2, h3, h4, h5, h6, strong, b {
-                color: #111827 !important;
+                color: #0f172a !important;
+            }
+
+            .ai-card-title, .ai-chart-header {
+                border-bottom: 1px solid #e2e8f0 !important;
+                padding-bottom: 6px !important;
+                margin-bottom: 10px !important;
             }
 
             .ai-summary-content,
@@ -893,10 +923,10 @@
             .ai-kpi-top,
             .ai-kpi-desc,
             .ai-rec-item {
-                color: #374151 !important;
+                color: #334155 !important;
             }
 
-            /* 5. Print Grid Layouts */
+            /* 6. Print Grid Layouts */
             .ai-dashboard-layout {
                 display: block !important;
                 width: 100% !important;
@@ -909,19 +939,41 @@
             .ai-kpi-grid {
                 display: grid !important;
                 grid-template-columns: repeat(4, 1fr) !important;
-                gap: 0.75rem !important;
-                margin-bottom: 1.25rem !important;
+                gap: 10px !important;
+                margin-bottom: 14px !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
             .ai-kpi-card {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 6px !important;
+                padding: 10px 14px !important;
                 margin-bottom: 0 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .ai-kpi-top {
+                font-size: 0.72rem !important;
+                font-weight: 600 !important;
+                color: #64748b !important;
+            }
+            .ai-kpi-val {
+                font-size: 1.45rem !important;
+                font-weight: 800 !important;
+                color: #0f172a !important;
+            }
+            .ai-kpi-desc {
+                font-size: 0.7rem !important;
+                color: #64748b !important;
             }
             .ai-chart-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 1rem !important;
-                margin-bottom: 1.25rem !important;
+                gap: 12px !important;
+                margin-bottom: 14px !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
@@ -933,36 +985,52 @@
                 max-height: 200px !important;
             }
 
-            /* 6. Clean Tables in Print */
+            /* 7. Clean Tables in Print */
             .ai-table-scroll {
-                border: 1px solid #d1d5db !important;
+                border: 1px solid #e2e8f0 !important;
                 overflow: visible !important;
             }
             .ai-data-table {
                 width: 100% !important;
             }
             .ai-data-table th {
-                background: #f3f4f6 !important;
-                color: #111827 !important;
+                background: #f8fafc !important;
+                background-color: #f8fafc !important;
+                color: #0f172a !important;
                 font-weight: 700 !important;
-                border-bottom: 2px solid #9ca3af !important;
+                border-bottom: 2px solid #cbd5e1 !important;
                 padding: 0.5rem 0.65rem !important;
             }
             .ai-data-table td {
                 background: #ffffff !important;
-                color: #111827 !important;
-                border-bottom: 1px solid #e5e7eb !important;
+                background-color: #ffffff !important;
+                color: #334155 !important;
+                border-bottom: 1px solid #e2e8f0 !important;
                 padding: 0.45rem 0.65rem !important;
             }
 
-            /* 7. Action Plan & Badges in Print */
+            /* 8. Action Plan & Badges in Print */
             .ai-badge, .ai-kpi-badge {
-                border: 1px solid #d1d5db !important;
-                background: #f3f4f6 !important;
-                color: #111827 !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #f8fafc !important;
+                background-color: #f8fafc !important;
+                color: #334155 !important;
+            }
+            .ai-kpi-badge.positive {
+                background: #ecfdf5 !important;
+                background-color: #ecfdf5 !important;
+                border-color: #a7f3d0 !important;
+                color: #065f46 !important;
+            }
+            .ai-kpi-badge.negative {
+                background: #fef2f2 !important;
+                background-color: #fef2f2 !important;
+                border-color: #fecaca !important;
+                color: #991b1b !important;
             }
             .ai-rec-num {
                 background: #d97706 !important;
+                background-color: #d97706 !important;
                 color: #ffffff !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -1417,15 +1485,17 @@
 
                     // Automatically remove dark mode before printing so browser PDF renders pure white
                     window.addEventListener('beforeprint', () => {
-                        if (document.documentElement.classList.contains('dark')) {
+                        if (document.documentElement.classList.contains('dark') || document.body.classList.contains('dark')) {
                             this.wasDark = true;
                             document.documentElement.classList.remove('dark');
+                            document.body.classList.remove('dark');
                         }
                     });
 
                     window.addEventListener('afterprint', () => {
                         if (this.wasDark) {
                             document.documentElement.classList.add('dark');
+                            document.body.classList.add('dark');
                             this.wasDark = false;
                         }
                     });
@@ -1436,13 +1506,18 @@
                 },
 
                 printReport() {
-                    if (document.documentElement.classList.contains('dark')) {
+                    // Ensure we are on dashboard tab for printable report
+                    this.currentTab = 'dashboard';
+                    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+                    if (isDark) {
                         this.wasDark = true;
                         document.documentElement.classList.remove('dark');
+                        document.body.classList.remove('dark');
                     }
+                    // Give DOM a frame to repaint and update layout
                     setTimeout(() => {
                         window.print();
-                    }, 60);
+                    }, 120);
                 },
 
                 switchTab(tab) {
