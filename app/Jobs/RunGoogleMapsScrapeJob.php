@@ -62,20 +62,35 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
         ]);
 
         try {
-            // 3. Start Apify Actor
-            $locationStr = $scrapeJob->location;
-            if (empty($locationStr) && $scrapeJob->city) {
-                $locationStr = $scrapeJob->city->name . ', Indonesia';
-            }
+            // 3. Start Apify Actor based on engine
+            $engine = $scrapeJob->engine ?? 'google-maps';
 
-            $runData = $apifyService->startGooglePlacesCrawler(
-                token: $token,
-                query: $scrapeJob->query,
-                location: $locationStr,
-                maxPlaces: $scrapeJob->target_limit,
-                includeImages: $scrapeJob->include_images,
-                includeReviews: $scrapeJob->include_reviews
-            );
+            if ($engine === 'google-jobs' || $engine === 'instagram') {
+                $actorEngine = $engine === 'instagram' 
+                    ? 'apify/instagram-post-scraper' 
+                    : 'spidersource/google-jobs-scraper';
+
+                $runData = $apifyService->startJobCrawler(
+                    token: $token,
+                    query: $scrapeJob->query,
+                    engine: $actorEngine,
+                    maxItems: $scrapeJob->target_limit
+                );
+            } else {
+                $locationStr = $scrapeJob->location;
+                if (empty($locationStr) && $scrapeJob->city) {
+                    $locationStr = $scrapeJob->city->name . ', Indonesia';
+                }
+
+                $runData = $apifyService->startGooglePlacesCrawler(
+                    token: $token,
+                    query: $scrapeJob->query,
+                    location: $locationStr,
+                    maxPlaces: $scrapeJob->target_limit,
+                    includeImages: $scrapeJob->include_images,
+                    includeReviews: $scrapeJob->include_reviews
+                );
+            }
 
             $runId = $runData['runId'];
             $datasetId = $runData['datasetId'];
@@ -113,7 +128,57 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
             $totalScraped = count($items);
             $scrapeJob->update(['total_scraped' => $totalScraped]);
 
-            // 6. Import directly into MySQL posts tables
+            // 6. If engine is job/instagram, normalize items before import
+            if ($engine === 'google-jobs') {
+                $items = array_map(function ($item) {
+                    $pos = $item['title'] ?? ($item['jobTitle'] ?? 'Lowongan Kerja');
+                    $comp = $item['companyName'] ?? ($item['company'] ?? 'Perusahaan Lokal');
+                    $loc = $item['location'] ?? ($item['address'] ?? '');
+                    $desc = $item['description'] ?? ($item['snippet'] ?? '');
+                    $salary = $item['salary'] ?? ($item['salaryInfo'] ?? '-');
+                    $apply = $item['applyUrl'] ?? ($item['jobUrl'] ?? ($item['link'] ?? ''));
+
+                    return [
+                        'title' => "{$pos} - {$comp}",
+                        'category' => 'Lowongan Kerja',
+                        'location' => $loc,
+                        'address' => $loc,
+                        'description' => $desc,
+                        'apply_url' => $apply,
+                        'website' => $apply,
+                        'details' => [
+                            'posisi' => $pos,
+                            'perusahaan' => $comp,
+                            'lokasi' => $loc,
+                            'gaji' => $salary,
+                            'cara_melamar' => $apply ?: 'Cek deskripsi lowongan',
+                        ],
+                    ];
+                }, $items);
+            } elseif ($engine === 'instagram') {
+                $items = array_map(function ($item) {
+                    $caption = $item['caption'] ?? ($item['text'] ?? '');
+                    $shortTitle = trim(explode("\n", $caption)[0] ?? 'Info Loker Lokal');
+                    $postUrl = $item['url'] ?? (!empty($item['shortCode']) ? "https://instagram.com/p/{$item['shortCode']}" : '');
+                    $imgs = !empty($item['displayUrl']) ? [$item['displayUrl']] : ($item['images'] ?? []);
+
+                    return [
+                        'title' => mb_substr($shortTitle, 0, 70) ?: 'Info Lowongan Kerja Lokal',
+                        'category' => 'Lowongan Kerja',
+                        'description' => $caption,
+                        'apply_url' => $postUrl,
+                        'website' => $postUrl,
+                        'images' => $imgs,
+                        'details' => [
+                            'posisi' => mb_substr($shortTitle, 0, 70),
+                            'perusahaan' => $item['ownerUsername'] ?? 'Instagram',
+                            'cara_melamar' => $postUrl,
+                        ],
+                    ];
+                }, $items);
+            }
+
+            // 7. Import directly into MySQL posts tables
             $importOptions = [
                 'skip_duplicates' => false,
                 'category_id' => $scrapeJob->category_id,

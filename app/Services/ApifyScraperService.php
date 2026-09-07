@@ -121,6 +121,59 @@ class ApifyScraperService
     }
 
     /**
+     * Start Job crawler Actor on Apify (Google Jobs or Instagram).
+     */
+    public function startJobCrawler(
+        string $token,
+        string $query,
+        string $engine = 'spidersource/google-jobs-scraper',
+        int $maxItems = 20
+    ): array {
+        if ($engine === 'apify/instagram-post-scraper') {
+            $actorId = 'apify/instagram-post-scraper';
+            $username = preg_replace('/^@/', '', trim($query));
+            $input = [
+                'username' => [$username],
+                'resultsLimit' => $maxItems,
+            ];
+        } else {
+            $actorId = 'spidersource/google-jobs-scraper';
+            $input = [
+                'queries' => [$query],
+                'maxItems' => $maxItems,
+                'countryCode' => 'id',
+                'languageCode' => 'id',
+            ];
+        }
+
+        $cleanActorId = str_replace('/', '~', $actorId);
+        $url = "https://api.apify.com/v2/acts/{$cleanActorId}/runs";
+
+        $response = Http::withToken($token)
+            ->timeout(30)
+            ->post($url, $input);
+
+        if (!$response->successful()) {
+            $status = $response->status();
+            $body = $response->body();
+
+            if ($status === 402 || $status === 429) {
+                throw new RuntimeException("Apify Quota Exceeded (HTTP {$status}): Saldo/kuota token ini telah habis.");
+            }
+
+            throw new RuntimeException("Gagal memulai crawler lowongan Apify (HTTP {$status}): {$body}");
+        }
+
+        $data = $response->json('data', []);
+        return [
+            'runId' => $data['id'] ?? null,
+            'actorId' => $data['actId'] ?? null,
+            'datasetId' => $data['defaultDatasetId'] ?? null,
+            'status' => $data['status'] ?? 'READY',
+        ];
+    }
+
+    /**
      * Check run status on Apify.
      */
     public function checkRunStatus(string $runId, string $token): array

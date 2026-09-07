@@ -24,41 +24,71 @@ class ListGoogleMapsScrapeJobs extends ListRecords
     {
         return [
             Action::make('startScrape')
-                ->label('Mulai Ekstraksi Google Maps')
+                ->label('Mulai Ekstraksi Data (Maps / Loker)')
                 ->icon('heroicon-o-magnifying-glass-plus')
                 ->color('primary')
-                ->modalHeading('Ekstraksi Tempat dari Google Maps')
-                ->modalDescription('Masukkan kata kunci pencarian. Data tempat (nama, rating, koordinat, foto, kontak) akan otomatis diekstrak dan disimpan ke database.')
+                ->modalHeading('Ekstraksi Tempat & Lowongan Kerja')
+                ->modalDescription('Pilih mesin scraper dan masukkan kata kunci. Data akan otomatis diekstrak via Apify dan tersimpan ke database.')
                 ->modalSubmitActionLabel('Mulai Ekstraksi & Simpan')
                 ->form([
+                    Select::make('engine')
+                        ->label('Pilihan Mesin Scraper')
+                        ->options([
+                            'google-jobs' => 'Google Jobs (spidersource/google-jobs-scraper) — Default Loker',
+                            'instagram' => 'Instagram Loker (apify/instagram-post-scraper) — Akun Komunitas',
+                            'google-maps' => 'Google Maps (compass/crawler-google-places) — Tempat & Fasilitas',
+                        ])
+                        ->default('google-jobs')
+                        ->required()
+                        ->live()
+                        ->columnSpanFull()
+                        ->helperText('Pilih mesin pencari sesuai kebutuhan: Google Jobs untuk loker terstruktur, Instagram untuk akun loker daerah, atau Google Maps untuk tempat.'),
+
                     TextInput::make('query')
-                        ->label('Kata Kunci Pencarian Google Maps')
-                        ->placeholder('Contoh: Hotel di Bandung, Kafe di Jogja, Penitipan koper dekat Stasiun Bandung')
+                        ->label(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                            'instagram' => 'Username Akun Instagram (tanpa @)',
+                            'google-jobs' => 'Kata Kunci Lowongan Kerja',
+                            default => 'Kata Kunci Tempat Google Maps'
+                        })
+                        ->placeholder(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                            'instagram' => 'Contoh: lokerbandung, infolokerjogja, loker.surabaya',
+                            'google-jobs' => 'Contoh: lowongan barista bandung, staf kafe jogja, cook jakarta',
+                            default => 'Contoh: Hotel di Bandung, Kafe di Jogja, Penitipan koper dekat Stasiun Bandung'
+                        })
                         ->required()
                         ->columnSpanFull()
-                        ->helperText('Ketik kata kunci tempat atau fasilitas transit (misal: "penitipan koper", "coworking space", "shower box" di sekitar stasiun/bandara).'),
+                        ->helperText(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                            'instagram' => 'Ketik username akun Instagram penyedia info loker tanpa simbol @.',
+                            'google-jobs' => 'Ketik posisi dan kota tujuan (misal: "lowongan barista bandung").',
+                            default => 'Ketik kata kunci tempat atau fasilitas transit di sekitar stasiun/bandara.'
+                        }),
 
                     TextInput::make('location')
                         ->label('Lokasi / Kota Spesifik (Opsional)')
                         ->placeholder('Contoh: Bandung, Indonesia')
+                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps')
                         ->columnSpanFull(),
 
                     Select::make('category_id')
                         ->label('Tetapkan Kategori (Opsional)')
                         ->options(Category::pluck('name', 'id'))
                         ->searchable()
-                        ->placeholder('Otomatis deteksi dari Google Maps')
-                        ->helperText('Jika dikosongkan, kategori akan dideteksi dari tag Google Maps.'),
+                        ->default(fn (\Filament\Forms\Get $get) => in_array($get('engine'), ['google-jobs', 'instagram']) 
+                            ? Category::where('slug', 'lowongan-kerja')->value('id') 
+                            : null
+                        )
+                        ->placeholder('Otomatis deteksi dari sumber')
+                        ->helperText('Jika dikosongkan, kategori akan dideteksi otomatis.'),
 
                     Select::make('city_id')
                         ->label('Tetapkan Kota (Opsional)')
                         ->options(City::pluck('name', 'id'))
                         ->searchable()
-                        ->placeholder('Otomatis deteksi dari Alamat')
-                        ->helperText('Jika dikosongkan, kota akan dideteksi dari parsing alamat.'),
+                        ->placeholder('Otomatis deteksi dari Lokasi/Alamat')
+                        ->helperText('Jika dikosongkan, kota akan dideteksi dari hasil parsing.'),
 
                     TextInput::make('target_limit')
-                        ->label('Jumlah Target Tempat')
+                        ->label('Jumlah Target Data')
                         ->numeric()
                         ->default(20)
                         ->minValue(1)
@@ -76,12 +106,14 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         ->helperText('Pilih akun tertentu atau biarkan otomatis memilih akun yang siap pakai.'),
 
                     Toggle::make('include_images')
-                        ->label('Ambil Foto Galeri')
-                        ->default(true),
+                        ->label('Ambil Foto / Gambar')
+                        ->default(true)
+                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps'),
 
                     Toggle::make('include_reviews')
                         ->label('Ambil Ulasan Pengguna')
-                        ->default(false),
+                        ->default(false)
+                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps'),
 
                     Toggle::make('publish_imported')
                         ->label('Langsung Publikasikan')
@@ -90,6 +122,7 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $job = GoogleMapsScrapeJob::create([
+                        'engine' => $data['engine'] ?? 'google-jobs',
                         'query' => $data['query'],
                         'location' => $data['location'] ?? null,
                         'category_id' => $data['category_id'] ?? null,

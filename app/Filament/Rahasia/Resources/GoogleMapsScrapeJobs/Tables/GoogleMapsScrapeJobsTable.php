@@ -26,8 +26,22 @@ class GoogleMapsScrapeJobsTable
                     ->label('ID')
                     ->sortable(),
 
+                TextColumn::make('engine')
+                    ->label('Mesin')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'google-jobs' => 'warning',
+                        'instagram' => 'danger',
+                        default => 'primary',
+                    })
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'google-jobs' => 'Google Jobs',
+                        'instagram' => 'Instagram',
+                        default => 'Google Maps',
+                    }),
+
                 TextColumn::make('query')
-                    ->label('Kata Kunci Maps')
+                    ->label('Kata Kunci / Query')
                     ->searchable()
                     ->weight('bold')
                     ->description(fn (GoogleMapsScrapeJob $record) => $record->location ? "Lokasi: {$record->location}" : null)

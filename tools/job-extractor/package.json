@@ -1,0 +1,16 @@
+{
+  "name": "disekitar-job-extractor",
+  "version": "1.0.0",
+  "description": "Scraper & normalizer untuk Lowongan Kerja Lokal DiSekitar (Google Jobs & Instagram Loker)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --check src/index.js && node --check src/scraper.js && node --check src/normalizer.js"
+  },
+  "dependencies": {
+    "apify-client": "^2.11.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.5"
+  }
+}

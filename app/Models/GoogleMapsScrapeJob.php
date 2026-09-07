@@ -11,6 +11,7 @@ class GoogleMapsScrapeJob extends Model
     use HasFactory;
 
     protected $fillable = [
+        'engine',
         'query',
         'location',
         'category_id',

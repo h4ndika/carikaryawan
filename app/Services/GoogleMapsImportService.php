@@ -233,7 +233,8 @@ class GoogleMapsImportService
     protected function mapJsonToPost(array $data): array
     {
         // Parse address to get location
-        $location = $this->parseAddressToLocation($data['address'] ?? '');
+        $addressStr = $data['address'] ?? ($data['location'] ?? '');
+        $location = $this->parseAddressToLocation($addressStr);
         $provinceId = $this->overrideProvinceId ?: $location['province_id'];
         $cityId = $this->overrideCityId ?: $location['city_id'];
 
@@ -250,7 +251,7 @@ class GoogleMapsImportService
         $slug = $this->ensureUniqueSlug($slug, $data['placeId'] ?? null);
 
         // Prepare excerpt from description
-        $description = $data['description'] ?? '';
+        $description = $data['description'] ?? ($data['snippet'] ?? '');
         $excerpt = Str::limit(strip_tags($description), 200);
 
         $status = $this->defaultStatus ?: 'draft';
@@ -270,12 +271,12 @@ class GoogleMapsImportService
             'province_id' => $provinceId,
             'city_id' => $cityId,
 
-            // Google Maps fields
+            // Google Maps / Job fields
             'place_id' => $data['placeId'] ?? null,
             'latitude' => $data['latitude'] ?? null,
             'longitude' => $data['longitude'] ?? null,
             'phone' => $data['phone'] ?? null,
-            'website' => $data['website'] ?? null,
+            'website' => $data['website'] ?? ($data['apply_url'] ?? null),
             'rating' => $data['rating'] ?? null,
             'reviews_count' => $data['reviewsCount'] ?? 0,
             'google_maps_url' => $data['googleMapsUrl'] ?? null,
@@ -369,7 +370,15 @@ class GoogleMapsImportService
                 if ($wisataCat) return $wisataCat->id;
             }
 
-            if (preg_match('/\b(loker|penitipan|bagasi|koper|shower|mandi|coworking|apotek|lounge|transit|stasiun|bandara|terminal|laundry|atm|money changer|shuttle)\b/i', $lowerTitle)) {
+            if (preg_match('/\b(lowongan|karir|career|recruitment|rekrutmen|dibutuhkan|hiring|loker\b|job vacancy)\b/i', $lowerTitle)) {
+                $jobCat = Category::where('name', 'LIKE', '%lowongan%')
+                    ->orWhere('name', 'LIKE', '%karir%')
+                    ->orWhere('name', 'LIKE', '%loker%')
+                    ->first();
+                if ($jobCat) return $jobCat->id;
+            }
+
+            if (preg_match('/\b(penitipan|bagasi|koper|shower|mandi|coworking|apotek|lounge|transit|stasiun|bandara|terminal|laundry|atm|money changer|shuttle)\b/i', $lowerTitle)) {
                 $fasilitasCat = Category::where('name', 'LIKE', '%fasilitas%')
                     ->orWhere('name', 'LIKE', '%transit%')
                     ->first();
@@ -480,6 +489,21 @@ class GoogleMapsImportService
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+        }
+
+        // Custom details array (e.g. from Job extractor: posisi, perusahaan, gaji, dll.)
+        if (!empty($data['details']) && is_array($data['details'])) {
+            foreach ($data['details'] as $k => $v) {
+                if (!empty($v) && is_scalar($v)) {
+                    $details[] = [
+                        'post_id' => $postId,
+                        'meta_key' => (string) $k,
+                        'meta_value' => (string) $v,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
         }
 
         if (!empty($details)) {
