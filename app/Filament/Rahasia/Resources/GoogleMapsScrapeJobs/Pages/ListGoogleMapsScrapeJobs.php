@@ -15,6 +15,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 
 class ListGoogleMapsScrapeJobs extends ListRecords
 {
@@ -45,19 +46,19 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         ->helperText('Pilih mesin pencari sesuai kebutuhan: Google Jobs untuk loker terstruktur, Instagram untuk akun loker daerah, atau Google Maps untuk tempat.'),
 
                     TextInput::make('query')
-                        ->label(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                        ->label(fn (Get $get) => match ($get('engine')) {
                             'instagram' => 'Username Akun Instagram (tanpa @)',
                             'google-jobs' => 'Kata Kunci Lowongan Kerja',
                             default => 'Kata Kunci Tempat Google Maps'
                         })
-                        ->placeholder(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                        ->placeholder(fn (Get $get) => match ($get('engine')) {
                             'instagram' => 'Contoh: lokerbandung, infolokerjogja, loker.surabaya',
                             'google-jobs' => 'Contoh: lowongan barista bandung, staf kafe jogja, cook jakarta',
                             default => 'Contoh: Hotel di Bandung, Kafe di Jogja, Penitipan koper dekat Stasiun Bandung'
                         })
                         ->required()
                         ->columnSpanFull()
-                        ->helperText(fn (\Filament\Forms\Get $get) => match ($get('engine')) {
+                        ->helperText(fn (Get $get) => match ($get('engine')) {
                             'instagram' => 'Ketik username akun Instagram penyedia info loker tanpa simbol @.',
                             'google-jobs' => 'Ketik posisi dan kota tujuan (misal: "lowongan barista bandung").',
                             default => 'Ketik kata kunci tempat atau fasilitas transit di sekitar stasiun/bandara.'
@@ -66,14 +67,14 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     TextInput::make('location')
                         ->label('Lokasi / Kota Spesifik (Opsional)')
                         ->placeholder('Contoh: Bandung, Indonesia')
-                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps')
+                        ->visible(fn (Get $get) => $get('engine') === 'google-maps')
                         ->columnSpanFull(),
 
                     Select::make('category_id')
                         ->label('Tetapkan Kategori (Opsional)')
-                        ->options(Category::pluck('name', 'id'))
+                        ->options(fn () => Category::pluck('name', 'id'))
                         ->searchable()
-                        ->default(fn (\Filament\Forms\Get $get) => in_array($get('engine'), ['google-jobs', 'instagram']) 
+                        ->default(fn (Get $get) => in_array($get('engine'), ['google-jobs', 'instagram']) 
                             ? Category::where('slug', 'lowongan-kerja')->value('id') 
                             : null
                         )
@@ -82,7 +83,7 @@ class ListGoogleMapsScrapeJobs extends ListRecords
 
                     Select::make('city_id')
                         ->label('Tetapkan Kota (Opsional)')
-                        ->options(City::pluck('name', 'id'))
+                        ->options(fn () => City::pluck('name', 'id'))
                         ->searchable()
                         ->placeholder('Otomatis deteksi dari Lokasi/Alamat')
                         ->helperText('Jika dikosongkan, kota akan dideteksi dari hasil parsing.'),
@@ -97,7 +98,7 @@ class ListGoogleMapsScrapeJobs extends ListRecords
 
                     Select::make('apify_account_id')
                         ->label('Pilih Akun / Token Apify')
-                        ->options(
+                        ->options(fn () => 
                             ApifyAccount::active()->pluck('label', 'id')->map(function ($label, $id) {
                                 return $label ?: 'Akun #' . $id;
                             })
@@ -108,12 +109,12 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     Toggle::make('include_images')
                         ->label('Ambil Foto / Gambar')
                         ->default(true)
-                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps'),
+                        ->visible(fn (Get $get) => $get('engine') === 'google-maps'),
 
                     Toggle::make('include_reviews')
                         ->label('Ambil Ulasan Pengguna')
                         ->default(false)
-                        ->visible(fn (\Filament\Forms\Get $get) => $get('engine') === 'google-maps'),
+                        ->visible(fn (Get $get) => $get('engine') === 'google-maps'),
 
                     Toggle::make('publish_imported')
                         ->label('Langsung Publikasikan')
