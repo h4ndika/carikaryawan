@@ -286,7 +286,7 @@ async function runInteractiveMenu() {
       {
         type: 'input',
         name: 'query',
-        message: 'Search query (e.g. "kafe di bandung", "hotel di jakarta"):',
+        message: 'Search query (e.g. "kafe di bandung", "hotel di jakarta", "penitipan koper dekat stasiun bandung"):',
         default: 'kafe di bandung',
       },
       {

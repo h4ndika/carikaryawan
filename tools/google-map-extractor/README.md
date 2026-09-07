@@ -179,6 +179,37 @@ Setiap baris data hasil ekspor memuat 17 atribut lengkap:
 
 ---
 
+## 🚆 Panduan Scrape & Import Kategori "Fasilitas Publik / Transit"
+
+Untuk mengisi konten Transit Hub / Fasilitas Publik (seperti loker koper, shower box, coworking dekat stasiun/bandara, apotek 24 jam):
+
+### 1. Jalankan Scraper (CLI / Web Dashboard)
+Contoh query pencarian:
+```bash
+# Contoh 1: Loker & Penitipan Bagasi
+node src/index.js scrape -q "penitipan koper dekat stasiun bandung" -m 20 -f json
+
+# Contoh 2: Coworking & Transit Lounge
+node src/index.js scrape -q "coworking space dekat stasiun gambir" -m 20 -f json
+
+# Contoh 3: Shower / Fasilitas Mandi & Istirahat
+node src/index.js scrape -q "shower box stasiun gambir" -m 10 -f json
+```
+Hasil file JSON akan otomatis tersimpan di folder `tools/google-map-extractor/output/`.
+
+### 2. Impor Otomatis ke Database DiSekitar
+Jalankan artisan command dari root project:
+```bash
+# Impor semua file JSON di folder output (otomatis mendeteksi kategori Fasilitas)
+php artisan maps:import
+
+# Atau impor file spesifik dengan target kategori Fasilitas (ID: 5)
+php artisan maps:import --file=tools/google-map-extractor/output/nama_file.json --default-category=5
+```
+*Note: Import service sudah dilengkapi auto-detection regex untuk kata kunci loker, bagasi, shower, coworking, transit, apotek, dan stasiun sehingga langsung otomatis masuk ke kategori Fasilitas.*
+
+---
+
 ## 🛠️ Testing & Validasi
 
 Untuk memastikan semua modul berjalan baik tanpa error syntax:
