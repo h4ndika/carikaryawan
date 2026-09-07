@@ -368,6 +368,13 @@ class GoogleMapsImportService
                     ->first();
                 if ($wisataCat) return $wisataCat->id;
             }
+
+            if (preg_match('/\b(loker|penitipan|bagasi|koper|shower|mandi|coworking|apotek|lounge|transit|stasiun|bandara|terminal|laundry|atm|money changer|shuttle)\b/i', $lowerTitle)) {
+                $fasilitasCat = Category::where('name', 'LIKE', '%fasilitas%')
+                    ->orWhere('name', 'LIKE', '%transit%')
+                    ->first();
+                if ($fasilitasCat) return $fasilitasCat->id;
+            }
         }
 
         // Return default or null

@@ -55,6 +55,7 @@ class PostAiContentService
             'Format artikel dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), jangan gunakan blok markdown atau backticks. ' .
             'Tambahkan juga data detail dalam format JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal: ' .
             '- Kategori Hotel, Wisata, Kuliner dll : harga, lokasi, jam_buka, fasilitas, rekomendasi ' .
+            '- Kategori Fasilitas Publik / Transit: jam_operasional, tarif, akses_stasiun_bandara, fasilitas_tersedia, tips_transit ' .
             '- Kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan ' .
             '- atau key spesifik lainnya yang relevan dengan topik ini. ' .
             'Format JSON: ' .
@@ -62,6 +63,7 @@ class PostAiContentService
                 "key1": "value1",
                 "key2": "value2"
             } ' .
+            (stripos($categoryName, 'fasilitas') !== false ? 'Untuk kategori Fasilitas/Transit ini, fokuskan konten sebagai panduan transit survival: jelaskan jarak/kemudahan akses dari pintu stasiun/bandara, ketersediaan colokan/wifi/loker/mandi, dan tips praktis saat transit. ' : '') .
             "Prompt tambahan: $promptUser";
     }
 

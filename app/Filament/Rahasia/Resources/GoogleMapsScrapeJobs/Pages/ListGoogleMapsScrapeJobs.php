@@ -33,10 +33,10 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                 ->form([
                     TextInput::make('query')
                         ->label('Kata Kunci Pencarian Google Maps')
-                        ->placeholder('Contoh: Hotel di Bandung, Kafe Instagramable di Jogja')
+                        ->placeholder('Contoh: Hotel di Bandung, Kafe di Jogja, Penitipan koper dekat Stasiun Bandung')
                         ->required()
                         ->columnSpanFull()
-                        ->helperText('Sama persis seperti yang Anda ketik di kolom pencarian Google Maps.'),
+                        ->helperText('Ketik kata kunci tempat atau fasilitas transit (misal: "penitipan koper", "coworking space", "shower box" di sekitar stasiun/bandara).'),
 
                     TextInput::make('location')
                         ->label('Lokasi / Kota Spesifik (Opsional)')
