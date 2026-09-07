@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Extractor - Dashboard Lowongan Kerja Lokal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-brand">
+                <div class="logo-icon">💼</div>
+                <div>
+                    <h1 class="logo-title">Job Extractor <span class="badge-version">v1.0</span></h1>
+                    <p class="logo-subtitle">Ekstraktor Lowongan Kerja Lokal (Google Jobs & Instagram)</p>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <span class="stat-label">Total Lowongan</span>
+                    <span class="stat-value text-accent" id="stat-total-jobs">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">File Output</span>
+                    <span class="stat-value" id="stat-total-files">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Apify Token</span>
+                    <span class="stat-value text-emerald" id="stat-token-status">Memeriksa...</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value" id="stat-scraper-status"><span class="status-dot dot-idle"></span> Standby</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <button class="tab-btn active" data-tab="scraper">
+                <span class="tab-icon">🚀</span>
+                <span>Scraper Console</span>
+            </button>
+            <button class="tab-btn" data-tab="results">
+                <span class="tab-icon">📋</span>
+                <span>Hasil Lowongan</span>
+                <span class="tab-counter" id="tab-results-count">0</span>
+            </button>
+            <button class="tab-btn" data-tab="files">
+                <span class="tab-icon">🗂️</span>
+                <span>File Output</span>
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <span class="tab-icon">⚙️</span>
+                <span>Pengaturan</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- TAB 1: SCRAPER CONSOLE -->
+        <section id="tab-scraper" class="tab-content active">
+            <div class="grid-2col">
+                <!-- Control Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">⚙️ Konfigurasi Ekstraksi</h2>
+                        <span class="badge badge-subtle">Apify Engine</span>
+                    </div>
+                    <form id="form-scrape" class="card-body">
+                        <!-- Engine Selection -->
+                        <div class="form-group">
+                            <label class="form-label">Pilih Mesin Scraper</label>
+                            <div class="engine-cards">
+                                <label class="engine-card active" id="engine-card-google">
+                                    <input type="radio" name="engine" value="spidersource/google-jobs-scraper" checked>
+                                    <div class="engine-info">
+                                        <div class="engine-title">
+                                            <span>🔍 Google Jobs</span>
+                                            <span class="badge badge-primary">Default</span>
+                                        </div>
+                                        <p class="engine-desc">Pencarian agregator Google Jobs (posisi resmi, info gaji, per kota).</p>
+                                    </div>
+                                </label>
+                                <label class="engine-card" id="engine-card-instagram">
+                                    <input type="radio" name="engine" value="apify/instagram-post-scraper">
+                                    <div class="engine-info">
+                                        <div class="engine-title">
+                                            <span>📸 Instagram Loker</span>
+                                            <span class="badge badge-secondary">Akun Komunitas</span>
+                                        </div>
+                                        <p class="engine-desc">Ekstrak caption & info dari akun loker kota (misal @lokerbandung, @lokerbdg).</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Query Input -->
+                        <div class="form-group">
+                            <label class="form-label" id="label-query">Keyword Posisi & Lokasi</label>
+                            <input type="text" id="input-query" class="form-control" 
+                                   placeholder="Contoh: lowongan barista bandung, staff toko surabaya" 
+                                   value="lowongan barista bandung" required>
+                            <small class="form-hint" id="hint-query">Bisa masukkan beberapa keyword/akun dipisahkan dengan koma.</small>
+                        </div>
+
+                        <!-- Max Items -->
+                        <div class="form-group">
+                            <div class="flex-between">
+                                <label class="form-label">Batas Jumlah Item (Limit)</label>
+                                <span class="val-badge" id="val-limit">20</span>
+                            </div>
+                            <input type="range" id="input-limit" class="form-range" min="5" max="100" step="5" value="20">
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="btn-start-scrape" class="btn btn-primary btn-block">
+                            <span class="btn-icon">⚡</span>
+                            <span id="btn-start-text">Mulai Ekstraksi Lowongan</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Log Terminal -->
+                <div class="card terminal-card">
+                    <div class="card-header terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <div class="terminal-title">📡 Live Stream Log Terminal</div>
+                        <div class="terminal-actions">
+                            <label class="terminal-autoscroll">
+                                <input type="checkbox" id="check-autoscroll" checked>
+                                <span>Auto-scroll</span>
+                            </label>
+                            <button type="button" id="btn-clear-logs" class="btn-sm btn-ghost">Bersihkan</button>
+                        </div>
+                    </div>
+                    <div class="terminal-body" id="terminal-logs">
+                        <div class="log-line log-system">
+                            <span class="log-time">[System]</span> Menunggu perintah scraping...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: RESULTS VIEWER -->
+        <section id="tab-results" class="tab-content">
+            <!-- Filter & Toolbar -->
+            <div class="card mb-4">
+                <div class="card-body filter-bar">
+                    <div class="form-group mb-0 flex-1">
+                        <label class="form-label">Pilih Berkas Hasil</label>
+                        <select id="select-result-file" class="form-control">
+                            <option value="">-- Memuat berkas... --</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-0 flex-1">
+                        <label class="form-label">Cari di Hasil Ini</label>
+                        <input type="text" id="input-search-jobs" class="form-control" placeholder="Cari posisi, perusahaan, atau kota...">
+                    </div>
+                    <div class="action-buttons-group">
+                        <button type="button" id="btn-download-json" class="btn btn-secondary" disabled>
+                            <span>📥 Download JSON</span>
+                        </button>
+                        <button type="button" id="btn-copy-json" class="btn btn-ghost" disabled>
+                            <span>📋 Salin JSON</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Result Grid -->
+            <div id="results-meta-bar" class="meta-bar mb-3">
+                <span id="results-count-text">Menampilkan 0 lowongan</span>
+                <span class="badge badge-subtle" id="results-file-info">-</span>
+            </div>
+
+            <div id="jobs-grid" class="jobs-grid">
+                <!-- Job Cards Rendered Dynamically -->
+                <div class="empty-state">
+                    <div class="empty-icon">💼</div>
+                    <h3>Belum Ada Hasil Lowongan</h3>
+                    <p>Pilih file JSON pada dropdown di atas atau mulai scraping baru dari tab Scraper Console.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: FILE OUTPUT MANAGER -->
+        <section id="tab-files" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🗂️ Berkas Hasil Scraper (Folder: output/)</h2>
+                    <button type="button" id="btn-refresh-files" class="btn-sm btn-ghost">🔄 Segarkan</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Berkas</th>
+                                    <th>Jumlah Lowongan</th>
+                                    <th>Ukuran</th>
+                                    <th>Waktu Dibuat</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="files-table-body">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">Memuat daftar berkas...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: SETTINGS -->
+        <section id="tab-settings" class="tab-content">
+            <div class="card max-w-xl mx-auto">
+                <div class="card-header">
+                    <h2 class="card-title">⚙️ Konfigurasi Apify</h2>
+                </div>
+                <form id="form-settings" class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Apify API Token</label>
+                        <input type="password" id="input-apify-token" class="form-control" placeholder="apify_api_...">
+                        <small class="form-hint">
+                            Token ini otomatis disimpan ke berkas <code>.env</code> lokal. Jika kosong, sistem otomatis membaca fallback token dari <code>tools/google-map-extractor/.env</code>.
+                        </small>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Tips Akun:</strong> Token Apify gratis memberikan kuota $5/bulan yang cukup untuk mengekstrak ratusan lowongan kerja lokal.
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾 Simpan Token</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Detail Lowongan -->
+    <div id="modal-job-detail" class="modal-backdrop">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Detail Lowongan</h3>
+                <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-content">
+                <!-- Detail content rendered dynamically -->
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="modal-apply-link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    <span>🚀 Lamar Sekarang / Buka Sumber</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

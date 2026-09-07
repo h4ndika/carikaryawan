@@ -6,7 +6,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --check src/index.js && node --check src/scraper.js && node --check src/normalizer.js"
+    "dashboard": "node src/server/index.js",
+    "server": "node src/server/index.js",
+    "test": "node --check src/index.js && node --check src/scraper.js && node --check src/normalizer.js && node --check src/server/index.js"
   },
   "dependencies": {
     "apify-client": "^2.11.0",

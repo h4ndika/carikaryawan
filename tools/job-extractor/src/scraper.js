@@ -10,7 +10,7 @@ export const ENGINE_INSTAGRAM = 'apify/instagram-post-scraper';
 /**
  * Cari token Apify fallback dari .env lokal atau tools/google-map-extractor/.env
  */
-function resolveApifyToken(customToken) {
+export function resolveApifyToken(customToken) {
   if (customToken) return customToken;
   if (process.env.APIFY_TOKEN) return process.env.APIFY_TOKEN;
 
@@ -30,12 +30,24 @@ export async function scrapeJobs(options = {}) {
     query = 'lowongan barista bandung',
     maxItems = 20,
     token = null,
-    outputDir = './output'
+    outputDir = './output',
+    onLog = null
   } = options;
+
+  const log = (message, level = 'info') => {
+    console.log(message);
+    if (typeof onLog === 'function') {
+      try {
+        onLog(level, message);
+      } catch {}
+    }
+  };
 
   const resolvedToken = resolveApifyToken(token);
   if (!resolvedToken) {
-    throw new Error('APIFY_TOKEN tidak ditemukan! Set APIFY_TOKEN di .env atau sertakan flag --token.');
+    const errMsg = 'APIFY_TOKEN tidak ditemukan! Set APIFY_TOKEN di .env atau sertakan flag --token.';
+    log(`❌ ${errMsg}`, 'error');
+    throw new Error(errMsg);
   }
 
   const client = new ApifyClient({ token: resolvedToken });
@@ -58,21 +70,23 @@ export async function scrapeJobs(options = {}) {
       resultsLimit: parseInt(maxItems, 10) || 20
     };
   } else {
-    throw new Error(`Engine tidak dikenali: ${engine}`);
+    const errMsg = `Engine tidak dikenali: ${engine}`;
+    log(`❌ ${errMsg}`, 'error');
+    throw new Error(errMsg);
   }
 
-  console.log(`\n🚀 Menjalankan actor: ${actorId}`);
-  console.log(`🎯 Input query:`, actorInput);
+  log(`🚀 Menjalankan actor: ${actorId}`);
+  log(`🎯 Input parameters: ${JSON.stringify(actorInput)}`);
 
   const run = await client.actor(actorId).call(actorInput, {
     waitSecs: 300,
     memoryMbytes: 2048
   });
 
-  console.log(`✅ Run selesai (ID: ${run.id}). Mengambil data hasil...`);
+  log(`✅ Run selesai (ID: ${run.id}). Mengambil dataset...`);
 
   const { items } = await client.dataset(run.defaultDatasetId).listItems();
-  console.log(`📦 Diperoleh ${items.length} item mentah dari Apify.`);
+  log(`📦 Diperoleh ${items.length} lowongan mentah dari Apify.`);
 
   const normalized = items.map(item => {
     if (engine === ENGINE_GOOGLE_JOBS) {
@@ -94,11 +108,12 @@ export async function scrapeJobs(options = {}) {
   const filePath = path.join(resolvedOutDir, fileName);
 
   fs.writeFileSync(filePath, JSON.stringify(normalized, null, 2), 'utf8');
-  console.log(`💾 Data tersimpan rapi: ${filePath} (${normalized.length} lowongan)`);
+  log(`💾 Data tersimpan rapi: ${filePath} (${normalized.length} lowongan)`, 'success');
 
   return {
     runId: run.id,
     count: normalized.length,
+    fileName,
     filePath,
     data: normalized
   };

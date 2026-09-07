@@ -33,5 +33,10 @@ Thumbs.db
 /tools/google-map-extractor/src/credentials.json
 /tools/google-map-extractor/src/github_accounts.txt
 
+# Job Extractor Tool
+/tools/job-extractor/node_modules
+/tools/job-extractor/output
+/tools/job-extractor/.env
+
 # Graphify
 /graphify-out
