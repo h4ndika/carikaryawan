@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\GoogleMapsScrapeJob;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -141,6 +142,142 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     Notification::make()
                         ->title('Ekstraksi Google Maps berhasil dimulai!')
                         ->body("Pencarian '{$job->query}' telah masuk ke antrean background.")
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('batchScrape')
+                ->label('Ekstraksi Massal (Multi Keyword & Kota)')
+                ->icon('heroicon-o-queue-list')
+                ->color('success')
+                ->modalHeading('Ekstraksi Massal (Multi Keyword & Kota)')
+                ->modalDescription('Masukkan beberapa kata kunci dan beberapa kota. Setiap kata kunci akan otomatis dikombinasikan dengan setiap kota (Keyword × Kota) menjadi antrean job terpisah.')
+                ->modalSubmitActionLabel('Buat Semua Antrean & Mulai')
+                ->form([
+                    Select::make('engine')
+                        ->label('Pilihan Mesin Scraper')
+                        ->options([
+                            'jobstreet' => 'JobStreet Indonesia (shahidirfan/jobstreet-scraper) — Rekomendasi Utama',
+                            'glints' => 'Glints Indonesia (truefetch/glints-job-listing) — Lengkap & Terstruktur',
+                            'google-maps' => 'Google Maps (compass/crawler-google-places) — Tempat & Fasilitas',
+                        ])
+                        ->default('jobstreet')
+                        ->required()
+                        ->live()
+                        ->columnSpanFull()
+                        ->helperText('Pilih mesin pencari untuk seluruh antrean batch ini.'),
+
+                    Textarea::make('queries')
+                        ->label('Daftar Kata Kunci (1 baris = 1 kata kunci)')
+                        ->placeholder("Barista\nStaff Gudang\nAdmin Kasir\nCook Helper")
+                        ->rows(5)
+                        ->required()
+                        ->columnSpanFull()
+                        ->helperText('Ketik kata kunci pencarian, pisahkan dengan baris baru (Enter).'),
+
+                    Textarea::make('locations')
+                        ->label('Daftar Lokasi / Kota (1 baris = 1 kota, Opsional)')
+                        ->placeholder("Bandung\nJakarta\nSurabaya\nYogyakarta")
+                        ->rows(5)
+                        ->columnSpanFull()
+                        ->helperText('Ketik nama kota, pisahkan dengan baris baru (Enter). Setiap keyword akan dipasangkan dengan tiap kota. Kosongkan jika ingin mencari tanpa filter kota.'),
+
+                    Select::make('category_id')
+                        ->label('Tetapkan Kategori (Opsional)')
+                        ->options(fn () => Category::pluck('name', 'id'))
+                        ->searchable()
+                        ->default(fn (Get $get) => in_array($get('engine'), ['jobstreet', 'glints']) 
+                            ? Category::where('slug', 'lowongan-kerja')->value('id') 
+                            : null
+                        )
+                        ->placeholder('Otomatis deteksi dari sumber')
+                        ->helperText('Jika dikosongkan, kategori akan dideteksi otomatis.'),
+
+                    TextInput::make('target_limit')
+                        ->label('Jumlah Target Data (per Kombinasi)')
+                        ->numeric()
+                        ->default(20)
+                        ->minValue(1)
+                        ->maxValue(500)
+                        ->required()
+                        ->helperText('Target data yang ditarik untuk masing-masing keyword & kota.'),
+
+                    Select::make('apify_account_id')
+                        ->label('Pilih Akun / Token Apify')
+                        ->options(fn () => 
+                            ApifyAccount::active()->pluck('label', 'id')->map(function ($label, $id) {
+                                return $label ?: 'Akun #' . $id;
+                            })
+                        )
+                        ->placeholder('Rotasi Otomatis (Load Balancing)')
+                        ->helperText('Biarkan kosong untuk pembagian beban otomatis antar token Apify yang aktif.'),
+
+                    Toggle::make('include_images')
+                        ->label('Ambil Foto / Gambar')
+                        ->default(true)
+                        ->visible(fn (Get $get) => $get('engine') === 'google-maps'),
+
+                    Toggle::make('include_reviews')
+                        ->label('Ambil Ulasan Pengguna')
+                        ->default(false)
+                        ->visible(fn (Get $get) => $get('engine') === 'google-maps'),
+
+                    Toggle::make('publish_imported')
+                        ->label('Langsung Publikasikan')
+                        ->default(false)
+                        ->helperText('Jika aktif, status data hasil scrape langsung Published.'),
+                ])
+                ->action(function (array $data) {
+                    $rawQueries = preg_split('/\r\n|\r|\n/', (string) ($data['queries'] ?? ''));
+                    $queries = array_values(array_filter(array_map('trim', $rawQueries)));
+
+                    $rawLocations = preg_split('/\r\n|\r|\n/', (string) ($data['locations'] ?? ''));
+                    $locations = array_values(array_filter(array_map('trim', $rawLocations)));
+
+                    if (empty($queries)) {
+                        Notification::make()
+                            ->title('Kata kunci tidak boleh kosong!')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    if (empty($locations)) {
+                        $locations = [null];
+                    }
+
+                    $createdCount = 0;
+                    foreach ($queries as $q) {
+                        if (empty($q)) continue;
+
+                        foreach ($locations as $loc) {
+                            $cityId = null;
+                            if (!empty($loc)) {
+                                $cityId = City::where('name', 'LIKE', "%{$loc}%")->value('id');
+                            }
+
+                            $job = GoogleMapsScrapeJob::create([
+                                'engine' => $data['engine'] ?? 'jobstreet',
+                                'query' => $q,
+                                'location' => $loc ?: null,
+                                'category_id' => $data['category_id'] ?? null,
+                                'city_id' => $cityId,
+                                'target_limit' => (int) ($data['target_limit'] ?? 20),
+                                'include_images' => (bool) ($data['include_images'] ?? true),
+                                'include_reviews' => (bool) ($data['include_reviews'] ?? false),
+                                'publish_imported' => (bool) ($data['publish_imported'] ?? false),
+                                'apify_account_id' => $data['apify_account_id'] ?? null,
+                                'status' => 'pending',
+                            ]);
+
+                            RunGoogleMapsScrapeJob::dispatch($job->id);
+                            $createdCount++;
+                        }
+                    }
+
+                    Notification::make()
+                        ->title("Ekstraksi Massal Dimulai!")
+                        ->body("Berhasil membuat {$createdCount} antrean pekerjaan di background.")
                         ->success()
                         ->send();
                 }),
