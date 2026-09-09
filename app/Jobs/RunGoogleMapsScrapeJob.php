@@ -141,7 +141,15 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                     $apply = $item['url'] ?? '';
                     $workType = $item['workType'] ?? ($item['jobType'] ?? '');
 
+                    // Canonical place_id for cross-platform deduplication
+                    $cleanCompany = preg_replace('/^(pt\.?|cv\.?|ud\.?|yayasan)\s+/i', '', trim($comp));
+                    $normCompany  = strtolower(preg_replace('/[^a-z0-9]/i', '', $cleanCompany));
+                    $normPosition = strtolower(preg_replace('/[^a-z0-9]/i', '', $pos));
+                    $normCity     = strtolower(preg_replace('/[^a-z0-9]/i', '', $loc));
+                    $placeId      = 'job_' . substr(md5("{$normCompany}_{$normPosition}_{$normCity}"), 0, 24);
+
                     return [
+                        'placeId' => $placeId,
                         'title' => "{$pos} - {$comp}",
                         'category' => 'Lowongan Kerja',
                         'location' => $loc,
@@ -182,7 +190,15 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                         ? implode(', ', array_map(fn($s) => is_array($s) ? ($s['name'] ?? '') : (string)$s, $item['skills'])) 
                         : ($item['skills'] ?? '');
 
+                    // Canonical place_id for cross-platform deduplication
+                    $cleanCompany = preg_replace('/^(pt\.?|cv\.?|ud\.?|yayasan)\s+/i', '', trim($comp));
+                    $normCompany  = strtolower(preg_replace('/[^a-z0-9]/i', '', $cleanCompany));
+                    $normPosition = strtolower(preg_replace('/[^a-z0-9]/i', '', $pos));
+                    $normCity     = strtolower(preg_replace('/[^a-z0-9]/i', '', $loc));
+                    $placeId      = 'job_' . substr(md5("{$normCompany}_{$normPosition}_{$normCity}"), 0, 24);
+
                     return [
+                        'placeId' => $placeId,
                         'title' => "{$pos} - {$comp}",
                         'category' => 'Lowongan Kerja',
                         'location' => $loc,

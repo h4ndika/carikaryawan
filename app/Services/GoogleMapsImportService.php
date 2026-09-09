@@ -428,6 +428,7 @@ class GoogleMapsImportService
         $post = Post::where('place_id', $placeId)->first();
         
         if ($post) {
+            unset($postData['slug']);
             $post->update($postData);
             return $post->id;
         }
