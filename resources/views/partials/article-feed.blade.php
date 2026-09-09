@@ -25,6 +25,8 @@
                         <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>
                         <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
                     </div>
+                @endif
+
                 @if ($post->isJob() && $post->isExpired())
                     <span class="absolute top-2.5 left-2.5 bg-red-600/90 text-white backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-xs flex items-center gap-1 z-10">
                         <i class="fa-solid fa-clock-rotate-left text-[8px]"></i> Ditutup
