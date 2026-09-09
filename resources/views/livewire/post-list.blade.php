@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-[#fafaf9] dark:bg-zinc-950 py-8 sm:py-12 transition-colors duration-300">
     @php
-        $isFirstPageWithoutCity = $posts->currentPage() === 1 && empty($citySlug);
+        $isJobCategory = $category->isJob();
+        $isFirstPageWithoutCity = !$isJobCategory && $posts->currentPage() === 1 && empty($citySlug);
         $featuredPost = $isFirstPageWithoutCity && $posts->count() >= 4 ? $posts->first() : null;
         $sideFeatured = $featuredPost ? $posts->slice(1, 3) : collect();
         $feedPosts = $featuredPost ? $posts->slice(4) : $posts;

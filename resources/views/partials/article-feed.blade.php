@@ -1,41 +1,44 @@
 @php
     $thumb = $post->primary_image_url;
     $fallbackThumbUrls = $post->fallback_image_urls;
+    $isJob = $post->isJob();
 @endphp
 
 <article class="group pb-10 border-b border-zinc-200/80 dark:border-zinc-800/80 last:border-0 last:pb-0">
     <div class="flex flex-col sm:flex-row gap-6 md:gap-8 items-start">
-        <div class="w-full sm:w-5/12 flex-shrink-0">
-            <a href="{{ $post->url() }}" 
-               wire:navigate class="block overflow-hidden rounded-xl aspect-[16/10] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
-                @if ($thumb)
-                    <img src="{{ $thumb }}" 
-                         alt="{{ $post->title }}" 
-                         data-fallbacks='@json($fallbackThumbUrls)'
-                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                         loading="lazy">
-                    @if ($source = $post->primary_image_source)
-                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
-                            Foto: {{ $source }}
+        @if (!$isJob)
+            <div class="w-full sm:w-5/12 flex-shrink-0">
+                <a href="{{ $post->url() }}" 
+                   wire:navigate class="block overflow-hidden rounded-xl aspect-[16/10] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
+                    @if ($thumb)
+                        <img src="{{ $thumb }}" 
+                             alt="{{ $post->title }}" 
+                             data-fallbacks='@json($fallbackThumbUrls)'
+                             onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                             loading="lazy">
+                        @if ($source = $post->primary_image_source)
+                            <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
+                                Foto: {{ $source }}
+                            </span>
+                        @endif
+                    @else
+                        <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
+                            <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
+                        </div>
+                    @endif
+
+                    @if ($post->isExpired())
+                        <span class="absolute top-2.5 left-2.5 bg-red-600/90 text-white backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-xs flex items-center gap-1 z-10">
+                            <i class="fa-solid fa-clock-rotate-left text-[8px]"></i> Ditutup
                         </span>
                     @endif
-                @else
-                    <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
-                        <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>
-                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
-                    </div>
-                @endif
-
-                @if ($post->isJob() && $post->isExpired())
-                    <span class="absolute top-2.5 left-2.5 bg-red-600/90 text-white backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-xs flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-clock-rotate-left text-[8px]"></i> Ditutup
-                    </span>
-                @endif
-            </a>
-        </div>
+                </a>
+            </div>
+        @endif
         
-        <div class="w-full sm:w-7/12 flex flex-col justify-between space-y-3">
+        <div class="w-full {{ $isJob ? '' : 'sm:w-7/12' }} flex flex-col justify-between space-y-3">
             <div>
                 <div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-800 dark:text-amber-400 font-bold mb-2">
                     <span>{{ $post->category->name ?? 'CERITA' }}</span>

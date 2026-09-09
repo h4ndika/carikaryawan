@@ -67,46 +67,48 @@
             </div>
         </header>
 
-        <!-- Featured Image with Placeholder Fallback & Gallery Fallback -->
-        @php
-            $mainImg = $post->primary_image_url;
-            $fallbackGalleryUrls = $post->fallback_image_urls;
-            $mainSource = $post->primary_image_source;
-        @endphp
-        <div class="mb-4 sm:mb-6">
-            <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800">
-                @if ($mainImg)
-                    <button type="button" 
-                            wire:click="openLightbox(@js($mainImg))"
-                            class="block w-full cursor-zoom-in group">
-                        <img src="{{ $mainImg }}" 
-                             alt="{{ $post->title }}" 
-                             referrerpolicy="no-referrer"
-                             data-fallbacks='@json($fallbackGalleryUrls)'
-                             onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                             class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]"
-                             loading="eager"
-                             fetchpriority="high"
-                             decoding="async">
-                        <div class="absolute bottom-4 right-4 flex items-center gap-2">
-                            @if ($mainSource)
-                                <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90">
-                                    <i class="fa-solid fa-camera mr-1 text-[10px]"></i> Sumber: {{ $mainSource }}
+        @if (!$post->isJob())
+            <!-- Featured Image with Placeholder Fallback & Gallery Fallback -->
+            @php
+                $mainImg = $post->primary_image_url;
+                $fallbackGalleryUrls = $post->fallback_image_urls;
+                $mainSource = $post->primary_image_source;
+            @endphp
+            <div class="mb-4 sm:mb-6">
+                <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800">
+                    @if ($mainImg)
+                        <button type="button" 
+                                wire:click="openLightbox(@js($mainImg))"
+                                class="block w-full cursor-zoom-in group">
+                            <img src="{{ $mainImg }}" 
+                                 alt="{{ $post->title }}" 
+                                 referrerpolicy="no-referrer"
+                                 data-fallbacks='@json($fallbackGalleryUrls)'
+                                 onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                 class="w-full max-h-[540px] object-cover transition duration-700 group-hover:scale-[1.01]"
+                                 loading="eager"
+                                 fetchpriority="high"
+                                 decoding="async">
+                            <div class="absolute bottom-4 right-4 flex items-center gap-2">
+                                @if ($mainSource)
+                                    <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90">
+                                        <i class="fa-solid fa-camera mr-1 text-[10px]"></i> Sumber: {{ $mainSource }}
+                                    </span>
+                                @endif
+                                <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
+                                    <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
                                 </span>
-                            @endif
-                            <span class="bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-90 group-hover:opacity-100 transition-opacity">
-                                <i class="fa-solid fa-expand mr-1.5"></i> Perbesar Foto
-                            </span>
+                            </div>
+                        </button>
+                    @else
+                        <div class="w-full h-72 sm:h-96 bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-8">
+                            <i class="fa-solid fa-camera text-5xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
+                            <span class="text-xs uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">DOKUMENTASI KURASI DISEKITAR</span>
                         </div>
-                    </button>
-                @else
-                    <div class="w-full h-72 sm:h-96 bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-8">
-                        <i class="fa-solid fa-camera text-5xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
-                        <span class="text-xs uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">DOKUMENTASI KURASI DISEKITAR</span>
-                    </div>
-                @endif
-            </figure>
-        </div>
+                    @endif
+                </figure>
+            </div>
+        @endif
 
         <!-- Main 2-Column Content Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -139,7 +141,7 @@
                 <x-ad-slot slotName="ad_post_before_gallery" />
 
                 <!-- Photo Gallery Grid (if available) -->
-                @if ($post->images && $post->images->isNotEmpty())
+                @if (!$post->isJob() && $post->images && $post->images->isNotEmpty())
                     <section class="mt-8 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                         <div class="mb-6 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                             <h2 class="font-serif-title text-xl font-bold text-zinc-950 dark:text-zinc-50">Galeri & Suasana</h2>
