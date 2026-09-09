@@ -3,7 +3,7 @@ import { readFile, stat, readdir, unlink, writeFile } from 'node:fs/promises';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { scrapeJobs, resolveApifyToken, ENGINE_GOOGLE_JOBS, ENGINE_INSTAGRAM } from '../scraper.js';
+import { scrapeJobs, resolveApifyToken, getAvailableApifyAccounts, ENGINE_GOOGLE_JOBS, ENGINE_INSTAGRAM } from '../scraper.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -144,7 +144,8 @@ const server = createServer(async (req, res) => {
       if (pathname === '/api/stats' && req.method === 'GET') {
         const files = await getOutputFilesList();
         const totalJobs = files.reduce((acc, f) => acc + (f.itemCount || 0), 0);
-        const token = resolveApifyToken();
+        const { token } = resolveApifyToken();
+        const availableAccounts = getAvailableApifyAccounts();
 
         return jsonResponse(res, 200, {
           totalFiles: files.length,
@@ -152,13 +153,52 @@ const server = createServer(async (req, res) => {
           isScraping,
           hasToken: !!token,
           maskedToken: token ? `${token.slice(0, 6)}...${token.slice(-4)}` : null,
+          availableAccountsCount: availableAccounts.length,
           defaultEngine: ENGINE_GOOGLE_JOBS,
         });
       }
 
+      // GET /api/accounts — Ambil akun Apify aktif dari SQLite google-map-extractor
+      if (pathname === '/api/accounts' && req.method === 'GET') {
+        const accounts = getAvailableApifyAccounts();
+        return jsonResponse(res, 200, { accounts });
+      }
+
+      // GET /api/locations — Autocomplete kota / kabupaten / provinsi Indonesia
+      if (pathname === '/api/locations' && req.method === 'GET') {
+        const search = (parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('search') || '').toLowerCase().trim();
+        const candidates = [
+          path.resolve(ROOT, '..', 'google-map-extractor', 'src', 'data', 'locations.json'),
+          path.resolve(ROOT, 'src', 'data', 'locations.json'),
+          '/var/www/html/tools/google-map-extractor/src/data/locations.json'
+        ];
+
+        let list = [];
+        for (const locFile of candidates) {
+          if (existsSync(locFile)) {
+            try {
+              const raw = await readFile(locFile, 'utf8');
+              list = JSON.parse(raw);
+              break;
+            } catch {}
+          }
+        }
+
+        if (search && list.length > 0) {
+          list = list.filter((l) =>
+            (l.name && l.name.toLowerCase().includes(search)) ||
+            (l.label && l.label.toLowerCase().includes(search)) ||
+            (l.value && l.value.toLowerCase().includes(search)) ||
+            (l.province && l.province.toLowerCase().includes(search))
+          );
+        }
+
+        return jsonResponse(res, 200, list.slice(0, 100));
+      }
+
       // GET /api/config
       if (pathname === '/api/config' && req.method === 'GET') {
-        const token = resolveApifyToken();
+        const { token } = resolveApifyToken();
         return jsonResponse(res, 200, {
           hasToken: !!token,
           maskedToken: token ? `${token.slice(0, 6)}...${token.slice(-4)}` : null,
@@ -192,11 +232,15 @@ const server = createServer(async (req, res) => {
         const body = await parseBody(req);
         const engine = body.engine || ENGINE_GOOGLE_JOBS;
         const query = body.query ? body.query.trim() : 'lowongan barista bandung';
+        const location = body.location ? body.location.trim() : '';
         const maxItems = parseInt(body.maxItems, 10) || 20;
         const customToken = body.token || null;
+        const accountMode = body.accountMode || 'auto';
+        const accountId = accountMode === 'manual' && body.accountId ? Number(body.accountId) : null;
+        const rotateAccount = accountMode === 'auto';
 
         isScraping = true;
-        broadcastLog('info', `🚀 Memulai ekstraksi: Engine = ${engine}, Query = "${query}", Limit = ${maxItems}`);
+        broadcastLog('info', `🚀 Memulai ekstraksi: Engine = ${engine}, Query = "${query}"${location ? `, Lokasi = "${location}"` : ''}, Limit = ${maxItems}, Mode Akun = ${accountMode}${accountId ? ` (#${accountId})` : ''}`);
 
         // Run scraper asynchronously
         (async () => {
@@ -204,8 +248,11 @@ const server = createServer(async (req, res) => {
             const result = await scrapeJobs({
               engine,
               query,
+              location,
               maxItems,
               token: customToken,
+              accountId,
+              rotateAccount,
               outputDir: OUTPUT_DIR,
               onLog: (level, msg) => broadcastLog(level, msg)
             });
@@ -221,7 +268,7 @@ const server = createServer(async (req, res) => {
         return jsonResponse(res, 202, {
           success: true,
           message: 'Scraping lowongan kerja dimulai di background',
-          params: { engine, query, maxItems }
+          params: { engine, query, location, maxItems, accountMode, accountId }
         });
       }
 

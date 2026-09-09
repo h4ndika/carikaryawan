@@ -32,11 +32,16 @@ const elements = {
     // Scraper Tab
     formScrape: $('#form-scrape'),
     engineCards: $$('.engine-card'),
+    groupLocation: $('#group-location'),
     inputQuery: $('#input-query'),
     labelQuery: $('#label-query'),
     hintQuery: $('#hint-query'),
+    inputLocation: $('#input-location'),
+    dropdownLocation: $('#location-dropdown'),
     inputLimit: $('#input-limit'),
     valLimit: $('#val-limit'),
+    selectAccountMode: $('#select-account-mode'),
+    selectAccountId: $('#select-account-id'),
     btnStartScrape: $('#btn-start-scrape'),
     btnStartText: $('#btn-start-text'),
     terminalLogs: $('#terminal-logs'),
@@ -129,16 +134,137 @@ function updateEngineFields(engine) {
     });
 
     if (engine === 'spidersource/google-jobs-scraper') {
-        elements.labelQuery.textContent = 'Keyword Posisi & Lokasi';
-        elements.inputQuery.placeholder = 'Contoh: lowongan barista bandung, staff toko surabaya';
-        elements.inputQuery.value = 'lowongan barista bandung';
-        elements.hintQuery.textContent = 'Bisa masukkan beberapa keyword posisi & kota dipisahkan dengan koma.';
+        elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
+        elements.inputQuery.placeholder = 'Contoh: Barista, Staff Gudang, Guru, Cook Helper';
+        elements.inputQuery.value = 'Barista';
+        elements.hintQuery.textContent = 'Masukkan posisi atau kata kunci pekerjaan yang dicari.';
+        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
     } else {
         elements.labelQuery.textContent = 'Username Akun Instagram Loker';
         elements.inputQuery.placeholder = 'Contoh: lokerbandung, lokerbdg, loker_jakarta';
         elements.inputQuery.value = 'lokerbandung';
         elements.hintQuery.textContent = 'Masukkan username akun IG komunitas loker (tanpa @), pisahkan dengan koma.';
+        if (elements.groupLocation) elements.groupLocation.style.display = 'none';
     }
+}
+
+// ─── Location Autocomplete ──────────────────────────────────────
+function initLocationAutocomplete() {
+    const input = elements.inputLocation;
+    const dropdown = elements.dropdownLocation;
+    if (!input || !dropdown) return;
+
+    let debounceTimer;
+    let selectedIndex = -1;
+    let currentResults = [];
+
+    const fetchAndShow = async (query = '') => {
+        try {
+            const res = await fetch(`/api/locations?q=${encodeURIComponent(query)}`);
+            const list = await res.json();
+            currentResults = Array.isArray(list) ? list : [];
+            selectedIndex = -1;
+
+            if (!currentResults.length) {
+                dropdown.innerHTML = '<div style="padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text-muted); text-align: center;">Lokasi tidak ditemukan.</div>';
+                dropdown.classList.add('open');
+                return;
+            }
+
+            dropdown.innerHTML = currentResults.map((item, i) => `
+                <div class="autocomplete-item" data-index="${i}" data-value="${escapeHtml(item.value)}">
+                    <span>${escapeHtml(item.label || item.name)}</span>
+                    <span class="autocomplete-item-type">${escapeHtml(item.type || 'kota')}</span>
+                </div>
+            `).join('');
+
+            dropdown.querySelectorAll('.autocomplete-item').forEach((el) => {
+                el.addEventListener('click', () => {
+                    input.value = el.dataset.value;
+                    dropdown.classList.remove('open');
+                });
+            });
+
+            dropdown.classList.add('open');
+        } catch {
+            dropdown.classList.remove('open');
+        }
+    };
+
+    input.addEventListener('focus', () => fetchAndShow(input.value.trim()));
+
+    input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => fetchAndShow(input.value.trim()), 200);
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (!dropdown.classList.contains('open')) return;
+        const items = dropdown.querySelectorAll('.autocomplete-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % items.length;
+            highlightItem(items, selectedIndex);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            highlightItem(items, selectedIndex);
+        } else if (e.key === 'Enter') {
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                e.preventDefault();
+                input.value = items[selectedIndex].dataset.value;
+                dropdown.classList.remove('open');
+            }
+        } else if (e.key === 'Escape') {
+            dropdown.classList.remove('open');
+        }
+    });
+
+    function highlightItem(items, idx) {
+        items.forEach((it, i) => {
+            if (i === idx) {
+                it.classList.add('selected');
+                it.scrollIntoView({ block: 'nearest' });
+            } else {
+                it.classList.remove('selected');
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            dropdown.classList.remove('open');
+        }
+    });
+}
+
+// ─── Apify Accounts from Google Map Extractor ───────────────────
+async function loadApifyAccounts() {
+    try {
+        const res = await fetch('/api/accounts');
+        const data = await res.json();
+        state.accounts = data.accounts || [];
+        populateAccountSelect();
+    } catch {
+        state.accounts = [];
+    }
+}
+
+function populateAccountSelect() {
+    const sel = elements.selectAccountId;
+    if (!sel) return;
+
+    if (!state.accounts || state.accounts.length === 0) {
+        sel.innerHTML = '<option value="">Tidak ada akun aktif di SQLite (Gunakan .env)</option>';
+        return;
+    }
+
+    sel.innerHTML = '<option value="">— Pilih Akun Apify —</option>' +
+        state.accounts.map(a => {
+            const label = a.email || (a.token ? `${a.token.slice(0, 10)}...` : `Akun #${a.id}`);
+            const usage = a.usageCount ?? 0;
+            return `<option value="${a.id}">#${a.id} ${escapeHtml(label)} (${usage}x digunakan)</option>`;
+        }).join('');
 }
 
 // ─── SSE Real-time Logs ─────────────────────────────────────────
@@ -478,6 +604,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial API calls
     loadStats();
     loadFilesList();
+    loadApifyAccounts();
+    initLocationAutocomplete();
 
     // Tab buttons
     elements.tabButtons.forEach(btn => {
@@ -497,27 +625,42 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.valLimit.textContent = e.target.value;
     });
 
+    // Account Mode change
+    if (elements.selectAccountMode && elements.selectAccountId) {
+        elements.selectAccountMode.addEventListener('change', (e) => {
+            elements.selectAccountId.style.display = e.target.value === 'manual' ? 'block' : 'none';
+        });
+    }
+
     // Scrape Form Submit
     elements.formScrape.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const engine = document.querySelector('input[name="engine"]:checked').value;
         const query = elements.inputQuery.value.trim();
+        const location = elements.inputLocation ? elements.inputLocation.value.trim() : '';
         const maxItems = parseInt(elements.inputLimit.value, 10) || 20;
+        const accountMode = elements.selectAccountMode ? elements.selectAccountMode.value : 'auto';
+        const accountId = elements.selectAccountId ? elements.selectAccountId.value : null;
 
         if (!query) {
             showToast('Harap masukkan keyword pencarian atau username!', 'error');
             return;
         }
 
+        if (accountMode === 'manual' && !accountId) {
+            showToast('Harap pilih salah satu akun Apify atau ganti ke mode Auto-Rotate!', 'error');
+            return;
+        }
+
         updateScraperState(true);
-        appendLog('info', `Mengirim permintaan ekstraksi [${engine}] "${query}" limit ${maxItems}...`);
+        appendLog('info', `Mengirim permintaan ekstraksi [${engine}] "${query}"${location ? ` (Lokasi: ${location})` : ''} limit ${maxItems}...`);
 
         try {
             const res = await fetch('/api/scrape', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ engine, query, maxItems })
+                body: JSON.stringify({ engine, query, location, maxItems, accountMode, accountId })
             });
             const data = await res.json();
 
