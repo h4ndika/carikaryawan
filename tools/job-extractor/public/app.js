@@ -5,7 +5,7 @@
 // ─── State ──────────────────────────────────────────────────────
 const state = {
     isScraping: false,
-    currentEngine: 'truefetch/glints-job-listing',
+    currentEngine: 'shahidirfan/jobstreet-scraper',
     activeFile: null,
     currentJobs: [],
     filteredJobs: [],

@@ -129,7 +129,7 @@ export function resolveApifyToken(options = {}) {
 
 export async function scrapeJobs(options = {}) {
   const {
-    engine = ENGINE_GOOGLE_JOBS,
+    engine = ENGINE_JOBSTREET,
     query = 'lowongan barista bandung',
     location = '',
     maxItems = 20,
