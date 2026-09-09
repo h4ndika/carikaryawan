@@ -71,6 +71,54 @@ class PhotoScraperService
         bool $replaceExisting = false,
         bool $publishOnComplete = false
     ): array {
+        // Handle job listings: search company logo instead of Google Maps venue photos
+        if ($post->isJob()) {
+            if (!$replaceExisting && !empty($post->thumbnail)) {
+                return [
+                    'success' => true,
+                    'message' => "Lowongan kerja sudah memiliki logo/thumbnail: {$post->title}",
+                    'count' => 0,
+                    'total' => max(1, $post->images()->count()),
+                ];
+            }
+
+            $companyName = $this->getJobCompanyName($post);
+            $logoUrl = $this->searchCompanyLogo($companyName);
+
+            if ($logoUrl) {
+                $post->update(['thumbnail' => $logoUrl]);
+
+                if ($post->images()->where('image_url', $logoUrl)->doesntExist()) {
+                    $post->images()->create([
+                        'image_url' => $logoUrl,
+                        'caption' => "Logo {$companyName}",
+                        'order' => 0,
+                    ]);
+                }
+
+                if ($publishOnComplete) {
+                    $post->update([
+                        'status' => 'published',
+                        'published_at' => $post->published_at ?? now(),
+                    ]);
+                }
+
+                return [
+                    'success' => true,
+                    'message' => "Berhasil menemukan logo perusahaan untuk: {$companyName}",
+                    'count' => 1,
+                    'total' => max(1, $post->images()->count()),
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => "Logo perusahaan tidak ditemukan untuk: {$companyName}",
+                'count' => 0,
+                'total' => 0,
+            ];
+        }
+
         // Normalize city & province name (strip KOTA, KAB., KABUPATEN, PROVINSI)
         $cleanCity = trim(preg_replace('/^(KOTA|KAB\.|KABUPATEN)\s+/i', '', $post->city?->name ?? ''));
         $cleanProv = trim(preg_replace('/^(PROV\.|PROVINSI)\s+/i', '', $post->province?->name ?? ''));
@@ -673,5 +721,126 @@ class PhotoScraperService
         }
 
         return true;
+    }
+
+    /**
+     * Extract company name from a job post details or title.
+     */
+    public function getJobCompanyName(Post $post): string
+    {
+        // 1. From post details
+        $detail = $post->details?->first(function ($d) {
+            $key = strtolower(trim($d->meta_key));
+            return in_array($key, ['nama_perusahaan', 'perusahaan', 'company', 'company_name', 'employer']);
+        });
+
+        if ($detail && !empty(trim($detail->meta_value))) {
+            return trim($detail->meta_value);
+        }
+
+        // 2. From title (e.g. "Posisi - Nama Perusahaan (Lokasi)" or "Posisi di Nama Perusahaan")
+        if (str_contains($post->title, ' - ')) {
+            $parts = explode(' - ', $post->title, 2);
+            $company = trim($parts[1]);
+            // Remove trailing parentheses like "(Bandung)"
+            return trim(preg_replace('/\s*\([^)]*\)\s*$/', '', $company));
+        }
+
+        if (preg_match('/\b(?:di|at)\s+([A-Za-z0-9\s&.,-]+)/i', $post->title, $matches)) {
+            return trim(preg_replace('/\s*\([^)]*\)\s*$/', '', $matches[1]));
+        }
+
+        return trim($post->title);
+    }
+
+    /**
+     * Search company logo using Bing image search with fallback filtering.
+     */
+    public function searchCompanyLogo(string $companyName): ?string
+    {
+        $cleanCompany = trim(preg_replace('/^(PT|CV|UD|Toko|Warung|Resto|Cafe)\.?\s+/i', '', $companyName));
+        $cleanCompany = trim(preg_replace('/\s*\([^)]*\)\s*/', ' ', $cleanCompany));
+
+        if (empty($cleanCompany)) {
+            return null;
+        }
+
+        $query = urlencode("{$cleanCompany} logo png");
+        $url = "https://www.bing.com/images/search?q={$query}&form=HDRSC2&first=1";
+
+        try {
+            $res = Http::withoutVerifying()->withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language' => 'id-ID,id;q=0.9,en-US;q=0.8',
+            ])->timeout(12)->get($url);
+
+            if (!$res->successful()) {
+                return null;
+            }
+
+            $html = $res->body();
+            if (preg_match_all('/murl&quot;:&quot;(https?:\/\/[^&"]+)&quot;/i', $html, $matches)) {
+                $badPatterns = [
+                    'freepik', 'vectorstock', 'shutterstock', 'stock', 'clipart',
+                    'wallpapers', 'pinimg', 'facebook.com', 'tokopedia.net', '.jp',
+                    'aerial-view', 'recipe'
+                ];
+
+                $slug = \Illuminate\Support\Str::slug($cleanCompany);
+                $words = array_filter(explode('-', $slug), fn ($w) => strlen($w) >= 3);
+
+                // Priority 1: Valid URL containing 'logo' and at least one company keyword
+                foreach ($matches[1] as $imgUrl) {
+                    if (!filter_var($imgUrl, FILTER_VALIDATE_URL)) continue;
+                    $lower = strtolower($imgUrl);
+
+                    $isBad = false;
+                    foreach ($badPatterns as $bad) {
+                        if (str_contains($lower, $bad)) {
+                            $isBad = true;
+                            break;
+                        }
+                    }
+                    if ($isBad) continue;
+                    if (!preg_match('/\.(png|jpe?g|webp)(\?|$)/i', $imgUrl)) continue;
+
+                    $hasWord = false;
+                    foreach ($words as $w) {
+                        if (str_contains($lower, $w)) {
+                            $hasWord = true;
+                            break;
+                        }
+                    }
+
+                    if (str_contains($lower, 'logo') && $hasWord) {
+                        return $imgUrl;
+                    }
+                }
+
+                // Priority 2: Valid URL containing 'logo'
+                foreach ($matches[1] as $imgUrl) {
+                    if (!filter_var($imgUrl, FILTER_VALIDATE_URL)) continue;
+                    $lower = strtolower($imgUrl);
+
+                    $isBad = false;
+                    foreach ($badPatterns as $bad) {
+                        if (str_contains($lower, $bad)) {
+                            $isBad = true;
+                            break;
+                        }
+                    }
+                    if ($isBad) continue;
+
+                    if (preg_match('/\.(png|jpe?g|webp)(\?|$)/i', $imgUrl) && str_contains($lower, 'logo')) {
+                        return $imgUrl;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning("Company logo search failed for '{$companyName}': " . $e->getMessage());
+        }
+
+        return null;
     }
 }

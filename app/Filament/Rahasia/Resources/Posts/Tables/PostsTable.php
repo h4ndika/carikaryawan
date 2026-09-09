@@ -386,7 +386,7 @@ class PostsTable
                                     continue;
                                 }
 
-                                if ($onlyLacking && $post->images()->count() >= 2) {
+                                if ($onlyLacking && (($post->isJob() && !empty($post->thumbnail)) || $post->images()->count() >= 2)) {
                                     $skippedCount++;
                                     continue;
                                 }
