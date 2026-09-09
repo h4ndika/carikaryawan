@@ -81,14 +81,34 @@
                         <div class="form-group">
                             <label class="form-label">Pilih Mesin Scraper</label>
                             <div class="engine-cards">
-                                <label class="engine-card active" id="engine-card-google">
-                                    <input type="radio" name="engine" value="spidersource/google-jobs-scraper" checked>
+                                <label class="engine-card active" id="engine-card-glints">
+                                    <input type="radio" name="engine" value="truefetch/glints-job-listing" checked>
+                                    <div class="engine-info">
+                                        <div class="engine-title">
+                                            <span>✨ Glints Indonesia</span>
+                                            <span class="badge badge-success">⭐ Utama</span>
+                                        </div>
+                                        <p class="engine-desc">Portal karir resmi di Indonesia: posisi, kisaran gaji, logo perusahaan, & kualifikasi terstruktur.</p>
+                                    </div>
+                                </label>
+                                <label class="engine-card" id="engine-card-jobstreet">
+                                    <input type="radio" name="engine" value="shahidirfan/jobstreet-scraper">
+                                    <div class="engine-info">
+                                        <div class="engine-title">
+                                            <span>💼 JobStreet Indonesia</span>
+                                            <span class="badge badge-primary">Populer</span>
+                                        </div>
+                                        <p class="engine-desc">Portal lowongan kerja nomor 1 di Indonesia dengan ribuan update loker baru setiap hari.</p>
+                                    </div>
+                                </label>
+                                <label class="engine-card" id="engine-card-google">
+                                    <input type="radio" name="engine" value="spidersource/google-jobs-scraper">
                                     <div class="engine-info">
                                         <div class="engine-title">
                                             <span>🔍 Google Jobs</span>
-                                            <span class="badge badge-primary">Default</span>
+                                            <span class="badge badge-subtle">Agregator</span>
                                         </div>
-                                        <p class="engine-desc">Pencarian agregator Google Jobs (posisi resmi, info gaji, per kota).</p>
+                                        <p class="engine-desc">Pencarian agregator Google Jobs untuk posisi resmi se-Indonesia.</p>
                                     </div>
                                 </label>
                                 <label class="engine-card" id="engine-card-instagram">
@@ -96,9 +116,9 @@
                                     <div class="engine-info">
                                         <div class="engine-title">
                                             <span>📸 Instagram Loker</span>
-                                            <span class="badge badge-secondary">Akun Komunitas</span>
+                                            <span class="badge badge-secondary">Komunitas</span>
                                         </div>
-                                        <p class="engine-desc">Ekstrak caption & info dari akun loker kota (misal @lokerbandung, @lokerbdg).</p>
+                                        <p class="engine-desc">Ekstrak caption & info dari akun komunitas IG loker (@lokerbandung, @lokerbdg).</p>
                                     </div>
                                 </label>
                             </div>

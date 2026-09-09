@@ -5,7 +5,7 @@
 // ─── State ──────────────────────────────────────────────────────
 const state = {
     isScraping: false,
-    currentEngine: 'spidersource/google-jobs-scraper',
+    currentEngine: 'truefetch/glints-job-listing',
     activeFile: null,
     currentJobs: [],
     filteredJobs: [],
@@ -133,11 +133,23 @@ function updateEngineFields(engine) {
         }
     });
 
-    if (engine === 'spidersource/google-jobs-scraper') {
+    if (engine === 'truefetch/glints-job-listing') {
+        elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
+        elements.inputQuery.placeholder = 'Contoh: Barista, Staff Gudang, Guru, Cook Helper, Admin';
+        elements.inputQuery.value = 'Barista';
+        elements.hintQuery.textContent = 'Cari lowongan kerja resmi di Glints Indonesia berdasarkan keyword dan lokasi.';
+        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
+    } else if (engine === 'shahidirfan/jobstreet-scraper') {
+        elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
+        elements.inputQuery.placeholder = 'Contoh: Barista, Admin, Staff Toko, Sales';
+        elements.inputQuery.value = 'Barista';
+        elements.hintQuery.textContent = 'Cari lowongan aktif di JobStreet Indonesia.';
+        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
+    } else if (engine === 'spidersource/google-jobs-scraper') {
         elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
         elements.inputQuery.placeholder = 'Contoh: Barista, Staff Gudang, Guru, Cook Helper';
         elements.inputQuery.value = 'Barista';
-        elements.hintQuery.textContent = 'Masukkan posisi atau kata kunci pekerjaan yang dicari.';
+        elements.hintQuery.textContent = 'Pencarian Google Jobs dengan opsi filter lokasi.';
         if (elements.groupLocation) elements.groupLocation.style.display = 'block';
     } else {
         elements.labelQuery.textContent = 'Username Akun Instagram Loker';
@@ -501,9 +513,17 @@ function renderJobsGrid(jobs) {
         const salary = (job.details && job.details.gaji) || job.salary || null;
         const applyUrl = job.apply_url || job.url || '#';
         const snippet = job.description || 'Tidak ada deskripsi rinci.';
-        const engineLabel = job.raw_engine === 'apify/instagram-post-scraper' || (job.details && job.details.posisi_ekstraksi === 'instagram')
-            ? '📸 Instagram'
-            : '🔍 Google Jobs';
+        const source = job.source || (job.details && job.details.posisi_ekstraksi) || '';
+        let engineLabel = '✨ Glints';
+        if (source === 'jobstreet') {
+            engineLabel = '💼 JobStreet';
+        } else if (source === 'google-jobs' || job.raw_engine === 'spidersource/google-jobs-scraper') {
+            engineLabel = '🔍 Google Jobs';
+        } else if (source === 'instagram' || job.raw_engine === 'apify/instagram-post-scraper') {
+            engineLabel = '📸 Instagram';
+        }
+
+        const companyLogo = job.company_logo || (job.images && job.images[0] && job.images[0].includes('company-logo') ? job.images[0] : null);
 
         return `
             <div class="job-card">
@@ -512,12 +532,16 @@ function renderJobsGrid(jobs) {
                         <h3 class="job-title">${escapeHtml(title)}</h3>
                         <span class="badge badge-subtle">${engineLabel}</span>
                     </div>
-                    <div class="job-company">🏢 ${escapeHtml(company)}</div>
+                    <div class="job-company" style="display:flex; align-items:center; gap:8px;">
+                        ${companyLogo ? `<img src="${escapeHtml(companyLogo)}" alt="" style="width:22px; height:22px; border-radius:4px; object-fit:contain; background:#fff; padding:2px;" onerror="this.style.display='none'">` : ''}
+                        <span>🏢 ${escapeHtml(company)}</span>
+                    </div>
                     
                     <div class="job-meta-row">
                         <span class="job-pill">📍 ${escapeHtml(city)}</span>
-                        ${salary ? `<span class="job-pill" style="color:#34d399; border-color:rgba(16, 185, 129, 0.3);">💰 ${escapeHtml(salary)}</span>` : ''}
-                        <span class="job-pill">🏷️ ${escapeHtml(job.category || 'Lowongan Kerja')}</span>
+                        ${salary && salary !== '-' ? `<span class="job-pill" style="color:#34d399; border-color:rgba(16, 185, 129, 0.3); font-weight:600;">💰 ${escapeHtml(salary)}</span>` : ''}
+                        ${job.job_type ? `<span class="job-pill">⏱️ ${escapeHtml(job.job_type)}</span>` : ''}
+                        ${job.skills ? `<span class="job-pill" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🎯 ${escapeHtml(job.skills)}</span>` : ''}
                     </div>
 
                     <p class="job-snippet">${escapeHtml(snippet)}</p>

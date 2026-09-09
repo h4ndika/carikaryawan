@@ -74,3 +74,94 @@ export function normalizeInstagramPost(item) {
     }
   };
 }
+
+export function normalizeGlintsJob(item) {
+  const position = item.title || 'Lowongan Kerja';
+  const company = item.company_name || 'Perusahaan';
+  const locObj = item.location || {};
+  const city = locObj.locality || locObj.raw || '';
+  const location = [city, locObj.country || 'Indonesia'].filter(Boolean).join(', ');
+  
+  let salary = '-';
+  if (item.salary_minimum) {
+    const cur = item.salary_currency || 'IDR';
+    const min = Number(item.salary_minimum).toLocaleString('id-ID');
+    const max = item.salary_maximum ? Number(item.salary_maximum).toLocaleString('id-ID') : '';
+    salary = `${cur} ${min}${max ? ' - ' + max : ''}${item.salary_period ? ' / ' + item.salary_period : ''}`;
+  }
+
+  const applyUrl = item.platform_url || item.official_url || '';
+  const postedAt = item.posted_date ? item.posted_date.split('T')[0] : new Date().toISOString().split('T')[0];
+  const images = item.company_logo ? [item.company_logo] : [];
+
+  return {
+    title: `${position} - ${company}${city ? ' (' + city + ')' : ''}`,
+    position,
+    company,
+    company_logo: item.company_logo || null,
+    location,
+    city,
+    salary,
+    job_type: item.job_type || 'Full-time',
+    skills: item.skills || '',
+    description: item.description || '',
+    apply_url: applyUrl,
+    posted_at: postedAt,
+    images,
+    source: 'glints',
+    category: 'Lowongan Kerja',
+    details: {
+      posisi: position,
+      perusahaan: company,
+      lokasi: location,
+      gaji: salary,
+      tipe_pekerjaan: item.job_type || 'Full-time',
+      keahlian: item.skills || '-',
+      kualifikasi: (item.description || '').slice(0, 350) + '...',
+      cara_melamar: applyUrl || 'Lamar langsung di portal Glints'
+    }
+  };
+}
+
+export function normalizeJobstreetJob(item) {
+  const position = item.title || 'Lowongan Kerja';
+  const company = item.company || 'Perusahaan';
+  const location = item.location || '';
+  
+  const cityMatch = location.match(/\b(Jakarta|Bandung|Surabaya|Semarang|Yogyakarta|Jogja|Denpasar|Bali|Medan|Malang|Solo|Surakarta|Bogor|Bekasi|Tangerang|Depok|Cimahi)\b/i);
+  const city = cityMatch ? cityMatch[1] : (location.split(',')[0] || '');
+
+  const salary = item.salary || '-';
+  const applyUrl = item.url || (item.id ? `https://id.jobstreet.com/job/${item.id}` : '');
+  const postedAt = item.postedAt_iso ? item.postedAt_iso.split('T')[0] : (item.postedAt_display || new Date().toISOString().split('T')[0]);
+  const description = item.description_text || item.teaser || '';
+
+  return {
+    title: `${position} - ${company}${city ? ' (' + city + ')' : ''}`,
+    position,
+    company,
+    company_logo: null,
+    location,
+    city,
+    salary,
+    job_type: item.workType || 'Full-time',
+    skills: item.classification || '',
+    description,
+    apply_url: applyUrl,
+    posted_at: postedAt,
+    images: [],
+    source: 'jobstreet',
+    category: 'Lowongan Kerja',
+    details: {
+      posisi: position,
+      perusahaan: company,
+      lokasi: location,
+      gaji: salary,
+      tipe_pekerjaan: item.workType || 'Full-time',
+      kategori: item.classification || item.subClassification || '-',
+      kualifikasi: description.slice(0, 350) + '...',
+      cara_melamar: applyUrl || 'Lamar langsung di portal JobStreet'
+    }
+  };
+}
+

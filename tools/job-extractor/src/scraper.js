@@ -2,7 +2,7 @@ import { ApifyClient } from 'apify-client';
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
-import { normalizeGoogleJob, normalizeInstagramPost } from './normalizer.js';
+import { normalizeGoogleJob, normalizeInstagramPost, normalizeGlintsJob, normalizeJobstreetJob } from './normalizer.js';
 
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
@@ -10,6 +10,8 @@ import { DatabaseSync } from 'node:sqlite';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+export const ENGINE_GLINTS = 'truefetch/glints-job-listing';
+export const ENGINE_JOBSTREET = 'shahidirfan/jobstreet-scraper';
 export const ENGINE_GOOGLE_JOBS = 'spidersource/google-jobs-scraper';
 export const ENGINE_INSTAGRAM = 'apify/instagram-post-scraper';
 
@@ -163,7 +165,24 @@ export async function scrapeJobs(options = {}) {
   let actorId = engine;
   let actorInput = {};
 
-  if (engine === ENGINE_GOOGLE_JOBS) {
+  if (engine === ENGINE_GLINTS) {
+    actorId = ENGINE_GLINTS;
+    const locClean = (location || '').trim();
+    const cleanSearch = locClean ? `${query} ${locClean}` : query;
+    actorInput = {
+      keyword: cleanSearch,
+      country: 'Indonesia',
+      max_results: parseInt(maxItems, 10) || 20
+    };
+  } else if (engine === ENGINE_JOBSTREET) {
+    actorId = ENGINE_JOBSTREET;
+    actorInput = {
+      keyword: query,
+      location: (location || '').trim(),
+      country: 'id',
+      results_wanted: parseInt(maxItems, 10) || 20
+    };
+  } else if (engine === ENGINE_GOOGLE_JOBS) {
     // Gabungkan query dengan filter lokasi jika ada
     let queries = Array.isArray(query) ? query : [query];
     const locClean = (location || '').trim();
@@ -209,7 +228,11 @@ export async function scrapeJobs(options = {}) {
   log(`📦 Diperoleh ${items.length} lowongan mentah dari Apify.`);
 
   const normalized = items.map(item => {
-    if (engine === ENGINE_GOOGLE_JOBS) {
+    if (engine === ENGINE_GLINTS) {
+      return normalizeGlintsJob(item);
+    } else if (engine === ENGINE_JOBSTREET) {
+      return normalizeJobstreetJob(item);
+    } else if (engine === ENGINE_GOOGLE_JOBS) {
       return normalizeGoogleJob(item);
     } else {
       return normalizeInstagramPost(item);
