@@ -70,12 +70,18 @@ class PostShow extends Component
     {
         $canonical = $this->post->canonical_url ?: $this->post->url();
 
-        $related = Post::query()
+        $relatedQuery = Post::query()
             ->published()
             ->where('category_id', $this->post->category_id)
             ->where('city_id', $this->post->city_id)
             ->where('id', '!=', $this->post->id)
-            ->with(['category', 'city', 'province', 'images'])
+            ->with(['category', 'city', 'province', 'images']);
+
+        if ($this->post->isJob()) {
+            $relatedQuery->activeJob();
+        }
+
+        $related = $relatedQuery
             ->latest('published_at')
             ->limit(6)
             ->get();

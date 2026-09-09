@@ -37,6 +37,7 @@ class Post extends Model
         'views_count' => 'integer',
         'affiliate_links' => 'array',
         'published_at' => 'datetime',
+        'expired_at' => 'datetime',
     ];
 
     public function pageViews(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -188,6 +189,48 @@ class Post extends Model
         return $query->where('status', 'published');
     }
 
+    /**
+     * Scope query to filter out expired jobs (for homepage/catalogue).
+     */
+    public function scopeActiveJob($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('expired_at')
+              ->orWhere('expired_at', '>', now());
+        });
+    }
+
+    /**
+     * Determine if this post is a job listing.
+     */
+    public function isJob(): bool
+    {
+        $catSlug = strtolower($this->category?->slug ?? '');
+        $catName = strtolower($this->category?->name ?? '');
+
+        return str_contains($catSlug, 'lowongan')
+            || str_contains($catName, 'lowongan')
+            || str_contains($catSlug, 'loker')
+            || str_contains($catName, 'loker');
+    }
+
+    /**
+     * Determine if this job listing has passed its expiration date.
+     */
+    public function isExpired(): bool
+    {
+        if ($this->expired_at) {
+            return $this->expired_at->isPast();
+        }
+
+        // Fallback: If it's a job and published more than 21 days ago
+        if ($this->isJob() && $this->published_at) {
+            return $this->published_at->addDays(21)->isPast();
+        }
+
+        return false;
+    }
+
     /** SEO helpers — fallback ke field konten jika meta kosong. */
     public function seoTitle(): string
     {
@@ -308,10 +351,46 @@ class Post extends Model
                 'worstRating' => 1,
             ];
         }
+
         if ($this->place_id) {
             $placeSchema['hasMap'] = "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->title) . "&query_place_id=" . $this->place_id;
         }
-        $graph[] = $placeSchema;
+
+        if ($this->isJob()) {
+            $validThrough = $this->expired_at
+                ? $this->expired_at->toIso8601String()
+                : ($this->published_at ? $this->published_at->addDays(21)->toIso8601String() : null);
+
+            $jobSchema = [
+                '@type' => 'JobPosting',
+                '@id' => $postUrl . '#jobposting',
+                'title' => $this->title,
+                'description' => strip_tags($this->content ?: $this->seoDescription()),
+                'datePosted' => optional($this->published_at)->toIso8601String() ?? now()->toIso8601String(),
+                'directApply' => true,
+                'hiringOrganization' => [
+                    '@type' => 'Organization',
+                    'name' => $this->title,
+                ],
+                'jobLocation' => [
+                    '@type' => 'Place',
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'addressLocality' => $cityName,
+                        'addressRegion' => $provName,
+                        'addressCountry' => 'ID',
+                    ],
+                ],
+            ];
+
+            if ($validThrough) {
+                $jobSchema['validThrough'] = $validThrough;
+            }
+
+            $graph[] = $jobSchema;
+        } else {
+            $graph[] = $placeSchema;
+        }
 
         // 3. BreadcrumbList Schema
         $breadcrumbs = [

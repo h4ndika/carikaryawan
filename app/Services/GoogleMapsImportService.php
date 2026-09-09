@@ -257,6 +257,15 @@ class GoogleMapsImportService
         $status = $this->defaultStatus ?: 'draft';
         $publishedAt = $status === 'published' ? now() : null;
 
+        $isJob = false;
+        if ($categoryId) {
+            $cat = Category::find($categoryId);
+            if ($cat && (str_contains(strtolower($cat->slug), 'lowongan') || str_contains(strtolower($cat->slug), 'loker') || str_contains(strtolower($cat->name), 'lowongan'))) {
+                $isJob = true;
+            }
+        }
+        $expiredAt = $isJob ? ($publishedAt ? $publishedAt->copy()->addDays(21) : now()->addDays(21)) : null;
+
         return [
             // Basic fields
             'title' => $data['title'],
@@ -265,6 +274,7 @@ class GoogleMapsImportService
             'content' => $description,
             'status' => $status,
             'published_at' => $publishedAt,
+            'expired_at' => $expiredAt,
 
             // Location
             'category_id' => $categoryId,

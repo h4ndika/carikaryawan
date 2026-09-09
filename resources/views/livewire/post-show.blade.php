@@ -113,6 +113,23 @@
             
             <!-- Left Column: Story Prose & Gallery (8 cols) -->
             <div class="lg:col-span-8">
+                @if ($post->isJob() && $post->isExpired())
+                    <div class="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 dark:border-amber-500/20 text-amber-950 dark:text-amber-200 flex items-start gap-3.5 shadow-xs">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-700 dark:text-amber-400 shrink-0 text-lg mt-0.5">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-sm sm:text-base text-amber-950 dark:text-amber-100">Lowongan Kerja Ini Telah Ditutup</h3>
+                                <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Ditutup</span>
+                            </div>
+                            <p class="text-xs sm:text-sm mt-1 text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
+                                Masa aktif publikasi lowongan kerja ini (21 hari) telah berakhir{{ $post->expired_at ? ' pada ' . $post->expired_at->translatedFormat('d F Y') : '' }}. Pendaftaran dan tautan lamaran telah dinonaktifkan. Anda dapat melihat rekomendasi lowongan kerja serupa yang masih aktif di bagian bawah halaman ini.
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Article Prose -->
                 <article class="prose-editorial max-w-none bg-white dark:bg-zinc-900 px-6 sm:px-10 pt-4 sm:pt-6 pb-8 sm:pb-10 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xs">
                     {!! $post->content !!}
@@ -231,10 +248,16 @@
                                     <i class="fa-solid fa-globe text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Situs Resmi</span>
-                                    <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
-                                        Kunjungi Website <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                    </a>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">{{ $post->isJob() ? 'Tautan Lamaran' : 'Situs Resmi' }}</span>
+                                    @if ($post->isJob() && $post->isExpired())
+                                        <span class="text-zinc-400 dark:text-zinc-500 font-medium text-xs italic flex items-center gap-1">
+                                            <i class="fa-solid fa-lock text-[10px]"></i> Pendaftaran Telah Ditutup
+                                        </span>
+                                    @else
+                                        <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
+                                            {{ $post->isJob() ? 'Lamar Sekarang' : 'Kunjungi Website' }} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endif

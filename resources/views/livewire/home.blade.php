@@ -48,6 +48,9 @@
                         <div class="space-y-2.5">
                             <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400">
                                 <span>{{ $featuredPost->category->name ?? 'REKOMENDASI' }}</span>
+                                @if ($featuredPost->isJob() && $featuredPost->isExpired())
+                                    <span class="text-red-600 dark:text-red-400 font-bold text-[10px] bg-red-50 dark:bg-red-950/50 px-2 py-0.5 rounded border border-red-200 dark:border-red-900">Ditutup</span>
+                                @endif
                                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                                 <span class="text-zinc-500 dark:text-zinc-400 font-medium">{{ max(1, round(str_word_count(strip_tags($featuredPost->content ?? '')) / 200)) }} min baca</span>
                             </div>
@@ -89,9 +92,14 @@
                                 <a href="{{ $sidePost->url() }}" 
                                    wire:navigate class="grid grid-cols-3 gap-4 items-start">
                                     <div class="col-span-2 space-y-1.5">
-                                        <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">
-                                            {{ $sidePost->category->name ?? 'CERITA' }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">
+                                                {{ $sidePost->category->name ?? 'CERITA' }}
+                                            </span>
+                                            @if ($sidePost->isJob() && $sidePost->isExpired())
+                                                <span class="text-red-600 dark:text-red-400 font-bold text-[9px] bg-red-50 dark:bg-red-950/50 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900">Ditutup</span>
+                                            @endif
+                                        </div>
                                         <h3 class="font-serif-title font-bold text-base leading-snug text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
                                             {{ $sidePost->title }}
                                         </h3>

@@ -25,6 +25,10 @@
                         <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>
                         <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
                     </div>
+                @if ($post->isJob() && $post->isExpired())
+                    <span class="absolute top-2.5 left-2.5 bg-red-600/90 text-white backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-xs flex items-center gap-1 z-10">
+                        <i class="fa-solid fa-clock-rotate-left text-[8px]"></i> Ditutup
+                    </span>
                 @endif
             </a>
         </div>
@@ -33,6 +37,9 @@
             <div>
                 <div class="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-800 dark:text-amber-400 font-bold mb-2">
                     <span>{{ $post->category->name ?? 'CERITA' }}</span>
+                    @if ($post->isJob() && $post->isExpired())
+                        <span class="text-red-600 dark:text-red-400 font-bold text-[10px] bg-red-50 dark:bg-red-950/50 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900">Ditutup</span>
+                    @endif
                     <span class="text-zinc-300 dark:text-zinc-700">•</span>
                     <span class="text-zinc-500 dark:text-zinc-400 font-medium">{{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
                 </div>

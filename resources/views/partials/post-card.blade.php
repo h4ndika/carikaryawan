@@ -30,6 +30,12 @@
         <span class="absolute top-3 left-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 shadow-xs border border-zinc-200/50 dark:border-zinc-800">
             {{ $post->category->name }}
         </span>
+
+        @if ($post->isJob() && $post->isExpired())
+            <span class="absolute top-3 right-3 bg-red-600/90 text-white backdrop-blur-xs px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shadow-xs flex items-center gap-1 z-10">
+                <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Ditutup
+            </span>
+        @endif
     </a>
 
     <div class="flex flex-1 flex-col justify-between p-5 space-y-3">
