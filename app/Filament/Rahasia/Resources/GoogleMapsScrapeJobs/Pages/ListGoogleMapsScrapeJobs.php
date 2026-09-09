@@ -35,46 +35,46 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     Select::make('engine')
                         ->label('Pilihan Mesin Scraper')
                         ->options([
-                            'google-jobs' => 'Google Jobs (spidersource/google-jobs-scraper) — Default Loker',
-                            'instagram' => 'Instagram Loker (apify/instagram-post-scraper) — Akun Komunitas',
+                            'jobstreet' => 'JobStreet Indonesia (shahidirfan/jobstreet-scraper) — Rekomendasi Utama',
+                            'glints' => 'Glints Indonesia (truefetch/glints-job-listing) — Lengkap & Terstruktur',
                             'google-maps' => 'Google Maps (compass/crawler-google-places) — Tempat & Fasilitas',
                         ])
-                        ->default('google-jobs')
+                        ->default('jobstreet')
                         ->required()
                         ->live()
                         ->columnSpanFull()
-                        ->helperText('Pilih mesin pencari sesuai kebutuhan: Google Jobs untuk loker terstruktur, Instagram untuk akun loker daerah, atau Google Maps untuk tempat.'),
+                        ->helperText('Pilih mesin pencari: JobStreet untuk loker hemat ($0.99/1k), Glints untuk data loker terperinci, atau Google Maps untuk tempat.'),
 
                     TextInput::make('query')
                         ->label(fn (Get $get) => match ($get('engine')) {
-                            'instagram' => 'Username Akun Instagram (tanpa @)',
-                            'google-jobs' => 'Kata Kunci Lowongan Kerja',
+                            'jobstreet' => 'Kata Kunci Posisi / Pekerjaan (JobStreet)',
+                            'glints' => 'Kata Kunci Posisi / Pekerjaan (Glints)',
                             default => 'Kata Kunci Tempat Google Maps'
                         })
                         ->placeholder(fn (Get $get) => match ($get('engine')) {
-                            'instagram' => 'Contoh: lokerbandung, infolokerjogja, loker.surabaya',
-                            'google-jobs' => 'Contoh: lowongan barista bandung, staf kafe jogja, cook jakarta',
+                            'jobstreet' => 'Contoh: Barista, Staff Gudang, Admin, Sales',
+                            'glints' => 'Contoh: Barista, Staff Gudang, Admin, Cook Helper',
                             default => 'Contoh: Hotel di Bandung, Kafe di Jogja, Penitipan koper dekat Stasiun Bandung'
                         })
                         ->required()
                         ->columnSpanFull()
                         ->helperText(fn (Get $get) => match ($get('engine')) {
-                            'instagram' => 'Ketik username akun Instagram penyedia info loker tanpa simbol @.',
-                            'google-jobs' => 'Ketik posisi dan kota tujuan (misal: "lowongan barista bandung").',
+                            'jobstreet' => 'Ketik posisi lowongan kerja yang dicari di JobStreet Indonesia.',
+                            'glints' => 'Ketik posisi lowongan kerja di Glints Indonesia.',
                             default => 'Ketik kata kunci tempat atau fasilitas transit di sekitar stasiun/bandara.'
                         }),
 
                     TextInput::make('location')
                         ->label('Lokasi / Kota Spesifik (Opsional)')
-                        ->placeholder('Contoh: Bandung, Indonesia')
-                        ->visible(fn (Get $get) => $get('engine') === 'google-maps')
-                        ->columnSpanFull(),
+                        ->placeholder('Contoh: Bandung, Jakarta, Yogyakarta')
+                        ->columnSpanFull()
+                        ->helperText('Filter lokasi lowongan atau tempat (opsional).'),
 
                     Select::make('category_id')
                         ->label('Tetapkan Kategori (Opsional)')
                         ->options(fn () => Category::pluck('name', 'id'))
                         ->searchable()
-                        ->default(fn (Get $get) => in_array($get('engine'), ['google-jobs', 'instagram']) 
+                        ->default(fn (Get $get) => in_array($get('engine'), ['jobstreet', 'glints']) 
                             ? Category::where('slug', 'lowongan-kerja')->value('id') 
                             : null
                         )
@@ -123,7 +123,7 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $job = GoogleMapsScrapeJob::create([
-                        'engine' => $data['engine'] ?? 'google-jobs',
+                        'engine' => $data['engine'] ?? 'jobstreet',
                         'query' => $data['query'],
                         'location' => $data['location'] ?? null,
                         'category_id' => $data['category_id'] ?? null,

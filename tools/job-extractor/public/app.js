@@ -136,28 +136,13 @@ function updateEngineFields(engine) {
     if (engine === 'truefetch/glints-job-listing') {
         elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
         elements.inputQuery.placeholder = 'Contoh: Barista, Staff Gudang, Guru, Cook Helper, Admin';
-        elements.inputQuery.value = 'Barista';
         elements.hintQuery.textContent = 'Cari lowongan kerja resmi di Glints Indonesia berdasarkan keyword dan lokasi.';
-        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
-    } else if (engine === 'shahidirfan/jobstreet-scraper') {
+    } else {
         elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
         elements.inputQuery.placeholder = 'Contoh: Barista, Admin, Staff Toko, Sales';
-        elements.inputQuery.value = 'Barista';
         elements.hintQuery.textContent = 'Cari lowongan aktif di JobStreet Indonesia.';
-        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
-    } else if (engine === 'spidersource/google-jobs-scraper') {
-        elements.labelQuery.textContent = 'Kata Kunci / Posisi Loker *';
-        elements.inputQuery.placeholder = 'Contoh: Barista, Staff Gudang, Guru, Cook Helper';
-        elements.inputQuery.value = 'Barista';
-        elements.hintQuery.textContent = 'Pencarian Google Jobs dengan opsi filter lokasi.';
-        if (elements.groupLocation) elements.groupLocation.style.display = 'block';
-    } else {
-        elements.labelQuery.textContent = 'Username Akun Instagram Loker';
-        elements.inputQuery.placeholder = 'Contoh: lokerbandung, lokerbdg, loker_jakarta';
-        elements.inputQuery.value = 'lokerbandung';
-        elements.hintQuery.textContent = 'Masukkan username akun IG komunitas loker (tanpa @), pisahkan dengan koma.';
-        if (elements.groupLocation) elements.groupLocation.style.display = 'none';
     }
+    if (elements.groupLocation) elements.groupLocation.style.display = 'block';
 }
 
 // ─── Location Autocomplete ──────────────────────────────────────

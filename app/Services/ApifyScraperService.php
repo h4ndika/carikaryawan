@@ -126,23 +126,25 @@ class ApifyScraperService
     public function startJobCrawler(
         string $token,
         string $query,
-        string $engine = 'spidersource/google-jobs-scraper',
+        string $engine = 'jobstreet',
+        ?string $location = null,
         int $maxItems = 20
     ): array {
-        if ($engine === 'apify/instagram-post-scraper') {
-            $actorId = 'apify/instagram-post-scraper';
-            $username = preg_replace('/^@/', '', trim($query));
+        if ($engine === 'glints' || $engine === 'truefetch/glints-job-listing') {
+            $actorId = 'truefetch/glints-job-listing';
+            $keyword = !empty($location) ? "{$query} {$location}" : $query;
             $input = [
-                'username' => [$username],
-                'resultsLimit' => $maxItems,
+                'keyword' => $keyword,
+                'country' => 'Indonesia',
+                'max_results' => $maxItems,
             ];
         } else {
-            $actorId = 'spidersource/google-jobs-scraper';
+            $actorId = 'shahidirfan/jobstreet-scraper';
             $input = [
-                'queries' => [$query],
-                'maxItems' => $maxItems,
-                'countryCode' => 'id',
-                'languageCode' => 'id',
+                'keyword' => $query,
+                'location' => $location ?? '',
+                'country' => 'id',
+                'results_wanted' => $maxItems,
             ];
         }
 

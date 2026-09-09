@@ -65,15 +65,17 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
             // 3. Start Apify Actor based on engine
             $engine = $scrapeJob->engine ?? 'google-maps';
 
-            if ($engine === 'google-jobs' || $engine === 'instagram') {
-                $actorEngine = $engine === 'instagram' 
-                    ? 'apify/instagram-post-scraper' 
-                    : 'spidersource/google-jobs-scraper';
+            if ($engine === 'jobstreet' || $engine === 'glints') {
+                $locationStr = $scrapeJob->location;
+                if (empty($locationStr) && $scrapeJob->city) {
+                    $locationStr = $scrapeJob->city->name;
+                }
 
                 $runData = $apifyService->startJobCrawler(
                     token: $token,
                     query: $scrapeJob->query,
-                    engine: $actorEngine,
+                    engine: $engine,
+                    location: $locationStr,
                     maxItems: $scrapeJob->target_limit
                 );
             } else {
@@ -128,15 +130,16 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
             $totalScraped = count($items);
             $scrapeJob->update(['total_scraped' => $totalScraped]);
 
-            // 6. If engine is job/instagram, normalize items before import
-            if ($engine === 'google-jobs') {
+            // 6. If engine is jobstreet/glints, normalize items before import
+            if ($engine === 'jobstreet') {
                 $items = array_map(function ($item) {
-                    $pos = $item['title'] ?? ($item['jobTitle'] ?? 'Lowongan Kerja');
-                    $comp = $item['companyName'] ?? ($item['company'] ?? 'Perusahaan Lokal');
-                    $loc = $item['location'] ?? ($item['address'] ?? '');
-                    $desc = $item['description'] ?? ($item['snippet'] ?? '');
-                    $salary = $item['salary'] ?? ($item['salaryInfo'] ?? '-');
-                    $apply = $item['applyUrl'] ?? ($item['jobUrl'] ?? ($item['link'] ?? ''));
+                    $pos = $item['title'] ?? 'Lowongan Kerja';
+                    $comp = $item['company'] ?? 'Perusahaan';
+                    $loc = $item['location'] ?? ($item['area'] ?? '');
+                    $desc = $item['description_text'] ?? ($item['description'] ?? '');
+                    $salary = $item['salary'] ?? '-';
+                    $apply = $item['url'] ?? '';
+                    $workType = $item['workType'] ?? ($item['jobType'] ?? '');
 
                     return [
                         'title' => "{$pos} - {$comp}",
@@ -151,28 +154,50 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                             'perusahaan' => $comp,
                             'lokasi' => $loc,
                             'gaji' => $salary,
+                            'tipe_pekerjaan' => $workType,
                             'cara_melamar' => $apply ?: 'Cek deskripsi lowongan',
                         ],
                     ];
                 }, $items);
-            } elseif ($engine === 'instagram') {
+            } elseif ($engine === 'glints') {
                 $items = array_map(function ($item) {
-                    $caption = $item['caption'] ?? ($item['text'] ?? '');
-                    $shortTitle = trim(explode("\n", $caption)[0] ?? 'Info Loker Lokal');
-                    $postUrl = $item['url'] ?? (!empty($item['shortCode']) ? "https://instagram.com/p/{$item['shortCode']}" : '');
-                    $imgs = !empty($item['displayUrl']) ? [$item['displayUrl']] : ($item['images'] ?? []);
+                    $pos = $item['title'] ?? 'Lowongan Kerja';
+                    $comp = $item['company_name'] ?? ($item['company'] ?? 'Perusahaan');
+                    $loc = is_array($item['location'] ?? null) 
+                        ? ($item['location']['locality'] ?? ($item['location']['area'] ?? 'Indonesia'))
+                        : ($item['location'] ?? 'Indonesia');
+                    $desc = $item['description'] ?? ($item['snippet'] ?? '');
+                    $apply = $item['platform_url'] ?? ($item['url'] ?? '');
+                    $logo = $item['company_logo'] ?? null;
+                    
+                    $salary = '-';
+                    if (!empty($item['salary_minimum']) || !empty($item['salary_maximum'])) {
+                        $curr = $item['salary_currency'] ?? 'IDR';
+                        $min = !empty($item['salary_minimum']) ? number_format($item['salary_minimum'], 0, ',', '.') : '';
+                        $max = !empty($item['salary_maximum']) ? number_format($item['salary_maximum'], 0, ',', '.') : '';
+                        $salary = $min && $max ? "{$curr} {$min} - {$max}" : "{$curr} " . ($min ?: $max);
+                    }
+
+                    $skills = is_array($item['skills'] ?? null) 
+                        ? implode(', ', array_map(fn($s) => is_array($s) ? ($s['name'] ?? '') : (string)$s, $item['skills'])) 
+                        : ($item['skills'] ?? '');
 
                     return [
-                        'title' => mb_substr($shortTitle, 0, 70) ?: 'Info Lowongan Kerja Lokal',
+                        'title' => "{$pos} - {$comp}",
                         'category' => 'Lowongan Kerja',
-                        'description' => $caption,
-                        'apply_url' => $postUrl,
-                        'website' => $postUrl,
-                        'images' => $imgs,
+                        'location' => $loc,
+                        'address' => $loc,
+                        'description' => $desc,
+                        'apply_url' => $apply,
+                        'website' => $apply,
+                        'images' => $logo ? [$logo] : [],
                         'details' => [
-                            'posisi' => mb_substr($shortTitle, 0, 70),
-                            'perusahaan' => $item['ownerUsername'] ?? 'Instagram',
-                            'cara_melamar' => $postUrl,
+                            'posisi' => $pos,
+                            'perusahaan' => $comp,
+                            'lokasi' => $loc,
+                            'gaji' => $salary,
+                            'keahlian' => $skills,
+                            'cara_melamar' => $apply ?: 'Cek deskripsi lowongan',
                         ],
                     ];
                 }, $items);
