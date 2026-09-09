@@ -71,6 +71,11 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                     $locationStr = $scrapeJob->city->name;
                 }
 
+                // Bersihkan prefix administratif (KOTA, KABUPATEN, KAB., KODYA) agar dikenali oleh search API JobStreet/Glints
+                if (!empty($locationStr)) {
+                    $locationStr = trim(preg_replace('/^(KOTA|KABUPATEN|KAB\.?|KODYA)\s+/i', '', trim($locationStr)));
+                }
+
                 $runData = $apifyService->startJobCrawler(
                     token: $token,
                     query: $scrapeJob->query,
@@ -112,7 +117,23 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
 
             $runStatus = $completedRun['status'] ?? 'UNKNOWN';
             if ($runStatus !== 'SUCCEEDED') {
-                throw new \RuntimeException("Proses crawler Apify selesai dengan status: {$runStatus}");
+                $logSnippet = $apifyService->getRunLogSnippet($runId, $token);
+
+                // Cek jika actor Jobstreet/Glints gagal hanya karena tidak ada lowongan ditemukan untuk query/lokasi ini
+                if ($logSnippet && stripos($logSnippet, 'No jobs were extracted') !== false) {
+                    $scrapeJob->update([
+                        'status' => 'completed',
+                        'total_scraped' => 0,
+                        'total_imported' => 0,
+                        'total_updated' => 0,
+                        'finished_at' => now(),
+                        'error_message' => 'Tidak ada lowongan ditemukan di sumber untuk kombinasi kata kunci dan kota ini (0 lowongan).',
+                    ]);
+                    return;
+                }
+
+                $detailStr = $logSnippet ? " - {$logSnippet}" : '';
+                throw new \RuntimeException("Proses crawler Apify selesai dengan status: {$runStatus}{$detailStr}");
             }
 
             // 5. Fetch dataset items

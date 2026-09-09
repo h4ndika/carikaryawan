@@ -122,10 +122,15 @@ class GoogleMapsScrapeJobsTable
                     ->sortable(),
 
                 TextColumn::make('error_message')
-                    ->label('Keterangan Error')
-                    ->limit(30)
-                    ->color('danger')
-                    ->visible(fn (?GoogleMapsScrapeJob $record) => $record?->status === 'failed')
+                    ->label('Keterangan / Rincian')
+                    ->wrap()
+                    ->limit(120)
+                    ->color(fn (GoogleMapsScrapeJob $record) => match ($record->status) {
+                        'failed' => 'danger',
+                        'completed' => 'gray',
+                        default => 'secondary',
+                    })
+                    ->placeholder('-')
                     ->tooltip(fn (GoogleMapsScrapeJob $record) => $record->error_message),
             ])
             ->filters([

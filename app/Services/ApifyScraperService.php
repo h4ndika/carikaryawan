@@ -237,4 +237,33 @@ class ApifyScraperService
 
         return $response->json() ?? [];
     }
+
+    /**
+     * Get error or recent log snippet from Apify run.
+     */
+    public function getRunLogSnippet(string $runId, string $token, int $maxLines = 3): ?string
+    {
+        try {
+            $url = "https://api.apify.com/v2/actor-runs/{$runId}/log";
+            $response = Http::withToken($token)
+                ->timeout(15)
+                ->get($url);
+
+            if ($response->successful()) {
+                $raw = trim($response->body());
+                if (!empty($raw)) {
+                    $lines = array_values(array_filter(array_map('trim', explode("\n", $raw))));
+                    $errorLines = array_values(array_filter($lines, fn ($l) => stripos($l, 'Error:') !== false || stripos($l, 'Exception') !== false));
+                    if (!empty($errorLines)) {
+                        return implode(" | ", array_slice($errorLines, -$maxLines));
+                    }
+                    return implode(" | ", array_slice($lines, -$maxLines));
+                }
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        return null;
+    }
 }
