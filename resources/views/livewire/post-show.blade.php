@@ -215,23 +215,27 @@
                                 @endif
                             </div>
                         @endif
-
-                        @if ($post->isJob() && $applyUrl)
-                            <div class="mt-4">
-                                @if ($post->isExpired())
-                                    <button disabled class="w-full py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400 dark:text-zinc-500 font-semibold text-xs flex items-center justify-center gap-2 cursor-not-allowed border border-zinc-200 dark:border-zinc-700/60">
-                                        <i class="fa-solid fa-lock text-xs"></i> Pendaftaran Telah Ditutup
-                                    </button>
-                                @else
-                                    <a href="{{ $applyUrl }}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all hover:shadow-md active:scale-[0.99] group/btn">
-                                        <i class="fa-solid fa-paper-plane text-xs transition-transform group-hover/btn:-translate-y-0.5"></i>
-                                        <span>Lamar Sekarang</span>
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-80"></i>
-                                    </a>
-                                @endif
-                            </div>
-                        @endif
                     </div>
+
+                    @if ($post->isJob() && $applyUrl)
+                        <div>
+                            @if ($post->isExpired())
+                                <button disabled class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 text-xs font-semibold tracking-wide cursor-not-allowed border border-zinc-200 dark:border-zinc-700/60">
+                                    <i class="fa-solid fa-lock text-xs"></i>
+                                    <span>Pendaftaran Telah Ditutup</span>
+                                </button>
+                            @else
+                                <a href="{{ $applyUrl }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 text-xs font-semibold tracking-wide transition-colors shadow-xs">
+                                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                                    <span>Lamar Sekarang</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-70"></i>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
 
                     <!-- Place Info Attributes -->
                     <div class="space-y-5 text-xs overflow-hidden">
