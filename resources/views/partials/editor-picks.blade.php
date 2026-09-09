@@ -22,25 +22,27 @@
                         {{ $pick->city->name ?? 'Indonesia' }}
                     </p>
                 </div>
-                <div class="w-16 h-16 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
-                    @if ($pickThumb)
-                        <img src="{{ $pickThumb }}" 
-                             alt="{{ $pick->title }}" 
-                             data-fallbacks='@json($fallbackPickUrls)'
-                             onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                             loading="lazy">
-                        @if ($pickSource = $pick->primary_image_source)
-                            <span class="absolute bottom-0.5 right-0.5 px-1 py-0.2 rounded bg-black/60 backdrop-blur-xs text-[7px] font-medium text-white/90 pointer-events-none">
-                                {{ $pickSource }}
-                            </span>
+                @if (!$pick->isJob())
+                    <div class="w-16 h-16 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
+                        @if ($pickThumb)
+                            <img src="{{ $pickThumb }}" 
+                                 alt="{{ $pick->title }}" 
+                                 data-fallbacks='@json($fallbackPickUrls)'
+                                 onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                 loading="lazy">
+                            @if ($pickSource = $pick->primary_image_source)
+                                <span class="absolute bottom-0.5 right-0.5 px-1 py-0.2 rounded bg-black/60 backdrop-blur-xs text-[7px] font-medium text-white/90 pointer-events-none">
+                                    {{ $pickSource }}
+                                </span>
+                            @endif
+                        @else
+                            <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
+                                <i class="fa-solid fa-camera text-sm"></i>
+                            </div>
                         @endif
-                    @else
-                        <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
-                            <i class="fa-solid fa-camera text-sm"></i>
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
             </a>
         </article>
         @endforeach

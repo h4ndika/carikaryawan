@@ -124,8 +124,8 @@
                                 @endphp
                                 <article class="pt-6 first:pt-0 group">
                                     <a href="{{ $sidePost->url() }}" 
-                                       wire:navigate class="grid grid-cols-3 gap-4 items-start">
-                                        <div class="col-span-2 space-y-1.5">
+                                       wire:navigate class="{{ $sidePost->isJob() ? 'block' : 'grid grid-cols-3 gap-4 items-start' }}">
+                                        <div class="{{ $sidePost->isJob() ? 'space-y-1.5' : 'col-span-2 space-y-1.5' }}">
                                             <div class="flex items-center gap-1.5">
                                                 <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">
                                                     {{ $sidePost->category->name ?? $category->name }}
@@ -143,25 +143,27 @@
                                                 <span>{{ max(1, round(str_word_count(strip_tags($sidePost->content ?? '')) / 200)) }} min</span>
                                             </div>
                                         </div>
-                                        <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
-                                            @if ($sideThumb)
-                                                <img src="{{ $sideThumb }}" 
-                                                     alt="{{ $sidePost->title }}" 
-                                                     data-fallbacks='@json($fallbackSideUrls)'
-                                                     onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                     loading="lazy">
-                                                @if ($sideSource = $sidePost->primary_image_source)
-                                                    <span class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[8px] font-medium text-white/90 pointer-events-none">
-                                                        {{ $sideSource }}
-                                                    </span>
+                                        @if (!$sidePost->isJob())
+                                            <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
+                                                @if ($sideThumb)
+                                                    <img src="{{ $sideThumb }}" 
+                                                         alt="{{ $sidePost->title }}" 
+                                                         data-fallbacks='@json($fallbackSideUrls)'
+                                                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                         loading="lazy">
+                                                    @if ($sideSource = $sidePost->primary_image_source)
+                                                        <span class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[8px] font-medium text-white/90 pointer-events-none">
+                                                            {{ $sideSource }}
+                                                        </span>
+                                                    @endif
+                                                @else
+                                                    <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
+                                                        <i class="fa-solid fa-camera text-base"></i>
+                                                    </div>
                                                 @endif
-                                            @else
-                                                <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
-                                                    <i class="fa-solid fa-camera text-base"></i>
-                                                </div>
-                                            @endif
-                                        </div>
+                                            </div>
+                                        @endif
                                     </a>
                                 </article>
                             @empty
