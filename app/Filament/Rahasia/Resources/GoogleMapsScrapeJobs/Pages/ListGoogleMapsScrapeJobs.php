@@ -175,12 +175,15 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         ->columnSpanFull()
                         ->helperText('Ketik kata kunci pencarian, pisahkan dengan baris baru (Enter).'),
 
-                    Textarea::make('locations')
-                        ->label('Daftar Lokasi / Kota (1 baris = 1 kota, Opsional)')
-                        ->placeholder("Bandung\nJakarta\nSurabaya\nYogyakarta")
-                        ->rows(5)
+                    Select::make('city_ids')
+                        ->label('Pilih Kota / Lokasi (Multi Select)')
+                        ->options(fn () => City::pluck('name', 'id'))
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->placeholder('Pilih satu atau beberapa kota')
                         ->columnSpanFull()
-                        ->helperText('Ketik nama kota, pisahkan dengan baris baru (Enter). Setiap keyword akan dipasangkan dengan tiap kota. Kosongkan jika ingin mencari tanpa filter kota.'),
+                        ->helperText('Pilih beberapa kota dari database. Setiap kata kunci akan dipasangkan dengan tiap kota yang dipilih. Kosongkan jika ingin mencari tanpa filter kota.'),
 
                     Select::make('category_id')
                         ->label('Tetapkan Kategori (Opsional)')
@@ -231,9 +234,6 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     $rawQueries = preg_split('/\r\n|\r|\n/', (string) ($data['queries'] ?? ''));
                     $queries = array_values(array_filter(array_map('trim', $rawQueries)));
 
-                    $rawLocations = preg_split('/\r\n|\r|\n/', (string) ($data['locations'] ?? ''));
-                    $locations = array_values(array_filter(array_map('trim', $rawLocations)));
-
                     if (empty($queries)) {
                         Notification::make()
                             ->title('Kata kunci tidak boleh kosong!')
@@ -242,26 +242,20 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         return;
                     }
 
-                    if (empty($locations)) {
-                        $locations = [null];
-                    }
+                    $cityIds = $data['city_ids'] ?? [];
+                    $selectedCities = !empty($cityIds) ? City::whereIn('id', $cityIds)->get() : collect([null]);
 
                     $createdCount = 0;
                     foreach ($queries as $q) {
                         if (empty($q)) continue;
 
-                        foreach ($locations as $loc) {
-                            $cityId = null;
-                            if (!empty($loc)) {
-                                $cityId = City::where('name', 'LIKE', "%{$loc}%")->value('id');
-                            }
-
+                        foreach ($selectedCities as $city) {
                             $job = GoogleMapsScrapeJob::create([
                                 'engine' => $data['engine'] ?? 'jobstreet',
                                 'query' => $q,
-                                'location' => $loc ?: null,
+                                'location' => $city ? $city->name : null,
                                 'category_id' => $data['category_id'] ?? null,
-                                'city_id' => $cityId,
+                                'city_id' => $city ? $city->id : null,
                                 'target_limit' => (int) ($data['target_limit'] ?? 20),
                                 'include_images' => (bool) ($data['include_images'] ?? true),
                                 'include_reviews' => (bool) ($data['include_reviews'] ?? false),
