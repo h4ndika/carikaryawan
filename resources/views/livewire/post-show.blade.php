@@ -186,10 +186,13 @@
                 <x-ad-slot slotName="ad_post_sidebar_top" class="!mt-0 !mb-6" />
 
                 <!-- Place Summary Card -->
+                @php
+                    $applyUrl = $post->website ?: ($post->details?->first(fn($d) => in_array(strtolower(trim($d->meta_key)), ['tautan_lamaran', 'link_lamaran', 'url_lamaran', 'link_pendaftaran', 'url_lowongan', 'website', 'url', 'link']))?->meta_value);
+                @endphp
                 <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-6">
                     <div class="pb-4 border-b border-zinc-100 dark:border-zinc-800">
                         <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 dark:text-amber-400 block mb-1">
-                            Informasi Tempat
+                            {{ $post->isJob() ? 'Informasi Lowongan' : 'Informasi Tempat' }}
                         </span>
                         <h3 class="font-serif-title font-bold text-xl text-zinc-950 dark:text-zinc-50">
                             {{ $post->title }}
@@ -209,6 +212,22 @@
                                 <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ number_format($post->rating, 1) }}</span>
                                 @if ($post->reviews_count)
                                     <span class="text-xs text-zinc-400 dark:text-zinc-500">({{ number_format($post->reviews_count) }} ulasan Google)</span>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if ($post->isJob() && $applyUrl)
+                            <div class="mt-4">
+                                @if ($post->isExpired())
+                                    <button disabled class="w-full py-2.5 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400 dark:text-zinc-500 font-semibold text-xs flex items-center justify-center gap-2 cursor-not-allowed border border-zinc-200 dark:border-zinc-700/60">
+                                        <i class="fa-solid fa-lock text-xs"></i> Pendaftaran Telah Ditutup
+                                    </button>
+                                @else
+                                    <a href="{{ $applyUrl }}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-all hover:shadow-md active:scale-[0.99] group/btn">
+                                        <i class="fa-solid fa-paper-plane text-xs transition-transform group-hover/btn:-translate-y-0.5"></i>
+                                        <span>Lamar Sekarang</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-80"></i>
+                                    </a>
                                 @endif
                             </div>
                         @endif
@@ -242,22 +261,16 @@
                             </div>
                         @endif
 
-                        @if ($post->website)
+                        @if ($post->website && !$post->isJob())
                             <div class="flex items-start gap-3">
                                 <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-amber-800 dark:text-amber-400 flex-shrink-0 mt-0.5">
                                     <i class="fa-solid fa-globe text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">{{ $post->isJob() ? 'Tautan Lamaran' : 'Situs Resmi' }}</span>
-                                    @if ($post->isJob() && $post->isExpired())
-                                        <span class="text-zinc-400 dark:text-zinc-500 font-medium text-xs italic flex items-center gap-1">
-                                            <i class="fa-solid fa-lock text-[10px]"></i> Pendaftaran Telah Ditutup
-                                        </span>
-                                    @else
-                                        <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
-                                            {{ $post->isJob() ? 'Lamar Sekarang' : 'Kunjungi Website' }} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                        </a>
-                                    @endif
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Situs Resmi</span>
+                                    <a href="{{ $post->website }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
+                                        Kunjungi Website <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    </a>
                                 </div>
                             </div>
                         @endif
@@ -266,6 +279,13 @@
                         @if ($post->details && $post->details->isNotEmpty())
                             @php
                                 $detailMetaMap = [
+                                    'posisi' => ['label' => 'Posisi', 'icon' => 'fa-solid fa-briefcase'],
+                                    'nama_perusahaan' => ['label' => 'Nama Perusahaan', 'icon' => 'fa-solid fa-building'],
+                                    'perusahaan' => ['label' => 'Nama Perusahaan', 'icon' => 'fa-solid fa-building'],
+                                    'gaji' => ['label' => 'Gaji', 'icon' => 'fa-solid fa-money-bill-wave'],
+                                    'kualifikasi' => ['label' => 'Kualifikasi', 'icon' => 'fa-solid fa-user-check'],
+                                    'deskripsi_pekerjaan' => ['label' => 'Deskripsi Pekerjaan', 'icon' => 'fa-solid fa-clipboard-list'],
+                                    'tipe_pekerjaan' => ['label' => 'Tipe Pekerjaan', 'icon' => 'fa-solid fa-business-time'],
                                     'jam_buka' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
                                     'jam_operasional' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
                                     'opening_hours' => ['label' => 'Jam Operasional', 'icon' => 'fa-regular fa-clock'],
@@ -289,11 +309,17 @@
                                 @foreach ($post->details as $detail)
                                     @php
                                         $normKey = strtolower(trim($detail->meta_key));
+                                        $normVal = trim($detail->meta_value);
+
                                         // Skip duplicate attributes if already shown in primary card fields
                                         if (in_array($normKey, ['lokasi', 'alamat']) && !empty($post->formatted_address)) {
                                             continue;
                                         }
-                                        if (in_array($normKey, ['website', 'situs', 'situs_web', 'url', 'link']) && !empty($post->website)) {
+                                        // ponytail: skips redundant job application link details since it is already hoisted as the primary CTA button
+                                        if ($post->isJob() && in_array($normKey, ['tautan_lamaran', 'link_lamaran', 'url_lamaran', 'link_pendaftaran', 'url_lowongan', 'tautan', 'link', 'url', 'website', 'situs', 'situs_web'])) {
+                                            continue;
+                                        }
+                                        if (!empty($applyUrl) && ($normVal === trim($applyUrl) || in_array($normKey, ['website', 'situs', 'situs_web', 'url', 'link', 'tautan', 'tautan_lamaran', 'link_lamaran', 'url_lamaran', 'link_pendaftaran', 'url_lowongan']))) {
                                             continue;
                                         }
                                         if (in_array($normKey, ['telepon', 'phone', 'kontak']) && !empty($post->phone)) {
