@@ -200,7 +200,7 @@ export async function scrapeJobs(options = {}) {
 
   const run = await client.actor(actorId).call(actorInput, {
     waitSecs: 300,
-    memoryMbytes: 2048
+    memory: 2048
   });
 
   log(`✅ Run selesai (ID: ${run.id}). Mengambil dataset...`);
