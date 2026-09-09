@@ -7,6 +7,7 @@ use App\Jobs\RunGoogleMapsScrapeJob;
 use App\Models\ApifyAccount;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Province;
 use App\Models\GoogleMapsScrapeJob;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -175,15 +176,25 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                         ->columnSpanFull()
                         ->helperText('Ketik kata kunci pencarian, pisahkan dengan baris baru (Enter).'),
 
+                    Select::make('province_ids')
+                        ->label('Pilih Provinsi (Otomatis Semua Kota/Kabupaten di Provinsi Ini)')
+                        ->options(fn () => Province::pluck('name', 'id'))
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->placeholder('Pilih satu atau beberapa provinsi (misal: DI Yogyakarta, Bali, Jawa Barat)')
+                        ->columnSpanFull()
+                        ->helperText('Jika dipilih, seluruh kota/kabupaten di dalam provinsi tersebut akan otomatis diikutsertakan.'),
+
                     Select::make('city_ids')
-                        ->label('Pilih Kota / Lokasi (Multi Select)')
+                        ->label('Pilih Kota Spesifik / Tambahan (Opsional)')
                         ->options(fn () => City::pluck('name', 'id'))
                         ->multiple()
                         ->searchable()
                         ->preload()
-                        ->placeholder('Pilih satu atau beberapa kota')
+                        ->placeholder('Pilih kota tertentu')
                         ->columnSpanFull()
-                        ->helperText('Pilih beberapa kota dari database. Setiap kata kunci akan dipasangkan dengan tiap kota yang dipilih. Kosongkan jika ingin mencari tanpa filter kota.'),
+                        ->helperText('Pilih kota tertentu jika ingin menambah kota di luar provinsi di atas atau hanya kota spesifik.'),
 
                     Select::make('category_id')
                         ->label('Tetapkan Kategori (Opsional)')
@@ -243,7 +254,17 @@ class ListGoogleMapsScrapeJobs extends ListRecords
                     }
 
                     $cityIds = $data['city_ids'] ?? [];
-                    $selectedCities = !empty($cityIds) ? City::whereIn('id', $cityIds)->get() : collect([null]);
+                    $provinceIds = $data['province_ids'] ?? [];
+
+                    $citiesFromProvinces = !empty($provinceIds)
+                        ? City::whereIn('province_id', $provinceIds)->get()
+                        : collect();
+                    $specificCities = !empty($cityIds)
+                        ? City::whereIn('id', $cityIds)->get()
+                        : collect();
+
+                    $allCities = $citiesFromProvinces->concat($specificCities)->unique('id');
+                    $selectedCities = $allCities->isNotEmpty() ? $allCities : collect([null]);
 
                     $createdCount = 0;
                     foreach ($queries as $q) {
