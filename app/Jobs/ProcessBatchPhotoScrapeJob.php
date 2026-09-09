@@ -136,10 +136,11 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
                         $total = $result['total'] ?? $count;
 
                         if ($total < 1) {
+                            $isJob = $post->isJob();
                             $job->update([
-                                'status' => 'failed',
+                                'status' => $isJob ? 'completed' : 'failed',
                                 'photos_count' => $count,
-                                'error_message' => 'Tidak ada foto yang ditemukan dari semua sumber.',
+                                'error_message' => $isJob ? 'Lowongan kerja: Logo resmi tidak ditemukan di web (menggunakan kartu standar).' : 'Tidak ada foto yang ditemukan dari semua sumber.',
                                 'finished_at' => now(),
                             ]);
                         } else {
@@ -177,10 +178,11 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
                 $total = $result['total'] ?? $count;
 
                 if ($total < 1) {
+                    $isJob = $post->isJob();
                     $job->update([
-                        'status' => 'failed',
+                        'status' => $isJob ? 'completed' : 'failed',
                         'photos_count' => $count,
-                        'error_message' => 'Tidak ada foto yang ditemukan dari semua sumber.',
+                        'error_message' => $isJob ? 'Lowongan kerja: Logo resmi tidak ditemukan di web (menggunakan kartu standar).' : 'Tidak ada foto yang ditemukan dari semua sumber.',
                         'finished_at' => now(),
                     ]);
                 } else {

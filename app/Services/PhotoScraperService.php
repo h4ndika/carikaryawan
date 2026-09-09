@@ -112,10 +112,10 @@ class PhotoScraperService
             }
 
             return [
-                'success' => false,
-                'message' => "Logo perusahaan tidak ditemukan untuk: {$companyName}",
+                'success' => true,
+                'message' => "Logo perusahaan tidak ditemukan untuk: {$companyName} (menggunakan kartu standar).",
                 'count' => 0,
-                'total' => 0,
+                'total' => max(0, $post->images()->count()),
             ];
         }
 

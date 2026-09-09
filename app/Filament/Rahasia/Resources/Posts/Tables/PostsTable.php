@@ -344,6 +344,10 @@ class PostsTable
                         ->modalDescription('Cari dan simpan foto tempat secara otomatis di latar belakang untuk post yang dipilih.')
                         ->modalSubmitActionLabel('Mulai Antrean Scrape Foto')
                         ->form([
+                            Toggle::make('skip_jobs')
+                                ->label('Lewati Kategori Lowongan Kerja')
+                                ->default(true)
+                                ->helperText('Lowongan kerja tidak memiliki foto tempat Google Maps. Centang untuk melewati kategori ini secara otomatis.'),
                             Toggle::make('only_lacking')
                                 ->label('Hanya proses post yang fotonya masih kurang (<= 1 foto)')
                                 ->default(true)
@@ -366,6 +370,7 @@ class PostsTable
                                 ->default(false),
                         ])
                         ->action(function (Collection $records, array $data) {
+                            $skipJobs = (bool) ($data['skip_jobs'] ?? true);
                             $onlyLacking = (bool) ($data['only_lacking'] ?? true);
                             $limit = (int) ($data['limit'] ?? 8);
                             $replaceExisting = (bool) ($data['replace_existing'] ?? false);
@@ -373,10 +378,16 @@ class PostsTable
 
                             $dispatchedCount = 0;
                             $skippedCount = 0;
+                            $skippedJobCount = 0;
                             $alreadyInQueueCount = 0;
                             $createdJobIds = [];
 
                             foreach ($records as $post) {
+                                if ($skipJobs && $post->isJob()) {
+                                    $skippedJobCount++;
+                                    continue;
+                                }
+
                                 $isAlreadyQueued = PhotoScrapeJob::where('post_id', $post->id)
                                     ->whereIn('status', ['pending', 'processing'])
                                     ->exists();
@@ -409,6 +420,9 @@ class PostsTable
                             }
 
                             $notes = [];
+                            if ($skippedJobCount > 0) {
+                                $notes[] = "{$skippedJobCount} lowongan kerja dilewati";
+                            }
                             if ($alreadyInQueueCount > 0) {
                                 $notes[] = "{$alreadyInQueueCount} dilewati karena sedang dalam antrean";
                             }
