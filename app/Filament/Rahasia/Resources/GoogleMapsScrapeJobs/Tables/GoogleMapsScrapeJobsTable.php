@@ -3,8 +3,10 @@
 namespace App\Filament\Rahasia\Resources\GoogleMapsScrapeJobs\Tables;
 
 use App\Jobs\RunGoogleMapsScrapeJob;
+use App\Models\ApifyAccount;
 use App\Models\GoogleMapsScrapeJob;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -13,6 +15,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class GoogleMapsScrapeJobsTable
 {
@@ -142,7 +145,15 @@ class GoogleMapsScrapeJobsTable
                     ->color('warning')
                     ->visible(fn (GoogleMapsScrapeJob $record) => in_array($record->status, ['failed', 'completed']))
                     ->action(function (GoogleMapsScrapeJob $record) {
+                        // Pilih akun aktif acak (diutamakan selain akun yang sebelumnya jika ada akun lain)
+                        $randomAccount = ApifyAccount::active()
+                            ->when($record->apify_account_id, fn ($q) => $q->where('id', '!=', $record->apify_account_id))
+                            ->inRandomOrder()
+                            ->first()
+                            ?? ApifyAccount::active()->inRandomOrder()->first();
+
                         $record->update([
+                            'apify_account_id' => $randomAccount?->id,
                             'status' => 'pending',
                             'error_message' => null,
                             'started_at' => null,
@@ -151,8 +162,11 @@ class GoogleMapsScrapeJobsTable
 
                         RunGoogleMapsScrapeJob::dispatch($record->id);
 
+                        $accountLabel = $randomAccount ? ($randomAccount->label ?: 'Akun #' . $randomAccount->id) : 'Rotasi Otomatis';
+
                         Notification::make()
                             ->title('Task ekstraksi dikirim kembali ke antrean')
+                            ->body("Akun Apify dialihkan ke: {$accountLabel}")
                             ->success()
                             ->send();
                     }),
@@ -171,6 +185,42 @@ class GoogleMapsScrapeJobsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('retrySelected')
+                        ->label('Ulangi Ekstraksi Terpilih (Acak Akun)')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Ulangi Ekstraksi Data Terpilih')
+                        ->modalDescription('Semua task terpilih akan dikirim kembali ke antrean dan dialihkan menggunakan akun Apify aktif secara acak/rotasi baru.')
+                        ->modalSubmitActionLabel('Ya, Ulangi Sekarang')
+                        ->action(function (Collection $records) {
+                            $activeAccounts = ApifyAccount::active()->get();
+                            $count = 0;
+
+                            foreach ($records as $record) {
+                                $filtered = $activeAccounts->where('id', '!=', $record->apify_account_id);
+                                $randomAccount = $filtered->isNotEmpty()
+                                    ? $filtered->random()
+                                    : ($activeAccounts->isNotEmpty() ? $activeAccounts->random() : null);
+
+                                $record->update([
+                                    'apify_account_id' => $randomAccount?->id,
+                                    'status' => 'pending',
+                                    'error_message' => null,
+                                    'started_at' => null,
+                                    'finished_at' => null,
+                                ]);
+
+                                RunGoogleMapsScrapeJob::dispatch($record->id);
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title("{$count} task ekstraksi dikirim kembali ke antrean")
+                                ->body('Semua task terpilih telah dialihkan ke akun Apify aktif secara acak.')
+                                ->success()
+                                ->send();
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ]);
