@@ -118,9 +118,13 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
             $runStatus = $completedRun['status'] ?? 'UNKNOWN';
             if ($runStatus !== 'SUCCEEDED') {
                 $logSnippet = $apifyService->getRunLogSnippet($runId, $token);
+                $statusMsg = $completedRun['statusMessage'] ?? null;
 
                 // Cek jika actor Jobstreet/Glints gagal hanya karena tidak ada lowongan ditemukan untuk query/lokasi ini
-                if ($logSnippet && stripos($logSnippet, 'No jobs were extracted') !== false) {
+                $noJobsFound = ($logSnippet && stripos($logSnippet, 'No jobs were extracted') !== false)
+                    || ($statusMsg && stripos($statusMsg, 'No jobs were extracted') !== false);
+
+                if ($noJobsFound) {
                     $scrapeJob->update([
                         'status' => 'completed',
                         'total_scraped' => 0,
@@ -132,7 +136,8 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                     return;
                 }
 
-                $detailStr = $logSnippet ? " - {$logSnippet}" : '';
+                $errDetail = $logSnippet ?: $statusMsg;
+                $detailStr = $errDetail ? " - {$errDetail}" : '';
                 throw new \RuntimeException("Proses crawler Apify selesai dengan status: {$runStatus}{$detailStr}");
             }
 

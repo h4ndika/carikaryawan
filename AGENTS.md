@@ -17,4 +17,4 @@ Setiap kali mendelegasikan tugas ke agent (Frontend, Backend, dll.):
 2. **Branching & PR**:
    - Untuk fitur baru / perubahan besar: Pekerjaan dilakukan pada branch khusus (misal: `feat/backend-...`, `feat/frontend-...`), push branch, dan buat Pull Request (PR) ke branch `main`.
    - Untuk perbaikan kecil / bugfix minor: Boleh langsung commit dan `git push origin main` tanpa perlu membuat branch dan PR baru.
-3. **Deployment**: Setelah ada update di `main`, lakukan sinkronisasi (`git pull origin main && php artisan optimize:clear`) di VPS.
+3. **Deployment**: Setelah ada update di `main`, lakukan sinkronisasi (`git pull origin main && php artisan optimize:clear && php artisan queue:restart`) di VPS.

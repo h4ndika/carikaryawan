@@ -193,6 +193,7 @@ class ApifyScraperService
         $data = $response->json('data', []);
         return [
             'status' => $data['status'] ?? 'UNKNOWN', // READY, RUNNING, SUCCEEDED, FAILED, TIMED-OUT, ABORTED
+            'statusMessage' => $data['statusMessage'] ?? null,
             'datasetId' => $data['defaultDatasetId'] ?? null,
             'finishedAt' => $data['finishedAt'] ?? null,
             'exitCode' => $data['exitCode'] ?? null,
@@ -253,11 +254,13 @@ class ApifyScraperService
                 $raw = trim($response->body());
                 if (!empty($raw)) {
                     $lines = array_values(array_filter(array_map('trim', explode("\n", $raw))));
-                    $errorLines = array_values(array_filter($lines, fn ($l) => stripos($l, 'Error:') !== false || stripos($l, 'Exception') !== false));
+                    $errorLines = array_values(array_filter($lines, fn ($l) => stripos($l, 'Error:') !== false || stripos($l, 'Exception') !== false || stripos($l, 'No jobs were extracted') !== false));
                     if (!empty($errorLines)) {
-                        return implode(" | ", array_slice($errorLines, -$maxLines));
+                        $cleaned = array_map(fn($line) => preg_replace('/^\d{4}-\d{2}-\d{2}T[^\s]+\s+/', '', $line), $errorLines);
+                        return implode(" | ", array_slice($cleaned, -2));
                     }
-                    return implode(" | ", array_slice($lines, -$maxLines));
+                    $cleaned = array_map(fn($line) => preg_replace('/^\d{4}-\d{2}-\d{2}T[^\s]+\s+/', '', $line), $lines);
+                    return implode(" | ", array_slice($cleaned, -$maxLines));
                 }
             }
         } catch (\Throwable $e) {
