@@ -603,66 +603,28 @@
             </section>
         @endif
 
-        <!-- Related Stories in Same City -->
+        <!-- Related Stories / Jobs in Same City -->
         @if (isset($related) && $related->isNotEmpty())
             <section class="mt-20 pt-12 border-t border-zinc-200 dark:border-zinc-800">
                 <div class="mb-8 flex items-baseline justify-between">
                     <div>
                         <span class="text-xs uppercase tracking-widest font-bold text-amber-800 dark:text-amber-400 block mb-1">Eksplorasi Lanjutan</span>
                         <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50">
-                            Cerita Terkait di {{ $post->city->name }}
+                            {{ $post->isJob() ? 'Lowongan Kerja Terkait' : 'Cerita Terkait' }} di {{ $post->city?->name ?? 'Sekitar' }}
                         </h2>
                     </div>
-                    <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
-                       wire:navigate
-                       class="text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 hidden sm:inline-flex items-center gap-1">
-                        Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </a>
+                    @if ($post->city)
+                        <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
+                           wire:navigate
+                           class="text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 hidden sm:inline-flex items-center gap-1">
+                            Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    @endif
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     @foreach ($related as $item)
-                        @php
-                            $itemThumb = $item->primary_image_url;
-                            $fallbackItemUrls = $item->fallback_image_urls;
-                        @endphp
-                        <article class="group space-y-3">
-                            <a href="{{ $item->url() }}" 
-                               wire:navigate class="block aspect-[16/10] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
-                                @if ($itemThumb)
-                                    <img src="{{ $itemThumb }}" 
-                                         alt="{{ $item->title }}" 
-                                         referrerpolicy="no-referrer"
-                                         data-fallbacks='@json($fallbackItemUrls)'
-                                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                         loading="lazy">
-                                    @if ($itemSource = $item->primary_image_source)
-                                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-medium text-white/90 tracking-wide pointer-events-none">
-                                            Foto: {{ $itemSource }}
-                                        </span>
-                                    @endif
-                                @else
-                                    <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
-                                        <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300 dark:text-zinc-600"></i>
-                                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
-                                    </div>
-                                @endif
-                            </a>
-                            <div class="space-y-1.5">
-                                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">
-                                    {{ $item->category->name }}
-                                </span>
-                                <h3 class="font-serif-title font-bold text-lg leading-snug text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
-                                    <a href="{{ $item->url() }}" wire:navigate>
-                                        {{ $item->title }}
-                                    </a>
-                                </h3>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
-                                    {{ $item->excerpt ?? \Illuminate\Support\Str::limit(strip_tags($item->content ?? ''), 90) }}
-                                </p>
-                            </div>
-                        </article>
+                        @include('partials.post-card', ['post' => $item])
                     @endforeach
                 </div>
             </section>

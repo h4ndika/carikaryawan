@@ -29,7 +29,7 @@
             @endif
 
             <span class="absolute top-3 left-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 shadow-xs border border-zinc-200/50 dark:border-zinc-800">
-                {{ $post->category->name }}
+                {{ $post->category?->name }}
             </span>
 
             @if ($post->isExpired())
@@ -41,7 +41,7 @@
     @else
         <div class="px-5 pt-5 flex items-center justify-between gap-2">
             <span class="bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-briefcase text-[10px] mr-1"></i> {{ $post->category->name }}
+                <i class="fa-solid fa-briefcase text-[10px] mr-1"></i> {{ $post->category?->name }}
             </span>
             @if ($post->isExpired())
                 <span class="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
@@ -69,7 +69,7 @@
         <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 font-medium">
             <div class="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
                 <i class="fa-solid fa-location-dot text-amber-800 dark:text-amber-400 text-[11px]"></i>
-                <span class="truncate">{{ $post->city->name }}</span>
+                <span class="truncate">{{ $post->city?->name ?? 'Indonesia' }}</span>
             </div>
             <span>{{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
         </div>
