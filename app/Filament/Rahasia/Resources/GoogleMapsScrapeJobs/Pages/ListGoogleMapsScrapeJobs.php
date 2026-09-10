@@ -7,6 +7,7 @@ use App\Jobs\RunGoogleMapsScrapeJob;
 use App\Models\ApifyAccount;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Landmark;
 use App\Models\Province;
 use App\Models\GoogleMapsScrapeJob;
 use Filament\Actions\Action;
@@ -26,6 +27,193 @@ class ListGoogleMapsScrapeJobs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('scrapeTransitFacilities')
+                ->label('Ekstraksi Fasilitas (Landmark)')
+                ->icon('heroicon-o-building-office-2')
+                ->color('warning')
+                ->modalHeading('Ekstraksi Fasilitas Publik & Transit Hub')
+                ->modalDescription('Pilih fasilitas dan landmark tujuan (Stasiun, Bandara, Terminal, Kampus). Sistem akan mengombinasikan kueri (Keyword × Landmark) dengan kategori otomatis ke "Fasilitas" dan kota terdeteksi dari landmark.')
+                ->modalSubmitActionLabel('Mulai Ekstraksi Fasilitas')
+                ->form([
+                    Select::make('preset_facilities')
+                        ->label('Pilihan Fasilitas Populer (Multi-Select)')
+                        ->options([
+                            'Penitipan koper' => '🧳 Penitipan Koper & Bagasi (Loker)',
+                            'Shower box' => '🚿 Shower Box & Fasilitas Mandi',
+                            'Coworking space' => '💻 Coworking Space & Kerja Harian',
+                            'Kafe 24 jam' => '☕ Kafe 24 Jam (Colokan & Wi-Fi)',
+                            'Apotek 24 jam' => '💊 Apotek & Klinik 24 Jam',
+                            'Sewa motor' => '🛵 Rental / Sewa Motor Stasiun',
+                            'SPKLU' => '⚡ SPKLU Mobil Listrik',
+                            'Laundry koin' => '🧺 Laundry Koin / Express',
+                        ])
+                        ->multiple()
+                        ->preload()
+                        ->default(['Penitipan koper'])
+                        ->columnSpanFull()
+                        ->helperText('Pilih satu atau beberapa fasilitas umum yang ingin diekstrak.'),
+
+                    Textarea::make('custom_facilities')
+                        ->label('Kata Kunci Fasilitas Tambahan (Opsional, 1 baris = 1 kata kunci)')
+                        ->placeholder("Minimarket 24 jam\nMasjid besar\nWarteg 24 jam")
+                        ->rows(2)
+                        ->columnSpanFull()
+                        ->helperText('Ketik fasilitas lain jika tidak tercantum di daftar pilihan di atas.'),
+
+                    Select::make('landmark_type')
+                        ->label('Saring Tipe Landmark')
+                        ->options([
+                            'all_transit' => '🚆 Semua Transit Hub (Stasiun, Bandara, Terminal)',
+                            'station' => '🚆 Stasiun Kereta Saja',
+                            'airport' => '✈️ Bandara Saja',
+                            'university' => '🎓 Kampus / Universitas',
+                            'all' => '📍 Semua Tipe Landmark (Termasuk Wisata, Mall, dll.)',
+                        ])
+                        ->default('all_transit')
+                        ->live()
+                        ->columnSpan(1)
+                        ->helperText('Filter daftar pilihan landmark di bawah.'),
+
+                    Select::make('province_id')
+                        ->label('Saring Provinsi (Opsional)')
+                        ->options(fn () => Province::pluck('name', 'id'))
+                        ->searchable()
+                        ->live()
+                        ->placeholder('Semua Provinsi')
+                        ->columnSpan(1)
+                        ->helperText('Filter daftar pilihan landmark per provinsi.'),
+
+                    Select::make('landmark_ids')
+                        ->label('Pilih Landmark Tujuan (Multi-Select)')
+                        ->options(function (Get $get) {
+                            return Landmark::query()
+                                ->when($get('province_id'), fn ($q, $pId) => $q->where('province_id', $pId))
+                                ->when($get('landmark_type'), function ($q, $type) {
+                                    if ($type === 'all_transit') {
+                                        return $q->whereIn('type', ['station', 'transit_station', 'transit_hub', 'airport', 'port']);
+                                    }
+                                    if ($type === 'station') {
+                                        return $q->whereIn('type', ['station', 'transit_station']);
+                                    }
+                                    if ($type === 'airport') {
+                                        return $q->where('type', 'airport');
+                                    }
+                                    if ($type === 'university') {
+                                        return $q->where('type', 'university');
+                                    }
+                                    return $q;
+                                })
+                                ->with('city')
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(function ($l) {
+                                    $cityName = $l->city?->name ?? 'Indonesia';
+                                    $icon = match ($l->type) {
+                                        'station', 'transit_station' => '🚆',
+                                        'airport' => '✈️',
+                                        'transit_hub', 'port' => '🚌',
+                                        'university' => '🎓',
+                                        default => '📍',
+                                    };
+                                    return [$l->id => "{$icon} {$l->name} ({$cityName})"];
+                                });
+                        })
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->columnSpanFull()
+                        ->helperText('Pilih satu atau beberapa landmark yang ingin diekstrak fasilitas sekitarnya.'),
+
+                    TextInput::make('target_limit')
+                        ->label('Jumlah Target per Landmark')
+                        ->numeric()
+                        ->default(10)
+                        ->minValue(1)
+                        ->maxValue(100)
+                        ->required()
+                        ->helperText('Batas tempat yang diambil per kombinasi (misal 10 tempat).'),
+
+                    Select::make('apify_account_id')
+                        ->label('Pilih Akun / Token Apify')
+                        ->options(fn () => 
+                            ApifyAccount::active()->pluck('label', 'id')->map(function ($label, $id) {
+                                return $label ?: 'Akun #' . $id;
+                            })
+                        )
+                        ->placeholder('Rotasi Otomatis (Load Balancing)')
+                        ->helperText('Biarkan kosong untuk pemilihan akun otomatis.'),
+
+                    Toggle::make('include_images')
+                        ->label('Ambil Foto / Gambar')
+                        ->default(true),
+
+                    Toggle::make('publish_imported')
+                        ->label('Langsung Publikasikan')
+                        ->default(false)
+                        ->helperText('Jika aktif, status data langsung Published.'),
+                ])
+                ->action(function (array $data) {
+                    $presets = $data['preset_facilities'] ?? [];
+                    $rawCustom = preg_split('/\r\n|\r|\n/', (string) ($data['custom_facilities'] ?? ''));
+                    $customs = array_values(array_filter(array_map('trim', $rawCustom)));
+                    $allKeywords = array_values(array_unique(array_filter(array_merge($presets, $customs))));
+
+                    if (empty($allKeywords)) {
+                        Notification::make()
+                            ->title('Pilih atau masukkan minimal satu kata kunci fasilitas!')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    $landmarkIds = $data['landmark_ids'] ?? [];
+                    if (empty($landmarkIds)) {
+                        Notification::make()
+                            ->title('Pilih minimal satu landmark!')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
+                    $fasilitasCategory = Category::where('slug', 'like', '%fasilitas%')
+                        ->orWhere('name', 'like', '%fasilitas%')
+                        ->first();
+                    $categoryId = $fasilitasCategory?->id;
+
+                    $landmarks = Landmark::with('city')->whereIn('id', $landmarkIds)->get();
+                    $createdCount = 0;
+
+                    foreach ($allKeywords as $keyword) {
+                        foreach ($landmarks as $landmark) {
+                            $searchQuery = trim("{$keyword} dekat {$landmark->name}");
+
+                            $job = GoogleMapsScrapeJob::create([
+                                'engine' => 'google-maps',
+                                'query' => $searchQuery,
+                                'location' => $landmark->city?->name,
+                                'category_id' => $categoryId,
+                                'city_id' => $landmark->city_id,
+                                'target_limit' => (int) ($data['target_limit'] ?? 10),
+                                'include_images' => (bool) ($data['include_images'] ?? true),
+                                'include_reviews' => false,
+                                'publish_imported' => (bool) ($data['publish_imported'] ?? false),
+                                'apify_account_id' => $data['apify_account_id'] ?? null,
+                                'status' => 'pending',
+                            ]);
+
+                            RunGoogleMapsScrapeJob::dispatch($job->id);
+                            $createdCount++;
+                        }
+                    }
+
+                    Notification::make()
+                        ->title("Ekstraksi Fasilitas Transit Dimulai!")
+                        ->body("Berhasil membuat {$createdCount} antrean pekerjaan fasilitas di background.")
+                        ->success()
+                        ->send();
+                }),
+
             Action::make('startScrape')
                 ->label('Mulai Ekstraksi Data (Maps / Loker)')
                 ->icon('heroicon-o-magnifying-glass-plus')
