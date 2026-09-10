@@ -431,7 +431,7 @@ class PhotoScraperService
                     ->connectTimeout(15)
                     ->timeout(35)
                     ->post($runUrl, [
-                        'categories' => ['overview'],
+                        'categories' => ['all'],
                         'imageSize' => 'large',
                         'maxPhotosPerPlace' => $limitPerPlace ?: 8,
                         'maxPlacesPerSearch' => count($placeIds),
