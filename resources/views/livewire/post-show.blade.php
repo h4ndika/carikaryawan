@@ -48,8 +48,15 @@
                     </div>
                 </div>
 
-                <!-- Share Buttons -->
-                <div class="flex items-center gap-2">
+                <!-- Action & Share Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <x-story-card-modal :post="$post" />
+                    @if (!$post->isJob())
+                        <x-embed-widget-modal :post="$post" />
+                    @endif
+
+                    <div class="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-1 hidden sm:block"></div>
+
                     <span class="text-zinc-400 dark:text-zinc-500 text-[11px] uppercase tracking-wider font-semibold">Bagikan:</span>
                     <a href="https://wa.me/?text={{ urlencode($post->title . ' ' . url()->current()) }}" 
                        target="_blank" 
@@ -65,6 +72,12 @@
                     </a>
                 </div>
             </div>
+
+            @if (!$post->isJob() && ($post->city || $post->latitude))
+                <x-weather-aqi-widget :lat="$post->latitude ?? $post->city?->latitude" 
+                                      :lon="$post->longitude ?? $post->city?->longitude" 
+                                      :location-name="$post->city?->name ?? 'Sekitar'" />
+            @endif
         </header>
 
         @if (!$post->isJob())

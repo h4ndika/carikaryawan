@@ -43,6 +43,10 @@
                         <span class="font-semibold text-zinc-900 dark:text-zinc-200">({{ $posts->total() }} catatan terbit)</span>
                     @endif
                 </p>
+
+                @if ($city)
+                    <x-weather-aqi-widget :lat="$city->latitude" :lon="$city->longitude" :location-name="$city->name" />
+                @endif
             </header>
         @endif
 

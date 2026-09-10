@@ -29,4 +29,14 @@ class City extends Model
     {
         return $this->hasMany(Landmark::class);
     }
+
+    public function getLatitudeAttribute(): float
+    {
+        return (float) ($this->attributes['latitude'] ?? ($this->landmarks->first()?->latitude ?? \App\Services\IndonesiaCityCoordinates::getLat($this->name)));
+    }
+
+    public function getLongitudeAttribute(): float
+    {
+        return (float) ($this->attributes['longitude'] ?? ($this->landmarks->first()?->longitude ?? \App\Services\IndonesiaCityCoordinates::getLon($this->name)));
+    }
 }

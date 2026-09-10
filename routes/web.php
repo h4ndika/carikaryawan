@@ -48,6 +48,10 @@ Route::get('/ads.txt', function () {
 Route::get('/disekitar/{landmark:slug}', LandmarkShow::class)->name('landmark.show');
 Route::get('/{category}/disekitar/{landmark:slug}', LandmarkShow::class)->name('category.landmark.show');
 
+// Embeddable Widgets & Badges (Featured on DISEKITAR)
+Route::get('/widget/post/{slug}', [\App\Http\Controllers\WidgetController::class, 'postWidget'])->name('widget.post');
+Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::class, 'badgeWidget'])->name('widget.badge');
+
 // Category index: /hotel
 Route::get('/{category}', PostList::class)
     ->name('category.home')

@@ -56,6 +56,8 @@
                     Daftar kurasi tempat menarik, kuliner, hotel, dan destinasi populer pilihan dalam radius {{ $radius }} km di dekat {{ $landmark->name }}{{ $landmark->city ? ', ' . $landmark->city->name : '' }}.
                 @endif
             </p>
+
+            <x-weather-aqi-widget :lat="$landmark->latitude" :lon="$landmark->longitude" :location-name="$landmark->name" />
         </header>
 
         <!-- Lead Editorial Spread (Hero Magazine Layout - Page 1) -->
