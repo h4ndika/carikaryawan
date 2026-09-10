@@ -17,7 +17,7 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $timeout = 600; // 10 menit
-    public int $tries = 2;
+    public int $tries = 1;
 
     /**
      * Create a new job instance.
@@ -208,5 +208,23 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
                 ]);
             }
         }
+    }
+
+    /**
+     * Handle job failure to ensure no jobs are left stuck in processing.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        if (empty($this->photoJobIds)) {
+            return;
+        }
+
+        PhotoScrapeJob::whereIn('id', $this->photoJobIds)
+            ->where('status', 'processing')
+            ->update([
+                'status' => 'failed',
+                'error_message' => $exception?->getMessage() ?? 'Antrean gagal diproses oleh worker.',
+                'finished_at' => now(),
+            ]);
     }
 }
