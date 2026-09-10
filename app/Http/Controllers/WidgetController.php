@@ -19,7 +19,7 @@ class WidgetController extends Controller
 
         return response()
             ->view('widgets.post-embed', compact('post'))
-            ->header('X-Frame-Options', 'ALLOWALL');
+            ->header('Content-Security-Policy', 'frame-ancestors *');
     }
 
     /**
@@ -34,6 +34,6 @@ class WidgetController extends Controller
 
         return response()
             ->view('widgets.badge-embed', compact('post'))
-            ->header('X-Frame-Options', 'ALLOWALL');
+            ->header('Content-Security-Policy', 'frame-ancestors *');
     }
 }
