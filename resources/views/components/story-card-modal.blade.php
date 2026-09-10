@@ -30,7 +30,7 @@
     <!-- Trigger Button -->
     <button type="button" 
             @click="openModal()" 
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-zinc-800 dark:text-zinc-200 border border-purple-200/60 dark:border-purple-800/60 text-xs font-semibold transition-all shadow-2xs hover:scale-105 active:scale-95"
+            class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-zinc-800 dark:text-zinc-200 border border-purple-200/60 dark:border-purple-800/60 text-xs font-semibold transition-all shadow-2xs hover:scale-105 active:scale-95"
             title="Bagikan ke Instagram Story / WhatsApp Status (9:16)">
         <i class="fa-brands fa-instagram text-pink-600 dark:text-pink-400 text-sm"></i>
         <span>Story 9:16</span>
@@ -60,7 +60,7 @@
                         <p class="text-[11px] text-zinc-400">Siap diunduh untuk Instagram Story & WA Status</p>
                     </div>
                 </div>
-                <button type="button" @click="closeModal()" class="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center transition-colors">
+                <button type="button" @click="closeModal()" class="cursor-pointer w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -86,13 +86,13 @@
                 <div class="flex items-center gap-2">
                     <button type="button" 
                             @click="downloadStoryImage()" 
-                            class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs inline-flex items-center gap-2 transition-transform active:scale-95 shadow-md">
+                            class="cursor-pointer px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs inline-flex items-center gap-2 transition-transform active:scale-95 shadow-md">
                         <i class="fa-solid fa-download"></i>
                         <span>Unduh Gambar</span>
                     </button>
                     <button type="button" 
                             @click="shareStory()" 
-                            class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs inline-flex items-center gap-1.5 transition-colors">
+                            class="cursor-pointer px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs inline-flex items-center gap-1.5 transition-colors">
                         <i class="fa-solid fa-share-nodes"></i>
                         <span>Bagikan</span>
                     </button>
@@ -104,15 +104,17 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('storyCardGenerator', (config) => ({
-        isOpen: false,
-        rendering: false,
-        canvasDataUrl: null,
+(() => {
+    const defineComponent = () => {
+        if (!window.Alpine) return;
+        Alpine.data('storyCardGenerator', (config) => ({
+            isOpen: false,
+            rendering: false,
+            canvasDataUrl: null,
 
-        openModal() {
-            this.isOpen = true;
-            this.$nextTick(() => {
+            openModal() {
+                this.isOpen = true;
+                this.$nextTick(() => {
                 this.renderCanvas();
             });
         },
@@ -362,5 +364,12 @@ document.addEventListener('alpine:init', () => {
             }
         }
     }));
-});
+    };
+
+    if (window.Alpine) {
+        defineComponent();
+    } else {
+        document.addEventListener('alpine:init', defineComponent);
+    }
+})();
 </script>

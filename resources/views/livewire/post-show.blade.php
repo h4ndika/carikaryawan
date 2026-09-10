@@ -50,8 +50,8 @@
 
                 <!-- Action & Share Buttons -->
                 <div class="flex flex-wrap items-center gap-2">
-                    <x-story-card-modal :post="$post" />
                     @if (!$post->isJob())
+                        <x-story-card-modal :post="$post" />
                         <x-embed-widget-modal :post="$post" />
                     @endif
 

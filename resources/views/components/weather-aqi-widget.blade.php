@@ -68,8 +68,10 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('weatherAqiWidget', (lat, lon, locationName) => ({
+(() => {
+    const defineComponent = () => {
+        if (!window.Alpine) return;
+        Alpine.data('weatherAqiWidget', (lat, lon, locationName) => ({
         lat: lat,
         lon: lon,
         locationName: locationName,
@@ -205,5 +207,12 @@ document.addEventListener('alpine:init', () => {
             };
         }
     }));
-});
+    };
+
+    if (window.Alpine) {
+        defineComponent();
+    } else {
+        document.addEventListener('alpine:init', defineComponent);
+    }
+})();
 </script>

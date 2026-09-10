@@ -19,7 +19,7 @@
     <!-- Trigger Button -->
     <button type="button" 
             @click="openModal()" 
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold transition-all shadow-2xs hover:scale-105 active:scale-95"
+            class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold transition-all shadow-2xs hover:scale-105 active:scale-95"
             title="Sematkan Lencana atau Kartu Ulasan di Website Anda">
         <i class="fa-solid fa-code text-amber-600 dark:text-amber-400 text-xs"></i>
         <span>Sematkan Widget</span>
@@ -49,7 +49,7 @@
                         <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Tampilkan ulasan kurasi resmi DISEKITAR di blog atau situs resmi bisnis Anda</p>
                     </div>
                 </div>
-                <button type="button" @click="closeModal()" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 flex items-center justify-center transition-colors">
+                <button type="button" @click="closeModal()" class="cursor-pointer w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -58,13 +58,13 @@
             <div class="px-5 pt-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-4 text-xs font-semibold">
                 <button type="button" 
                         @click="activeTab = 'card'" 
-                        class="pb-2.5 border-b-2 transition-colors"
+                        class="cursor-pointer pb-2.5 border-b-2 transition-colors"
                         :class="activeTab === 'card' ? 'border-amber-500 text-amber-600 dark:text-amber-400' : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'">
                     <i class="fa-regular fa-id-card mr-1"></i> Kartu Ulasan Lengkap
                 </button>
                 <button type="button" 
                         @click="activeTab = 'badge'" 
-                        class="pb-2.5 border-b-2 transition-colors"
+                        class="cursor-pointer pb-2.5 border-b-2 transition-colors"
                         :class="activeTab === 'badge' ? 'border-amber-500 text-amber-600 dark:text-amber-400' : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'">
                     <i class="fa-solid fa-certificate mr-1"></i> Lencana "Featured on DISEKITAR"
                 </button>
@@ -120,7 +120,7 @@
                 
                 <button type="button" 
                         @click="copyCode()" 
-                        class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs inline-flex items-center gap-2 transition-transform active:scale-95 shadow-sm">
+                        class="cursor-pointer px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs inline-flex items-center gap-2 transition-transform active:scale-95 shadow-sm">
                     <i :class="copied ? 'fa-solid fa-check text-emerald-950' : 'fa-regular fa-copy'"></i>
                     <span x-text="copied ? 'Berhasil Disalin!' : 'Salin Kode HTML'"></span>
                 </button>
@@ -131,45 +131,54 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('embedWidgetModal', (config) => ({
-        isOpen: false,
-        activeTab: 'card',
-        postCode: config.postCode,
-        badgeCode: config.badgeCode,
-        copied: false,
+(() => {
+    const defineComponent = () => {
+        if (!window.Alpine) return;
+        Alpine.data('embedWidgetModal', (config) => ({
+            isOpen: false,
+            activeTab: 'card',
+            postCode: config.postCode,
+            badgeCode: config.badgeCode,
+            copied: false,
 
-        openModal() {
-            this.isOpen = true;
-            this.copied = false;
-        },
+            openModal() {
+                this.isOpen = true;
+                this.copied = false;
+            },
 
-        closeModal() {
-            this.isOpen = false;
-        },
+            closeModal() {
+                this.isOpen = false;
+            },
 
-        async copyCode() {
-            const textToCopy = this.activeTab === 'card' ? this.postCode : this.badgeCode;
-            try {
-                await navigator.clipboard.writeText(textToCopy);
-                this.copied = true;
-                setTimeout(() => {
-                    this.copied = false;
-                }, 2500);
-            } catch (err) {
-                // Fallback
-                const ta = document.createElement('textarea');
-                ta.value = textToCopy;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                this.copied = true;
-                setTimeout(() => {
-                    this.copied = false;
-                }, 2500);
+            async copyCode() {
+                const textToCopy = this.activeTab === 'card' ? this.postCode : this.badgeCode;
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    this.copied = true;
+                    setTimeout(() => {
+                        this.copied = false;
+                    }, 2500);
+                } catch (err) {
+                    // Fallback
+                    const ta = document.createElement('textarea');
+                    ta.value = textToCopy;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    this.copied = true;
+                    setTimeout(() => {
+                        this.copied = false;
+                    }, 2500);
+                }
             }
-        }
-    }));
-});
+        }));
+    };
+
+    if (window.Alpine) {
+        defineComponent();
+    } else {
+        document.addEventListener('alpine:init', defineComponent);
+    }
+})();
 </script>
