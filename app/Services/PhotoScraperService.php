@@ -431,7 +431,7 @@ class PhotoScraperService
                     ->connectTimeout(15)
                     ->timeout(35)
                     ->post($runUrl, [
-                        'categories' => ['all'],
+                        'categories' => ['overview'],
                         'imageSize' => 'large',
                         'maxPhotosPerPlace' => $limitPerPlace ?: 8,
                         'maxPlacesPerSearch' => count($placeIds),
@@ -507,13 +507,13 @@ class PhotoScraperService
             return [];
         }
 
-        // Poll status until SUCCEEDED (max 300s / 5 minutes)
-        $maxWaitSeconds = 300;
+        // Poll status until SUCCEEDED (max 240s)
+        $maxWaitSeconds = 240;
         $startTime = time();
         $status = $runData['status'] ?? 'RUNNING';
 
         while (in_array($status, ['READY', 'RUNNING']) && (time() - $startTime) < $maxWaitSeconds) {
-            sleep(4);
+            sleep(3);
             try {
                 $statusRes = Http::withoutVerifying()
                     ->withToken($token)

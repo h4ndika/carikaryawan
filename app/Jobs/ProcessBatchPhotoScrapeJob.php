@@ -83,7 +83,13 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
             try {
                 // Maximum limit requested among jobs
                 $maxLimit = $jobs->max('limit') ?: 8;
-                $scrapedPhotosByPlaceId = $photoService->scrapeBatchFromApifyActor($placeIds, null, $maxLimit);
+                // Chunk to 3 places max per Apify run to guarantee ~20-30s turnaround and avoid container timeouts
+                foreach (array_chunk($placeIds, 3) as $chunkPlaceIds) {
+                    $chunkPhotos = $photoService->scrapeBatchFromApifyActor($chunkPlaceIds, null, $maxLimit);
+                    foreach ($chunkPhotos as $pid => $pList) {
+                        $scrapedPhotosByPlaceId[$pid] = $pList;
+                    }
+                }
             } catch (Throwable $e) {
                 Log::warning("Batch Apify parallel scrape error: " . $e->getMessage());
             }

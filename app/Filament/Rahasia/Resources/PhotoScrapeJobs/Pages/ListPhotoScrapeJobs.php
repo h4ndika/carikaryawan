@@ -98,13 +98,35 @@ class ListPhotoScrapeJobs extends ListRecords
                         'finished_at' => null,
                     ]);
 
-                    foreach (array_chunk($jobIds, 10) as $chunkIds) {
+                    foreach (array_chunk($jobIds, 3) as $chunkIds) {
                         ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                     }
 
                     Notification::make()
                         ->title('Antrean Berhasil Dijalankan')
-                        ->body(count($jobIds) . ' antrean foto telah dikembalikan ke status pending dan dimasukkan ke worker (diproses 10 pararel).')
+                        ->body(count($jobIds) . ' antrean foto telah dimasukkan ke worker (diproses cepat per 3 tempat).')
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('resetStuck')
+                ->label('Reset Antrean Macet')
+                ->icon('heroicon-o-arrow-path-rounded-square')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Reset Antrean Sedang Proses yang Macet')
+                ->modalDescription('Akan mengembalikan semua antrean berstatus "Sedang Proses" kembali menjadi "Menunggu" (Pending) agar bisa dijalankan ulang.')
+                ->modalSubmitActionLabel('Ya, Reset Antrean Macet')
+                ->action(function () {
+                    $stuckCount = PhotoScrapeJob::where('status', 'processing')->count();
+                    PhotoScrapeJob::where('status', 'processing')->update([
+                        'status' => 'pending',
+                        'started_at' => null,
+                        'error_message' => null,
+                    ]);
+
+                    Notification::make()
+                        ->title("{$stuckCount} antrean macet berhasil di-reset ke status Menunggu")
                         ->success()
                         ->send();
                 }),
@@ -136,7 +158,7 @@ class ListPhotoScrapeJobs extends ListRecords
                         'finished_at' => null,
                     ]);
 
-                    foreach (array_chunk($failedJobIds, 10) as $chunkIds) {
+                    foreach (array_chunk($failedJobIds, 3) as $chunkIds) {
                         ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
                     }
 
