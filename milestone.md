@@ -1,6 +1,62 @@
 # DISEKITAR — Milestone & Progress Log
 
-## Milestone: Analytics Engine, AdSense Readiness & Scraping Pipeline (24 Agustus - 5 September 2026)
+## Milestone: Pilar Lowongan Kerja, Deduplikasi Kanonikal, Batch Scraping Multi-Wilayah & Resilience Engine (6 - 10 September 2026)
+
+### 1. Ekosistem Papan Lowongan Kerja (Job Board) & Multi-Engine Scraping (6 - 8 September 2026)
+- **Integrasi Scraper JobStreet & Glints Indonesia:**
+  - Menghapus provider scraping usang (Google Jobs & Instagram scraper) dan beralih penuh ke provider loker terpercaya di Indonesia: **JobStreet** (`shahidirfan/jobstreet-scraper`) dan **Glints** (`truefetch/glints-job-listing`).
+  - Standalone micro-tool `job-extractor` (Express dashboard dengan SSE live streaming, rotasi token Apify otomatis dari database, dan location autocomplete).
+  - Integrasi native ke Filament Admin (`GoogleMapsScrapeJob` / Menu Ekstraksi) dengan pemilihan engine (Google Maps, JobStreet, Glints), target limit, dan auto-kategori *Lowongan Kerja*.
+- **Pencarian & Penanganan Logo Perusahaan Otomatis:**
+  - Fallback logo perusahaan otomatis (`photo-scrape`) via Google Custom Search dan DuckDuckGo favicon service dengan validasi status URL gambar untuk mencegah link rusak.
+  - Job post secara otomatis dilewati dari scraper foto tempat Google Maps agar tidak tertimpa gambar yang tidak relevan.
+
+### 2. Canonical Deduplication Lintas Platform & Backfill (9 September 2026)
+- **Fingerprint Canonical `place_id`:**
+  - Mengatasi duplikasi saat lowongan yang sama ditemukan di JobStreet dan Glints.
+  - Generasi ID kanonikal unik berbasis hash MD5 dari normalisasi entitas: `job_` + MD5(`normCompany_normPosition_normCity`).
+  - Pembersihan otomatis nama badan usaha (`PT`, `CV`, `UD`, `Yayasan`) dan karakter non-alfanumerik untuk menjamin identitas unik cross-engine.
+- **Command Backfill Database:**
+  - Dibuat Artisan command `php artisan jobs:backfill-place-id` yang berhasil memperbarui seluruh record lowongan lama ke format kanonikal baru di database MySQL.
+
+### 3. Kebijakan Kedaluwarsa Otomatis & SEO JobPosting (8 - 9 September 2026)
+- **Sistem Auto-Expiration 21 Hari:**
+  - Lowongan otomatis ditandai kedaluwarsa setelah 21 hari sejak tanggal tayang (`published_at`).
+  - Tidak menghapus artikel agar tidak menimbulkan broken link / 404 pada search engine.
+  - Indikator visual editorial: Badge *"Lowongan Ditutup / Telah Kedaluwarsa"* dan tombol lamar dinonaktifkan.
+  - SEO Schema JSON-LD: Integrasi atribut `validThrough` yang presisi sesuai standar Google Jobs Search.
+
+### 4. Redesain Khusus Kategori Lowongan Kerja (Text-First UI) (9 September 2026)
+- **Tampilan Bersih Bebas Gambar:**
+  - Menyembunyikan elemen foto/thumbnail khusus artikel berkategori *Lowongan Kerja* di Beranda (Lead Story & Side Stories), Feed Artikel Publik, Pilihan Redaksi, dan Halaman Detail Post (`post-show`).
+  - Format penyajian berbasis teks profesional yang padat informasi, rapi, dan nyaman dibaca.
+- **CTA Lamaran Terisolasi & Elegan:**
+  - Penataan tombol "Lamar Sekarang" di antara dua divider halus di bawah rincian pekerjaan, mencegah redundansi teks tautan lamaran di bagian deskripsi.
+
+### 5. Batch Scraping Multi-Keyword, Multi-Kota & Multi-Provinsi (9 - 10 September 2026)
+- **Aksi Ekstraksi Batch Tingkat Lanjut:**
+  - Tombol modal baru `Ekstraksi Batch (Multi Keyword & Multi Lokasi)` di Filament.
+  - Input multi-keyword (satu per baris textarea).
+  - Searchable multi-select Kota dan multi-select Provinsi.
+  - Algoritma ekspansi wilayah: Otomatis mengekstrak seluruh kota dari provinsi yang dipilih (misal: memilih Bali & DI Yogyakarta langsung menarik seluruh kab/kota di kedua provinsi tersebut) dan menggabungkannya dengan kota pilihan spesifik tanpa duplikasi ID.
+- **Normalisasi Otomatis Prefix Administratif Kota:**
+  - Pembersihan otomatis awalan `KOTA`, `KABUPATEN`, `KAB.`, `KODYA` sebelum dikirim ke API crawler JobStreet/Glints (misal: `KOTA DENPASAR` -> `Denpasar`) sehingga query pencarian selalu dikenali oleh search engine loker.
+
+### 6. Resilience, Logging & Antrean VPS Worker (9 - 10 September 2026)
+- **Penanganan Zero Results Otomatis:**
+  - Jika pencarian menghasilkan 0 data di JobStreet/Glints (actor melempar `No jobs were extracted`), sistem tidak lagi crash dengan status `FAILED`, melainkan otomatis diselesaikan dengan status `Selesai (0 data)` disertai keterangan informatif.
+- **Ekstraksi Log Error Apify Rinci & Kolom Tabel Transparan:**
+  - Penarikan cuplikan baris error console Apify (`getRunLogSnippet` & `statusMessage`) secara langsung.
+  - Kolom keterangan & error selalu terlihat di tabel antrean dengan text-wrapping dan deskripsi status badge tanpa perlu membuka modal error satu per satu.
+- **Rotasi Akun Acak pada Retry:**
+  - Tombol aksi "Ulangi Ekstraksi" per baris memprioritaskan akun Apify aktif yang berbeda dari akun sebelumnya.
+  - Bulk Action `Ulangi Ekstraksi Terpilih (Acak Akun)` untuk me-retry banyak baris sekaligus dengan pemilihan akun acak.
+- **Protokol Daemon Queue VPS:**
+  - Penambahan instruksi wajib `php artisan queue:restart` di file `AGENTS.md` setelah deploy untuk mencegah daemon worker mengeksekusi kode in-memory yang usang.
+
+---
+
+## Milestone Sebelumnya: Analytics Engine, AdSense Readiness & Scraping Pipeline (24 Agustus - 5 September 2026)
 
 ### 1. Internal Analytics & Visitor Tracking Dashboard (3 - 5 September 2026)
 - **Engine Pelacakan Pengunjung Ringan:** Dibuat middleware `TrackVisitor` dan tabel `page_views` yang mencatat kunjungan web riil secara anonim (salted IP hash, eliminasi bot/crawler dan administrator terautentikasi).

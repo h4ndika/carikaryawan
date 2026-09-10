@@ -113,6 +113,23 @@ Status: 🔵 Planned
 
 ---
 
+## Lowongan Kerja (Job Board Ecosystem)
+
+Status: 🟢 Available
+
+Modul penayangan dan agregasi informasi lowongan kerja berbasis lokasi.
+
+### Features
+
+- **Multi-Engine Scraping:** Integrasi otomatis ekstraksi data loker terverifikasi dari JobStreet dan Glints Indonesia.
+- **Canonical Deduplication:** Fingerprint unik `place_id` lintas platform (`job_` + MD5 hash) untuk mencegah duplikasi listing dari penyedia berbeda.
+- **Batch Scraping Multi-Wilayah:** Input multi-keyword, multi-select kota, dan multi-select provinsi dengan otomatisasi penggabungan kabupaten/kota dan pembersihan nama administratif.
+- **Auto-Expiration & SEO Compliance:** Masa tayang 21 hari dengan visual closed badge, penonaktifan tombol lamar, dan Schema JSON-LD `validThrough` tanpa penghapusan URL.
+- **Text-First Layout:** Penyajian khusus lowongan kerja bebas gambar untuk tampilan profesional yang padat informasi dan tombol CTA lamaran terisolasi.
+- **Resilience Engine:** Penanganan 0 lowongan otomatis, auto-rotate token akun Apify saat retry, serta ekstraksi log error konsol langsung ke panel admin.
+
+---
+
 ## Category
 
 Status: 🔵 Planned

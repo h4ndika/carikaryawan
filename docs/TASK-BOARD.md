@@ -1,9 +1,45 @@
 # DISEKITAR — Task Board
 
 Status: living doc. Update tiap milestone selesai.  
-Terakhir Diperbarui: 5 September 2026
+Terakhir Diperbarui: 10 September 2026
 
-## Done (24 Agustus - 5 September 2026)
+## Done (6 - 10 September 2026)
+
+### 1. Ekosistem Papan Lowongan Kerja (Job Board) & Scraping Engine
+- [x] Scraper JobStreet (`shahidirfan/jobstreet-scraper`) & Glints (`truefetch/glints-job-listing`) terintegrasi langsung di Filament Admin.
+- [x] Standalone micro-tool `job-extractor` (Express dashboard dengan SSE streaming, auto-rotate token Apify, dan autocomplete).
+- [x] Penghapusan dependensi usang (Google Jobs & Instagram Scraper).
+- [x] Auto-company logo search via Google Search / DuckDuckGo fallback dengan verifikasi URL responsif.
+- [x] Proteksi photo-scraper: Post berkategori Lowongan Kerja otomatis dilewati agar gambar tidak tertimpa foto tempat Google Maps.
+
+### 2. Deduplikasi Lintas Platform & Backfill Database
+- [x] Fingerprint Canonical `place_id`: Algoritma unik MD5(`normCompany_normPosition_normCity`) dengan pembersihan prefix badan hukum (`PT`, `CV`, `UD`, `Yayasan`) untuk mendeteksi kesamaan loker antar-platform (JobStreet vs Glints).
+- [x] Artisan Command `php artisan jobs:backfill-place-id` untuk migrasi seluruh data lama ke sistem identitas kanonikal.
+
+### 3. Kebijakan Kedaluwarsa Otomatis & SEO JobPosting
+- [x] Auto-expiration 21 hari sejak tanggal publikasi (`published_at`).
+- [x] Soft-closing editorial: Badge "Lowongan Ditutup / Telah Kedaluwarsa" dan tombol lamar disabled tanpa 404/penghapusan URL.
+- [x] Schema JSON-LD `validThrough` yang valid untuk Google Jobs SEO.
+
+### 4. Redesain Frontend Khusus Lowongan Kerja (Text-First UI)
+- [x] Sembunyikan elemen foto/thumbnail untuk post Lowongan Kerja di Home (Lead Story & Side Stories), Feed Artikel, Pilihan Redaksi, dan Detail Post.
+- [x] Re-posisi tombol CTA "Lamar Sekarang" di antara pembatas divider rapi dan eliminasi teks lamaran yang tumpang tindih.
+
+### 5. Batch Scraping Multi-Keyword, Multi-Kota & Multi-Provinsi
+- [x] Form modal Filament untuk eksekusi batch multi-keyword (textarea per baris).
+- [x] Searchable multi-select Kota dan multi-select Provinsi dengan auto-merge seluruh kota/kabupaten turunan tanpa duplikasi ID.
+- [x] Sanitasi otomatis prefix nama kota administratif (`KOTA`, `KABUPATEN`, `KAB.`, `KODYA`) sebelum dikirim ke API crawler.
+
+### 6. Resilience, Error Logging & VPS Daemon Queue
+- [x] Zero-result handler: Status Apify `No jobs were extracted` ditangani sebagai `Selesai (0 data)` secara anggun alih-alih crash `FAILED`.
+- [x] Penarikan log error konsol Apify (`getRunLogSnippet` & `statusMessage`) langsung ke database dan kolom tabel Filament.
+- [x] Kolom Keterangan / Error terbuka langsung di baris tabel dengan text-wrapping dan badge description.
+- [x] Retry dengan pemilihan akun Apify acak dan Bulk Action `Ulangi Ekstraksi Terpilih (Acak Akun)`.
+- [x] Penambahan protokol sinkronisasi daemon queue (`queue:restart`) di `AGENTS.md`.
+
+---
+
+## Done Sebelumnya (24 Agustus - 5 September 2026)
 
 ### 1. Internal Visitor Analytics Engine (Filament Admin)
 - [x] Middleware `TrackVisitor` & tabel `page_views` (penghitungan pageview & visitor anonim berbasis salted IP hash).
