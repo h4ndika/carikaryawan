@@ -470,8 +470,8 @@ class Post extends Model
     public function url(): string
     {
         return route('posts.show', [
-            'category' => $this->category->slug,
-            'city' => $this->city->slug,
+            'category' => $this->category?->slug ?? 'rekomendasi',
+            'city' => $this->city?->slug ?? 'indonesia',
             'slug' => $this->slug,
         ]);
     }

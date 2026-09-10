@@ -162,7 +162,9 @@
             <img src="{{ $post->primary_image_url ?: asset('images/placeholder.svg') }}" 
                  alt="{{ $post->title }}"
                  loading="lazy">
-            <span class="badge-cat">{{ $post->category->name }}</span>
+            @if ($post->category)
+                <span class="badge-cat">{{ $post->category->name }}</span>
+            @endif
             <span class="badge-verified">
                 <i class="fa-solid fa-award"></i> Pilihan Terkurasi
             </span>
@@ -177,10 +179,12 @@
 
             <h2 class="card-title">{{ $post->title }}</h2>
 
-            <div class="location">
-                <i class="fa-solid fa-location-dot" style="color: #d97706;"></i>
-                <span>{{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif</span>
-            </div>
+            @if ($post->city)
+                <div class="location">
+                    <i class="fa-solid fa-location-dot" style="color: #d97706;"></i>
+                    <span>{{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif</span>
+                </div>
+            @endif
 
             <p class="excerpt">
                 {{ str($post->excerpt ?: strip_tags($post->content))->limit(90) }}

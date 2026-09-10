@@ -13,8 +13,8 @@ class WidgetController extends Controller
     public function postWidget(string $slug)
     {
         $post = Post::with(['category', 'city', 'province'])
+            ->published()
             ->where('slug', $slug)
-            ->where('is_published', true)
             ->firstOrFail();
 
         return response()
@@ -28,8 +28,8 @@ class WidgetController extends Controller
     public function badgeWidget(string $slug)
     {
         $post = Post::with(['category', 'city'])
+            ->published()
             ->where('slug', $slug)
-            ->where('is_published', true)
             ->firstOrFail();
 
         return response()
