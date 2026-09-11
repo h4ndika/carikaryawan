@@ -13,7 +13,7 @@ use Throwable;
 class PhotoScraperService
 {
     protected const DDG_IMAGE_SEARCH_URL = 'https://duckduckgo.com/i.js';
-    protected const APIFY_PHOTO_ACTOR = 'lurkapi~google-maps-photos-and-videos-scraper';
+    protected const APIFY_PHOTO_ACTOR = 'compass~crawler-google-places';
 
     /**
      * Scrape place photos using Apify only (no unreliable search engines)
@@ -427,25 +427,18 @@ class PhotoScraperService
                 throw new PhotoScrapeException($lastError);
             }
             try {
+                $startUrls = array_map(
+                    fn ($pid) => ['url' => "https://www.google.com/maps/place/?q=place_id:{$pid}"],
+                    array_values(array_unique($placeIds))
+                );
+
                 $response = Http::withToken($token)->connectTimeout(5)->timeout(10)
                     ->post('https://api.apify.com/v2/acts/'.self::APIFY_PHOTO_ACTOR.'/runs?timeout='.PhotoScrapeQueue::RUN_SECONDS, [
-                        'categories' => ['all'],
-                        'imageSize' => 'large',
-                        'maxPhotosPerPlace' => max(1, min(100, $limit)),
-                        'maxPlacesPerSearch' => count($placeIds),
-                        'outputDimensions' => true,
-                        'outputGps' => true,
-                        'outputInternalCategoryCode' => false,
-                        'outputPlaceName' => true,
-                        'outputPlaceUrl' => true,
-                        'outputScrapedAt' => true,
-                        'outputSearchKeyword' => true,
-                        'outputSource' => true,
-                        'outputUploadDate' => true,
-                        'outputUploadedByOwner' => true,
-                        'outputPlaceIds' => true,
-                        'outputThumbnailUrl' => true,
-                        'placeIds' => array_values(array_unique($placeIds)),
+                        'startUrls' => $startUrls,
+                        'maxCrawledPlacesPerSearch' => count($startUrls),
+                        'maxImages' => max(1, min(100, $limit)),
+                        'scrapeReviews' => false,
+                        'scrapePhotos' => true,
                     ]);
             } catch (Throwable $e) {
                 throw new PhotoScrapeException('Koneksi start Apify gagal/timeout. Periksa Runs di Apify sebelum mengulang; run mungkin sudah dibuat.');
@@ -504,7 +497,7 @@ class PhotoScraperService
         }
         $result = array_fill_keys($placeIds, []);
         foreach ($items as $item) {
-            if (!is_array($item) || (isset($item['type']) && !in_array($item['type'], ['photo', 'video'], true))) {
+            if (!is_array($item)) {
                 continue;
             }
             $pid = $item['placeId'] ?? null;
@@ -515,9 +508,21 @@ class PhotoScraperService
             if (!$pid || !array_key_exists($pid, $result)) {
                 continue;
             }
-            $url = $item['imageUrl'] ?? $item['photoUrl'] ?? $item['photo_url_large'] ?? $item['photo_url'] ?? $item['thumbnailUrl'] ?? $item['url'] ?? null;
-            if (is_string($url) && $this->isValidImageUrl($url) && count($result[$pid]) < $limit && !in_array($url, $result[$pid], true)) {
-                $result[$pid][] = $url;
+
+            // Support compass/crawler-google-places (imageUrls array) as well as flat item streams
+            $itemImages = $item['imageUrls'] ?? $item['images'] ?? [];
+            if (!is_array($itemImages) || empty($itemImages)) {
+                $flatUrl = $item['imageUrl'] ?? $item['photoUrl'] ?? $item['photo_url_large'] ?? $item['photo_url'] ?? $item['thumbnailUrl'] ?? $item['url'] ?? null;
+                if ($flatUrl) {
+                    $itemImages = [$flatUrl];
+                }
+            }
+
+            foreach ($itemImages as $rawImg) {
+                $url = is_string($rawImg) ? $rawImg : ($rawImg['imageUrl'] ?? $rawImg['url'] ?? null);
+                if (is_string($url) && $this->isValidImageUrl($url) && count($result[$pid]) < $limit && !in_array($url, $result[$pid], true)) {
+                    $result[$pid][] = $url;
+                }
             }
         }
         return $result;
