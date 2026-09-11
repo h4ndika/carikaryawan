@@ -38,6 +38,7 @@ class Post extends Model
         'affiliate_links' => 'array',
         'published_at' => 'datetime',
         'expired_at' => 'datetime',
+        'posted_to_threads_at' => 'datetime',
     ];
 
     public function pageViews(): \Illuminate\Database\Eloquent\Relations\HasMany

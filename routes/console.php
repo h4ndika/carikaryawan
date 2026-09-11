@@ -23,3 +23,8 @@ Artisan::command('photos:recover-stale', function () {
 })->purpose('Recover orphaned photo scraping jobs');
 
 Schedule::command('photos:recover-stale')->everyMinute()->withoutOverlapping();
+
+// Broadcast 1 konten loker / rekomendasi ke Threads 3x sehari pada jam aktif audiens (08:00, 12:30, 19:00 WIB / UTC+7)
+Schedule::command('threads:broadcast')->dailyAt('01:00')->withoutOverlapping(); // 08:00 WIB (01:00 UTC)
+Schedule::command('threads:broadcast')->dailyAt('05:30')->withoutOverlapping(); // 12:30 WIB (05:30 UTC)
+Schedule::command('threads:broadcast')->dailyAt('12:00')->withoutOverlapping(); // 19:00 WIB (12:00 UTC)
