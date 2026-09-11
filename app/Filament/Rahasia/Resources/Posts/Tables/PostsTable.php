@@ -178,11 +178,15 @@ class PostsTable
 
                 SelectFilter::make('city_id')
                     ->relationship('city', 'name')
-                    ->label('City'),
+                    ->label('City')
+                    ->searchable()
+                    ->preload(),
 
                 SelectFilter::make('province_id')
                     ->relationship('province', 'name')
-                    ->label('Province'),
+                    ->label('Province')
+                    ->searchable()
+                    ->preload(),
 
                 Filter::make('created_at')
                     ->label('Tanggal Dibuat')
