@@ -39,6 +39,11 @@ class ManageAdSettings extends Page
             'adsense_auto_ads' => (bool) Setting::get('adsense_auto_ads', false),
             'ads_txt_content' => Setting::get('ads_txt_content', "google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0"),
 
+            'adsterra_enabled' => (bool) Setting::get('adsterra_enabled', false),
+            'adsterra_head_code' => Setting::get('adsterra_head_code', ''),
+            'adsterra_popunder_code' => Setting::get('adsterra_popunder_code', ''),
+            'adsterra_socialbar_code' => Setting::get('adsterra_socialbar_code', ''),
+
             // Home ads
             'ad_home_hero_enabled' => (bool) Setting::get('ad_home_hero_enabled', false),
             'ad_home_hero_code' => Setting::get('ad_home_hero_code', ''),
@@ -97,6 +102,33 @@ class ManageAdSettings extends Page
                             ->placeholder('google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0')
                             ->rows(3)
                             ->helperText('Otomatis disajikan di URL https://disekitar.com/ads.txt untuk verifikasi kepemilikan oleh Google AdSense.'),
+                    ]),
+
+                Section::make('Konfigurasi Jaringan Iklan Adsterra')
+                    ->description('Kelola script global Adsterra seperti Social Bar, Popunder, atau script verifikasi.')
+                    ->icon(Heroicon::OutlinedSparkles)
+                    ->schema([
+                        Toggle::make('adsterra_enabled')
+                            ->label('Aktifkan Jaringan Adsterra')
+                            ->helperText('Master switch untuk mengaktifkan script global Adsterra di website.'),
+
+                        Textarea::make('adsterra_head_code')
+                            ->label('Script Header Adsterra (Head Tag / Verifikasi)')
+                            ->placeholder("<script type='text/javascript' src='//...js'></script>")
+                            ->rows(3)
+                            ->helperText('Dimuat di bagian <head> website (opsional, jika Adsterra meminta verifikasi kode/script head).'),
+
+                        Textarea::make('adsterra_socialbar_code')
+                            ->label('Kode Adsterra Social Bar / In-Page Push')
+                            ->placeholder("<script type='text/javascript' src='//...js'></script>")
+                            ->rows(3)
+                            ->helperText('Dimuat di bagian bawah <body> website untuk format Social Bar / Push Notifications iklan.'),
+
+                        Textarea::make('adsterra_popunder_code')
+                            ->label('Kode Adsterra Popunder (Opsional)')
+                            ->placeholder("<script type='text/javascript' src='//...js'></script>")
+                            ->rows(3)
+                            ->helperText('Dimuat di bagian bawah <body>. Biarkan kosong jika tidak ingin menggunakan popunder demi kenyamanan pembaca.'),
                     ]),
 
                 Section::make('Tata Letak Iklan: Beranda (Home)')

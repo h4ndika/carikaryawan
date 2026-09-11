@@ -9,7 +9,14 @@
     $customHead = trim((string) \App\Models\Setting::get('custom_head_scripts', ''));
     $adsenseEnabled = (bool) \App\Models\Setting::get('adsense_enabled', false);
     $adsenseClientId = trim((string) \App\Models\Setting::get('adsense_client_id', ''));
+    $adsterraEnabled = (bool) \App\Models\Setting::get('adsterra_enabled', false);
+    $adsterraHead = trim((string) \App\Models\Setting::get('adsterra_head_code', ''));
 @endphp
+
+@if ($adsterraEnabled && !empty($adsterraHead))
+    <!-- Adsterra Header Scripts -->
+    {!! $adsterraHead !!}
+@endif
 
 @if ($adsenseEnabled && !empty($adsenseClientId))
     <!-- Google AdSense -->

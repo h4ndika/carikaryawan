@@ -125,35 +125,38 @@
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Iklan Google AdSense (Penting)</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Jaringan Periklanan Pihak Ketiga (Google AdSense, Adsterra, dll.)</h2>
                         <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-zinc-800 dark:text-zinc-200">
-                            <p class="text-sm font-semibold mb-2">Pemberitahuan Khusus Iklan Pihak Ketiga:</p>
+                            <p class="text-sm font-semibold mb-2">Pemberitahuan Transparansi Iklan Pihak Ketiga:</p>
                             <p class="text-xs sm:text-sm leading-relaxed">
-                                Situs kami bekerja sama dengan <strong>Google AdSense</strong> sebagai penyedia jaringan periklanan pihak ketiga. Google menggunakan cookie untuk menayangkan iklan kepada pengguna berdasarkan kunjungan sebelumnya ke situs kami maupun situs web lain di internet.
+                                Situs kami bermitra dengan penyedia jaringan periklanan pihak ketiga terpercaya, termasuk <strong>Google AdSense</strong> dan mitra periklanan digital lainnya (seperti <strong>Adsterra</strong>). Mitra periklanan ini menggunakan cookie, web beacon, dan teknologi penargetan serupa untuk menayangkan iklan yang relevan kepada pengunjung berdasarkan riwayat kunjungan ke situs kami maupun situs web lain di internet.
                             </p>
                         </div>
                         <ul class="list-disc pl-5 space-y-2 mt-3">
                             <li>
-                                <strong>Kuki DART / DoubleClick:</strong> Penggunaan kuki periklanan memungkinkan Google dan mitranya untuk menayangkan iklan yang relevan kepada pengunjung berdasarkan pola kunjungan mereka di internet.
+                                <strong>Kuki DART / DoubleClick (Google):</strong> Google menggunakan kuki untuk menayangkan iklan kepada pengguna kami berdasarkan kunjungan mereka ke DISEKITAR dan situs web lainnya di internet.
                             </li>
                             <li>
-                                <strong>Pilihan Menyisih (Opt-Out):</strong> Anda dapat memilih untuk menyisih dari periklanan yang dipersonalisasi dengan mengunjungi halaman 
+                                <strong>Jaringan Periklanan Mitra Pihak Ketiga:</strong> Vendor dan jaringan iklan pihak ketiga lainnya juga dapat menayangkan iklan di situs kami. Kuki pihak ketiga digunakan untuk mengukur efektivitas kampanye iklan dan mempersonalisasi konten iklan.
+                            </li>
+                            <li>
+                                <strong>Pilihan Menyisih Iklan Google (Opt-Out):</strong> Anda dapat menyisih dari periklanan berbasis minat Google dengan mengunjungi 
                                 <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">Setelan Iklan Google (Google Ads Settings)</a>.
                             </li>
                             <li>
-                                Alternatifnya, pengguna dapat menyisih dari penggunaan kuki vendor pihak ketiga untuk iklan yang dipersonalisasi dengan mengunjungi situs inisiatif regulasi periklanan di 
-                                <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">www.aboutads.info</a>.
+                                <strong>Pilihan Menyisih Umum:</strong> Pengguna dapat menyisih dari penggunaan kuki vendor pihak ketiga untuk iklan yang dipersonalisasi dengan mengunjungi situs inisiatif regulasi periklanan di 
+                                <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">www.aboutads.info</a> atau <a href="https://youradchoices.com/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">YourAdChoices</a>.
                             </li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Penggunaan Cookie Pihak Ketiga Lainnya</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Penggunaan Cookie & Layanan Analitik</h2>
                         <p>
-                            Selain Google AdSense, kami dapat menggunakan layanan analitik seperti Google Analytics untuk menganalisis tren penggunaan situs secara agregat (misalnya halaman mana yang paling banyak dibaca dan durasi kunjungan). Layanan analitik ini juga memanfaatkan kuki untuk mengukur kinerja situs secara anonim.
+                            Selain jaringan periklanan, kami menggunakan layanan analitik seperti Google Analytics dan Umami Analytics untuk menganalisis tren penggunaan situs secara agregat (seperti statistik kunjungan halaman dan durasi baca). Layanan ini beroperasi secara anonim dan mematuhi prinsip privasi data.
                         </p>
                         <p>
-                            Anda memiliki kendali penuh untuk menonaktifkan atau memblokir kuki melalui pengaturan peramban web Anda (seperti Google Chrome, Mozilla Firefox, Apple Safari, atau Microsoft Edge). Harap dicatat bahwa menonaktifkan kuki tertentu mungkin memengaruhi fungsionalitas beberapa fitur situs (seperti preferensi mode gelap).
+                            Anda memiliki kendali penuh untuk menerima, menonaktifkan, atau menghapus kuki melalui pengaturan peramban web Anda (Google Chrome, Mozilla Firefox, Apple Safari, atau Microsoft Edge). Harap dicatat bahwa menonaktifkan kuki tertentu dapat memengaruhi fungsionalitas interaktif situs (seperti preferensi tema gelap).
                         </p>
                     </section>
 
