@@ -9,7 +9,11 @@ class PhotoScrapeJob extends Model
 {
     protected $guarded = ['id'];
 
+    protected $hidden = ['apify_token'];
+
     protected $casts = [
+        'apify_token' => 'encrypted',
+        'deadline_at' => 'datetime',
         'replace_existing' => 'boolean',
         'publish_on_complete' => 'boolean',
         'started_at' => 'datetime',

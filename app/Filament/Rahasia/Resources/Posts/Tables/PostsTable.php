@@ -4,10 +4,10 @@ namespace App\Filament\Rahasia\Resources\Posts\Tables;
 
 use App\Jobs\GeneratePostContentJob;
 use App\Jobs\ProcessBatchAiQueueJob;
-use App\Jobs\ProcessBatchPhotoScrapeJob;
 use App\Models\AiGenerationJob;
 use App\Models\PhotoScrapeJob;
 use App\Models\Post;
+use App\Services\PhotoScrapeQueue;
 use App\Services\PhotoScraperService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -259,11 +259,11 @@ class PostsTable
                             'publish_on_complete' => (bool) ($data['publish_on_complete'] ?? false),
                         ]);
 
-                        ProcessBatchPhotoScrapeJob::dispatch([$job->id]);
+                        $queuedCount = app(PhotoScrapeQueue::class)->enqueue([$job->id]);
 
                         Notification::make()
-                            ->title('Antrean Scrape Foto Dibuat')
-                            ->body("Scrape foto untuk '{$record->title}' telah dimasukkan ke antrean worker.")
+                            ->title($queuedCount ? 'Antrean Scrape Foto Dibuat' : 'Gagal Mengirim Antrean; Periksa Detail Job')
+                            ->body($queuedCount ? "Scrape foto untuk '{$record->title}' telah dimasukkan ke antrean worker." : "Antrean dibuat, tetapi queue backend gagal. Lihat error di menu Antrean Scrape Foto.")
                             ->actions([
                                 Action::make('lihatAntrean')
                                     ->label('Lihat Antrean')
@@ -415,11 +415,14 @@ class PostsTable
                                 $dispatchedCount++;
                             }
 
-                            foreach (array_chunk($createdJobIds, 25) as $chunkIds) {
-                                ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
-                            }
+                            $queuedCount = app(PhotoScrapeQueue::class)->enqueue($createdJobIds);
+                            $dispatchFailedCount = count($createdJobIds) - $queuedCount;
 
                             $notes = [];
+                            if ($dispatchFailedCount > 0) {
+                                $notes[] = "{$dispatchFailedCount} gagal dikirim; periksa error antrean";
+                            }
+                            $dispatchedCount = $queuedCount;
                             if ($skippedJobCount > 0) {
                                 $notes[] = "{$skippedJobCount} lowongan kerja dilewati";
                             }
