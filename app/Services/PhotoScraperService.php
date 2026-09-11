@@ -504,7 +504,7 @@ class PhotoScraperService
         }
         $result = array_fill_keys($placeIds, []);
         foreach ($items as $item) {
-            if (!is_array($item) || (isset($item['type']) && $item['type'] !== 'photo')) {
+            if (!is_array($item) || (isset($item['type']) && !in_array($item['type'], ['photo', 'video'], true))) {
                 continue;
             }
             $pid = $item['placeId'] ?? null;
