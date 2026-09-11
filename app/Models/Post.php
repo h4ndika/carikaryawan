@@ -114,9 +114,23 @@ class Post extends Model
             return $this->thumbnail;
         }
         if ($this->relationLoaded('images')) {
-            return $this->images->first()?->image_url;
+            $firstImg = $this->images->first()?->image_url;
+            if (!empty($firstImg)) {
+                return $firstImg;
+            }
+        } else {
+            $firstImg = $this->images()->first()?->image_url;
+            if (!empty($firstImg)) {
+                return $firstImg;
+            }
         }
-        return $this->images()->first()?->image_url;
+
+        // Auto-generate dynamic SVG cover banner for job listings
+        if ($this->isJob() && !empty($this->slug)) {
+            return route('job.image', ['slug' => $this->slug]);
+        }
+
+        return null;
     }
 
     /**
@@ -244,7 +258,7 @@ class Post extends Model
 
     public function seoImage(): string
     {
-        return $this->og_image ?: (string) ($this->thumbnail ?? '');
+        return $this->og_image ?: (string) ($this->thumbnail ?: ($this->primary_image_url ?? ''));
     }
 
     public function seoRobots(): string

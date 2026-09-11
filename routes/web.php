@@ -52,6 +52,9 @@ Route::get('/{category}/disekitar/{landmark:slug}', LandmarkShow::class)->name('
 Route::get('/widget/post/{slug}', [\App\Http\Controllers\WidgetController::class, 'postWidget'])->name('widget.post');
 Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::class, 'badgeWidget'])->name('widget.badge');
 
+// Dynamic Job Cover Image (for OpenGraph & Hero Banner)
+Route::get('/job-image/{slug}.svg', [\App\Http\Controllers\JobImageController::class, 'show'])->name('job.image');
+
 // Category index: /hotel
 Route::get('/{category}', PostList::class)
     ->name('category.home')

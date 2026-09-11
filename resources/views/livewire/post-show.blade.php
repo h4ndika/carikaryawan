@@ -80,13 +80,25 @@
             @endif
         </header>
 
-        @if (!$post->isJob())
+        @php
+            $mainImg = $post->primary_image_url;
+            $fallbackGalleryUrls = $post->fallback_image_urls;
+            $mainSource = $post->primary_image_source;
+        @endphp
+
+        @if ($post->isJob())
+            <!-- Dynamic Job Cover Visual (1200x630 format) -->
+            <div class="mb-6">
+                <figure class="relative rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 dark:border-zinc-800 bg-zinc-950">
+                    <img src="{{ route('job.image', ['slug' => $post->slug]) }}" 
+                         alt="{{ $post->title }}" 
+                         class="w-full h-auto object-cover max-h-[460px]"
+                         loading="eager"
+                         fetchpriority="high">
+                </figure>
+            </div>
+        @else
             <!-- Featured Image with Placeholder Fallback & Gallery Fallback -->
-            @php
-                $mainImg = $post->primary_image_url;
-                $fallbackGalleryUrls = $post->fallback_image_urls;
-                $mainSource = $post->primary_image_source;
-            @endphp
             <div class="mb-4 sm:mb-6">
                 <figure class="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800">
                     @if ($mainImg)
