@@ -100,6 +100,49 @@ class ThreadsService
     }
 
     /**
+     * Publish image with caption directly to Threads.
+     */
+    public function postImage(string $imageUrl, string $text): array
+    {
+        $userId = $this->getUserId();
+        $token = $this->getAccessToken();
+
+        if (!$userId || !$token) {
+            throw new Exception('Threads credentials belum lengkap.');
+        }
+
+        // Step 1: Create IMAGE container
+        $containerPayload = [
+            'media_type' => 'IMAGE',
+            'image_url' => $imageUrl,
+            'text' => $text,
+            'access_token' => $token,
+        ];
+
+        $createRes = Http::post("{$this->baseUrl}/{$userId}/threads", $containerPayload);
+
+        if (!$createRes->successful()) {
+            throw new Exception('Gagal membuat container gambar Threads: ' . ($createRes->json('error.message') ?? $createRes->body()));
+        }
+
+        $containerId = $createRes->json('id');
+
+        // Step 2: Publish container (sleep 5 seconds to ensure Meta image download and processing)
+        sleep(5);
+
+        $publishRes = Http::post("{$this->baseUrl}/{$userId}/threads_publish", [
+            'creation_id' => $containerId,
+            'access_token' => $token,
+        ]);
+
+        if (!$publishRes->successful()) {
+            throw new Exception('Gagal publish gambar ke Threads: ' . ($publishRes->json('error.message') ?? $publishRes->body()));
+        }
+
+        return $publishRes->json();
+    }
+
+    /**
      * Build engaging post copy for a Post model and publish it.
      */
     public function publishPost(Post $post): array
@@ -137,7 +180,32 @@ class ThreadsService
             $text = mb_substr($text, 0, 490) . "...\n" . $url;
         }
 
-        $result = $this->postText($text, $url);
+        // Get image URL (PNG/JPG only, SVG is not supported by Threads media_type IMAGE)
+        $imageUrl = null;
+        if (!empty($post->thumbnail) && !str_ends_with(strtolower($post->thumbnail), '.svg')) {
+            $imageUrl = $post->thumbnail;
+        } elseif ($post->relationLoaded('images') && $post->images->first()) {
+            $first = $post->images->first()->image_url;
+            if ($first && !str_ends_with(strtolower($first), '.svg')) {
+                $imageUrl = $first;
+            }
+        } elseif ($post->images()->exists()) {
+            $first = $post->images()->first()?->image_url;
+            if ($first && !str_ends_with(strtolower($first), '.svg')) {
+                $imageUrl = $first;
+            }
+        }
+
+        // Make absolute URL if relative
+        if ($imageUrl && !str_starts_with($imageUrl, 'http://') && !str_starts_with($imageUrl, 'https://')) {
+            $imageUrl = url($imageUrl);
+        }
+
+        if ($imageUrl) {
+            $result = $this->postImage($imageUrl, $text);
+        } else {
+            $result = $this->postText($text, $url);
+        }
 
         // Mark post as shared to Threads
         $post->updateQuietly(['posted_to_threads_at' => now()]);
