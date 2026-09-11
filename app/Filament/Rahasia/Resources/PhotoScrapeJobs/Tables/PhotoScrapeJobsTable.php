@@ -2,9 +2,10 @@
 
 namespace App\Filament\Rahasia\Resources\PhotoScrapeJobs\Tables;
 
-use App\Jobs\ProcessBatchPhotoScrapeJob;
 use App\Models\PhotoScrapeJob;
+use App\Services\PhotoScrapeQueue;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -55,6 +56,23 @@ class PhotoScrapeJobsTable
                         default => ucfirst($state),
                     }),
 
+                TextColumn::make('phase')
+                    ->label('Tahap')
+                    ->formatStateUsing(fn (?string $state) => match ($state) {
+                        'completed' => 'Selesai',
+                        'failed' => 'Gagal',
+                        'queued' => 'Menunggu worker/slot',
+                        'preparing' => 'Validasi tempat',
+                        'starting' => 'Memulai Apify',
+                        'polling' => 'Menunggu hasil Apify',
+                        default => $state ?? '-',
+                    })
+                    ->toggleable(),
+                TextColumn::make('apify_run_id')
+                    ->label('Run Apify')->copyable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('deadline_at')
+                    ->label('Batas Waktu')->dateTime('d M H:i:s')->toggleable(),
+
                 TextColumn::make('photos_count')
                     ->label('Foto Didapat')
                     ->badge()
@@ -88,7 +106,7 @@ class PhotoScrapeJobsTable
                     ->label('Keterangan / Error')
                     ->limit(30)
                     ->color('danger')
-                    ->visible(fn (?PhotoScrapeJob $record) => !empty($record?->error_message))
+                    ->placeholder('-')
                     ->tooltip(fn (PhotoScrapeJob $record) => $record->error_message),
             ])
             ->filters([
@@ -128,17 +146,10 @@ class PhotoScrapeJobsTable
                     ->color('warning')
                     ->visible(fn (PhotoScrapeJob $record) => in_array($record->status, ['failed', 'completed']))
                     ->action(function (PhotoScrapeJob $record) {
-                        $record->update([
-                            'status' => 'pending',
-                            'error_message' => null,
-                            'started_at' => null,
-                            'finished_at' => null,
-                        ]);
-
-                        ProcessBatchPhotoScrapeJob::dispatch([$record->id]);
+                        $count = app(PhotoScrapeQueue::class)->enqueue([$record->id]);
 
                         Notification::make()
-                            ->title('Job berhasil dimasukkan kembali ke antrean')
+                            ->title($count ? 'Job dimasukkan kembali ke antrean' : 'Job sudah aktif; tidak diduplikasi')
                             ->success()
                             ->send();
                     }),
@@ -147,21 +158,20 @@ class PhotoScrapeJobsTable
                     ->label('Detail')
                     ->icon('heroicon-o-exclamation-triangle')
                     ->color('danger')
-                    ->visible(fn (PhotoScrapeJob $record) => !empty($record->error_message))
+                    ->visible(fn (PhotoScrapeJob $record) => ! empty($record->error_message))
                     ->modalHeading('Rincian Error / Keterangan')
                     ->modalDescription(fn (PhotoScrapeJob $record) => $record->error_message)
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Tutup'),
 
-                DeleteAction::make(),
+                DeleteAction::make()->visible(fn (PhotoScrapeJob $record) => ! in_array($record->status, ['pending', 'processing'])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    Action::make('processBatchSelected')
+                    BulkAction::make('processBatchSelected')
                         ->label('Proses Terpilih (Batch)')
                         ->icon('heroicon-o-bolt')
                         ->color('success')
-                        ->accessSelectedRecords()
                         ->requiresConfirmation()
                         ->modalHeading('Proses Antrean Terpilih')
                         ->modalDescription('Akan memasukkan semua job yang dipilih ke background worker.')
@@ -173,26 +183,19 @@ class PhotoScrapeJobsTable
                                 return;
                             }
 
-                            // Reset selected jobs to pending and clear errors
-                            PhotoScrapeJob::whereIn('id', $jobIds)->update([
-                                'status' => 'pending',
-                                'error_message' => null,
-                                'started_at' => null,
-                                'finished_at' => null,
-                            ]);
-
-                            foreach (array_chunk($jobIds, 3) as $chunkIds) {
-                                ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
-                            }
+                            $count = app(PhotoScrapeQueue::class)->enqueue($jobIds);
 
                             Notification::make()
                                 ->title('Job Berhasil Dimasukkan ke Antrean')
-                                ->body("{$count} job terpilih diubah statusnya menjadi pending dan dimasukkan ke worker (diproses cepat per 3 tempat).")
+                                ->body("{$count} job dimasukkan ke worker. Job yang masih aktif dilewati.")
                                 ->success()
                                 ->send();
                         }),
 
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->fetchSelectedRecords(true)
+                        ->action(fn (Collection $records) => PhotoScrapeJob::whereIn('id', $records->modelKeys())
+                            ->whereIn('status', ['completed', 'failed'])->delete()),
                 ]),
             ]);
     }

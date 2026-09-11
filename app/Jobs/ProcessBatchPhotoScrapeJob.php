@@ -2,229 +2,212 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\PhotoScrapeException;
 use App\Models\PhotoScrapeJob;
+use App\Services\PhotoScrapeQueue;
 use App\Services\PhotoScraperService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class ProcessBatchPhotoScrapeJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $timeout = 600; // 10 menit
-    public int $tries = 1;
+    // Less than the default database/Redis retry_after (90 seconds).
+    public int $timeout = 75;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param array<int> $photoJobIds
-     */
-    public function __construct(
-        public array $photoJobIds
-    ) {}
+    public int $tries = 0; // releases for polling/capacity are not failures
 
-    /**
-     * Execute the job in parallel batches of up to 10 places.
-     */
-    public function handle(PhotoScraperService $photoService): void
+    public int $maxExceptions = 1;
+
+    public bool $failOnTimeout = true;
+
+    public ?string $processingToken = null;
+
+    public function __construct(public array $photoJobIds, ?string $processingToken = null)
     {
-        if (empty($this->photoJobIds)) {
+        $this->processingToken = $processingToken;
+    }
+
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping('photo-batch:'.($this->processingToken ?? sha1(json_encode($this->photoJobIds)))))
+            ->releaseAfter(5)->expireAfter(80)];
+    }
+
+    public function handle(PhotoScraperService $service): void
+    {
+        // Upgrade old serialized batches (including batches of 25) safely.
+        if (! $this->processingToken) {
+            $pending = PhotoScrapeJob::whereIn('id', $this->photoJobIds)
+                ->where('status', 'pending')->whereNull('processing_token')->pluck('id')->all();
+            app(PhotoScrapeQueue::class)->enqueue($pending);
+
             return;
         }
 
-        $jobs = PhotoScrapeJob::with('post.city', 'post.province', 'post.images')
-            ->whereIn('id', $this->photoJobIds)
-            ->whereIn('status', ['pending', 'processing'])
-            ->get();
-
+        $jobs = $this->owned()->with('post.category', 'post.city', 'post.province', 'post.images')->get();
         if ($jobs->isEmpty()) {
             return;
         }
+        if ($jobs->first()->status === 'pending') {
+            if ($jobs->first()->updated_at->lt(now()->subMinutes(30))) {
+                $this->failed(new PhotoScrapeException('Batas waktu menunggu worker/slot terlewati (30 menit). Kurangi batch atau tambah kapasitas worker.'));
 
-        // 1. Mark all jobs as processing immediately
-        PhotoScrapeJob::whereIn('id', $jobs->pluck('id')->all())->update([
-            'status' => 'processing',
-            'started_at' => now(),
-            'error_message' => null,
-        ]);
+                return;
+            }
+            // Lock only while claiming a capacity slot, never during network I/O.
+            $lock = Cache::lock('photo-scrape:capacity', 10);
+            if (! $lock->get()) {
+                $this->release(15);
 
-        // 2. Prepare placeIds map
-        $placeIdToJobs = [];
-        $fallbackJobs = [];
+                return;
+            }
+            try {
+                $active = PhotoScrapeJob::where('status', 'processing')->whereNotNull('processing_token')
+                    ->distinct()->count('processing_token');
+                if ($active >= max(1, (int) config('services.apify.photo_max_active_runs', 3))) {
+                    $this->release(15);
 
-        foreach ($jobs as $job) {
-            $post = $job->post;
-            if (!$post) {
-                $job->update([
-                    'status' => 'failed',
-                    'error_message' => 'Post tidak ditemukan atau telah dihapus.',
-                    'finished_at' => now(),
+                    return;
+                }
+                $this->owned()->where('status', 'pending')->update([
+                    'phase' => 'preparing', 'status' => 'processing', 'started_at' => now(),
+                    'deadline_at' => now()->addSeconds(PhotoScrapeQueue::RUN_SECONDS),
                 ]);
-                continue;
+            } finally {
+                $lock->release();
             }
-
-            if (!empty($post->place_id) && str_starts_with($post->place_id, 'ChI')) {
-                $placeIdToJobs[$post->place_id][] = $job;
-            } else {
-                $fallbackJobs[] = $job;
-            }
+            $jobs = $this->owned()->with('post.category', 'post.city', 'post.province', 'post.images')->get();
         }
 
-        // 3. Process all placeIds in parallel batch via Apify (up to 10 at once)
-        $scrapedPhotosByPlaceId = [];
-        $placeIds = array_keys($placeIdToJobs);
-
-        if (!empty($placeIds)) {
-            try {
-                // Maximum limit requested among jobs
-                $maxLimit = $jobs->max('limit') ?: 8;
-                // Chunk to 3 places max per Apify run to guarantee ~20-30s turnaround and avoid container timeouts
-                foreach (array_chunk($placeIds, 3) as $chunkPlaceIds) {
-                    $chunkPhotos = $photoService->scrapeBatchFromApifyActor($chunkPlaceIds, null, $maxLimit);
-                    foreach ($chunkPhotos as $pid => $pList) {
-                        $scrapedPhotosByPlaceId[$pid] = $pList;
+        try {
+            if ($jobs->contains(fn ($job) => ! $job->deadline_at || $job->deadline_at->isPast())) {
+                throw new PhotoScrapeException('Batas waktu scrape foto terlewati (600 detik). Periksa run Apify dan worker sebelum mengulang.');
+            }
+            $handledLogo = false;
+            $placeIds = [];
+            foreach ($jobs as $row) {
+                if (! $row->post) {
+                    $this->finish($row->id, 'failed', 0, 'Post tidak ditemukan atau telah dihapus.');
+                } elseif ($row->post->isJob()) {
+                    $handledLogo = true;
+                    try {
+                        $result = $service->scrapeAndAttachForPost($row->post, $row->limit, $row->replace_existing, $row->publish_on_complete);
+                        $ok = ($result['total'] ?? 0) > 0;
+                        $this->finish($row->id, $ok ? 'completed' : 'failed', $result['total'] ?? 0, $ok ? null : ($result['message'] ?? 'Logo tidak ditemukan.'));
+                    } catch (Throwable $e) {
+                        $this->finish($row->id, 'failed', 0, 'Gagal mengambil/menyimpan logo perusahaan.');
                     }
-                }
-            } catch (Throwable $e) {
-                Log::warning("Batch Apify parallel scrape error: " . $e->getMessage());
-            }
-        }
-
-        // 4. Attach results to posts
-        foreach ($placeIdToJobs as $placeId => $matchedJobs) {
-            $photos = $scrapedPhotosByPlaceId[$placeId] ?? [];
-
-            foreach ($matchedJobs as $job) {
-                $post = $job->post;
-
-                try {
-                    if (!empty($photos)) {
-                        $result = $photoService->attachPhotosToPost(
-                            post: $post,
-                            photos: array_slice($photos, 0, $job->limit ?: 8),
-                            replaceExisting: (bool) $job->replace_existing,
-                            publishOnComplete: (bool) $job->publish_on_complete
-                        );
-
-                        $count = $result['count'] ?? 0;
-                        $total = $result['total'] ?? $count;
-
-                        if ($total < 1) {
-                            $job->update([
-                                'status' => 'failed',
-                                'photos_count' => 0,
-                                'error_message' => 'Tidak ada foto yang ditemukan dari sumber.',
-                                'finished_at' => now(),
-                            ]);
-                        } else {
-                            $job->update([
-                                'status' => 'completed',
-                                'photos_count' => $total,
-                                'error_message' => null,
-                                'finished_at' => now(),
-                            ]);
-                        }
-                    } else {
-                        // Fallback single scrape if batch didn't return photos for this specific placeId
-                        $result = $photoService->scrapeAndAttachForPost(
-                            post: $post,
-                            limit: $job->limit ?: 8,
-                            replaceExisting: (bool) $job->replace_existing,
-                            publishOnComplete: (bool) $job->publish_on_complete
-                        );
-
-                        $count = $result['count'] ?? 0;
-                        $total = $result['total'] ?? $count;
-
-                        if ($total < 1) {
-                            $isJob = $post->isJob();
-                            $job->update([
-                                'status' => $isJob ? 'completed' : 'failed',
-                                'photos_count' => $count,
-                                'error_message' => $isJob ? 'Lowongan kerja: Logo resmi tidak ditemukan di web (menggunakan kartu standar).' : 'Tidak ada foto yang ditemukan dari semua sumber.',
-                                'finished_at' => now(),
-                            ]);
-                        } else {
-                            $job->update([
-                                'status' => 'completed',
-                                'photos_count' => $total,
-                                'error_message' => null,
-                                'finished_at' => now(),
-                            ]);
-                        }
-                    }
-                } catch (Throwable $e) {
-                    Log::error("Photo scrape failed for Job #{$job->id} (Post #{$post->id}): " . $e->getMessage());
-                    $job->update([
-                        'status' => 'failed',
-                        'error_message' => $e->getMessage(),
-                        'finished_at' => now(),
-                    ]);
-                }
-            }
-        }
-
-        // 5. Process any fallback jobs (places without place_id)
-        foreach ($fallbackJobs as $job) {
-            $post = $job->post;
-            try {
-                $result = $photoService->scrapeAndAttachForPost(
-                    post: $post,
-                    limit: $job->limit ?: 8,
-                    replaceExisting: (bool) $job->replace_existing,
-                    publishOnComplete: (bool) $job->publish_on_complete
-                );
-
-                $count = $result['count'] ?? 0;
-                $total = $result['total'] ?? $count;
-
-                if ($total < 1) {
-                    $isJob = $post->isJob();
-                    $job->update([
-                        'status' => $isJob ? 'completed' : 'failed',
-                        'photos_count' => $count,
-                        'error_message' => $isJob ? 'Lowongan kerja: Logo resmi tidak ditemukan di web (menggunakan kartu standar).' : 'Tidak ada foto yang ditemukan dari semua sumber.',
-                        'finished_at' => now(),
-                    ]);
+                } elseif (! str_starts_with($row->post->place_id ?? '', 'ChI')) {
+                    $this->finish($row->id, 'failed', 0, 'Google Maps place_id tidak valid/tidak tersedia. Import ulang data tempat terlebih dahulu.');
                 } else {
-                    $job->update([
-                        'status' => 'completed',
-                        'photos_count' => $total,
-                        'error_message' => null,
-                        'finished_at' => now(),
-                    ]);
+                    $placeIds[] = $row->post->place_id;
                 }
-            } catch (Throwable $e) {
-                Log::error("Photo scrape failed for Job #{$job->id} (Post #{$post->id}): " . $e->getMessage());
-                $job->update([
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage(),
-                    'finished_at' => now(),
-                ]);
             }
+            $jobs = $this->owned()->with('post')->get();
+            if ($jobs->isEmpty()) {
+                return;
+            }
+            $first = $jobs->first();
+            $limit = max(1, min(100, (int) $jobs->max('limit')));
+            $placeIds = array_values(array_unique($placeIds));
+            if (! $first->apify_run_id) {
+                if ($handledLogo) {
+                    $this->release(1);
+
+                    return;
+                }
+                if ($first->phase === 'starting') {
+                    throw new PhotoScrapeException('Apify start sebelumnya terputus. Periksa Runs di Apify sebelum mengulang; run mungkin sudah dibuat.');
+                }
+                if (! $this->owned()->update(['phase' => 'starting'])) {
+                    return;
+                }
+                $run = $service->startPhotoRun($placeIds, null, $limit);
+                // Apply encryption before one atomic, ownership-guarded update.
+                $encrypted = (new PhotoScrapeJob(['apify_token' => $run['token']]))->getAttributes()['apify_token'];
+                $this->owned()->update(['phase' => 'polling', 'apify_run_id' => $run['id'], 'apify_dataset_id' => $run['dataset_id'], 'apify_token' => $encrypted]);
+                $this->release(15);
+
+                return;
+            }
+            if ($service->photoRunStatus($first->apify_run_id, $first->apify_token) !== 'SUCCEEDED') {
+                $this->owned()->update(['poll_failures' => 0, 'error_message' => null]);
+                $this->release(15);
+
+                return;
+            }
+            $photos = $service->fetchPhotoRunResults($first->apify_dataset_id, $first->apify_token, $placeIds, $limit);
+            // Persist successes independently; empty results never start another paid scrape.
+            foreach ($jobs as $row) {
+                try {
+                    DB::transaction(function () use ($row, $service, $photos) {
+                        $current = $this->owned()->whereKey($row->id)->lockForUpdate()->first();
+                        if (! $current) {
+                            return;
+                        }
+                        $post = $current->post()->lockForUpdate()->first();
+                        $images = $post ? ($photos[$post->place_id] ?? []) : [];
+                        if (! $post || ! $images) {
+                            $this->finish($row->id, 'failed', 0, $post ? 'Run Apify selesai tetapi tidak menghasilkan foto valid untuk tempat ini.' : 'Post telah dihapus.');
+
+                            return;
+                        }
+                        $result = $service->attachPhotosToPost($post, array_slice($images, 0, max(1, min(100, (int) $current->limit))), $current->replace_existing, $current->publish_on_complete);
+                        $this->finish($row->id, 'completed', $result['total']);
+                    });
+                } catch (Throwable $e) {
+                    $this->finish($row->id, 'failed', 0, 'Gagal menyimpan foto. Perubahan galeri dibatalkan; periksa database/storage.');
+                }
+            }
+        } catch (Throwable $e) {
+            if ($e instanceof PhotoScrapeException && $e->retryable) {
+                $failures = (int) $this->owned()->max('poll_failures') + 1;
+                if ($failures < 3) {
+                    $this->owned()->update(['poll_failures' => $failures, 'error_message' => $e->getMessage()]);
+                    $this->release(15);
+
+                    return;
+                }
+            }
+            $this->failed($e);
         }
     }
 
-    /**
-     * Handle job failure to ensure no jobs are left stuck in processing.
-     */
-    public function failed(?Throwable $exception): void
+    private function owned(): Builder
     {
-        if (empty($this->photoJobIds)) {
+        return PhotoScrapeJob::whereIn('id', $this->photoJobIds)
+            ->where('processing_token', $this->processingToken)
+            ->whereIn('status', ['pending', 'processing']);
+    }
+
+    private function finish(int $id, string $status, int $count, ?string $error = null): void
+    {
+        $this->owned()->whereKey($id)->update([
+            'phase' => $status, 'status' => $status, 'photos_count' => $count, 'error_message' => $error,
+            'finished_at' => now(), 'processing_token' => null, 'apify_token' => null,
+        ]);
+    }
+
+    public function failed(?Throwable $e): void
+    {
+        if (! $this->processingToken) {
             return;
         }
-
-        PhotoScrapeJob::whereIn('id', $this->photoJobIds)
-            ->where('status', 'processing')
-            ->update([
-                'status' => 'failed',
-                'error_message' => $exception?->getMessage() ?? 'Antrean gagal diproses oleh worker.',
-                'finished_at' => now(),
-            ]);
+        $message = $e instanceof PhotoScrapeException
+            ? $e->getMessage() : 'Worker scrape foto gagal/timeout. Periksa queue worker dan run Apify sebelum mengulang.';
+        $this->owned()->update([
+            'phase' => 'failed', 'status' => 'failed', 'error_message' => $message,
+            'finished_at' => now(), 'processing_token' => null, 'apify_token' => null,
+        ]);
     }
 }

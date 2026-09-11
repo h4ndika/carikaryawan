@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'apify' => [
+        'token' => env('APIFY_TOKEN'),
+        'photo_max_active_runs' => (int) env('PHOTO_SCRAPE_MAX_ACTIVE_RUNS', 3),
+    ],
 
     /*
     |--------------------------------------------------------------------------

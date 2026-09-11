@@ -3,8 +3,8 @@
 namespace App\Filament\Rahasia\Resources\PhotoScrapeJobs\Pages;
 
 use App\Filament\Rahasia\Resources\PhotoScrapeJobs\PhotoScrapeJobResource;
-use App\Jobs\ProcessBatchPhotoScrapeJob;
 use App\Models\PhotoScrapeJob;
+use App\Services\PhotoScrapeQueue;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
@@ -76,57 +76,43 @@ class ListPhotoScrapeJobs extends ListRecords
                     } elseif ($targetStatus === 'failed') {
                         $query->where('status', 'failed');
                     } else {
-                        $query->whereIn('status', ['pending', 'failed', 'processing']);
+                        $query->whereIn('status', ['pending', 'failed']);
                     }
 
-                    $jobIds = $query->limit($limit)->pluck('id')->all();
+                    $jobIds = $query->whereNull('processing_token')->orderBy('id')->limit($limit)->pluck('id')->all();
 
                     if (empty($jobIds)) {
                         Notification::make()
                             ->title('Tidak Ada Antrean')
-                            ->body('Tidak ditemukan job dengan status yang dipilih.')
+                            ->body('Tidak ada job yang belum dikirim. Job aktif tidak diduplikasi; periksa worker jika masih menunggu.')
                             ->warning()
                             ->send();
+
                         return;
                     }
 
-                    // Reset all selected jobs to pending status and clear errors
-                    PhotoScrapeJob::whereIn('id', $jobIds)->update([
-                        'status' => 'pending',
-                        'error_message' => null,
-                        'started_at' => null,
-                        'finished_at' => null,
-                    ]);
-
-                    foreach (array_chunk($jobIds, 3) as $chunkIds) {
-                        ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
-                    }
+                    $count = app(PhotoScrapeQueue::class)->enqueue($jobIds);
 
                     Notification::make()
-                        ->title('Antrean Berhasil Dijalankan')
-                        ->body(count($jobIds) . ' antrean foto telah dimasukkan ke worker (diproses cepat per 3 tempat).')
+                        ->title($count ? 'Antrean Berhasil Dijalankan' : 'Tidak Ada Job Dikirim; Periksa Status Antrean')
+                        ->body($count.' antrean foto dimasukkan ke worker (maksimal 3 tempat/run; status diperbarui otomatis).')
                         ->success()
                         ->send();
                 }),
 
             Action::make('resetStuck')
-                ->label('Reset Antrean Macet')
+                ->label('Tandai Antrean Kedaluwarsa')
                 ->icon('heroicon-o-arrow-path-rounded-square')
                 ->color('danger')
                 ->requiresConfirmation()
-                ->modalHeading('Reset Antrean Sedang Proses yang Macet')
-                ->modalDescription('Akan mengembalikan semua antrean berstatus "Sedang Proses" kembali menjadi "Menunggu" (Pending) agar bisa dijalankan ulang.')
-                ->modalSubmitActionLabel('Ya, Reset Antrean Macet')
+                ->modalHeading('Periksa Batas Waktu Antrean')
+                ->modalDescription('Hanya antrean melewati batas waktu yang ditandai gagal dengan keterangan. Run aktif tidak direset. Ulangi lewat tombol Job Gagal setelah memeriksa worker.')
+                ->modalSubmitActionLabel('Ya, Tandai Antrean Kedaluwarsa')
                 ->action(function () {
-                    $stuckCount = PhotoScrapeJob::where('status', 'processing')->count();
-                    PhotoScrapeJob::where('status', 'processing')->update([
-                        'status' => 'pending',
-                        'started_at' => null,
-                        'error_message' => null,
-                    ]);
+                    $stuckCount = app(PhotoScrapeQueue::class)->recoverStale();
 
                     Notification::make()
-                        ->title("{$stuckCount} antrean macet berhasil di-reset ke status Menunggu")
+                        ->title("{$stuckCount} antrean kedaluwarsa ditandai gagal")
                         ->success()
                         ->send();
                 }),
@@ -137,7 +123,7 @@ class ListPhotoScrapeJobs extends ListRecords
                 ->color('warning')
                 ->requiresConfirmation()
                 ->modalHeading('Ulangi Semua Job Gagal')
-                ->modalDescription('Apakah Anda yakin ingin mengembalikan semua job yang berstatus Gagal menjadi Pending dan memprosesnya secara pararel?')
+                ->modalDescription('Apakah Anda yakin ingin mengembalikan semua job yang berstatus Gagal menjadi Pending dan memprosesnya secara paralel?')
                 ->modalSubmitActionLabel('Ya, Ulangi Semua Gagal')
                 ->action(function () {
                     $failedJobIds = PhotoScrapeJob::where('status', 'failed')->pluck('id')->all();
@@ -148,23 +134,15 @@ class ListPhotoScrapeJobs extends ListRecords
                             ->body('Semua job sudah selesai atau tidak ada yang berstatus gagal.')
                             ->info()
                             ->send();
+
                         return;
                     }
 
-                    PhotoScrapeJob::whereIn('id', $failedJobIds)->update([
-                        'status' => 'pending',
-                        'error_message' => null,
-                        'started_at' => null,
-                        'finished_at' => null,
-                    ]);
-
-                    foreach (array_chunk($failedJobIds, 3) as $chunkIds) {
-                        ProcessBatchPhotoScrapeJob::dispatch($chunkIds);
-                    }
+                    $count = app(PhotoScrapeQueue::class)->enqueue($failedJobIds);
 
                     Notification::make()
-                        ->title('Job Gagal Berhasil Di-queue Ulang')
-                        ->body(count($failedJobIds) . ' job gagal telah diubah statusnya menjadi pending dan dimasukkan ke worker.')
+                        ->title($count ? 'Job Gagal Berhasil Di-queue Ulang' : 'Tidak Ada Job Dikirim; Periksa Status Antrean')
+                        ->body($count.' job gagal telah diubah statusnya menjadi pending dan dimasukkan ke worker.')
                         ->success()
                         ->send();
                 }),

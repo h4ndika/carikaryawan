@@ -15,3 +15,11 @@ Schedule::command('ai:process-batch --limit=10 --concurrency=10')
     ->runInBackground();
 
 
+
+// Terminalize orphaned photo runs after worker crashes/SIGKILL, without resetting live work.
+Artisan::command('photos:recover-stale', function () {
+    $count = app(\App\Services\PhotoScrapeQueue::class)->recoverStale();
+    $this->info("{$count} antrean foto kedaluwarsa ditandai gagal.");
+})->purpose('Recover orphaned photo scraping jobs');
+
+Schedule::command('photos:recover-stale')->everyMinute()->withoutOverlapping();
