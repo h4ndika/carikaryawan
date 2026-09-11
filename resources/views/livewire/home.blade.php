@@ -22,30 +22,28 @@
                 <article class="lg:col-span-7 group">
                     <a href="{{ $featuredPost->url() }}" 
                        wire:navigate class="block space-y-4">
-                        @if (!$featuredPost->isJob())
-                            <div class="aspect-[16/10] overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
-                                @if ($featuredThumb)
-                                    <img src="{{ $featuredThumb }}" 
-                                         alt="{{ $featuredPost->title }}" 
-                                         data-fallbacks='@json($fallbackFeaturedUrls ?? [])'
-                                         onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                         loading="eager"
-                                         fetchpriority="high"
-                                         decoding="async">
-                                    @if ($featuredSource = $featuredPost->primary_image_source)
-                                        <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-medium text-white/90 tracking-wide pointer-events-none">
-                                            Foto: {{ $featuredSource }}
-                                        </span>
-                                    @endif
-                                @else
-                                    <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-8">
-                                        <i class="fa-solid fa-camera text-4xl text-zinc-300 dark:text-zinc-600 mb-2"></i>
-                                        <span class="text-xs uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">DISEKITAR KURASI</span>
-                                    </div>
+                        <div class="aspect-[16/10] overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 relative">
+                            @if ($featuredThumb)
+                                <img src="{{ $featuredThumb }}" 
+                                     alt="{{ $featuredPost->title }}" 
+                                     data-fallbacks='@json($fallbackFeaturedUrls ?? [])'
+                                     onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                     loading="eager"
+                                     fetchpriority="high"
+                                     decoding="async">
+                                @if ($featuredSource = $featuredPost->primary_image_source)
+                                    <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-medium text-white/90 tracking-wide pointer-events-none">
+                                        Foto: {{ $featuredSource }}
+                                    </span>
                                 @endif
-                            </div>
-                        @endif
+                            @else
+                                <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-8">
+                                    <i class="fa-solid fa-camera text-4xl text-zinc-300 dark:text-zinc-600 mb-2"></i>
+                                    <span class="text-xs uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500">DISEKITAR KURASI</span>
+                                </div>
+                            @endif
+                        </div>
 
                         <div class="space-y-2.5">
                             <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400">
@@ -92,10 +90,13 @@
                             @endphp
                             <article class="pt-6 first:pt-0 group">
                                 <a href="{{ $sidePost->url() }}" 
-                                   wire:navigate class="{{ $sidePost->isJob() ? 'block' : 'grid grid-cols-3 gap-4 items-start' }}">
-                                    <div class="{{ $sidePost->isJob() ? 'space-y-1.5' : 'col-span-2 space-y-1.5' }}">
+                                   wire:navigate class="grid grid-cols-3 gap-4 items-start">
+                                    <div class="col-span-2 space-y-1.5">
                                         <div class="flex items-center gap-1.5">
                                             <span class="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400 block">
+                                                @if ($sidePost->isJob())
+                                                    <i class="fa-solid fa-briefcase text-[10px] mr-0.5"></i>
+                                                @endif
                                                 {{ $sidePost->category->name ?? 'CERITA' }}
                                             </span>
                                             @if ($sidePost->isJob() && $sidePost->isExpired())
@@ -111,27 +112,25 @@
                                             <span>{{ max(1, round(str_word_count(strip_tags($sidePost->content ?? '')) / 200)) }} min</span>
                                         </div>
                                     </div>
-                                    @if (!$sidePost->isJob())
-                                        <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
-                                            @if ($sideThumb)
-                                                <img src="{{ $sideThumb }}" 
-                                                     alt="{{ $sidePost->title }}" 
-                                                     data-fallbacks='@json($fallbackSideUrls)'
-                                                     onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
-                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                     loading="lazy">
-                                                @if ($sideSource = $sidePost->primary_image_source)
-                                                    <span class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[8px] font-medium text-white/90 pointer-events-none">
-                                                        {{ $sideSource }}
-                                                    </span>
-                                                @endif
-                                            @else
-                                                <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
-                                                    <i class="fa-solid fa-camera text-base"></i>
-                                                </div>
+                                    <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
+                                        @if ($sideThumb)
+                                            <img src="{{ $sideThumb }}" 
+                                                 alt="{{ $sidePost->title }}" 
+                                                 data-fallbacks='@json($fallbackSideUrls)'
+                                                 onerror="if(window.handleImageFallback){handleImageFallback(this);}else{this.onerror=null;this.src='/images/placeholder.svg';}"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                 loading="lazy">
+                                            @if ($sideSource = $sidePost->primary_image_source)
+                                                <span class="absolute bottom-1 right-1 px-1 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[8px] font-medium text-white/90 pointer-events-none">
+                                                    {{ $sideSource }}
+                                                </span>
                                             @endif
-                                        </div>
-                                    @endif
+                                        @else
+                                            <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600">
+                                                <i class="fa-solid fa-camera text-base"></i>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </a>
                             </article>
                         @empty
