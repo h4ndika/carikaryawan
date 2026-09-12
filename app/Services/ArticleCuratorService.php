@@ -45,34 +45,68 @@ class ArticleCuratorService
             throw new RuntimeException("Tidak ada data tempat di {$city->name} yang memenuhi kriteria.");
         }
 
-        // Siapkan ringkasan data tempat untuk prompt AI
+        // Siapkan ringkasan data tempat lengkap untuk prompt AI
         $placesContext = [];
         foreach ($places as $index => $p) {
-            $catName = $p->category?->name ?? 'Tempat Menarik';
+            $catName = $p->category?->name ?? 'Tempat Populer';
             $num = $index + 1;
-            $addr = $p->formatted_address ?: $p->address;
-            $rating = $p->rating ? "Rating: {$p->rating} ({$p->reviews_count} ulasan)" : '';
-            $desc = Str::limit(strip_tags($p->content), 250);
-            $placesContext[] = "{$num}. Nama: \"{$p->title}\" ({$catName})\n   Alamat: {$addr}\n   {$rating}\n   Deskripsi Singkat: {$desc}\n   URL Detail: {$p->url()}\n   Foto: {$p->primary_image_url}";
+            $addr = $p->formatted_address ?: $p->address ?: "{$city->name}";
+            $rating = $p->rating ? "Rating Google: {$p->rating} ({$p->reviews_count} ulasan)" : '';
+            $desc = Str::limit(strip_tags($p->content), 350);
+            $imgUrl = $p->primary_image_url ?: '';
+            
+            // Ambil info jam buka & harga jika ada
+            $jamBuka = $p->details?->first(fn($d) => in_array(strtolower(trim($d->meta_key)), ['jam_buka', 'jam_operasional', 'opening_hours']))?->meta_value;
+            $harga = $p->details?->first(fn($d) => in_array(strtolower(trim($d->meta_key)), ['harga', 'rentang_harga', 'tiket_masuk', 'price']))?->meta_value;
+
+            $metaParts = [];
+            if ($jamBuka) $metaParts[] = "Jam Buka: {$jamBuka}";
+            if ($harga) $metaParts[] = "Kisaran Harga: {$harga}";
+            $metaStr = !empty($metaParts) ? ("   Info: " . implode(" | ", $metaParts) . "\n") : '';
+
+            $placesContext[] = "{$num}. Nama Tempat: \"{$p->title}\" ({$catName})\n" .
+                "   Alamat: {$addr}\n" .
+                ($rating ? "   {$rating}\n" : '') .
+                $metaStr .
+                "   Ringkasan Tempat: {$desc}\n" .
+                "   URL Halaman: {$p->url()}\n" .
+                "   Foto Utama: {$imgUrl}";
         }
 
         $topicName = $category ? $category->name : 'Tempat Menarik & Populer';
-        $prompt = "Buatkan artikel blog editorial listicle bergaya majalah gaya hidup/perjalanan yang sangat menarik dan mendalam untuk website \"DISEKITAR\".\n" .
-            "Topik: Rekomendasi {$limit} {$topicName} Terbaik di {$city->name}.\n" .
-            ($customAngle ? "Sudut Pandang / Angle Khusus: {$customAngle}\n" : '') .
-            "Berikut adalah daftar {$places->count()} tempat yang WAJIB diulas dalam artikel:\n" .
+        $currentYear = date('Y');
+
+        $prompt = "Buatkan artikel blog editorial listicle mendalam, otoritatif, dan ramah SEO untuk portal informasi perkotaan 'DISEKITAR' (disekitar.com).\n\n" .
+            "TOPIK UTAMA: Rekomendasi {$limit} {$topicName} Terbaik & Paling Populer di {$city->name} ({$currentYear}).\n" .
+            ($customAngle ? "SUDUT PANDANG / ANGLE KHUSUS: {$customAngle}\n" : '') .
+            "DAFTAR {$places->count()} TEMPAT YANG DIBAHAS:\n" .
             implode("\n\n", $placesContext) . "\n\n" .
-            "Instruksi Penulisan:\n" .
-            "1. Buat Judul Artikel yang menarik, ramah SEO, dan klikabel (misal: '5 Rekomendasi Tempat Wisata Terbaik di Bandung untuk Liburan Akhir Pekan').\n" .
-            "2. Paragraf Pembuka: Sambutan hangat dan narasi pengantar mengenai pesona kota {$city->name} terkait topik ini.\n" .
-            "3. Bagian Isi: Ulas satu per satu tempat secara berurutan menggunakan subjudul <h2>{Nomor}. {Nama Tempat}</h2>. Ceritakan keistimewaan tempat tersebut, daya tarik utamanya, suasana, dan tips berkunjung.\n" .
-            "   PENTING: Di setiap ulasan tempat, sertakan link rujukan ke URL detailnya dengan tag <a href=\"URL_DETAIL\" class=\"text-amber-700 dark:text-amber-400 font-semibold underline\" target=\"_blank\">Lihat detail & lokasi {Nama Tempat} di DISEKITAR &rarr;</a>.\n" .
-            "4. Paragraf Penutup: Tips praktis berkunjung (waktu terbaik, transportasi) dan kesimpulan penutup.\n" .
-            "5. Format output: Gunakan tag HTML bersih (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <a>). JANGAN gunakan blok markdown (tanpa ```html).\n" .
-            "6. Di akhir teks, sertakan metadata dalam format tag <meta_json>...</meta_json> berisi:\n" .
+            "PANDUAN STRUKTUR & STANDAR SEO:\n" .
+            "1. JANGAN mencantumkan judul utama (<h1> atau <h2> judul artikel) di awal isi konten HTML karena sistem website sudah otomatis menampilkannya sebagai header artikel.\n" .
+            "2. PARAGRAF PEMBUKA: Langsung mulai dengan 2-3 paragraf pembuka yang mengalir, memperkenalkan pesona {$topicName} di {$city->name}, tren terkini, dan mengapa kurasi ini penting untuk pembaca.\n" .
+            "3. BAGIAN ULASAN TEMPAT: Untuk setiap tempat, gunakan format hierarki berikut secara konsisten:\n" .
+            "   - Gunakan heading: <h2>{Nomor}. {Nama Tempat}</h2>\n" .
+            "   - Jika URL 'Foto Utama' tempat tersedia (bukan kosong), sematkan foto dengan tag HTML:\n" .
+            "     <figure class=\"my-4 rounded-xl overflow-hidden shadow-xs border border-zinc-200 dark:border-zinc-800\">\n" .
+            "       <img src=\"{URL_FOTO_UTAMA}\" alt=\"{Nama Tempat} di {$city->name}\" class=\"w-full max-h-[420px] object-cover rounded-xl\" loading=\"lazy\">\n" .
+            "       <figcaption class=\"text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 text-center italic\">Suasana {Nama Tempat}</figcaption>\n" .
+            "     </figure>\n" .
+            "   - Tulis 2 hingga 3 paragraf ulasan mendalam: keunikan tempat, daya tarik utama, suasana/ambience, menu/fasilitas unggulan, dan alasan mengapa wajib dikunjungi.\n" .
+            "   - Buat box ringkasan informasi praktis dengan list:\n" .
+            "     <ul class=\"bg-zinc-50 dark:bg-zinc-800/60 p-4 rounded-xl text-sm border border-zinc-200/70 dark:border-zinc-700/60 space-y-1.5 my-3\">\n" .
+            "       <li><strong>Alamat:</strong> {Alamat lengkap}</li>\n" .
+            "       <li><strong>Rating & Ulasan:</strong> {Rating Google ulasan}</li>\n" .
+            "       <li><strong>Rekomendasi / Daya Tarik:</strong> {Tips/keunggulan utama}</li>\n" .
+            "     </ul>\n" .
+            "   - Tautkan internal link rujukan ke profil lengkap tempat di DISEKITAR:\n" .
+            "     <p><a href=\"{URL_Halaman}\" class=\"inline-flex items-center gap-1.5 text-amber-800 dark:text-amber-400 font-semibold hover:underline\" target=\"_blank\">Lihat detail & lokasi lengkap {Nama Tempat} di DISEKITAR &rarr;</a></p>\n" .
+            "4. TIPS PRAKTIS BERKUNJUNG: Berikan subjudul <h2>Tips Berkunjung ke {$city->name}</h2> berisi tips bermanfaat (waktu terbaik berkunjung, rute/transportasi, etika lokal, budget).\n" .
+            "5. PARAGRAF PENUTUP / KESIMPULAN: Ringkasan penutup yang ramah dan mengajak pembaca menjelajahi kota.\n" .
+            "6. FORMAT OUTPUT: Gunakan tag HTML bersih (<h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <a>, <figure>, <img>, <figcaption>). DILARANG menggunakan markdown codeblock (tanpa ```html).\n" .
+            "7. Di bagian paling akhir, sertakan metadata JSON di dalam tag <meta_json>...</meta_json>:\n" .
             "   {\n" .
-            "     \"title\": \"Judul Artikel Pilihan\",\n" .
-            "     \"excerpt\": \"Ringkasan 2-3 kalimat menarik untuk deskripsi artikel\"\n" .
+            "     \"title\": \"Judul SEO yang sangat menarik, natural, dan clickable maksimal 65 karakter\",\n" .
+            "     \"excerpt\": \"Deskripsi meta ramah mesin pencari berkisar 140-160 karakter yang merangkum artikel secara memikat\"\n" .
             "   }";
 
         $apiKey = config('openai.api_key');
@@ -95,7 +129,7 @@ class ArticleCuratorService
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'Kamu adalah editor travel & lifestyle senior terkemuka di Indonesia. Kamu menulis artikel yang hidup, berjiwa lokal, informatif, dan terstruktur rapi dalam format HTML.',
+                    'content' => 'Kamu adalah editor lifestyle dan pakar SEO travel terkemuka di Indonesia. Kamu menulis artikel panduan lokal yang hidup, kaya visual, kaya data, dan diformat dalam HTML bersih berstandar tinggi.',
                 ],
                 [
                     'role' => 'user',
@@ -112,8 +146,8 @@ class ArticleCuratorService
         $rawText = $response->json('choices.0.message.content') ?? '';
 
         // Ekstrak Meta JSON
-        $title = "{$limit} Rekomendasi {$topicName} di {$city->name}";
-        $excerpt = "Panduan kurasi editorial {$limit} {$topicName} paling populer dan terbaik di {$city->name}.";
+        $title = "{$limit} Rekomendasi {$topicName} Terbaik di {$city->name} ({$currentYear})";
+        $excerpt = "Panduan kurasi editorial {$limit} {$topicName} paling populer dan terbaik di {$city->name}. Temukan daya tarik, lokasi, dan tips berkunjung lengkapnya di sini.";
 
         if (preg_match('/<meta_json>(.*?)<\/meta_json>/is', $rawText, $m)) {
             $metaData = json_decode(trim($m[1]), true);
@@ -131,6 +165,9 @@ class ArticleCuratorService
         // Bersihkan pembungkus markdown ```html
         $cleanContent = preg_replace('/^```(?:html)?\s*/i', '', $cleanContent);
         $cleanContent = preg_replace('/\s*```$/', '', $cleanContent);
+
+        // Jika AI masih mengawali konten dengan tag <h1> atau <h2> judul artikel yang sama persis, bersihkan agar tidak dobel
+        $cleanContent = preg_replace('/^\s*<h[12][^>]*>.*?<\/h[12]>\s*/i', '', $cleanContent, 1);
 
         // Pilih featured image dari foto tempat pertama yang tersedia
         $featuredImage = $places->first()?->primary_image_url ?: null;
