@@ -54,11 +54,11 @@ class AutoHarvestMapsCommand extends Command
             $city = \App\Models\City::find($targetCityId);
         } else {
             // Ambil dari kumpulan 30 kota yang memiliki postingan paling sedikit se-Indonesia
-            $lowestPostsCount = \App\Models\City::withCount('posts')->min('posts_count') ?? 0;
-            $city = \App\Models\City::withCount('posts')
-                ->where('posts_count', '<=', $lowestPostsCount + 5)
-                ->inRandomOrder()
-                ->first() ?: \App\Models\City::inRandomOrder()->first();
+            $lowestCities = \App\Models\City::withCount('posts')
+                ->orderBy('posts_count', 'asc')
+                ->limit(30)
+                ->get();
+            $city = $lowestCities->isNotEmpty() ? $lowestCities->random() : \App\Models\City::inRandomOrder()->first();
         }
 
         if (!$city) {
