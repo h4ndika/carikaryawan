@@ -455,6 +455,10 @@
                             <option value="invalid">Invalid</option>
                             <option value="disabled">Disabled</option>
                         </select>
+                        <button class="btn btn-warning" id="export-tokens-btn">
+                            <span class="btn-icon">📋</span>
+                            Export Token (Copy)
+                        </button>
                         <button class="btn btn-success" id="add-account-btn">
                             <span class="btn-icon">➕</span>
                             Add API Key
@@ -469,6 +473,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="account-select-all" title="Select All">
+                                </th>
                                 <th>ID</th>
                                 <th>Email</th>
                                 <th>API Token</th>
@@ -535,6 +542,29 @@
                     <button type="submit" class="btn btn-primary">Add Account</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Export Accounts Modal -->
+    <div class="modal" id="export-accounts-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Export API Key Apify</h3>
+                <button class="modal-close" data-modal="export-accounts-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="card-subtitle" style="margin-bottom: 0.75rem;">
+                    Daftar API Token Apify per baris. Anda dapat langsung meng-copy teks ini dan mem-pastenya ke fitur <strong>Import API Key</strong> di admin panel Filament.
+                </p>
+                <div class="form-group">
+                    <label for="export-tokens-textarea"><strong>API Keys (<span id="export-tokens-count">0</span> akun dipilih)</strong></label>
+                    <textarea id="export-tokens-textarea" class="input" style="height: 180px; font-family: monospace; font-size: 0.85rem; line-height: 1.4; resize: vertical;" readonly></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="export-accounts-modal">Tutup</button>
+                <button type="button" class="btn btn-success" id="copy-all-exported-tokens-btn">📋 Copy Semua Token</button>
+            </div>
         </div>
     </div>
 

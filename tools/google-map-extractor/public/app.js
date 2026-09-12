@@ -365,6 +365,54 @@ function initAccountActions() {
 
     document.getElementById('account-search')?.addEventListener('input', renderAccountsTable);
     document.getElementById('account-filter')?.addEventListener('change', renderAccountsTable);
+
+    // Multi-select Select All
+    document.getElementById('account-select-all')?.addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        document.querySelectorAll('.account-checkbox').forEach(cb => cb.checked = checked);
+    });
+
+    // Export Tokens Button
+    document.getElementById('export-tokens-btn')?.addEventListener('click', () => {
+        const selectedCheckboxes = document.querySelectorAll('.account-checkbox:checked');
+        let tokens = [];
+
+        if (selectedCheckboxes.length > 0) {
+            tokens = Array.from(selectedCheckboxes).map(cb => cb.dataset.token).filter(Boolean);
+        } else {
+            // Jika tidak ada yang dicentang, ambil semua token akun yang tampil di tabel
+            const allCheckboxes = document.querySelectorAll('.account-checkbox');
+            if (allCheckboxes.length === 0) {
+                toast('Tidak ada akun yang tersedia untuk diexport.', 'warning');
+                return;
+            }
+            tokens = Array.from(allCheckboxes).map(cb => cb.dataset.token).filter(Boolean);
+        }
+
+        const countEl = document.getElementById('export-tokens-count');
+        const textareaEl = document.getElementById('export-tokens-textarea');
+        if (countEl) countEl.textContent = tokens.length;
+        if (textareaEl) textareaEl.value = tokens.join('\n');
+
+        openModal('export-accounts-modal');
+    });
+
+    // Copy All Exported Tokens Button
+    document.getElementById('copy-all-exported-tokens-btn')?.addEventListener('click', () => {
+        const textareaEl = document.getElementById('export-tokens-textarea');
+        if (!textareaEl || !textareaEl.value) {
+            toast('Tidak ada token untuk di-copy.', 'warning');
+            return;
+        }
+
+        navigator.clipboard.writeText(textareaEl.value).then(() => {
+            toast(`Berhasil menyalin ${textareaEl.value.split('\n').filter(Boolean).length} API Key!`, 'success');
+        }).catch(err => {
+            textareaEl.select();
+            document.execCommand('copy');
+            toast('Berhasil menyalin ke clipboard!', 'success');
+        });
+    });
 }
 
 async function loadAccounts() {
@@ -399,7 +447,7 @@ function renderAccountsTable() {
     if (filter !== 'all') list = list.filter(a => a.status === filter);
 
     if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="8">
+        tbody.innerHTML = `<tr><td colspan="9">
             <div class="empty-state">
                 <div class="empty-state-icon">🔑</div>
                 <div class="empty-state-text">No accounts found in database. Add one manually or use 1-Click Auto-Create!</div>
@@ -419,6 +467,9 @@ function renderAccountsTable() {
 
         return `
         <tr>
+            <td style="text-align: center;">
+                <input type="checkbox" class="account-checkbox" data-id="${id}" data-token="${esc(token)}">
+            </td>
             <td><code>#${id}</code></td>
             <td><strong>${esc(email)}</strong></td>
             <td>
