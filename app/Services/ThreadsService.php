@@ -58,6 +58,30 @@ class ThreadsService
     }
 
     /**
+     * Refresh a long-lived access token before it expires (resets 60 days validity).
+     */
+    public function refreshLongLivedToken(): ?string
+    {
+        $token = $this->getAccessToken();
+        if (!$token) {
+            return null;
+        }
+
+        $response = Http::get('https://graph.threads.net/refresh_access_token', [
+            'grant_type' => 'th_refresh_token',
+            'access_token' => $token,
+        ]);
+
+        if ($response->successful() && !empty($response->json('access_token'))) {
+            $newToken = $response->json('access_token');
+            Setting::set('threads_access_token', $newToken);
+            return $newToken;
+        }
+
+        return null;
+    }
+
+    /**
      * Publish custom text directly to Threads.
      */
     public function postText(string $text, ?string $linkAttachment = null): array

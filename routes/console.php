@@ -28,3 +28,9 @@ Schedule::command('photos:recover-stale')->everyMinute()->withoutOverlapping();
 Schedule::command('threads:broadcast')->dailyAt('01:00')->withoutOverlapping(); // 08:00 WIB (01:00 UTC)
 Schedule::command('threads:broadcast')->dailyAt('05:30')->withoutOverlapping(); // 12:30 WIB (05:30 UTC)
 Schedule::command('threads:broadcast')->dailyAt('12:00')->withoutOverlapping(); // 19:00 WIB (12:00 UTC)
+
+// Auto-refresh Threads Long-Lived Token weekly (resets 60 days validity so it never expires)
+Schedule::call(function () {
+    app(\App\Services\ThreadsService::class)->refreshLongLivedToken();
+})->weekly();
+
