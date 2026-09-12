@@ -30,17 +30,17 @@ class ListAutoHarvestQueues extends ListRecords
                 }),
 
             \Filament\Actions\Action::make('triggerDripPublish')
-                ->label('Publish 10 Post Sekarang')
+                ->label('Publish 50 Post Sekarang')
                 ->icon('heroicon-o-sparkles')
                 ->color('success')
                 ->requiresConfirmation()
                 ->modalHeading('Jalankan Drip Publish')
-                ->modalDescription('Sistem akan mengambil 10 tempat draft dari antrean stok ini, men-generate ulasan AI, dan mempublikasikannya.')
+                ->modalDescription('Sistem akan mengambil 50 tempat draft dari antrean stok ini, men-generate ulasan AI secara paralel, dan mempublikasikannya.')
                 ->action(function () {
-                    \Illuminate\Support\Facades\Artisan::queue('maps:drip-publish', ['--limit' => 10]);
+                    \Illuminate\Support\Facades\Artisan::queue('maps:drip-publish', ['--limit' => 50, '--concurrency' => 10]);
                     \Filament\Notifications\Notification::make()
                         ->title('Drip Publish Dimulai')
-                        ->body('10 post sedang diproses AI di latar belakang dan akan segera terbit.')
+                        ->body('50 post sedang diproses AI secara paralel di latar belakang dan akan segera terbit.')
                         ->success()
                         ->send();
                 }),

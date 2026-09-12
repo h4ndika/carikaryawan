@@ -56,20 +56,9 @@ Schedule::command('articles:auto-curate --limit=5')
     ->withoutOverlapping()
     ->runInBackground();
 
-// Drip-Publish 10 Post Tempat dari Stok Auto-Harvest (3x sehari = 30 post/hari)
-// Dijadwalkan ~30 menit sebelum jadwal broadcast Threads (08:00, 12:30, 19:00 WIB)
-Schedule::command('maps:drip-publish --limit=10')
-    ->dailyAt('00:30') // 07:30 WIB (00:30 UTC)
-    ->withoutOverlapping()
-    ->runInBackground();
-
-Schedule::command('maps:drip-publish --limit=10')
-    ->dailyAt('05:00') // 12:00 WIB (05:00 UTC)
-    ->withoutOverlapping()
-    ->runInBackground();
-
-Schedule::command('maps:drip-publish --limit=10')
-    ->dailyAt('11:30') // 18:30 WIB (11:30 UTC)
+// Drip-Publish stok tempat ke AI & publish (50 post setiap 1 jam)
+Schedule::command('maps:drip-publish --limit=50 --concurrency=10')
+    ->hourly()
     ->withoutOverlapping()
     ->runInBackground();
 
