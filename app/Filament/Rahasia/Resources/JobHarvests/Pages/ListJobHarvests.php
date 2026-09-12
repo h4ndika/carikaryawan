@@ -28,10 +28,11 @@ class ListJobHarvests extends ListRecords
                     Select::make('engine')
                         ->label('Scraper Engine')
                         ->options([
-                            'glints' => 'Glints (Rekomendasi - Cepat & Lengkap)',
-                            'jobstreet' => 'Jobstreet',
+                            'auto' => 'Auto (Rotasi Selang-seling Glints <-> Jobstreet)',
+                            'glints' => 'Glints (Spesifik)',
+                            'jobstreet' => 'Jobstreet (Spesifik)',
                         ])
-                        ->default('glints')
+                        ->default('auto')
                         ->required(),
 
                     TextInput::make('limit')

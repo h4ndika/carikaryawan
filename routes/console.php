@@ -48,8 +48,8 @@ Schedule::call(function () {
     app(\App\Services\ThreadsService::class)->refreshLongLivedToken();
 })->weekly();
 
-// Auto-harvest loker se-Indonesia setiap subuh jam 05:00 WIB (22:00 UTC)
-Schedule::command('jobs:auto-harvest --limit=20 --engine=glints')
+// Auto-harvest loker se-Indonesia setiap subuh jam 05:00 WIB (22:00 UTC) - Rotasi selang-seling Glints <-> Jobstreet
+Schedule::command('jobs:auto-harvest --limit=20 --engine=auto')
     ->dailyAt('22:00')
     ->withoutOverlapping()
     ->runInBackground();

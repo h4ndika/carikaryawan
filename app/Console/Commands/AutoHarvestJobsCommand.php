@@ -23,7 +23,7 @@ class AutoHarvestJobsCommand extends Command
      */
     protected $signature = 'jobs:auto-harvest 
                             {--limit=20 : Jumlah target loker yang ingin diambil}
-                            {--engine=glints : Pilihan scraper (glints atau jobstreet)}
+                            {--engine=auto : Pilihan scraper (auto, glints, atau jobstreet)}
                             {--keyword= : Override kata kunci pencarian (opsional)}
                             {--city= : Override kota tujuan (opsional)}';
 
@@ -85,7 +85,16 @@ class AutoHarvestJobsCommand extends Command
         }
 
         $targetLimit = (int) $this->option('limit');
-        $engine = $this->option('engine') ?: 'glints';
+        $inputEngine = $this->option('engine');
+
+        // Resolve Engine (Rotasi selang-seling Glints <-> Jobstreet jika diset 'auto' atau null)
+        if (empty($inputEngine) || $inputEngine === 'auto') {
+            $lastEngine = Setting::get('auto_job_harvest_last_engine', 'jobstreet');
+            $engine = ($lastEngine === 'glints') ? 'jobstreet' : 'glints';
+            Setting::set('auto_job_harvest_last_engine', $engine);
+        } else {
+            $engine = $inputEngine;
+        }
 
         // 1. Resolve Kata Kunci (Rotasi harian)
         $overrideKeyword = $this->option('keyword');
