@@ -9,6 +9,7 @@ use App\Filament\Rahasia\Resources\AutoHarvestQueues\Schemas\AutoHarvestQueueFor
 use App\Filament\Rahasia\Resources\AutoHarvestQueues\Tables\AutoHarvestQueuesTable;
 use App\Models\AutoHarvestQueue;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -21,7 +22,7 @@ class AutoHarvestQueueResource extends Resource
     protected static ?string $navigationLabel = 'Stok Auto-Harvest';
     protected static ?string $modelLabel = 'Stok Auto-Harvest';
     protected static ?string $pluralModelLabel = 'Stok Auto-Harvest';
-    protected static ?string $navigationGroup = 'Master Direktori';
+    protected static string | UnitEnum | null $navigationGroup = 'Master Direktori';
     protected static ?int $navigationSort = 15;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
