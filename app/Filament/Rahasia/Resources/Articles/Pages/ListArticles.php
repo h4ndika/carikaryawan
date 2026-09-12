@@ -77,6 +77,22 @@ class ListArticles extends ListRecords
                         ->send();
                 }),
 
+            Action::make('triggerAutoHarvest')
+                ->label('Jalankan Auto-Harvest Sekarang')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading('Jalankan Auto-Harvest Kurasi')
+                ->modalDescription('Sistem akan memilih 1 kota dan topik terbaik secara otomatis dari rotasi database, lalu memasukkannya ke antrean pembuatan artikel AI.')
+                ->action(function () {
+                    \Illuminate\Support\Facades\Artisan::call('articles:auto-curate');
+                    Notification::make()
+                        ->title('Auto-Harvest Berhasil Dijalankan')
+                        ->body('Kurasi otomatis telah dikirim ke antrean latar belakang.')
+                        ->success()
+                        ->send();
+                }),
+
             CreateAction::make()
                 ->label('Tulis Manual'),
         ];

@@ -40,3 +40,15 @@ Schedule::command('jobs:auto-harvest --limit=20 --engine=glints')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Auto-curate artikel blog harian se-Indonesia 2x sehari (06:30 WIB & 15:00 WIB)
+Schedule::command('articles:auto-curate --limit=5')
+    ->dailyAt('23:30') // 06:30 WIB
+    ->withoutOverlapping()
+    ->runInBackground();
+
+Schedule::command('articles:auto-curate --limit=5')
+    ->dailyAt('08:00') // 15:00 WIB
+    ->withoutOverlapping()
+    ->runInBackground();
+
+
