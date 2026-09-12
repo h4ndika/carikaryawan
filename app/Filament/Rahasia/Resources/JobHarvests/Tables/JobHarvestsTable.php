@@ -161,7 +161,7 @@ class JobHarvestsTable
                     ->label('Buka')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
-                    ->url(fn (Post $record): string => route('posts.show', $record->slug))
+                    ->url(fn (Post $record): string => $record->url())
                     ->openUrlInNewTab(),
 
                 Action::make('generateAi')
