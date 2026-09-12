@@ -30,7 +30,14 @@ class ListArticles extends ListRecords
                 ->form([
                     Select::make('city_id')
                         ->label('Pilih Kota')
-                        ->options(City::query()->orderBy('name')->pluck('name', 'id'))
+                        ->options(
+                            City::query()
+                                ->whereHas('posts', fn ($q) => $q->published())
+                                ->withCount(['posts' => fn ($q) => $q->published()])
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(fn ($city) => [$city->id => "{$city->name} ({$city->posts_count} tempat)"])
+                        )
                         ->searchable()
                         ->required(),
 
