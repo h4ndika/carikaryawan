@@ -17,14 +17,15 @@ class CurateArticleJob implements ShouldQueue
 
     public int $timeout = 240;
     public int $tries = 2;
-    public string $queue = 'ai';
 
     public function __construct(
         public int $cityId,
         public ?int $categoryId = null,
         public int $limit = 5,
         public ?string $customAngle = null
-    ) {}
+    ) {
+        $this->onQueue('ai');
+    }
 
     public function handle(ArticleCuratorService $curator): void
     {
