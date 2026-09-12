@@ -20,6 +20,7 @@ class GoogleMapsImportService
         'updated' => 0,
         'skipped' => 0,
         'failed' => 0,
+        'imported_post_ids' => [],
     ];
 
     protected bool $skipDuplicates = false;
@@ -187,6 +188,7 @@ class GoogleMapsImportService
                 // Create new
                 $postId = $this->createPost($data);
                 $this->stats['imported']++;
+                $this->stats['imported_post_ids'][] = $postId;
             }
 
             // Extract all Google Maps image URLs
@@ -591,6 +593,7 @@ class GoogleMapsImportService
             'updated' => 0,
             'skipped' => 0,
             'failed' => 0,
+            'imported_post_ids' => [],
         ];
     }
 

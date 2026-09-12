@@ -45,7 +45,40 @@ class PostAiContentService
         if ($post->website) {
             $extraContext[] = "Website: {$post->website}";
         }
-        $extraContextStr = !empty($extraContext) ? 'Informasi tempat dari data Google Maps: ' . implode(' | ', $extraContext) . '.' : '';
+        $isJob = $post->isJob();
+        if ($isJob) {
+            $post->loadMissing('details');
+            $existingDetails = $post->details->pluck('meta_value', 'meta_key')->toArray();
+            $existingDesc = trim(strip_tags($post->content));
+            if (!empty($existingDesc)) {
+                $extraContext[] = "Deskripsi Lowongan Asli dari Perusahaan: " . Str::limit($existingDesc, 800);
+            }
+            if (!empty($existingDetails['cara_melamar'])) {
+                $extraContext[] = "Cara Melamar Asli: " . $existingDetails['cara_melamar'];
+            }
+        }
+
+        $extraContextStr = !empty($extraContext) ? 'Informasi pelengkap: ' . implode(' | ', $extraContext) . '.' : '';
+
+        if ($isJob) {
+            return "Buatkan artikel lowongan kerja yang sangat informatif, profesional, dan rapi untuk posisi dan perusahaan: \"$title\", yang berlokasi di $cityName, $provinceName. " .
+                ($extraContextStr ? "$extraContextStr " : '') .
+                'Tulis dengan bahasa Indonesia yang jelas, menarik bagi pencari kerja, dan terstruktur rapi. ' .
+                'Gunakan susunan subjudul: <h2>Ringkasan Lowongan</h2>, <h3>Kualifikasi & Persyaratan</h3>, <h3>Tanggung Jawab Pekerjaan</h3>, dan <h3>Benefit & Cara Melamar</h3>. ' .
+                'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2>. JANGAN berikan teks pengantar, instruksi, atau salam pembuka/penutup. ' .
+                'Format dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), tanpa blok markdown/backticks. ' .
+                'Sertakan juga data detail terstruktur dalam format JSON di akhir output, dibungkus tag <json>...</json>: ' .
+                'Format JSON: ' .
+                '{
+                    "posisi": "Nama Posisi",
+                    "perusahaan": "Nama Perusahaan",
+                    "lokasi": "' . ($cityName ?: 'Indonesia') . '",
+                    "gaji": "Perkiraan / Negosiasi / Kisaran Gaji",
+                    "kualifikasi": "Ringkasan kualifikasi utama",
+                    "tipe_pekerjaan": "Full Time / Kontrak / Part Time / Magang"
+                } ' .
+                ($additionalPrompt ? "Prompt tambahan: $additionalPrompt" : '');
+        }
 
         return "Buatkan artikel editorial menarik dengan Judul : \"$title\", yang berlokasi di $cityName, $provinceName. " .
             "Artikel ini berkategori $categoryName. " .
@@ -56,7 +89,6 @@ class PostAiContentService
             'Tambahkan juga data detail dalam format JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal: ' .
             '- Kategori Hotel, Wisata, Kuliner dll : harga, lokasi, jam_buka, fasilitas, rekomendasi ' .
             '- Kategori Fasilitas Publik / Transit: jam_operasional, tarif, akses_stasiun_bandara, fasilitas_tersedia, tips_transit ' .
-            '- Kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan ' .
             '- atau key spesifik lainnya yang relevan dengan topik ini. ' .
             'Format JSON: ' .
             '{
@@ -102,16 +134,28 @@ class PostAiContentService
 
             $post->update($updateData);
 
-            // Sync Details using single batch insert
+            // Sync Details using upsert/merge to preserve important original fields (like cara_melamar / apply_url)
             if (!empty($detailsArray)) {
+                $existingDetails = \App\Models\PostDetail::where('post_id', $post->id)->pluck('meta_value', 'meta_key')->toArray();
                 \App\Models\PostDetail::where('post_id', $post->id)->forceDelete();
                 $now = now();
-                $insertRows = [];
+                $merged = $existingDetails;
                 foreach ($detailsArray as $detail) {
+                    $key = (string) $detail['meta_key'];
+                    $val = (string) $detail['meta_value'];
+                    // Jaga agar cara_melamar / website link asli tidak tertimpa teks dummy AI
+                    if ($key === 'cara_melamar' && !empty($existingDetails['cara_melamar']) && str_contains($existingDetails['cara_melamar'], 'http')) {
+                        continue;
+                    }
+                    $merged[$key] = $val;
+                }
+
+                $insertRows = [];
+                foreach ($merged as $k => $v) {
                     $insertRows[] = [
                         'post_id' => $post->id,
-                        'meta_key' => (string) $detail['meta_key'],
-                        'meta_value' => (string) $detail['meta_value'],
+                        'meta_key' => $k,
+                        'meta_value' => $v,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
