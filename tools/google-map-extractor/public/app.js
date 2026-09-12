@@ -366,6 +366,7 @@ function initAccountActions() {
     document.getElementById('account-search')?.addEventListener('input', renderAccountsTable);
     document.getElementById('account-filter')?.addEventListener('change', renderAccountsTable);
     document.getElementById('account-date')?.addEventListener('change', renderAccountsTable);
+    document.getElementById('account-date')?.addEventListener('input', renderAccountsTable);
 
     // Multi-select Select All
     document.getElementById('account-select-all')?.addEventListener('change', (e) => {
@@ -449,8 +450,21 @@ function renderAccountsTable() {
     if (filter !== 'all') list = list.filter(a => a.status === filter);
     if (dateFilter) {
         list = list.filter(a => {
-            const rawDate = a.createdAt || a.created_at || '';
-            return rawDate.startsWith(dateFilter);
+            const raw = a.createdAt || a.created_at || '';
+            if (!raw) return false;
+            if (raw.startsWith(dateFilter)) return true;
+            try {
+                // Konversi SQLite datetime UTC ke local browser YYYY-MM-DD
+                const d = new Date(raw.includes('T') ? raw : raw.replace(' ', 'T') + (raw.endsWith('Z') ? '' : 'Z'));
+                if (!isNaN(d.getTime())) {
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const localYmd = `${year}-${month}-${day}`;
+                    if (localYmd === dateFilter) return true;
+                }
+            } catch (e) {}
+            return false;
         });
     }
 
