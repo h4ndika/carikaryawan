@@ -62,27 +62,19 @@ class ListArticles extends ListRecords
                         ->label('Sudut Pandang / Angle Khusus (Opsional)')
                         ->placeholder('misal: Cocok untuk liburan keluarga, ramah kantong, atau spot foto instagramable'),
                 ])
-                ->action(function (array $data, ArticleCuratorService $curator) {
-                    try {
-                        $article = $curator->curateListicle(
-                            cityId: (int) $data['city_id'],
-                            categoryId: !empty($data['category_id']) ? (int) $data['category_id'] : null,
-                            limit: (int) ($data['limit'] ?? 5),
-                            customAngle: $data['custom_angle'] ?? null
-                        );
+                ->action(function (array $data) {
+                    \App\Jobs\CurateArticleJob::dispatch(
+                        cityId: (int) $data['city_id'],
+                        categoryId: !empty($data['category_id']) ? (int) $data['category_id'] : null,
+                        limit: (int) ($data['limit'] ?? 5),
+                        customAngle: $data['custom_angle'] ?? null
+                    );
 
-                        Notification::make()
-                            ->title('Artikel Berhasil Dibuat!')
-                            ->body("Artikel '{$article->title}' telah selesai dikurasi dan dipublikasikan.")
-                            ->success()
-                            ->send();
-                    } catch (\Throwable $e) {
-                        Notification::make()
-                            ->title('Gagal Membuat Artikel')
-                            ->body($e->getMessage())
-                            ->danger()
-                            ->send();
-                    }
+                    Notification::make()
+                        ->title('Permintaan Kurasi Dikirim ke Antrean')
+                        ->body('Proses pembuatan artikel sedang berjalan di latar belakang (queue). Artikel akan otomatis muncul setelah selesai.')
+                        ->success()
+                        ->send();
                 }),
 
             CreateAction::make()
