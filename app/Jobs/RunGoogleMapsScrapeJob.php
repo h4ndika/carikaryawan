@@ -20,11 +20,13 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
 
     public int $timeout = 900; // 15 menit
     public int $tries = 1;
-    public string $queue = 'maps';
 
     public function __construct(
         public int $scrapeJobId
-    ) {}
+    ) {
+        $engine = GoogleMapsScrapeJob::where('id', $scrapeJobId)->value('engine');
+        $this->queue = in_array($engine, ['jobstreet', 'glints']) ? 'jobs' : 'maps';
+    }
 
     public function handle(
         ApifyScraperService $apifyService,
