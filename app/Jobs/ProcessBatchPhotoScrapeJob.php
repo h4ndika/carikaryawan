@@ -29,12 +29,12 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
     public int $maxExceptions = 1;
 
     public bool $failOnTimeout = true;
-    public string $queue = 'photos';
 
     public ?string $processingToken = null;
 
     public function __construct(public array $photoJobIds, ?string $processingToken = null)
     {
+        $this->onQueue('photos');
         $this->processingToken = $processingToken;
     }
 

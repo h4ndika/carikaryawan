@@ -26,11 +26,6 @@ class ProcessBatchAiQueueJob implements ShouldQueue
     public int $tries = 2;
 
     /**
-     * The queue the job should be dispatched to.
-     */
-    public string $queue = 'ai';
-
-    /**
      * Create a new job instance.
      *
      * @param array<int> $aiJobIds
@@ -39,7 +34,9 @@ class ProcessBatchAiQueueJob implements ShouldQueue
     public function __construct(
         public array $aiJobIds,
         public int $concurrency = 25
-    ) {}
+    ) {
+        $this->onQueue('ai');
+    }
 
     /**
      * Execute the job.
