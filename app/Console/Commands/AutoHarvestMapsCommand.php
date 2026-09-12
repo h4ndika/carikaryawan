@@ -53,11 +53,12 @@ class AutoHarvestMapsCommand extends Command
         if ($targetCityId) {
             $city = \App\Models\City::find($targetCityId);
         } else {
-            // Ambil kota yang memiliki postingan paling sedikit se-Indonesia
+            // Ambil dari kumpulan 30 kota yang memiliki postingan paling sedikit se-Indonesia
+            $lowestPostsCount = \App\Models\City::withCount('posts')->min('posts_count') ?? 0;
             $city = \App\Models\City::withCount('posts')
-                ->orderBy('posts_count', 'asc')
+                ->where('posts_count', '<=', $lowestPostsCount + 5)
                 ->inRandomOrder()
-                ->first();
+                ->first() ?: \App\Models\City::inRandomOrder()->first();
         }
 
         if (!$city) {
@@ -82,8 +83,9 @@ class AutoHarvestMapsCommand extends Command
         }
 
         // 3. Resolve Query Pencarian
-        $query = "{$category->name} di {$city->name}";
-        $location = "{$city->name}, Indonesia";
+        $cleanedCityName = preg_replace('/^(KAB\.|KABUPATEN|KOTA)\s+/i', '', trim($city->name));
+        $query = "{$category->name} di {$cleanedCityName}";
+        $location = "{$cleanedCityName}, Indonesia";
         $targetLimit = (int) ($this->option('limit') ?: 300);
 
         $this->info("=== Memulai Auto Harvest Google Maps ===");
