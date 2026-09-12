@@ -174,30 +174,39 @@ class ThreadsService
     {
         $url = $post->url();
         $cityName = $post->city?->name ?? 'Indonesia';
-        $categoryName = $post->category?->name ?? 'Info Sekitar';
         $cleanTitle = trim($post->title);
 
         if ($post->isJob()) {
             $company = $post->company_name ?: ($post->job_company ?: '');
-            $text = "📢 Lowongan Kerja Terbaru di {$cityName}!\n\n";
-            $text .= "💼 Posisi: {$cleanTitle}\n";
+            $intros = [
+                "Ada info loker baru nih buat daerah {$cityName}.",
+                "Lagi cari loker di {$cityName}? Ini barusan masuk infonya.",
+                "Info loker {$cityName} yang baru update hari ini:",
+            ];
+            $intro = $intros[array_rand($intros)];
+
+            $text = "{$intro}\n\n";
+            $text .= "Posisi: {$cleanTitle}\n";
             if ($company) {
-                $text .= "🏢 Perusahaan: {$company}\n";
+                $text .= "Perusahaan: {$company}\n";
             }
-            $text .= "\n📌 Info detail kualifikasi & cara melamar langsung:\n";
-            $text .= "{$url}\n\n";
-            $cityTag = str_replace([' ', '-', '.'], '', $cityName);
-            $text .= "#Loker{$cityTag} #LowonganKerja #LokerTerbaru #Disekitar";
+            $text .= "\nKualifikasi lengkap sama link daftarnya bisa langsung cek di sini ya:\n";
+            $text .= "{$url}";
         } else {
-            $text = "✨ Rekomendasi di {$cityName}: {$cleanTitle}\n\n";
+            $intros = [
+                "Lagi nyari tempat nongkrong atau referensi di {$cityName}?",
+                "Buat yang lagi nyari spot asik di {$cityName}, coba cek ini deh:",
+                "Rekomendasi tempat di {$cityName} yang bisa kamu masukin wishlist:",
+            ];
+            $intro = $intros[array_rand($intros)];
+
+            $text = "{$intro}\n\n";
+            $text .= "{$cleanTitle}\n\n";
             if ($post->excerpt) {
                 $text .= $post->excerpt . "\n\n";
             }
-            $text .= "📍 Selengkapnya baca ulasan & lokasi di sini:\n";
-            $text .= "{$url}\n\n";
-            $cityTag = str_replace([' ', '-', '.'], '', $cityName);
-            $catTag = str_replace([' ', '-', '.'], '', $categoryName);
-            $text .= "#Kuliner{$cityTag} #Wisata{$cityTag} #{$catTag} #Disekitar";
+            $text .= "Info lokasi dan ulasan lengkapnya:\n";
+            $text .= "{$url}";
         }
 
         // Meta Threads text limit is 500 characters
@@ -245,22 +254,24 @@ class ThreadsService
     {
         $url = $article->url();
         $cityName = $article->city?->name ?? 'Indonesia';
-        $categoryName = $article->category?->name ?? 'Panduan Wisata & Kuliner';
         $cleanTitle = trim($article->title);
 
-        $text = "📖 Baca Panduan Rekomendasi di {$cityName}!\n\n";
-        $text .= "✨ {$cleanTitle}\n\n";
+        $intros = [
+            "Buat yang lagi ngerencanain main atau hunting spot di {$cityName}, kita baru beresin panduannya nih.",
+            "Lagi butuh ide buat jalan-jalan di {$cityName}? Coba intip kurasi ini:",
+            "Kumpulan tempat rekomendasi di {$cityName} yang patut kamu coba:",
+        ];
+        $intro = $intros[array_rand($intros)];
+
+        $text = "{$intro}\n\n";
+        $text .= "{$cleanTitle}\n\n";
 
         if ($article->excerpt) {
             $text .= $article->excerpt . "\n\n";
         }
 
-        $text .= "📍 Baca ulasan lengkap & rekomendasi tempatnya di sini:\n";
-        $text .= "{$url}\n\n";
-
-        $cityTag = str_replace([' ', '-', '.'], '', $cityName);
-        $catTag = str_replace([' ', '-', '.'], '', $categoryName);
-        $text .= "#{$cityTag} #{$catTag} #Wisata{$cityTag} #Kuliner{$cityTag} #DisekitarBlog";
+        $text .= "Daftar tempat lengkapnya bisa dibaca di sini ya:\n";
+        $text .= "{$url}";
 
         // Meta Threads text limit is 500 characters
         if (mb_strlen($text) > 495) {
