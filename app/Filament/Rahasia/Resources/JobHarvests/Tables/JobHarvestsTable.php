@@ -43,7 +43,7 @@ class JobHarvestsTable
                     ->searchable()
                     ->wrap()
                     ->weight('bold')
-                    ->description(fn (Post $record): ?string => $record->website ? Str_limit($record->website, 45) : null),
+                    ->description(fn (Post $record): ?string => $record->website ? \Illuminate\Support\Str::limit($record->website, 45) : null),
 
                 TextColumn::make('city.name')
                     ->label('Kota')
