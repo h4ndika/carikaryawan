@@ -29,6 +29,7 @@ class ProcessBatchPhotoScrapeJob implements ShouldQueue
     public int $maxExceptions = 1;
 
     public bool $failOnTimeout = true;
+    public string $queue = 'photos';
 
     public ?string $processingToken = null;
 

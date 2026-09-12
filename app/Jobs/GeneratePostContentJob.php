@@ -18,6 +18,7 @@ class GeneratePostContentJob implements ShouldQueue
 
     public int $timeout = 180;
     public int $tries = 2;
+    public string $queue = 'ai';
 
     public function __construct(
         public int $aiJobId

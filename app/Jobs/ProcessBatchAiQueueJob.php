@@ -26,6 +26,11 @@ class ProcessBatchAiQueueJob implements ShouldQueue
     public int $tries = 2;
 
     /**
+     * The queue the job should be dispatched to.
+     */
+    public string $queue = 'ai';
+
+    /**
      * Create a new job instance.
      *
      * @param array<int> $aiJobIds

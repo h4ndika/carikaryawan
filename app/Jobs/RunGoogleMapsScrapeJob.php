@@ -20,6 +20,7 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
 
     public int $timeout = 900; // 15 menit
     public int $tries = 1;
+    public string $queue = 'maps';
 
     public function __construct(
         public int $scrapeJobId
