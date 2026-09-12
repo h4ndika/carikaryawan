@@ -185,13 +185,19 @@ class ThreadsService
             ];
             $intro = $intros[array_rand($intros)];
 
-            $text = "{$intro}\n\n";
-            $text .= "Posisi: {$cleanTitle}\n";
+            $suffix = "\n\nKualifikasi lengkap sama link daftarnya bisa langsung cek di sini ya:\n{$url}";
+            $maxBodyLen = 500 - mb_strlen($suffix);
+
+            $body = "{$intro}\n\nPosisi: {$cleanTitle}";
             if ($company) {
-                $text .= "Perusahaan: {$company}\n";
+                $body .= "\nPerusahaan: {$company}";
             }
-            $text .= "\nKualifikasi lengkap sama link daftarnya bisa langsung cek di sini ya:\n";
-            $text .= "{$url}";
+
+            if (mb_strlen($body) > $maxBodyLen) {
+                $body = mb_substr($body, 0, $maxBodyLen - 3) . '...';
+            }
+
+            $text = $body . $suffix;
         } else {
             $intros = [
                 "Lagi nyari tempat nongkrong atau referensi di {$cityName}?",
@@ -200,18 +206,23 @@ class ThreadsService
             ];
             $intro = $intros[array_rand($intros)];
 
-            $text = "{$intro}\n\n";
-            $text .= "{$cleanTitle}\n\n";
+            $suffix = "\n\nInfo lokasi dan ulasan lengkapnya:\n{$url}";
+            $maxBodyLen = 500 - mb_strlen($suffix);
+            $body = "{$intro}\n\n{$cleanTitle}";
             if ($post->excerpt) {
-                $text .= $post->excerpt . "\n\n";
+                $body .= "\n\n{$post->excerpt}";
             }
-            $text .= "Info lokasi dan ulasan lengkapnya:\n";
-            $text .= "{$url}";
+
+            if (mb_strlen($body) > $maxBodyLen) {
+                $body = mb_substr($body, 0, $maxBodyLen - 3) . '...';
+            }
+
+            $text = $body . $suffix;
         }
 
-        // Meta Threads text limit is 500 characters
-        if (mb_strlen($text) > 495) {
-            $text = mb_substr($text, 0, 490) . "...\n" . $url;
+        // Hard safety limit: Meta Threads parameter text must be <= 500 characters
+        if (mb_strlen($text) > 500) {
+            $text = mb_substr($text, 0, 497) . '...';
         }
 
         // Get image URL (PNG/JPG only, SVG is not supported by Threads media_type IMAGE)
@@ -263,19 +274,23 @@ class ThreadsService
         ];
         $intro = $intros[array_rand($intros)];
 
-        $text = "{$intro}\n\n";
-        $text .= "{$cleanTitle}\n\n";
+        $suffix = "\n\nDaftar tempat lengkapnya bisa dibaca di sini ya:\n{$url}";
+        $maxBodyLen = 500 - mb_strlen($suffix);
 
+        $body = "{$intro}\n\n{$cleanTitle}";
         if ($article->excerpt) {
-            $text .= $article->excerpt . "\n\n";
+            $body .= "\n\n{$article->excerpt}";
         }
 
-        $text .= "Daftar tempat lengkapnya bisa dibaca di sini ya:\n";
-        $text .= "{$url}";
+        if (mb_strlen($body) > $maxBodyLen) {
+            $body = mb_substr($body, 0, $maxBodyLen - 3) . '...';
+        }
 
-        // Meta Threads text limit is 500 characters
-        if (mb_strlen($text) > 495) {
-            $text = mb_substr($text, 0, 490) . "...\n" . $url;
+        $text = $body . $suffix;
+
+        // Hard safety limit: Meta Threads parameter text must be <= 500 characters
+        if (mb_strlen($text) > 500) {
+            $text = mb_substr($text, 0, 497) . '...';
         }
 
         // Get image URL (PNG/JPG only)
