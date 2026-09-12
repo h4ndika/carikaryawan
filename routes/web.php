@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\SitemapController;
+use App\Livewire\BlogIndex;
+use App\Livewire\BlogShow;
 use App\Livewire\Home;
 use App\Livewire\LandmarkShow;
 use App\Livewire\PageShow;
@@ -13,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Home::class)->name('home');
 Route::get('/cari', Search::class)->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Blog Editorial routes
+Route::get('/blog', BlogIndex::class)->name('blog.index');
+Route::get('/blog/{slug}', BlogShow::class)->name('blog.show');
 
 // Mandatory Legal & Editorial Policy Routes
 Route::get('/tentang-kami', PageShow::class)->name('page.about')->defaults('page', 'tentang-kami');

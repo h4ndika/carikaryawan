@@ -36,5 +36,10 @@ class Category extends Model
             || str_contains($slug, 'loker')
             || str_contains($name, 'loker');
     }
+
+    public function articles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Article::class);
+    }
 }
 

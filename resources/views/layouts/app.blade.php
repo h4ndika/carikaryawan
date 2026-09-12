@@ -117,7 +117,10 @@
                                 {{ $navCat->name }}
                             </a>
                         @endforeach
-                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors text-amber-800 dark:text-amber-400 font-bold">
+                        <a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1 text-amber-800 dark:text-amber-400">
+                            <span>Blog</span>
+                        </a>
+                        <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                             Jelajah
                         </a>
                     </nav>
@@ -205,6 +208,7 @@
                         <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Eksplorasi</h4>
                         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a></li>
+                            <li><a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Blog Editorial</a></li>
                             <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Pencarian Cerita</a></li>
                             <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 dark:hover:text-white transition-colors">Peta Situs (Sitemap)</a></li>
                         </ul>

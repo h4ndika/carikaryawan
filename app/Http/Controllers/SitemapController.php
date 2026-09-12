@@ -32,6 +32,24 @@ class SitemapController extends Controller
             ];
         }
 
+        // 1c. Blog Index & Articles
+        $urls[] = [
+            'loc' => route('blog.index'),
+            'lastmod' => now()->toAtomString(),
+            'changefreq' => 'daily',
+            'priority' => '0.9',
+        ];
+
+        $articles = \App\Models\Article::published()->latest('published_at')->limit(1000)->get(['id', 'slug', 'updated_at', 'published_at']);
+        foreach ($articles as $art) {
+            $urls[] = [
+                'loc' => route('blog.show', ['slug' => $art->slug]),
+                'lastmod' => optional($art->updated_at)->toAtomString() ?? optional($art->published_at)->toAtomString() ?? now()->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ];
+        }
+
         // 2. Category Index Pages
         $categories = Category::query()->orderBy('name')->get(['id', 'name', 'slug', 'updated_at']);
         foreach ($categories as $cat) {
