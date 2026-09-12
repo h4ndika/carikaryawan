@@ -81,6 +81,9 @@ class ArticleCuratorService
         }
 
         $baseUri = config('openai.base_uri') ?: 'https://api.openai.com/v1';
+        if (!str_starts_with($baseUri, 'http://') && !str_starts_with($baseUri, 'https://')) {
+            $baseUri = 'https://' . $baseUri;
+        }
         $endpoint = rtrim($baseUri, '/') . '/chat/completions';
         $model = config('openai.model') ?: 'gpt-4o-mini';
 
