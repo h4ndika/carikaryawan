@@ -71,7 +71,8 @@ class ManageThreadsSettings extends Page
                         Select::make('threads_content_type')
                             ->label('Kategori Konten yang Diprioritaskan')
                             ->options([
-                                'all' => 'Semua Konten (Lowongan Kerja & Tempat Rekomendasi)',
+                                'all' => 'Semua Konten (Blog Artikel, Lowongan Kerja & Tempat Rekomendasi)',
+                                'articles' => 'Hanya Artikel Blog (Panduan & Listicle)',
                                 'jobs' => 'Hanya Lowongan Kerja (Loker)',
                                 'places' => 'Hanya Tempat & Rekomendasi (Kafe, Hotel, Resto, Wisata)',
                             ])

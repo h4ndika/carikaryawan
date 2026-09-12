@@ -16,6 +16,7 @@ class Article extends Model
 
     protected $casts = [
         'published_at' => 'datetime',
+        'posted_to_threads_at' => 'datetime',
         'views_count' => 'integer',
     ];
 

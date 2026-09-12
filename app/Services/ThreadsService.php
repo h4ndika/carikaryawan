@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Article;
 use App\Models\Post;
 use App\Models\Setting;
 use Exception;
@@ -236,4 +237,57 @@ class ThreadsService
 
         return $result;
     }
+
+    /**
+     * Build engaging post copy for an Article model (blog listicle) and publish it.
+     */
+    public function publishArticle(Article $article): array
+    {
+        $url = $article->url();
+        $cityName = $article->city?->name ?? 'Indonesia';
+        $categoryName = $article->category?->name ?? 'Panduan Wisata & Kuliner';
+        $cleanTitle = trim($article->title);
+
+        $text = "📖 Baca Panduan Rekomendasi di {$cityName}!\n\n";
+        $text .= "✨ {$cleanTitle}\n\n";
+
+        if ($article->excerpt) {
+            $text .= $article->excerpt . "\n\n";
+        }
+
+        $text .= "📍 Baca ulasan lengkap & rekomendasi tempatnya di sini:\n";
+        $text .= "{$url}\n\n";
+
+        $cityTag = str_replace([' ', '-', '.'], '', $cityName);
+        $catTag = str_replace([' ', '-', '.'], '', $categoryName);
+        $text .= "#{$cityTag} #{$catTag} #Wisata{$cityTag} #Kuliner{$cityTag} #DisekitarBlog";
+
+        // Meta Threads text limit is 500 characters
+        if (mb_strlen($text) > 495) {
+            $text = mb_substr($text, 0, 490) . "...\n" . $url;
+        }
+
+        // Get image URL (PNG/JPG only)
+        $imageUrl = null;
+        if (!empty($article->featured_image_url) && !str_ends_with(strtolower($article->featured_image_url), '.svg')) {
+            $imageUrl = $article->featured_image_url;
+        }
+
+        // Make absolute URL if relative
+        if ($imageUrl && !str_starts_with($imageUrl, 'http://') && !str_starts_with($imageUrl, 'https://')) {
+            $imageUrl = url($imageUrl);
+        }
+
+        if ($imageUrl) {
+            $result = $this->postImage($imageUrl, $text);
+        } else {
+            $result = $this->postText($text, $url);
+        }
+
+        // Mark article as shared to Threads
+        $article->updateQuietly(['posted_to_threads_at' => now()]);
+
+        return $result;
+    }
 }
+
