@@ -9,6 +9,7 @@ use App\Filament\Rahasia\Resources\Articles\Schemas\ArticleForm;
 use App\Filament\Rahasia\Resources\Articles\Tables\ArticlesTable;
 use App\Models\Article;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,7 +23,7 @@ class ArticleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedNewspaper;
 
-    protected static ?string $navigationGroup = 'Konten & Publikasi';
+    protected static string|UnitEnum|null $navigationGroup = 'Konten & Publikasi';
 
     protected static ?string $modelLabel = 'Artikel Blog';
 
