@@ -365,6 +365,7 @@ function initAccountActions() {
 
     document.getElementById('account-search')?.addEventListener('input', renderAccountsTable);
     document.getElementById('account-filter')?.addEventListener('change', renderAccountsTable);
+    document.getElementById('account-date')?.addEventListener('change', renderAccountsTable);
 
     // Multi-select Select All
     document.getElementById('account-select-all')?.addEventListener('change', (e) => {
@@ -441,10 +442,17 @@ function renderAccountsTable() {
     if (!tbody) return;
     const search = (document.getElementById('account-search')?.value || '').toLowerCase();
     const filter = document.getElementById('account-filter')?.value || 'all';
+    const dateFilter = document.getElementById('account-date')?.value || '';
 
     let list = state.accounts;
     if (search) list = list.filter(a => (a.email || '').toLowerCase().includes(search) || (a.token || '').toLowerCase().includes(search));
     if (filter !== 'all') list = list.filter(a => a.status === filter);
+    if (dateFilter) {
+        list = list.filter(a => {
+            const rawDate = a.createdAt || a.created_at || '';
+            return rawDate.startsWith(dateFilter);
+        });
+    }
 
     if (!list.length) {
         tbody.innerHTML = `<tr><td colspan="9">
