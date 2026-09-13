@@ -137,6 +137,11 @@ return [
             'driver' => 'openai-compatible',
             'url' => env('OPENAI_COMPATIBLE_URL', env('OPENAI_BASE_URL') ? (str_starts_with(env('OPENAI_BASE_URL'), 'http') ? env('OPENAI_BASE_URL') : 'https://' . env('OPENAI_BASE_URL')) : 'https://ai.disekitar.com/v1'),
             'key' => env('OPENAI_COMPATIBLE_API_KEY', env('OPENAI_API_KEY')),
+            'models' => [
+                'text' => [
+                    'default' => env('OPENAI_MODEL', 'Content-blog'),
+                ],
+            ],
         ],
 
         'openrouter' => [
