@@ -216,7 +216,7 @@ class ThreadsService
             $catTag = preg_replace('/[^a-zA-Z0-9]/', '', ucwords(strtolower($categoryName)));
             $cityTag = preg_replace('/[^a-zA-Z0-9]/', '', $titleCaseCity);
 
-            $topicTag = $topicTagCity ? "rekomendasi{$topicTagCity}" : null;
+            $topicTag = $topicTagCity ?: 'kuliner';
 
             $header = "✨ Rekomendasi Tempat disekitar {$titleCaseCity}!\n\n";
             $headline = "📍 {$cleanTitle}\n\n";
@@ -279,13 +279,19 @@ class ThreadsService
     public function publishArticle(Article $article): array
     {
         $url = $article->url();
-        $cityName = $article->city?->name ?? 'Indonesia';
+        $rawCityName = $article->city?->name ?? 'Indonesia';
+        // Bersihkan prefix 'KOTA ' / 'KAB. ' / 'KABUPATEN '
+        $cleanCityOnly = trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $rawCityName));
+        $titleCaseCity = ucwords(strtolower($cleanCityOnly));
+        $topicTagCity = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $cleanCityOnly));
+        $topicTag = $topicTagCity ?: 'rekomendasi';
+
         $cleanTitle = trim($article->title);
 
         $intros = [
-            "Buat yang lagi ngerencanain main atau hunting spot di {$cityName}, kita baru beresin panduannya nih.",
-            "Lagi butuh ide buat jalan-jalan di {$cityName}? Coba intip kurasi ini:",
-            "Kumpulan tempat rekomendasi di {$cityName} yang patut kamu coba:",
+            "Buat yang lagi ngerencanain main atau hunting spot disekitar {$titleCaseCity}, kita baru beresin panduannya nih.",
+            "Lagi butuh ide buat jalan-jalan disekitar {$titleCaseCity}? Coba intip kurasi ini:",
+            "Kumpulan tempat rekomendasi disekitar {$titleCaseCity} yang patut kamu coba:",
         ];
         $intro = $intros[array_rand($intros)];
 
@@ -320,9 +326,9 @@ class ThreadsService
         }
 
         if ($imageUrl) {
-            $result = $this->postImage($imageUrl, $text);
+            $result = $this->postImage($imageUrl, $text, $topicTag);
         } else {
-            $result = $this->postText($text, $url);
+            $result = $this->postText($text, $url, $topicTag);
         }
 
         // Mark article as shared to Threads
