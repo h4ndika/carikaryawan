@@ -43,6 +43,12 @@ Schedule::command('threads:broadcast --type=jobs')->dailyAt('11:30')->withoutOve
 // 6. Santai Malam (20:30 WIB / 13:30 UTC): Artikel Blog & Panduan Kurasi
 Schedule::command('threads:broadcast --type=articles')->dailyAt('13:30')->withoutOverlapping();
 
+// Auto-reply responder komentar di Threads (dijalankan setiap 15 menit agar memenuhi respon cepat 30-90 menit)
+Schedule::command('threads:monitor-replies --hours=12')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // Auto-refresh Threads Long-Lived Token weekly (resets 60 days validity so it never expires)
 Schedule::call(function () {
     app(\App\Services\ThreadsService::class)->refreshLongLivedToken();

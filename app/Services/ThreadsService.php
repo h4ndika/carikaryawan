@@ -495,5 +495,127 @@ ATURAN WAJIB:
 
         return null;
     }
+
+    /**
+     * Get recent published threads for the account.
+     */
+    public function getUserThreads(int $limit = 20): array
+    {
+        $userId = $this->getUserId();
+        $token = $this->getAccessToken();
+
+        if (!$userId || !$token) {
+            return [];
+        }
+
+        $res = Http::withToken($token)->get("{$this->baseUrl}/{$userId}/threads", [
+            'fields' => 'id,text,permalink,timestamp',
+            'limit' => $limit,
+        ]);
+
+        return $res->json('data') ?? [];
+    }
+
+    /**
+     * Get conversation / replies for a specific thread.
+     */
+    public function getThreadConversation(string $mediaId): array
+    {
+        $token = $this->getAccessToken();
+        if (!$token) {
+            return [];
+        }
+
+        $res = Http::withToken($token)->get("{$this->baseUrl}/{$mediaId}/conversation", [
+            'fields' => 'id,text,username,timestamp',
+        ]);
+
+        return $res->json('data') ?? [];
+    }
+
+    /**
+     * Reply to a specific thread or comment.
+     */
+    public function replyToThread(string $replyToId, string $text): array
+    {
+        $userId = $this->getUserId();
+        $token = $this->getAccessToken();
+
+        if (!$userId || !$token) {
+            throw new Exception('Threads credentials belum lengkap.');
+        }
+
+        // Step 1: Create reply media container
+        $containerPayload = [
+            'media_type' => 'TEXT',
+            'text' => $text,
+            'reply_to_id' => $replyToId,
+            'access_token' => $token,
+        ];
+
+        $createRes = Http::post("{$this->baseUrl}/{$userId}/threads", $containerPayload);
+
+        if (!$createRes->successful()) {
+            throw new Exception('Gagal membuat container reply Threads: ' . ($createRes->json('error.message') ?? $createRes->body()));
+        }
+
+        $containerId = $createRes->json('id');
+
+        // Step 2: Publish container
+        sleep(2);
+
+        $publishRes = Http::post("{$this->baseUrl}/{$userId}/threads_publish", [
+            'creation_id' => $containerId,
+            'access_token' => $token,
+        ]);
+
+        if (!$publishRes->successful()) {
+            throw new Exception('Gagal publish reply Threads: ' . ($publishRes->json('error.message') ?? $publishRes->body()));
+        }
+
+        return $publishRes->json();
+    }
+
+    /**
+     * Generate context-aware AI reply for a comment.
+     */
+    public function generateAiReply(string $parentPostText, string $commentAuthor, string $commentText): ?string
+    {
+        try {
+            $systemInstruction = "Kamu adalah community engagement manager ramah untuk Threads @disekitarcom (portal info lokal, tempat nongkrong, & loker Indonesia). Tugasmu membalas komentar audiens secara ramah, santai (conversational), suportif, dan natural (bukan seperti robot cs). Balas HANYA dengan teks balasan murni, tanpa code block, tanpa penjelasan pembuka/penutup.";
+
+            $prompt = "Konteks Postingan Utama Kita:
+\"{$parentPostText}\"
+
+Komentar dari pengguna (@{$commentAuthor}):
+\"{$commentText}\"
+
+Instruksi:
+1. Sapa atau respon langsung isi komentar mereka secara relevan dan antusias.
+2. Jika mereka bertanya seputar tempat atau loker, jawab dengan ramah dan sarankan cek detail di link pada postingan utama bila perlu.
+3. Buat teks balasan pendek & padat (maksimal 250 karakter).";
+
+            $agent = new DisekitarAgent(instructions: $systemInstruction);
+            $response = (string) $agent->prompt(
+                prompt: $prompt,
+                provider: 'openai-compatible',
+                model: 'Content-blog',
+                timeout: 30
+            );
+
+            $clean = trim($response);
+            $clean = preg_replace('/^```[a-zA-Z]*\s*/i', '', $clean);
+            $clean = preg_replace('/\s*```$/', '', $clean);
+            $clean = trim($clean);
+
+            if (!empty($clean) && mb_strlen($clean) <= 450) {
+                return $clean;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Threads AI Reply Generation failed: ' . $e->getMessage());
+        }
+
+        return null;
+    }
 }
 
