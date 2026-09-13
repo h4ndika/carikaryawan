@@ -617,5 +617,60 @@ Instruksi:
 
         return null;
     }
+
+    /**
+     * Generate 3 varied reply drafts for interacting with external threads.
+     *
+     * @return array<int, array{style: string, text: string}>
+     */
+    public function generateEngagementDrafts(string $threadContent, string $topic = 'umum'): array
+    {
+        try {
+            $systemInstruction = "Kamu adalah social media specialist untuk @disekitarcom di platform Threads. Gaya bicaramu autentik, santai, cerdas, dan membaur layaknya pengguna asli Threads (bukan sales atau akun promosi kaku). Balas HANYA dengan JSON valid berisi 3 draft balasan dengan gaya berbeda.";
+
+            $prompt = "Berikut adalah konten postingan Thread seseorang (topik: {$topic}):
+\"{$threadContent}\"
+
+Buatkan 3 pilihan draft reply singkat (di bawah 200 karakter per draft) untuk merespon postingan tersebut:
+1. 'Santai / Relatable' (sependapat, berbagi pengalaman serupa)
+2. 'Nilai Tambah / Insight' (memberi saran atau info pelengkap yang bermanfaat)
+3. 'Pertanyaan Pemantik' (mengajak diskusi lebih dalam secara hangat)
+
+ATURAN PENTING:
+- Jangan jualan terang-terangan / hard selling.
+- Format balasan HARUS JSON persis seperti ini:
+[
+  {\"style\": \"Santai / Relatable\", \"text\": \"...\"},
+  {\"style\": \"Insight / Nilai Tambah\", \"text\": \"...\"},
+  {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"}
+]";
+
+            $agent = new DisekitarAgent(instructions: $systemInstruction);
+            $response = (string) $agent->prompt(
+                prompt: $prompt,
+                provider: 'openai-compatible',
+                model: 'Content-blog',
+                timeout: 30
+            );
+
+            $clean = trim($response);
+            $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
+            $clean = preg_replace('/\s*```$/', '', $clean);
+            $clean = trim($clean);
+
+            $parsed = json_decode($clean, true);
+            if (is_array($parsed) && count($parsed) > 0) {
+                return $parsed;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Threads AI Engagement Drafts failed: ' . $e->getMessage());
+        }
+
+        return [
+            ['style' => 'Santai / Relatable', 'text' => 'Setuju banget sih sama poin ini. Banyak yang ngerasain hal serupa belakangan ini.'],
+            ['style' => 'Insight / Nilai Tambah', 'text' => 'Bener, apalagi kalau diperhatiin faktor lokasinya juga ngaruh banget ke hal ini.'],
+            ['style' => 'Diskusi Pemantik', 'text' => 'Menarik nih pembahasannya! Menurut kalian apa faktor paling menantang dari ini?'],
+        ];
+    }
 }
 

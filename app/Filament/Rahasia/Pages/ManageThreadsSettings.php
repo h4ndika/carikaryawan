@@ -7,6 +7,7 @@ use App\Services\ThreadsService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -94,6 +95,50 @@ class ManageThreadsSettings extends Page
                             Action::make('save')
                                 ->label('Simpan Pengaturan Threads')
                                 ->submit('save'),
+
+                            Action::make('suggestReplies')
+                                ->label('AI Reply Suggester (Interaksi Thread Luar)')
+                                ->color('warning')
+                                ->icon(Heroicon::OutlinedSparkles)
+                                ->modalHeading('AI Reply Suggester — Niche Engagement')
+                                ->modalDescription('Paste isi postingan Thread seseorang (loker, kuliner, wisata, atau opini lokal). AI akan merumuskan 3 opsi balasan cerdas & santai untuk kamu copy-paste ke Threads.')
+                                ->form([
+                                    Select::make('topic')
+                                        ->label('Topik Bahasan')
+                                        ->options([
+                                            'loker' => 'Lowongan Kerja / Karier / Interview',
+                                            'kuliner' => 'Kuliner / Tempat Makan / Kafe',
+                                            'wisata' => 'Wisata / Rekomendasi Tempat Lokal',
+                                            'umum' => 'Santai / Percakapan Komunitas Umum',
+                                        ])
+                                        ->default('loker')
+                                        ->required(),
+
+                                    Textarea::make('thread_text')
+                                        ->label('Isi Postingan / Pertanyaan Thread Orang Lain')
+                                        ->placeholder('Contoh: Menurut kalian kenapa sekarang cari kerja admin di kota besar susah banget ya? Persaingannya gila-gilaan...')
+                                        ->rows(4)
+                                        ->required(),
+                                ])
+                                ->modalSubmitActionLabel('Generate 3 Draft Reply')
+                                ->action(function (array $data, ThreadsService $service) {
+                                    $drafts = $service->generateEngagementDrafts($data['thread_text'], $data['topic']);
+
+                                    $body = '';
+                                    foreach ($drafts as $index => $d) {
+                                        $num = $index + 1;
+                                        $style = $d['style'] ?? 'Opsi';
+                                        $text = $d['text'] ?? '';
+                                        $body .= "**{$num}. [{$style}]**\n\"{$text}\"\n\n";
+                                    }
+
+                                    Notification::make()
+                                        ->title('Draft Balasan AI Siap Dicopy:')
+                                        ->body($body)
+                                        ->persistent()
+                                        ->success()
+                                        ->send();
+                                }),
 
                             Action::make('testPost')
                                 ->label('Kirim Tes Post ke Threads Sekarang')
