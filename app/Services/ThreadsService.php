@@ -85,7 +85,7 @@ class ThreadsService
     /**
      * Publish custom text directly to Threads.
      */
-    public function postText(string $text, ?string $linkAttachment = null): array
+    public function postText(string $text, ?string $linkAttachment = null, ?string $topicTag = null): array
     {
         $userId = $this->getUserId();
         $token = $this->getAccessToken();
@@ -100,6 +100,10 @@ class ThreadsService
             'text' => $text,
             'access_token' => $token,
         ];
+
+        if (!empty($topicTag)) {
+            $containerPayload['topic_tag'] = $topicTag;
+        }
 
         $createRes = Http::post("{$this->baseUrl}/{$userId}/threads", $containerPayload);
 
@@ -127,7 +131,7 @@ class ThreadsService
     /**
      * Publish image with caption directly to Threads.
      */
-    public function postImage(string $imageUrl, string $text): array
+    public function postImage(string $imageUrl, string $text, ?string $topicTag = null): array
     {
         $userId = $this->getUserId();
         $token = $this->getAccessToken();
@@ -143,6 +147,10 @@ class ThreadsService
             'text' => $text,
             'access_token' => $token,
         ];
+
+        if (!empty($topicTag)) {
+            $containerPayload['topic_tag'] = $topicTag;
+        }
 
         $createRes = Http::post("{$this->baseUrl}/{$userId}/threads", $containerPayload);
 
@@ -173,51 +181,58 @@ class ThreadsService
     public function publishPost(Post $post): array
     {
         $url = $post->url();
-        $cityName = $post->city?->name ?? 'Indonesia';
+        $rawCityName = $post->city?->name ?? 'Indonesia';
+        // Bersihkan prefix 'KOTA ' / 'KAB. ' / 'KABUPATEN '
+        $cleanCityOnly = trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $rawCityName));
+        // Format lowercase lalu ucwords untuk tampilan teks (contoh: "Kota Bandung")
+        $titleCaseCity = ucwords(strtolower($cleanCityOnly));
+        $topicTagCity = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $cleanCityOnly));
+
         $cleanTitle = trim($post->title);
 
         if ($post->isJob()) {
             $company = $post->company_name ?: ($post->job_company ?: '');
-            $intros = [
-                "Ada info loker baru nih buat daerah {$cityName}.",
-                "Lagi cari loker di {$cityName}? Ini barusan masuk infonya.",
-                "Info loker {$cityName} yang baru update hari ini:",
-            ];
-            $intro = $intros[array_rand($intros)];
+            $topicTag = $topicTagCity ? "loker{$topicTagCity}" : 'lowongankerja';
 
-            $suffix = "\n\nKualifikasi lengkap sama link daftarnya bisa langsung cek di sini ya:\n{$url}";
-            $maxBodyLen = 500 - mb_strlen($suffix);
-
-            $body = "{$intro}\n\nPosisi: {$cleanTitle}";
+            $header = "📢 Lowongan Kerja Terbaru disekitar {$titleCaseCity}!\n\n";
+            $position = "💼 Posisi: {$cleanTitle}\n";
             if ($company) {
-                $body .= "\nPerusahaan: {$company}";
+                $position .= "🏢 Perusahaan: {$company}\n";
             }
 
-            if (mb_strlen($body) > $maxBodyLen) {
-                $body = mb_substr($body, 0, $maxBodyLen - 3) . '...';
+            $info = "\n📌 Info detail kualifikasi & cara melamar langsung:\n{$url}\n\n";
+            $hashtags = "#Loker{$topicTagCity} #LowonganKerja #LokerTerbaru #Disekitar";
+
+            $fixedLen = mb_strlen($header) + mb_strlen($info) + mb_strlen($hashtags);
+            $maxPositionLen = 495 - $fixedLen;
+
+            if (mb_strlen($position) > $maxPositionLen) {
+                $position = mb_substr($position, 0, max(0, $maxPositionLen - 3)) . "...\n";
             }
 
-            $text = $body . $suffix;
+            $text = $header . $position . $info . $hashtags;
         } else {
-            $intros = [
-                "Lagi nyari tempat nongkrong atau referensi di {$cityName}?",
-                "Buat yang lagi nyari spot asik di {$cityName}, coba cek ini deh:",
-                "Rekomendasi tempat di {$cityName} yang bisa kamu masukin wishlist:",
-            ];
-            $intro = $intros[array_rand($intros)];
+            $categoryName = $post->category?->name ?? 'Tempat';
+            $catTag = preg_replace('/[^a-zA-Z0-9]/', '', ucwords(strtolower($categoryName)));
+            $cityTag = preg_replace('/[^a-zA-Z0-9]/', '', $titleCaseCity);
 
-            $suffix = "\n\nInfo lokasi dan ulasan lengkapnya:\n{$url}";
-            $maxBodyLen = 500 - mb_strlen($suffix);
-            $body = "{$intro}\n\n{$cleanTitle}";
-            if ($post->excerpt) {
-                $body .= "\n\n{$post->excerpt}";
+            $topicTag = $topicTagCity ? "rekomendasi{$topicTagCity}" : null;
+
+            $header = "✨ Rekomendasi Tempat disekitar {$titleCaseCity}!\n\n";
+            $headline = "📍 {$cleanTitle}\n\n";
+
+            $excerpt = $post->excerpt ? "{$post->excerpt}\n\n" : '';
+            $info = "Selengkapnya baca ulasan & info lokasi di sini:\n{$url}\n\n";
+            $hashtags = "#Kuliner{$cityTag} #Wisata{$cityTag} #{$catTag} #Disekitar";
+
+            $fixedLen = mb_strlen($header) + mb_strlen($headline) + mb_strlen($info) + mb_strlen($hashtags);
+            $maxExcerptLen = 495 - $fixedLen;
+
+            if ($excerpt && mb_strlen($excerpt) > $maxExcerptLen) {
+                $excerpt = mb_substr($excerpt, 0, max(0, $maxExcerptLen - 3)) . "...\n\n";
             }
 
-            if (mb_strlen($body) > $maxBodyLen) {
-                $body = mb_substr($body, 0, $maxBodyLen - 3) . '...';
-            }
-
-            $text = $body . $suffix;
+            $text = $header . $headline . $excerpt . $info . $hashtags;
         }
 
         // Hard safety limit: Meta Threads parameter text must be <= 500 characters
@@ -247,9 +262,9 @@ class ThreadsService
         }
 
         if ($imageUrl) {
-            $result = $this->postImage($imageUrl, $text);
+            $result = $this->postImage($imageUrl, $text, $topicTag);
         } else {
-            $result = $this->postText($text, $url);
+            $result = $this->postText($text, $url, $topicTag);
         }
 
         // Mark post as shared to Threads
