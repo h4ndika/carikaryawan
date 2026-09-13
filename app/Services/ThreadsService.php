@@ -384,7 +384,12 @@ ATURAN WAJIB:
 6. Panjang TOTAL teks harus di bawah 450 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
-            $response = (string) $agent->prompt(prompt: $prompt, model: 'Content-blog', timeout: 30);
+            $response = (string) $agent->prompt(
+                prompt: $prompt,
+                provider: 'openai-compatible',
+                model: 'Content-blog',
+                timeout: 30
+            );
             $clean = trim($response);
 
             // Bersihkan markdown code block jika model membungkusnya
@@ -426,7 +431,12 @@ ATURAN WAJIB:
 6. Panjang TOTAL teks harus di bawah 450 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
-            $response = (string) $agent->prompt(prompt: $prompt, model: 'Content-blog', timeout: 30);
+            $response = (string) $agent->prompt(
+                prompt: $prompt,
+                provider: 'openai-compatible',
+                model: 'Content-blog',
+                timeout: 30
+            );
             $clean = trim($response);
 
             $clean = preg_replace('/^```[a-zA-Z]*\s*/i', '', $clean);
@@ -464,7 +474,12 @@ ATURAN WAJIB:
 5. Panjang TOTAL di bawah 450 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
-            $response = (string) $agent->prompt(prompt: $prompt, model: 'Content-blog', timeout: 30);
+            $response = (string) $agent->prompt(
+                prompt: $prompt,
+                provider: 'openai-compatible',
+                model: 'Content-blog',
+                timeout: 30
+            );
             $clean = trim($response);
 
             $clean = preg_replace('/^```[a-zA-Z]*\s*/i', '', $clean);
