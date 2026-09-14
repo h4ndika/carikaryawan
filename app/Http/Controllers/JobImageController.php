@@ -32,6 +32,15 @@ class JobImageController extends Controller
      */
     public function png(string $slug): Response
     {
+        $cachePath = storage_path("app/public/job-banners/{$slug}.png");
+
+        if (file_exists($cachePath) && filesize($cachePath) > 1000) {
+            return response(file_get_contents($cachePath), 200, [
+                'Content-Type' => 'image/png',
+                'Cache-Control' => 'public, max-age=604800, immutable',
+            ]);
+        }
+
         $post = Post::with(['category', 'city', 'province'])
             ->published()
             ->where('slug', $slug)
@@ -43,9 +52,15 @@ class JobImageController extends Controller
         $png = $this->convertSvgToPng($svg);
 
         if ($png) {
+            // Save to disk cache
+            if (!is_dir(dirname($cachePath))) {
+                @mkdir(dirname($cachePath), 0755, true);
+            }
+            @file_put_contents($cachePath, $png);
+
             return response($png, 200, [
                 'Content-Type' => 'image/png',
-                'Cache-Control' => 'public, max-age=86400',
+                'Cache-Control' => 'public, max-age=604800, immutable',
             ]);
         }
 
