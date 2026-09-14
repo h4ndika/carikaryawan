@@ -148,8 +148,9 @@ class ManageThreadsSettings extends Page
                                 ->action(function (array $data, ThreadsService $service, Action $action) {
                                     $this->generatedReplyDrafts = $service->generateEngagementDrafts($data['thread_text'], $data['topic']);
 
+                                    $count = count($this->generatedReplyDrafts);
                                     Notification::make()
-                                        ->title('3 Draft Balasan Berhasil Dibuat!')
+                                        ->title("{$count} Opsi Draft Balasan Berhasil Dibuat!")
                                         ->body('Silakan pilih salah satu opsi di bawah dan klik Salin Teks.')
                                         ->success()
                                         ->send();

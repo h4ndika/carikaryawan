@@ -726,25 +726,30 @@ Instruksi:
                 $contextHint = "\n\n(Jika tidak ada post spesifik, arahkan ke portal utama disekitar.com atau disekitar.com/loker)";
             }
 
-            $systemInstruction = "Kamu adalah social media specialist untuk @disekitarcom (portal info loker, kuliner, wisata, dan info lokal terkurasi per kota di Indonesia: disekitar.com). Gaya bicaramu autentik, santai, empatik, cerdas, dan membaur khas anak Threads (bukan spambot). Balas HANYA dengan format JSON valid berisi 3 opsi draft balasan.";
+            $systemInstruction = "Kamu adalah social media specialist & community builder untuk @disekitarcom (portal kurasi info loker, kuliner, wisata, dan info lokal terkurasi per kota di Indonesia: disekitar.com). Gaya komunikasimu hangat, luwes, cerdas, solutif, dan mengalir natural layaknya teman ngobrol di Threads. Tulisan tidak boleh terlalu pelit kata; berikan penjelasan atau tanggapan yang bernyawa dan berbobot (2-4 kalimat yang mengalir enak). Balas HANYA dalam format JSON valid berupa list array objek.";
 
             $prompt = "Berikut adalah postingan akun Thread seseorang (topik: {$topic}):
 \"{$threadContent}\"{$contextHint}
 
-Buatkan 3 opsi draft reply singkat (santai, natural, max ~220 karakter):
-1. 'Santai / Relatable' (empati, relate dengan keresahannya, gaya santai sesama anak Threads)
-2. 'Solutif + Link Rekomendasi disekitar.com' (kasih saran bermanfaat dan cantumkan link postingan relevan yang diberikan di atas agar pembaca bisa langsung akses ke disekitar.com)
-3. 'Diskusi Pemantik' (ajak ngobrol/tanya balik yang menarik seputar kota/topik terkait)
+Buatkan 5 opsi draft balasan (reply) yang bernyawa, natural, ramah, dan tidak kaku. Jangan terlalu pelit kata-kata—buat antara 2 hingga 4 kalimat yang enak dibaca dan terasa manusiawi:
 
-ATURAN PENTING:
-- Jika ada DATA POST RELEVAN dengan URL di atas, WAJIB cantumkan link URL tersebut pada opsi 2 atau opsi yang solutif.
-- WAJIB integrasikan website disekitar.com secara halus, elegan, dan solutif (soft-selling / rekomendasi teman), BUKAN platform kompetitor luar seperti LinkedIn, Jobstreet, dll.
-- Jangan terkesan bot spam kaku, buat sealami mungkin layaknya sesama user Threads yang berbagi info berguna.
+1. 'Santai / Relatable': Tunjukkan empati mendalam terhadap situasi/curhatan tersebut. Gunakan bahasa gaul santai/Threads yang hangat, beri semangat nyata, dan ceritakan sudut pandang yang menenangkan.
+2. 'Solutif + Rekomendasi Link disekitar.com': Berikan insight atau saran taktis yang konkret, lalu rekomendasikan link disekitar.com yang relevan di atas secara halus sebagai solusi bermanfaat tanpa hard-selling.
+3. 'Diskusi Pemantik': Tanggapi inti argumennya lalu lontarkan pertanyaan lanjutan atau sudut pandang baru yang memancing warganet lain ikut berdiskusi di kolom reply.
+4. 'Tips Praktis & Insight': Berikan 1-2 tips atau trik langsung yang aplikatif untuk menghadapi keresahan di postingan tersebut.
+5. 'Sudut Pandang Alternatif / Mindset': Berikan perspektif segar atau reframe positif yang membuka pikiran tentang topik tersebut.
+
+ATURAN WAJIB:
+- Jika ada DATA POST RELEVAN dengan URL di atas, WAJIB sertakan link URL lengkapnya di opsi nomor 2 ('Solutif + Rekomendasi Link disekitar.com').
+- WAJIB integrasikan tautan atau rujukan disekitar.com secara halus, elegan, dan solutif (seperti rekomendasi kawan), BUKAN mereferensikan platform kompetitor luar.
+- Hindari nada kaku seperti robot CS / akun korporat. Jadilah akun komunitas lokal yang asik diajak interaksi.
 - Format balasan HARUS JSON persis seperti ini:
 [
   {\"style\": \"Santai / Relatable\", \"text\": \"...\"},
   {\"style\": \"Solutif + Rekomendasi Link disekitar.com\", \"text\": \"...\"},
-  {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"}
+  {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"},
+  {\"style\": \"Tips Praktis & Insight\", \"text\": \"...\"},
+  {\"style\": \"Sudut Pandang Alternatif / Mindset\", \"text\": \"...\"}
 ]";
 
             $apiKey = config('openai.api_key') ?: config('ai.providers.openai-compatible.key');
@@ -787,9 +792,11 @@ ATURAN PENTING:
 
         $fallbackLink = $samplePost ? $samplePost->url() : 'https://disekitar.com/lowongan-kerja';
         return [
-            ['style' => 'Santai / Relatable', 'text' => 'Bener banget, perjuangan nyari kerja sekarang emang butuh ekstra sabar & tenaga. Semangat ya, rezeki ga akan salah alamat!'],
-            ['style' => 'Solutif + Rekomendasi Link disekitar.com', 'text' => "Kalau butuh alternatif info loker terkurasi dan terverifikasi di sekitarmu, coba pantau di {$fallbackLink} ya kak, semoga ada yang cocok!"],
-            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer bidang atau posisi apa nih kak? Barangkali teman-teman di sini ada link atau referensi.'],
+            ['style' => 'Santai / Relatable', 'text' => 'Bener banget, perjuangan nyari kerja sekarang emang butuh ekstra sabar dan mental baja. Ada kalanya ngerasa capek dan pengen rehat bentar, dan itu valid banget. Tetap jaga ritme ya, rezeki baik ga akan salah alamat!'],
+            ['style' => 'Solutif + Rekomendasi Link disekitar.com', 'text' => "Biar ga boncos dan terhindar dari loker fiktif yang berseliweran, coba cek update info loker terkurasi lokal di kotamu lewat {$fallbackLink} deh. Semuanya disaring langsung, semoga nemu yang cocok sama skill kamu!"],
+            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer bidang atau role apa nih kak sekarang? Coba drop preferensi kotanya juga, barangkali ada teman-teman sesama anak Threads di sini yang punya info internal.'],
+            ['style' => 'Tips Praktis & Insight', 'text' => 'Sedikit tips praktis: coba rapikan portofolio singkat atau highlight 3 pencapaian terbaik di CV kamu, terus sesuaikan kata kuncinya sama kualifikasi loker. Kadang pembedanya cuma di cara kita nunjukin solusi ke HRD.'],
+            ['style' => 'Sudut Pandang Alternatif / Mindset', 'text' => 'Proses nyari kerja itu bukan cuma soal kita dipilih sama perusahaan, tapi juga momen kita milih lingkungan kerja yang sehat buat masa depan. Jangan sampai putus asa, setiap penolakan biasanya ngarahin kita ke tempat yang lebih tepat.'],
         ];
     }
 }

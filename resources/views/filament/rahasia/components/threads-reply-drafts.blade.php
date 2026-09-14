@@ -121,9 +121,7 @@
                         </button>
                     </div>
 
-                    <div class="reply-draft-body">
-                        {{ $draft['text'] ?? '' }}
-                    </div>
+                    <div class="reply-draft-body">{{ trim($draft['text'] ?? '') }}</div>
                 </div>
             @endforeach
         </div>
