@@ -140,7 +140,7 @@ class ManageThreadsSettings extends Page
                                         ->rows(3)
                                         ->required(),
                                 ])
-                                ->modalContent(fn () => view('filament.rahasia.components.threads-reply-drafts', [
+                                ->modalContentFooter(fn () => view('filament.rahasia.components.threads-reply-drafts', [
                                     'drafts' => $this->generatedReplyDrafts,
                                 ]))
                                 ->modalSubmitActionLabel('⚡ Generate / Buat Ulang Draft')

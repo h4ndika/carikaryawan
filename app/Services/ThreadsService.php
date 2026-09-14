@@ -747,32 +747,49 @@ ATURAN PENTING:
   {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"}
 ]";
 
-            $agent = new DisekitarAgent(instructions: $systemInstruction);
-            $response = (string) $agent->prompt(
-                prompt: $prompt,
-                provider: 'openai-compatible',
-                model: 'Content-blog',
-                timeout: 30
-            );
+            $apiKey = config('openai.api_key') ?: config('ai.providers.openai-compatible.key');
+            $baseUri = config('openai.base_uri') ?: 'ai.disekitar.com/v1';
+            if (!str_starts_with($baseUri, 'http://') && !str_starts_with($baseUri, 'https://')) {
+                $baseUri = 'https://' . $baseUri;
+            }
+            $endpoint = rtrim($baseUri, '/') . '/chat/completions';
+            $model = config('openai.model') ?: 'Content-blog';
 
-            $clean = trim($response);
-            $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
-            $clean = preg_replace('/\s*```$/', '', $clean);
-            $clean = trim($clean);
+            $httpRes = Http::timeout(45)->withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'Content-Type' => 'application/json',
+            ])->post($endpoint, [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemInstruction],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'temperature' => 0.8,
+            ]);
 
-            $parsed = json_decode($clean, true);
-            if (is_array($parsed) && count($parsed) > 0) {
-                return $parsed;
+            if ($httpRes->successful()) {
+                $rawText = $httpRes->json('choices.0.message.content') ?? '';
+                $clean = trim($rawText);
+                $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
+                $clean = preg_replace('/\s*```$/', '', $clean);
+                $clean = trim($clean);
+
+                $parsed = json_decode($clean, true);
+                if (is_array($parsed) && count($parsed) > 0) {
+                    return $parsed;
+                }
+            } else {
+                Log::warning('Threads AI Engagement Drafts HTTP failed: ' . $httpRes->status() . ' ' . $httpRes->body());
             }
         } catch (\Throwable $e) {
             Log::warning('Threads AI Engagement Drafts failed: ' . $e->getMessage());
         }
 
-        $fallbackLink = $samplePost ? $samplePost->url() : 'https://disekitar.com';
+        $fallbackLink = $samplePost ? $samplePost->url() : 'https://disekitar.com/lowongan-kerja';
         return [
-            ['style' => 'Santai / Relatable', 'text' => 'Bener banget, nyari info yang valid sekarang kudu jeli. Semangat terus ya pejuang karir!'],
-            ['style' => 'Solutif + Rekomendasi Link disekitar.com', 'text' => "Coba cek update loker terkurasi di kota ini: {$fallbackLink} biar ga boncos kena loker abal-abal."],
-            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer role apa nih di kotamu? Siapa tahu ada info lokal yang relevan bisa saling share.'],
+            ['style' => 'Santai / Relatable', 'text' => 'Bener banget, perjuangan nyari kerja sekarang emang butuh ekstra sabar & tenaga. Semangat ya, rezeki ga akan salah alamat!'],
+            ['style' => 'Solutif + Rekomendasi Link disekitar.com', 'text' => "Kalau butuh alternatif info loker terkurasi dan terverifikasi di sekitarmu, coba pantau di {$fallbackLink} ya kak, semoga ada yang cocok!"],
+            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer bidang atau posisi apa nih kak? Barangkali teman-teman di sini ada link atau referensi.'],
         ];
     }
 }
