@@ -142,40 +142,37 @@ class ManageThreadsSettings extends Page
                                         ->label('Draft 1: Santai / Relatable')
                                         ->rows(3)
                                         ->readOnly()
-                                        ->placeholder('Hasil draft balasan santai akan muncul di sini setelah di-generate...')
+                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft santai...')
                                         ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
-                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
-                                            'title' => 'Klik untuk langsung copy',
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
+                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
+                                            'title' => 'Klik teks untuk langsung copy',
                                         ])
-                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
-                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_1'))),
+                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
 
                                     Textarea::make('draft_2')
                                         ->label('Draft 2: Nilai Tambah / Insight Objektif')
                                         ->rows(3)
                                         ->readOnly()
-                                        ->placeholder('Hasil draft balasan berwawasan akan muncul di sini setelah di-generate...')
+                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft wawasan...')
                                         ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
-                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
-                                            'title' => 'Klik untuk langsung copy',
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
+                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
+                                            'title' => 'Klik teks untuk langsung copy',
                                         ])
-                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
-                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_2'))),
+                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
 
                                     Textarea::make('draft_3')
                                         ->label('Draft 3: Diskusi / Pertanyaan Pemantik')
                                         ->rows(3)
                                         ->readOnly()
-                                        ->placeholder('Hasil draft balasan interaktif akan muncul di sini setelah di-generate...')
+                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft pemantik diskusi...')
                                         ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
-                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
-                                            'title' => 'Klik untuk langsung copy',
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
+                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
+                                            'title' => 'Klik teks untuk langsung copy',
                                         ])
-                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
-                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_3'))),
+                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
                                 ])
                                 ->modalSubmitActionLabel('⚡ Generate / Buat Ulang Draft')
                                 ->modalCancelActionLabel('Tutup')
@@ -188,7 +185,7 @@ class ManageThreadsSettings extends Page
 
                                     Notification::make()
                                         ->title('3 Draft Balasan Berhasil Dibuat!')
-                                        ->body('Silakan baca dan klik salah satu kotak draft di bawah untuk langsung menyalin ke Threads.')
+                                        ->body('Silakan baca dan klik salah satu kotak draft di bawah untuk langsung menyalin.')
                                         ->success()
                                         ->send();
 
