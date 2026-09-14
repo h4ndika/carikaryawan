@@ -88,6 +88,15 @@ class ThreadsBroadcastCommand extends Command
 
             $article = $articleQuery->latest('published_at')->first();
 
+            // Fallback: Jika tidak ada artikel baru di kota prioritas, ambil artikel baru dari kota manapun
+            if (!$article) {
+                $article = \App\Models\Article::query()
+                    ->published()
+                    ->whereNull('posted_to_threads_at')
+                    ->latest('published_at')
+                    ->first();
+            }
+
             if (!$article) {
                 $this->info('Tidak ada artikel blog baru yang perlu di-broadcast ke Threads.');
                 return self::SUCCESS;
@@ -154,6 +163,24 @@ class ThreadsBroadcastCommand extends Command
 
         // Prioritaskan konten terbitan terbaru
         $post = $query->latest('published_at')->first();
+
+        // Fallback: Jika tidak ada postingan baru di kota prioritas, ambil dari kota manapun
+        if (!$post && !empty($targetCityIds)) {
+            $fallbackQuery = \App\Models\Post::query()
+                ->where('status', 'published')
+                ->whereNull('posted_to_threads_at');
+
+            if ($type === 'jobs') {
+                $fallbackQuery->whereHas('category', fn ($q) => $q->where('slug', 'lowongan-kerja'))
+                              ->where(function ($q) {
+                                  $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
+                              });
+            } elseif ($type === 'places') {
+                $fallbackQuery->whereHas('category', fn ($q) => $q->where('slug', '!=', 'lowongan-kerja'));
+            }
+
+            $post = $fallbackQuery->latest('published_at')->first();
+        }
 
         if (!$post) {
             $this->info('Tidak ada postingan baru yang perlu di-broadcast ke Threads.');
