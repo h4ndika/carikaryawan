@@ -108,6 +108,7 @@ class Home extends Component
         ])->layout('layouts.app', [
             'canonicalUrl' => $siteUrl,
             'metaDescription' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',
+            'ogImage' => asset('android-chrome-512x512.png'),
             'jsonLd' => $jsonLd,
         ]);
     }
