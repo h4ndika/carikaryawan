@@ -308,7 +308,13 @@ class ThreadsService
 
         // Get image URL (PNG/JPG only, SVG is not supported by Threads media_type IMAGE)
         $imageUrl = null;
-        if (!empty($post->thumbnail) && !str_ends_with(strtolower($post->thumbnail), '.svg')) {
+        if ($post->isJob()) {
+            if (!empty($post->thumbnail) && !str_ends_with(strtolower($post->thumbnail), '.svg')) {
+                $imageUrl = $post->thumbnail;
+            } else {
+                $imageUrl = route('job.image.png', ['slug' => $post->slug]);
+            }
+        } elseif (!empty($post->thumbnail) && !str_ends_with(strtolower($post->thumbnail), '.svg')) {
             $imageUrl = $post->thumbnail;
         } elseif ($post->relationLoaded('images') && $post->images->first()) {
             $first = $post->images->first()->image_url;
