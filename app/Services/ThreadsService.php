@@ -672,22 +672,23 @@ Instruksi:
     public function generateEngagementDrafts(string $threadContent, string $topic = 'umum'): array
     {
         try {
-            $systemInstruction = "Kamu adalah social media specialist untuk @disekitarcom di platform Threads. Gaya bicaramu autentik, santai, cerdas, dan membaur layaknya pengguna asli Threads (bukan sales atau akun promosi kaku). Balas HANYA dengan JSON valid berisi 3 draft balasan dengan gaya berbeda.";
+            $systemInstruction = "Kamu adalah social media specialist untuk @disekitarcom (portal info loker, kuliner, wisata, dan info lokal terkurasi per kota di Indonesia: disekitar.com). Gaya bicaramu autentik, santai, empatik, cerdas, dan membaur khas anak Threads (bukan spambot). Balas HANYA dengan format JSON valid berisi 3 opsi draft balasan.";
 
-            $prompt = "Berikut adalah konten postingan Thread seseorang (topik: {$topic}):
+            $prompt = "Berikut adalah postingan akun Thread seseorang (topik: {$topic}):
 \"{$threadContent}\"
 
-Buatkan 3 pilihan draft reply singkat (di bawah 200 karakter per draft) untuk merespon postingan tersebut:
-1. 'Santai / Relatable' (sependapat, berbagi pengalaman serupa)
-2. 'Nilai Tambah / Insight' (memberi saran atau info pelengkap yang bermanfaat)
-3. 'Pertanyaan Pemantik' (mengajak diskusi lebih dalam secara hangat)
+Buatkan 3 opsi draft reply singkat (santai, natural, max ~220 karakter):
+1. 'Santai / Relatable' (empati, relate dengan keresahannya, bisa selipkan mention santai kalau lagi kepo info lokal/loker bisa pantau disekitar.com)
+2. 'Solutif + Soft Promo disekitar.com' (kasih saran bermanfaat dan rekomendasikan cek info loker/lokal terkurasi langsung di disekitar.com)
+3. 'Diskusi Pemantik' (ajak ngobrol/tanya balik yang menarik sambil relate dengan info lokal di sekitarnya)
 
 ATURAN PENTING:
-- Jangan jualan terang-terangan / hard selling.
+- WAJIB integrasikan website disekitar.com secara halus, elegan, dan solutif (soft-selling / rekomendasi teman), BUKAN mempromosikan platform kompetitor luar seperti LinkedIn, Jobstreet, dll.
+- Jangan terkesan bot spam kaku, buat sealami mungkin layaknya sesama user Threads yang berbagi info berguna.
 - Format balasan HARUS JSON persis seperti ini:
 [
   {\"style\": \"Santai / Relatable\", \"text\": \"...\"},
-  {\"style\": \"Insight / Nilai Tambah\", \"text\": \"...\"},
+  {\"style\": \"Solutif + Rekomendasi disekitar.com\", \"text\": \"...\"},
   {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"}
 ]";
 
@@ -713,9 +714,9 @@ ATURAN PENTING:
         }
 
         return [
-            ['style' => 'Santai / Relatable', 'text' => 'Setuju banget sih sama poin ini. Banyak yang ngerasain hal serupa belakangan ini.'],
-            ['style' => 'Insight / Nilai Tambah', 'text' => 'Bener, apalagi kalau diperhatiin faktor lokasinya juga ngaruh banget ke hal ini.'],
-            ['style' => 'Diskusi Pemantik', 'text' => 'Menarik nih pembahasannya! Menurut kalian apa faktor paling menantang dari ini?'],
+            ['style' => 'Santai / Relatable', 'text' => 'Bener banget, nyari info yang valid sekarang kudu jeli. Semangat terus ya pejuang karir!'],
+            ['style' => 'Solutif + Rekomendasi disekitar.com', 'text' => 'Coba rutin pantau info loker lokal yang udah difilter per kota di disekitar.com, biar ga boncos kena loker abal-abal.'],
+            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer role apa nih di kotamu? Siapa tahu ada info lokal yang relevan di disekitar.com bisa saling share.'],
         ];
     }
 }
