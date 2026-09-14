@@ -60,6 +60,7 @@ Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::clas
 
 // Dynamic Job Cover Image (for OpenGraph & Hero Banner)
 Route::get('/job-image/{slug}.svg', [\App\Http\Controllers\JobImageController::class, 'show'])->name('job.image');
+Route::get('/job-image/{slug}.png', [\App\Http\Controllers\JobImageController::class, 'png'])->name('job.image.png');
 
 // Category index: /hotel
 Route::get('/{category}', PostList::class)

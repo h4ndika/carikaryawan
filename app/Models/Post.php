@@ -259,14 +259,14 @@ class Post extends Model
 
     public function seoImage(): string
     {
-        // Khusus loker atau jika gambar bertipe SVG (tidak didukung OpenGraph / Threads / WhatsApp card preview),
-        // gunakan logo icon PNG resolusi tinggi (512x512)
+        // Khusus loker, gunakan dynamic banner versi raster PNG (1200x630) agar terbaca sempurna oleh
+        // crawler OpenGraph Meta Threads, WhatsApp, Facebook, dan Twitter Card.
         if ($this->isJob()) {
             $img = $this->og_image ?: ($this->thumbnail ?: '');
             if (!empty($img) && !str_ends_with(strtolower($img), '.svg')) {
                 return $img;
             }
-            return asset('android-chrome-512x512.png');
+            return route('job.image.png', ['slug' => $this->slug]);
         }
 
         $image = $this->og_image ?: (string) ($this->thumbnail ?: ($this->primary_image_url ?? ''));

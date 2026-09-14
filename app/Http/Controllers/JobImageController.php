@@ -19,6 +19,80 @@ class JobImageController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        $svg = $this->generateSvg($post);
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    /**
+     * Render job cover banner as PNG (for OpenGraph & social media link previews).
+     */
+    public function png(string $slug): Response
+    {
+        $post = Post::with(['category', 'city', 'province'])
+            ->published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $svg = $this->generateSvg($post);
+
+        // Convert SVG to PNG using rsvg-convert CLI if available
+        $png = $this->convertSvgToPng($svg);
+
+        if ($png) {
+            return response($png, 200, [
+                'Content-Type' => 'image/png',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        // Fallback: Redirect to PNG logo icon if converter is unavailable
+        return redirect(asset('android-chrome-512x512.png'), 302);
+    }
+
+    private function convertSvgToPng(string $svg): ?string
+    {
+        $bin = '/usr/bin/rsvg-convert';
+        if (!file_exists($bin)) {
+            $bin = trim((string) shell_exec('which rsvg-convert 2>/dev/null'));
+        }
+
+        if (empty($bin) || !is_executable($bin)) {
+            return null;
+        }
+
+        $descriptors = [
+            0 => ['pipe', 'r'], // stdin
+            1 => ['pipe', 'w'], // stdout
+            2 => ['pipe', 'w'], // stderr
+        ];
+
+        $process = proc_open("{$bin} -f png -w 1200 -h 630", $descriptors, $pipes);
+
+        if (is_resource($process)) {
+            fwrite($pipes[0], $svg);
+            fclose($pipes[0]);
+
+            $stdout = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+
+            fclose($pipes[2]);
+            $returnCode = proc_close($process);
+
+            if ($returnCode === 0 && !empty($stdout)) {
+                return $stdout;
+            }
+        }
+
+        return null;
+    }
+
+    public function generateSvg(Post $post): string
+    {
+
         $rawTitle = $post->title;
         $company = '';
         $role = $rawTitle;
@@ -112,10 +186,7 @@ class JobImageController extends Controller
 </svg>
 SVG;
 
-        return response($svg, 200, [
-            'Content-Type' => 'image/svg+xml; charset=UTF-8',
-            'Cache-Control' => 'public, max-age=86400',
-        ]);
+        return $svg;
     }
 
     private function wrapText(string $text, int $maxCharsPerLine, int $maxLines): array
