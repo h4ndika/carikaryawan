@@ -118,7 +118,8 @@ class ManageThreadsSettings extends Page
                                 ->color('warning')
                                 ->icon(Heroicon::OutlinedSparkles)
                                 ->modalHeading('AI Reply Suggester — Niche Engagement')
-                                ->modalDescription('Paste isi postingan Thread seseorang (loker, kuliner, wisata, atau opini lokal). AI akan merumuskan 3 opsi balasan cerdas & santai untuk kamu copy-paste ke Threads.')
+                                ->modalDescription('Paste postingan/pertanyaan akun Thread orang lain. AI akan menghasilkan 3 opsi balasan siap copas langsung di bawah.')
+                                ->modalWidth(\Filament\Support\Enums\Width::TwoExtraLarge)
                                 ->form([
                                     Select::make('topic')
                                         ->label('Topik Bahasan')
@@ -134,27 +135,64 @@ class ManageThreadsSettings extends Page
                                     Textarea::make('thread_text')
                                         ->label('Isi Postingan / Pertanyaan Thread Orang Lain')
                                         ->placeholder('Contoh: Menurut kalian kenapa sekarang cari kerja admin di kota besar susah banget ya? Persaingannya gila-gilaan...')
-                                        ->rows(4)
+                                        ->rows(3)
                                         ->required(),
+
+                                    Textarea::make('draft_1')
+                                        ->label('Draft 1: Santai / Relatable')
+                                        ->rows(3)
+                                        ->readOnly()
+                                        ->placeholder('Hasil draft balasan santai akan muncul di sini setelah di-generate...')
+                                        ->extraInputAttributes([
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
+                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
+                                            'title' => 'Klik untuk langsung copy',
+                                        ])
+                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
+                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_1'))),
+
+                                    Textarea::make('draft_2')
+                                        ->label('Draft 2: Nilai Tambah / Insight Objektif')
+                                        ->rows(3)
+                                        ->readOnly()
+                                        ->placeholder('Hasil draft balasan berwawasan akan muncul di sini setelah di-generate...')
+                                        ->extraInputAttributes([
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
+                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
+                                            'title' => 'Klik untuk langsung copy',
+                                        ])
+                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
+                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_2'))),
+
+                                    Textarea::make('draft_3')
+                                        ->label('Draft 3: Diskusi / Pertanyaan Pemantik')
+                                        ->rows(3)
+                                        ->readOnly()
+                                        ->placeholder('Hasil draft balasan interaktif akan muncul di sini setelah di-generate...')
+                                        ->extraInputAttributes([
+                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium',
+                                            'onclick' => 'this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 });',
+                                            'title' => 'Klik untuk langsung copy',
+                                        ])
+                                        ->helperText('💡 Klik teks di atas untuk langsung menyalin ke clipboard.')
+                                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => filled($get('draft_3'))),
                                 ])
-                                ->modalSubmitActionLabel('Generate 3 Draft Reply')
-                                ->action(function (array $data, ThreadsService $service) {
+                                ->modalSubmitActionLabel('⚡ Generate / Buat Ulang Draft')
+                                ->modalCancelActionLabel('Tutup')
+                                ->action(function (array $data, ThreadsService $service, \Filament\Schemas\Components\Utilities\Set $set, Action $action) {
                                     $drafts = $service->generateEngagementDrafts($data['thread_text'], $data['topic']);
 
-                                    $body = '';
-                                    foreach ($drafts as $index => $d) {
-                                        $num = $index + 1;
-                                        $style = $d['style'] ?? 'Opsi';
-                                        $text = $d['text'] ?? '';
-                                        $body .= "**{$num}. [{$style}]**\n\"{$text}\"\n\n";
-                                    }
+                                    $set('draft_1', $drafts[0]['text'] ?? '');
+                                    $set('draft_2', $drafts[1]['text'] ?? '');
+                                    $set('draft_3', $drafts[2]['text'] ?? '');
 
                                     Notification::make()
-                                        ->title('Draft Balasan AI Siap Dicopy:')
-                                        ->body($body)
-                                        ->persistent()
+                                        ->title('3 Draft Balasan Berhasil Dibuat!')
+                                        ->body('Silakan baca dan klik salah satu kotak draft di bawah untuk langsung menyalin ke Threads.')
                                         ->success()
                                         ->send();
+
+                                    $action->halt();
                                 }),
 
                             Action::make('testPost')
