@@ -259,7 +259,23 @@ class Post extends Model
 
     public function seoImage(): string
     {
-        return $this->og_image ?: (string) ($this->thumbnail ?: ($this->primary_image_url ?? ''));
+        // Khusus loker atau jika gambar bertipe SVG (tidak didukung OpenGraph / Threads / WhatsApp card preview),
+        // gunakan logo icon PNG resolusi tinggi (512x512)
+        if ($this->isJob()) {
+            $img = $this->og_image ?: ($this->thumbnail ?: '');
+            if (!empty($img) && !str_ends_with(strtolower($img), '.svg')) {
+                return $img;
+            }
+            return asset('android-chrome-512x512.png');
+        }
+
+        $image = $this->og_image ?: (string) ($this->thumbnail ?: ($this->primary_image_url ?? ''));
+
+        if (empty($image) || str_ends_with(strtolower($image), '.svg')) {
+            return asset('android-chrome-512x512.png');
+        }
+
+        return $image;
     }
 
     public function seoRobots(): string

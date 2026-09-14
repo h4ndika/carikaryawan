@@ -8,7 +8,7 @@
         $pageTitle = $title ?? config('app.name', 'DISEKITAR');
         $desc = $metaDescription ?? 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.';
         $currentUrl = !empty($canonicalUrl) ? $canonicalUrl : url()->current();
-        $shareImage = !empty($ogImage) ? $ogImage : asset('images/placeholder.svg');
+        $shareImage = !empty($ogImage) && !str_ends_with(strtolower($ogImage), '.svg') ? $ogImage : asset('android-chrome-512x512.png');
     @endphp
 
     <title>{{ $pageTitle }}</title>
