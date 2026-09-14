@@ -39,6 +39,52 @@ class ThreadsService
     }
 
     /**
+     * Get default target city IDs (Bandung, Jakarta, Yogyakarta, Bali)
+     */
+    public static function getDefaultCityIds(): array
+    {
+        return \App\Models\City::query()
+            ->where(function ($q) {
+                $q->where('name', 'like', '%Bandung%')
+                  ->orWhere('name', 'like', '%Jakarta%')
+                  ->orWhere('name', 'like', '%Yogyakarta%')
+                  ->orWhere('name', 'like', '%Denpasar%')
+                  ->orWhere('name', 'like', '%Badung%')
+                  ->orWhere('name', 'like', '%Bali%')
+                  ->orWhere('name', 'like', '%Gianyar%')
+                  ->orWhere('name', 'like', '%Tabanan%');
+            })
+            ->orWhereHas('province', function ($q) {
+                $q->where('name', 'like', '%DKI Jakarta%')
+                  ->orWhere('name', 'like', '%Jakarta%')
+                  ->orWhere('name', 'like', '%Bali%')
+                  ->orWhere('name', 'like', '%Yogyakarta%')
+                  ->orWhere('name', 'like', '%DI Yogyakarta%');
+            })
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Get configured target city IDs from settings, or default cities if none configured.
+     */
+    public static function getTargetCityIds(): array
+    {
+        $raw = Setting::get('threads_target_cities');
+        if (!empty($raw)) {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded) && !empty($decoded)) {
+                return array_map('intval', $decoded);
+            }
+        }
+
+        return self::getDefaultCityIds();
+    }
+
+    /**
      * Verify token by fetching user profile.
      */
     public function verifyProfile(): array

@@ -70,13 +70,23 @@ class ThreadsBroadcastCommand extends Command
         // 3. Mode Antrean Otomatis Berdasarkan Tipe
         $type = $this->option('type') ?: \App\Models\Setting::get('threads_content_type', 'all');
 
+        // Dapatkan filter kota target (Bandung, Jakarta, Yogyakarta, Bali, dll.)
+        $targetCityIds = \App\Services\ThreadsService::getTargetCityIds();
+
         // Jika type adalah 'articles', khusus ambil artikel blog yang belum terbit di Threads
         if ($type === 'articles') {
-            $article = \App\Models\Article::query()
+            $articleQuery = \App\Models\Article::query()
                 ->published()
-                ->whereNull('posted_to_threads_at')
-                ->latest('published_at')
-                ->first();
+                ->whereNull('posted_to_threads_at');
+
+            if (!empty($targetCityIds)) {
+                $articleQuery->where(function ($q) use ($targetCityIds) {
+                    $q->whereIn('city_id', $targetCityIds)
+                      ->orWhereNull('city_id'); // Izinkan artikel umum/nasional
+                });
+            }
+
+            $article = $articleQuery->latest('published_at')->first();
 
             if (!$article) {
                 $this->info('Tidak ada artikel blog baru yang perlu di-broadcast ke Threads.');
@@ -96,11 +106,18 @@ class ThreadsBroadcastCommand extends Command
 
         // Jika type 'all', prioritaskan artikel blog jika ada artikel baru yang belum pernah diposting
         if ($type === 'all') {
-            $pendingArticle = \App\Models\Article::query()
+            $pendingArticleQuery = \App\Models\Article::query()
                 ->published()
-                ->whereNull('posted_to_threads_at')
-                ->latest('published_at')
-                ->first();
+                ->whereNull('posted_to_threads_at');
+
+            if (!empty($targetCityIds)) {
+                $pendingArticleQuery->where(function ($q) use ($targetCityIds) {
+                    $q->whereIn('city_id', $targetCityIds)
+                      ->orWhereNull('city_id');
+                });
+            }
+
+            $pendingArticle = $pendingArticleQuery->latest('published_at')->first();
 
             // Jika ada artikel blog yang belum pernah terbit ke Threads, bagikan artikel blog
             if ($pendingArticle) {
@@ -128,6 +145,11 @@ class ThreadsBroadcastCommand extends Command
                   });
         } elseif ($type === 'places') {
             $query->whereHas('category', fn ($q) => $q->where('slug', '!=', 'lowongan-kerja'));
+        }
+
+        // Terapkan filter kota prioritas trafik tinggi jika ada
+        if (!empty($targetCityIds)) {
+            $query->whereIn('city_id', $targetCityIds);
         }
 
         // Prioritaskan konten terbitan terbaru

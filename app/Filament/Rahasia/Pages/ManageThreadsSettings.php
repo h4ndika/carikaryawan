@@ -35,11 +35,15 @@ class ManageThreadsSettings extends Page
 
     public function mount(): void
     {
+        $savedCities = Setting::get('threads_target_cities');
+        $targetCities = !empty($savedCities) ? json_decode($savedCities, true) : ThreadsService::getDefaultCityIds();
+
         $this->form->fill([
             'threads_auto_post_enabled' => (bool) Setting::get('threads_auto_post_enabled', true),
             'threads_user_id' => Setting::get('threads_user_id', config('services.threads.user_id', '')),
             'threads_access_token' => Setting::get('threads_access_token', config('services.threads.access_token', '')),
             'threads_content_type' => Setting::get('threads_content_type', 'all'),
+            'threads_target_cities' => $targetCities,
         ]);
     }
 
@@ -79,6 +83,19 @@ class ManageThreadsSettings extends Page
                             ])
                             ->default('all')
                             ->helperText('Pilih jenis konten yang ingin dibagikan secara otomatis ke linimasa Threads.'),
+
+                        Select::make('threads_target_cities')
+                            ->label('Kota Target untuk Otomasi Post')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(function () {
+                                return \App\Models\City::query()
+                                    ->orderBy('name')
+                                    ->pluck('name', 'id');
+                            })
+                            ->helperText('Pilih kota-kota yang ingin diprioritaskan untuk auto-post ke Threads. Kosongkan jika ingin mencakup seluruh kota di Indonesia.')
+                            ->placeholder('Pilih satu atau lebih kota (Default: Bandung, Jakarta, Yogyakarta, Bali)...'),
                     ]),
             ]);
     }
@@ -158,7 +175,11 @@ class ManageThreadsSettings extends Page
         $state = $this->form->getState();
 
         foreach ($state as $key => $value) {
-            Setting::set($key, is_bool($value) ? ($value ? '1' : '0') : (string) ($value ?? ''));
+            if (is_array($value)) {
+                Setting::set($key, json_encode(array_values(array_map('intval', $value))));
+            } else {
+                Setting::set($key, is_bool($value) ? ($value ? '1' : '0') : (string) ($value ?? ''));
+            }
         }
 
         Notification::make()
@@ -173,10 +194,15 @@ class ManageThreadsSettings extends Page
         $this->save();
 
         try {
-            $post = \App\Models\Post::query()
-                ->where('status', 'published')
-                ->latest('published_at')
-                ->first();
+            $targetCityIds = ThreadsService::getTargetCityIds();
+
+            $query = \App\Models\Post::query()->where('status', 'published');
+            if (!empty($targetCityIds)) {
+                $query->whereIn('city_id', $targetCityIds);
+            }
+
+            $post = $query->latest('published_at')->first() 
+                ?: \App\Models\Post::query()->where('status', 'published')->latest('published_at')->first();
 
             if (!$post) {
                 Notification::make()
