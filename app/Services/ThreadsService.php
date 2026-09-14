@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Ai\DisekitarAgent;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\City;
 use App\Models\Post;
 use App\Models\Setting;
 use Exception;
@@ -672,23 +674,70 @@ Instruksi:
     public function generateEngagementDrafts(string $threadContent, string $topic = 'umum'): array
     {
         try {
+            // Deteksi kota dari postingan thread atau data database
+            $detectedCity = null;
+            $samplePost = null;
+            $allCities = City::select('id', 'name', 'slug')->get();
+
+            foreach ($allCities as $c) {
+                $cleanName = trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $c->name));
+                if (mb_strlen($cleanName) >= 3 && preg_match('/\b' . preg_quote($cleanName, '/') . '\b/i', $threadContent)) {
+                    $detectedCity = $c;
+                    break;
+                }
+            }
+
+            // Ambil postingan relevan dari database jika kota terdeteksi atau sesuai topik
+            $postQuery = Post::query()->published()->with(['city', 'category']);
+
+            if ($topic === 'loker') {
+                $postQuery->whereHas('category', fn ($q) => $q->where('slug', 'like', '%loker%')->orWhere('name', 'like', '%loker%')->orWhere('slug', 'like', '%lowongan%'));
+            } elseif ($topic === 'kuliner') {
+                $postQuery->whereHas('category', fn ($q) => $q->where('slug', 'like', '%kuliner%')->orWhere('name', 'like', '%kuliner%')->orWhere('slug', 'like', '%cafe%'));
+            } elseif ($topic === 'wisata') {
+                $postQuery->whereHas('category', fn ($q) => $q->where('slug', 'like', '%wisata%')->orWhere('name', 'like', '%wisata%'));
+            }
+
+            if ($detectedCity) {
+                $samplePost = (clone $postQuery)->where('city_id', $detectedCity->id)->latest('published_at')->first();
+            }
+
+            if (!$samplePost) {
+                $samplePost = (clone $postQuery)->latest('published_at')->first();
+            }
+
+            $contextHint = '';
+            if ($samplePost) {
+                $postUrl = $samplePost->url();
+                $postTitle = $samplePost->title;
+                $cityName = $samplePost->city ? trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $samplePost->city->name)) : '';
+                $contextHint = "\n\nDATABASE POST RELEVAN DITEMUKAN:
+- Judul Post: \"{$postTitle}\"
+- Kota: {$cityName}
+- URL Lengkap: {$postUrl}
+(PENTING: Gunakan URL di atas untuk draft balasan yang solutif/rekomendasi agar netizen bisa langsung klik membaca info terkurasi di disekitar.com!)";
+            } else {
+                $contextHint = "\n\n(Jika tidak ada post spesifik, arahkan ke portal utama disekitar.com atau disekitar.com/loker)";
+            }
+
             $systemInstruction = "Kamu adalah social media specialist untuk @disekitarcom (portal info loker, kuliner, wisata, dan info lokal terkurasi per kota di Indonesia: disekitar.com). Gaya bicaramu autentik, santai, empatik, cerdas, dan membaur khas anak Threads (bukan spambot). Balas HANYA dengan format JSON valid berisi 3 opsi draft balasan.";
 
             $prompt = "Berikut adalah postingan akun Thread seseorang (topik: {$topic}):
-\"{$threadContent}\"
+\"{$threadContent}\"{$contextHint}
 
 Buatkan 3 opsi draft reply singkat (santai, natural, max ~220 karakter):
-1. 'Santai / Relatable' (empati, relate dengan keresahannya, bisa selipkan mention santai kalau lagi kepo info lokal/loker bisa pantau disekitar.com)
-2. 'Solutif + Soft Promo disekitar.com' (kasih saran bermanfaat dan rekomendasikan cek info loker/lokal terkurasi langsung di disekitar.com)
-3. 'Diskusi Pemantik' (ajak ngobrol/tanya balik yang menarik sambil relate dengan info lokal di sekitarnya)
+1. 'Santai / Relatable' (empati, relate dengan keresahannya, gaya santai sesama anak Threads)
+2. 'Solutif + Link Rekomendasi disekitar.com' (kasih saran bermanfaat dan cantumkan link postingan relevan yang diberikan di atas agar pembaca bisa langsung akses ke disekitar.com)
+3. 'Diskusi Pemantik' (ajak ngobrol/tanya balik yang menarik seputar kota/topik terkait)
 
 ATURAN PENTING:
-- WAJIB integrasikan website disekitar.com secara halus, elegan, dan solutif (soft-selling / rekomendasi teman), BUKAN mempromosikan platform kompetitor luar seperti LinkedIn, Jobstreet, dll.
+- Jika ada DATA POST RELEVAN dengan URL di atas, WAJIB cantumkan link URL tersebut pada opsi 2 atau opsi yang solutif.
+- WAJIB integrasikan website disekitar.com secara halus, elegan, dan solutif (soft-selling / rekomendasi teman), BUKAN platform kompetitor luar seperti LinkedIn, Jobstreet, dll.
 - Jangan terkesan bot spam kaku, buat sealami mungkin layaknya sesama user Threads yang berbagi info berguna.
 - Format balasan HARUS JSON persis seperti ini:
 [
   {\"style\": \"Santai / Relatable\", \"text\": \"...\"},
-  {\"style\": \"Solutif + Rekomendasi disekitar.com\", \"text\": \"...\"},
+  {\"style\": \"Solutif + Rekomendasi Link disekitar.com\", \"text\": \"...\"},
   {\"style\": \"Diskusi Pemantik\", \"text\": \"...\"}
 ]";
 
@@ -713,10 +762,11 @@ ATURAN PENTING:
             Log::warning('Threads AI Engagement Drafts failed: ' . $e->getMessage());
         }
 
+        $fallbackLink = $samplePost ? $samplePost->url() : 'https://disekitar.com';
         return [
             ['style' => 'Santai / Relatable', 'text' => 'Bener banget, nyari info yang valid sekarang kudu jeli. Semangat terus ya pejuang karir!'],
-            ['style' => 'Solutif + Rekomendasi disekitar.com', 'text' => 'Coba rutin pantau info loker lokal yang udah difilter per kota di disekitar.com, biar ga boncos kena loker abal-abal.'],
-            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer role apa nih di kotamu? Siapa tahu ada info lokal yang relevan di disekitar.com bisa saling share.'],
+            ['style' => 'Solutif + Rekomendasi Link disekitar.com', 'text' => "Coba cek update loker terkurasi di kota ini: {$fallbackLink} biar ga boncos kena loker abal-abal."],
+            ['style' => 'Diskusi Pemantik', 'text' => 'Lagi fokus incer role apa nih di kotamu? Siapa tahu ada info lokal yang relevan bisa saling share.'],
         ];
     }
 }
