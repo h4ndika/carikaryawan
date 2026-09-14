@@ -33,6 +33,8 @@ class ManageThreadsSettings extends Page
 
     public ?array $data = [];
 
+    public array $generatedReplyDrafts = [];
+
     public function mount(): void
     {
         $savedCities = Setting::get('threads_target_cities');
@@ -137,55 +139,18 @@ class ManageThreadsSettings extends Page
                                         ->placeholder('Contoh: Menurut kalian kenapa sekarang cari kerja admin di kota besar susah banget ya? Persaingannya gila-gilaan...')
                                         ->rows(3)
                                         ->required(),
-
-                                    Textarea::make('draft_1')
-                                        ->label('Draft 1: Santai / Relatable')
-                                        ->rows(3)
-                                        ->readOnly()
-                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft santai...')
-                                        ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
-                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
-                                            'title' => 'Klik teks untuk langsung copy',
-                                        ])
-                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
-
-                                    Textarea::make('draft_2')
-                                        ->label('Draft 2: Nilai Tambah / Insight Objektif')
-                                        ->rows(3)
-                                        ->readOnly()
-                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft wawasan...')
-                                        ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
-                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
-                                            'title' => 'Klik teks untuk langsung copy',
-                                        ])
-                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
-
-                                    Textarea::make('draft_3')
-                                        ->label('Draft 3: Diskusi / Pertanyaan Pemantik')
-                                        ->rows(3)
-                                        ->readOnly()
-                                        ->placeholder('Klik "⚡ Generate / Buat Ulang Draft" di bawah untuk memproses draft pemantik diskusi...')
-                                        ->extraInputAttributes([
-                                            'class' => 'bg-gray-50/50 dark:bg-gray-800/50 font-medium cursor-pointer',
-                                            'onclick' => 'if(this.value){ this.select(); navigator.clipboard.writeText(this.value); $tooltip("Tersalin ke clipboard!", { timeout: 1500 }); }',
-                                            'title' => 'Klik teks untuk langsung copy',
-                                        ])
-                                        ->helperText('💡 Klik kotak teks di atas untuk menyalin langsung ke clipboard Threads.'),
                                 ])
+                                ->modalContentFooter(fn () => view('filament.rahasia.components.threads-reply-drafts', [
+                                    'drafts' => $this->generatedReplyDrafts,
+                                ]))
                                 ->modalSubmitActionLabel('⚡ Generate / Buat Ulang Draft')
                                 ->modalCancelActionLabel('Tutup')
-                                ->action(function (array $data, ThreadsService $service, \Filament\Schemas\Components\Utilities\Set $set, Action $action) {
-                                    $drafts = $service->generateEngagementDrafts($data['thread_text'], $data['topic']);
-
-                                    $set('draft_1', $drafts[0]['text'] ?? '');
-                                    $set('draft_2', $drafts[1]['text'] ?? '');
-                                    $set('draft_3', $drafts[2]['text'] ?? '');
+                                ->action(function (array $data, ThreadsService $service, Action $action) {
+                                    $this->generatedReplyDrafts = $service->generateEngagementDrafts($data['thread_text'], $data['topic']);
 
                                     Notification::make()
                                         ->title('3 Draft Balasan Berhasil Dibuat!')
-                                        ->body('Silakan baca dan klik salah satu kotak draft di bawah untuk langsung menyalin.')
+                                        ->body('Silakan pilih salah satu opsi di bawah dan klik Salin Teks.')
                                         ->success()
                                         ->send();
 
