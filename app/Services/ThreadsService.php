@@ -244,30 +244,41 @@ class ThreadsService
             $company = $post->company_name ?: ($post->job_company ?: '');
             $topicTag = $topicTagCity ? "loker{$topicTagCity}" : 'lowongankerja';
 
-            // Coba generate copy percakapan berbasis AI
-            $aiText = $this->generateAiJobCopy($cleanTitle, $company, $titleCaseCity, $url, $topicTagCity);
+            // Format terstruktur bersih (format alternatif / fallback)
+            $buildStructuredFormat = function () use ($cleanTitle, $company, $titleCaseCity, $url, $topicTagCity) {
+                $cityUpper = mb_strtoupper($titleCaseCity);
+                $header = "📢 Lowongan Kerja Terbaru di {$cityUpper}!\n\n";
 
-            if ($aiText) {
-                $text = $aiText;
-            } else {
-                // Fallback ke template percakapan terstruktur
-                $header = "📢 Lowongan Kerja Terbaru disekitar {$titleCaseCity}!\n\n";
-                $position = "💼 Posisi: {$cleanTitle}\n";
+                $position = "💼 Posisi: {$cleanTitle}";
                 if ($company) {
-                    $position .= "🏢 Perusahaan: {$company}\n";
+                    $position .= " - {$company}";
                 }
+                $position .= "\n\n";
 
-                $info = "\n📌 Info detail kualifikasi & cara melamar langsung:\n{$url}\n\n";
+                $info = "📌 Info detail kualifikasi & cara melamar langsung:\n{$url}\n\n";
                 $hashtags = "#Loker{$topicTagCity} #LowonganKerja #LokerTerbaru #Disekitar";
 
                 $fixedLen = mb_strlen($header) + mb_strlen($info) + mb_strlen($hashtags);
                 $maxPositionLen = 495 - $fixedLen;
 
                 if (mb_strlen($position) > $maxPositionLen) {
-                    $position = mb_substr($position, 0, max(0, $maxPositionLen - 3)) . "...\n";
+                    $position = mb_substr($position, 0, max(0, $maxPositionLen - 3)) . "...\n\n";
                 }
 
-                $text = $header . $position . $info . $hashtags;
+                return $header . $position . $info . $hashtags;
+            };
+
+            // Variasi acak 50:50: separuh menggunakan model AI naratif, separuh menggunakan format terstruktur rapi
+            $useAi = (mt_rand(1, 100) <= 50);
+
+            $text = null;
+            if ($useAi) {
+                $text = $this->generateAiJobCopy($cleanTitle, $company, $titleCaseCity, $url, $topicTagCity);
+            }
+
+            // Jika mode terstruktur atau AI gagal/null, gunakan format template terstruktur
+            if (empty($text)) {
+                $text = $buildStructuredFormat();
             }
         } else {
             $categoryName = $post->category?->name ?? 'Tempat';
