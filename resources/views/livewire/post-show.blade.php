@@ -162,6 +162,95 @@
                     {!! $post->content !!}
                 </article>
 
+                <!-- Career Toolkit / Afiliasi Loker Section -->
+                @if ($post->isJob())
+                    @php
+                        $affiliateEnabled = (bool) \App\Models\Setting::get('job_affiliate_enabled', true);
+                        $affiliateTitle = \App\Models\Setting::get('job_affiliate_title', 'Persiapan Lamar Kerja (Toolkit Karir)');
+                        $affiliateSubtitle = \App\Models\Setting::get('job_affiliate_subtitle', 'Tingkatkan peluang lolos seleksi dengan referensi template CV dan materi pendukung pilihan berikut:');
+                        $rawItems = \App\Models\Setting::get('job_affiliate_items');
+                        $affiliateItems = [];
+                        if (!empty($rawItems)) {
+                            $decoded = is_array($rawItems) ? $rawItems : json_decode($rawItems, true);
+                            if (is_array($decoded)) {
+                                $affiliateItems = array_values(array_filter($decoded, function ($item) {
+                                    return !empty($item['url']) && ($item['is_active'] ?? true);
+                                }));
+                            }
+                        }
+                    @endphp
+
+                    @if ($affiliateEnabled && !empty($affiliateItems))
+                        <section class="mt-8 bg-gradient-to-br from-amber-500/5 via-white to-orange-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-orange-950/10 p-6 sm:p-8 rounded-2xl border border-amber-200/70 dark:border-amber-900/40 shadow-xs">
+                            <div class="flex items-start gap-3.5 mb-5">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0 text-lg mt-0.5">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="font-serif-title text-lg sm:text-xl font-bold text-zinc-950 dark:text-zinc-50">
+                                            {{ $affiliateTitle }}
+                                        </h3>
+                                        <span class="bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                            Rekomendasi
+                                        </span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                                        {{ $affiliateSubtitle }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                @foreach ($affiliateItems as $item)
+                                    @php
+                                        $platform = strtolower($item['platform'] ?? 'custom');
+                                        $platformBadge = match($platform) {
+                                            'shopee' => ['name' => 'Shopee', 'color' => 'bg-[#EE4D2D] text-white', 'icon' => 'fa-solid fa-bag-shopping'],
+                                            'tokopedia' => ['name' => 'Tokopedia', 'color' => 'bg-[#03AC0E] text-white', 'icon' => 'fa-solid fa-bag-shopping'],
+                                            'skill_academy' => ['name' => 'Skill Academy', 'color' => 'bg-sky-600 text-white', 'icon' => 'fa-solid fa-graduation-cap'],
+                                            'dicoding' => ['name' => 'Dicoding', 'color' => 'bg-indigo-600 text-white', 'icon' => 'fa-solid fa-code'],
+                                            'tiktok' => ['name' => 'TikTok Shop', 'color' => 'bg-black text-white', 'icon' => 'fa-brands fa-tiktok'],
+                                            'gramedia' => ['name' => 'Gramedia', 'color' => 'bg-blue-700 text-white', 'icon' => 'fa-solid fa-book'],
+                                            default => ['name' => 'Partner Resmi', 'color' => 'bg-zinc-800 text-white', 'icon' => 'fa-solid fa-arrow-up-right-from-square'],
+                                        };
+                                    @endphp
+                                    <a href="{{ $item['url'] }}" 
+                                       target="_blank" 
+                                       rel="nofollow sponsored noopener noreferrer"
+                                       class="group relative flex flex-col justify-between p-4 rounded-xl bg-white dark:bg-zinc-800/80 hover:bg-amber-50/50 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/70 hover:border-amber-400/80 dark:hover:border-amber-600/60 shadow-2xs hover:shadow-md transition-all duration-200">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-2 mb-2">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold {{ $platformBadge['color'] }}">
+                                                    <i class="{{ $platformBadge['icon'] }} text-[9px]"></i>
+                                                    {{ $platformBadge['name'] }}
+                                                </span>
+                                                @if (!empty($item['badge']))
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                                                        {{ $item['badge'] }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <h4 class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                                                {{ $item['title'] }}
+                                            </h4>
+                                            @if (!empty($item['description']))
+                                                <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
+                                                    {{ $item['description'] }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                        <div class="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-700/50 flex items-center justify-between text-[11px] font-semibold text-amber-700 dark:text-amber-400 group-hover:text-amber-800 dark:group-hover:text-amber-300">
+                                            <span>Lihat Rekomendasi</span>
+                                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
+                @endif
+
                 <!-- Ad Slot: Di Atas Galeri -->
                 <x-ad-slot slotName="ad_post_before_gallery" />
 
