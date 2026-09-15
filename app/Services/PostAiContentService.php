@@ -65,7 +65,10 @@ class PostAiContentService
                 ($extraContextStr ? "$extraContextStr " : '') .
                 'Tulis dengan bahasa Indonesia yang jelas, menarik bagi pencari kerja, dan terstruktur rapi. ' .
                 'Gunakan susunan subjudul: <h2>Ringkasan Lowongan</h2>, <h3>Kualifikasi & Persyaratan</h3>, <h3>Tanggung Jawab Pekerjaan</h3>, dan <h3>Benefit & Cara Melamar</h3>. ' .
-                'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2>. JANGAN berikan teks pengantar, instruksi, atau salam pembuka/penutup. ' .
+                'PENTING & WAJIB TERKAIT TAUTAN/URL: ' .
+                'Pada bagian Cara Melamar, JANGAN melampirkan atau menuliskan URL tautan mentah (raw link seperti https://glints.com/..., https://jobstreet.co.id/..., linkedin, dll.). ' .
+                'Sebagai gantinya, arahkan pembaca untuk mengklik tombol resmi "Lamar Sekarang" yang tersedia di halaman informasi lowongan ini, serta siapkan berkas CV/portofolio terbaik mereka. ' .
+                'Langsung mulai dengan judul artikel menggunakan tag <h2>. JANGAN berikan teks pengantar, instruksi, atau salam pembuka/penutup. ' .
                 'Format dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), tanpa blok markdown/backticks. ' .
                 'Sertakan juga data detail terstruktur dalam format JSON di akhir output, dibungkus tag <json>...</json>: ' .
                 'Format JSON: ' .
@@ -463,6 +466,11 @@ class PostAiContentService
         foreach ($closingPatterns as $pattern) {
             $text = preg_replace($pattern, '', $text);
         }
+
+        // 6. Clean up raw external job board links in content (e.g. Glints, Jobstreet, Kalibrr, LinkedIn job links)
+        // ponytail: converts raw application URLs in article prose into a clear call-to-action for the page's "Lamar Sekarang" button
+        $text = preg_replace('/<a\s+[^>]*href=["\']https?:\/\/(?:www\.)?(?:glints\.com|jobstreet\.co\.id|jobstreet\.com|kalibrr\.com|karir\.com|kitalulus\.com|linkedin\.com\/jobs)[^"\']*["\'][^>]*>.*?<\/a>/is', 'tombol <strong>"Lamar Sekarang"</strong> di halaman ini', $text);
+        $text = preg_replace('/https?:\/\/(?:www\.)?(?:glints\.com|jobstreet\.co\.id|jobstreet\.com|kalibrr\.com|karir\.com|kitalulus\.com|linkedin\.com\/jobs)\/[^\s<"\'\)]+/is', 'tombol <strong>"Lamar Sekarang"</strong> di halaman ini', $text);
 
         return [
             'content' => trim($text),

@@ -83,6 +83,7 @@ class PostForm
                                             'Tulis dengan bahasa Indonesia yang natural dan menarik seperti majalah editorial. ' .
                                             'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2> atau <h1>. JANGAN berikan teks pengantar, penjelasan instruksi, pemikiran/reasoning, atau salam pembuka/penutup. ' .
                                             'Format artikel dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), jangan gunakan blok markdown atau backticks. ' .
+                                            'KHUSUS LOWONGAN KERJA: Jangan melampirkan URL link mentah (seperti glints, jobstreet, dll.) di dalam teks artikel; cukup arahkan pelamar untuk mengklik tombol resmi "Lamar Sekarang" di halaman ini. ' .
                                             'Tambahkan juga data detail dalam JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal:' .
                                             '- Kalau kategori seperti Hotel, Tempat Makan dll : harga, lokasi, jam_buka, fasilitas' .
                                             '- Kalau kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan' .
