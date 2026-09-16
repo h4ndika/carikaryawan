@@ -86,7 +86,7 @@ class PostForm
                                             'KHUSUS LOWONGAN KERJA: Jangan melampirkan URL link mentah (seperti glints, jobstreet, dll.) di dalam teks artikel; cukup arahkan pelamar untuk mengklik tombol resmi "Lamar Sekarang" di halaman ini. ' .
                                             'Tambahkan juga data detail dalam JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal:' .
                                             '- Kalau kategori seperti Hotel, Tempat Makan dll : harga, lokasi, jam_buka, fasilitas' .
-                                            '- Kalau kategori Lowongan Kerja: posisi, gaji, lokasi, kualifikasi, deskripsi_pekerjaan' .
+                                            '- Kalau kategori Lowongan Kerja: posisi, nama_perusahaan, gaji, tipe_pekerjaan, lokasi, kualifikasi, deskripsi_pekerjaan' .
                                             '- dan selanjutnya tolong pikirkan key nya berdasarkan kategori lainnya' .
                                             'Dengan Format Universal seperti ini :' .
                                             '{

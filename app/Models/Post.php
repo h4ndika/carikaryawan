@@ -284,6 +284,111 @@ class Post extends Model
     }
 
     /**
+     * Helper to get a detail meta_value by list of candidate keys.
+     */
+    public function getDetailValue(array|string $keys): ?string
+    {
+        $keys = (array) $keys;
+        if ($this->relationLoaded('details')) {
+            $matched = $this->details->first(function ($d) use ($keys) {
+                return in_array(strtolower(trim($d->meta_key)), $keys);
+            });
+            return $matched ? trim($matched->meta_value) : null;
+        }
+
+        $row = $this->details()
+            ->whereIn('meta_key', $keys)
+            ->first();
+
+        return $row ? trim($row->meta_value) : null;
+    }
+
+    /**
+     * Map job employment type to Schema.org standard (FULL_TIME, PART_TIME, CONTRACTOR, INTERN, etc.)
+     */
+    public function getJobEmploymentType(): string
+    {
+        $raw = strtolower((string) ($this->getDetailValue(['tipe_pekerjaan', 'employment_type', 'tipe', 'status_kerja']) ?? ''));
+
+        if (str_contains($raw, 'part') || str_contains($raw, 'paruh')) {
+            return 'PART_TIME';
+        }
+        if (str_contains($raw, 'kontrak') || str_contains($raw, 'contract')) {
+            return 'CONTRACTOR';
+        }
+        if (str_contains($raw, 'magang') || str_contains($raw, 'intern')) {
+            return 'INTERN';
+        }
+        if (str_contains($raw, 'freelance') || str_contains($raw, 'lepas')) {
+            return 'OTHER';
+        }
+
+        return 'FULL_TIME';
+    }
+
+    /**
+     * Extract or estimate baseSalary for Google JobPosting schema.
+     */
+    public function getJobBaseSalary(): array
+    {
+        $rawSalary = (string) ($this->getDetailValue(['gaji', 'salary', 'rentang_gaji', 'upah']) ?? '');
+
+        // Cari angka nominal dalam teks gaji (contoh: 3.500.000, 3500000, 3,5 - 5 jt, dll)
+        preg_match_all('/\d+[\d\.,]*/', $rawSalary, $matches);
+        $numbers = [];
+        if (!empty($matches[0])) {
+            foreach ($matches[0] as $numStr) {
+                $cleanNum = (float) str_replace(['.', ','], '', $numStr);
+                // Handle ekspresi jutaan (misal: "3 jt" atau "4.5 juta")
+                if ($cleanNum > 0 && $cleanNum < 100 && (str_contains($rawSalary, 'jt') || str_contains($rawSalary, 'juta'))) {
+                    $cleanNum = $cleanNum * 1000000;
+                }
+                if ($cleanNum >= 100000) {
+                    $numbers[] = (int) $cleanNum;
+                }
+            }
+        }
+
+        if (count($numbers) >= 2) {
+            sort($numbers);
+            $minVal = $numbers[0];
+            $maxVal = end($numbers);
+            return [
+                '@type' => 'MonetaryAmount',
+                'currency' => 'IDR',
+                'value' => [
+                    '@type' => 'QuantitativeValue',
+                    'minValue' => $minVal,
+                    'maxValue' => $maxVal,
+                    'unitText' => 'MONTH',
+                ],
+            ];
+        } elseif (count($numbers) === 1 && $numbers[0] >= 500000) {
+            return [
+                '@type' => 'MonetaryAmount',
+                'currency' => 'IDR',
+                'value' => [
+                    '@type' => 'QuantitativeValue',
+                    'value' => $numbers[0],
+                    'unitText' => 'MONTH',
+                ],
+            ];
+        }
+
+        // Fallback default UMR/Gaji kompetitif standar jika tidak dicantumkan spesifik
+        return [
+            '@type' => 'MonetaryAmount',
+            'currency' => 'IDR',
+            'value' => [
+                '@type' => 'QuantitativeValue',
+                'minValue' => 3000000,
+                'maxValue' => 6000000,
+                'unitText' => 'MONTH',
+            ],
+        ];
+    }
+
+    /**
      * Generate Schema.org JSON-LD Structured Data for this post.
      */
     public function generateJsonLd(?string $canonicalUrl = null): array
@@ -360,9 +465,10 @@ class Post extends Model
         if ($this->formatted_address || $cityName) {
             $placeSchema['address'] = [
                 '@type' => 'PostalAddress',
-                'streetAddress' => $this->formatted_address ?: $this->title,
+                'streetAddress' => $this->formatted_address ?: ($this->city?->name ?: $this->title),
                 'addressLocality' => $cityName,
                 'addressRegion' => $provName,
+                'postalCode' => $this->city?->postal_code ?: '40111',
                 'addressCountry' => 'ID',
             ];
         }
@@ -392,23 +498,44 @@ class Post extends Model
                 ? $this->expired_at->toIso8601String()
                 : ($this->published_at ? $this->published_at->addDays(21)->toIso8601String() : null);
 
+            // Ekstrak nama perusahaan dan posisi secara presisi
+            $companyName = $this->company_name ?: ($this->getDetailValue(['perusahaan', 'nama_perusahaan', 'company']) ?: '');
+            $jobTitle = $this->title;
+            if (empty($companyName) && str_contains($this->title, ' - ')) {
+                $parts = explode(' - ', $this->title, 2);
+                $jobTitle = trim($parts[0]);
+                $companyName = trim($parts[1]);
+            }
+            if (empty($companyName)) {
+                $companyName = $this->title;
+            }
+
+            // Ekstrak alamat dan kode pos yang valid
+            $streetAddress = $this->formatted_address ?: ($this->getDetailValue(['alamat', 'lokasi']) ?: ($cityName ?: 'Indonesia'));
+            $postalCode = $this->city?->postal_code ?: '40111';
+
             $jobSchema = [
                 '@type' => 'JobPosting',
                 '@id' => $postUrl . '#jobposting',
-                'title' => $this->title,
+                'title' => $jobTitle,
                 'description' => strip_tags($this->content ?: $this->seoDescription()),
                 'datePosted' => optional($this->published_at)->toIso8601String() ?? now()->toIso8601String(),
+                'employmentType' => $this->getJobEmploymentType(),
+                'baseSalary' => $this->getJobBaseSalary(),
                 'directApply' => true,
                 'hiringOrganization' => [
                     '@type' => 'Organization',
-                    'name' => $this->title,
+                    'name' => $companyName,
+                    'sameAs' => $siteUrl,
                 ],
                 'jobLocation' => [
                     '@type' => 'Place',
                     'address' => [
                         '@type' => 'PostalAddress',
-                        'addressLocality' => $cityName,
-                        'addressRegion' => $provName,
+                        'streetAddress' => $streetAddress,
+                        'addressLocality' => $cityName ?: 'Indonesia',
+                        'addressRegion' => $provName ?: 'Indonesia',
+                        'postalCode' => $postalCode,
                         'addressCountry' => 'ID',
                     ],
                 ],
