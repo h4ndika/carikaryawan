@@ -66,200 +66,238 @@
              class="relative w-full max-w-xl mx-auto bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             
             <!-- Modal Header -->
-            <div class="px-5 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            <div class="px-6 py-4.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-xs">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-indigo-600/20 ring-4 ring-indigo-500/10">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-zinc-950 dark:text-zinc-50">1-Click AI Cover Letter Generator</h3>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400">
-                            Khusus: <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $post->title }}</span> · {{ $companyName }}
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-50 tracking-tight">AI Cover Letter Generator</h3>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">1-Click ATS</span>
+                        </div>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate max-w-[280px] sm:max-w-md mt-0.5">
+                            <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $post->title }}</span> · {{ $companyName }}
                         </p>
                     </div>
                 </div>
                 <button type="button" 
                         @click="closeModal()" 
-                        class="cursor-pointer w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-zinc-700 text-zinc-400 transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
+                        class="cursor-pointer w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400 text-zinc-400 transition-colors flex items-center justify-center border border-zinc-200/60 dark:border-zinc-700/60">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
             <!-- Modal Body -->
-            <div class="p-5 overflow-y-auto space-y-4 flex-1">
+            <div class="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
                 
                 <!-- View 1: Input Form -->
-                <div x-show="!hasResult">
-                    <p class="text-xs text-zinc-600 dark:text-zinc-300 mb-4 leading-relaxed">
-                        Lengkapi informasi dasar Anda di bawah ini agar AI dapat menyusun surat lamaran yang persuasif, relevan, dan sesuai standar HRD:
-                    </p>
+                <div x-show="!hasResult" class="space-y-5">
+                    <!-- Helper Banner -->
+                    <div class="p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-xl bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fa-solid fa-sparkles"></i>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            Lengkapi profil singkat Anda. AI akan menyesuaikan kualifikasi dan pengalaman Anda dengan lowongan <strong class="text-indigo-600 dark:text-indigo-400">{{ $post->title }}</strong>.
+                        </p>
+                    </div>
 
-                    <div class="space-y-3.5">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                    <div class="space-y-4">
+                        <!-- Identitas Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" 
-                                       x-model="form.name" 
-                                       placeholder="Contoh: Rian Pratama"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
+                                        <i class="fa-regular fa-user"></i>
+                                    </span>
+                                    <input type="text" 
+                                           x-model="form.name" 
+                                           placeholder="Nama Anda"
+                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                    Kota Asal / Domisili Surat
+
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                    Kota Domisili Surat
                                 </label>
-                                <input type="text" 
-                                       x-model="form.city" 
-                                       placeholder="Contoh: Bandung, Jakarta, Yogyakarta"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                    <input type="text" 
+                                           x-model="form.city" 
+                                           placeholder="Contoh: Bandung, Jakarta"
+                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                        <!-- Kontak Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     No. WhatsApp / HP
                                 </label>
-                                <input type="text" 
-                                       x-model="form.phone" 
-                                       placeholder="Contoh: 081234567890"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </span>
+                                    <input type="text" 
+                                           x-model="form.phone" 
+                                           placeholder="081234567890"
+                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Alamat Email
                                 </label>
-                                <input type="email" 
-                                       x-model="form.email" 
-                                       placeholder="Contoh: rian.pratama@gmail.com"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
+                                        <i class="fa-regular fa-envelope"></i>
+                                    </span>
+                                    <input type="email" 
+                                           x-model="form.email" 
+                                           placeholder="email.anda@gmail.com"
+                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                        <!-- Opsi Bahasa & Tone Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Bahasa Surat
                                 </label>
                                 <select x-model="form.language"
-                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
-                                    <option value="id">Bahasa Indonesia (Formal & Sopan)</option>
-                                    <option value="en">English (Professional & ATS Friendly)</option>
+                                        class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white">
+                                    <option value="id">🇮🇩 Bahasa Indonesia (Formal & Santun)</option>
+                                    <option value="en">🇬🇧 English (Professional & ATS)</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Gaya Bahasa (Tone)
                                 </label>
                                 <select x-model="form.tone"
-                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
-                                    <option value="professional">Profesional & Santun (Standar)</option>
-                                    <option value="enthusiastic">Antusias & Energik</option>
-                                    <option value="concise">Singkat, Padat & Ringkas</option>
+                                        class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white">
+                                    <option value="professional">Profesional & Berbobot (Standar HR)</option>
+                                    <option value="enthusiastic">Penuh Semangat & Antusias</option>
+                                    <option value="concise">Singkat, Padat & Langsung Inti</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                        <!-- Pengalaman Singkat -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                 Latar Belakang / Pengalaman Singkat
                             </label>
                             <textarea x-model="form.experience" 
                                       rows="2" 
-                                      placeholder="Contoh: Pengalaman 2 tahun sebagai admin operasional & customer service di bidang retail / Fresh graduate S1 Manajemen."
-                                      class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"></textarea>
+                                      placeholder="Contoh: Fresh graduate S1 Manajemen / 2 tahun pengalaman sebagai staf operasional & customer service di bidang retail."
+                                      class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400"></textarea>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                Keterampilan / Keahlian Utama yang Ingin Ditegaskan
+                        <!-- Keterampilan -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                Keterampilan / Skill Unggulan
                             </label>
                             <input type="text" 
                                    x-model="form.skills" 
-                                   placeholder="Contoh: Microsoft Excel tingkat lanjut, komunikasi persuasif, manajemen stok barang"
-                                   class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                   placeholder="Contoh: Microsoft Excel, komunikasi persuasif, manajemen waktu"
+                                   class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
                         </div>
 
-                        <div x-show="errorMessage" class="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
-                            <i class="fa-solid fa-circle-exclamation"></i>
+                        <div x-show="errorMessage" class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs flex items-center gap-2.5">
+                            <i class="fa-solid fa-circle-exclamation shrink-0"></i>
                             <span x-text="errorMessage"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- View 2: Generated Result -->
-                <div x-show="hasResult" class="space-y-3">
+                <div x-show="hasResult" class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-lines text-indigo-600 dark:text-indigo-400"></i>
-                            Draf Surat Lamaran (Dapat Diedit Langsung):
+                        <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Draf Surat Lamaran Kerja
                         </span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <span class="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-500/20">
                             Siap Digunakan
                         </span>
                     </div>
 
                     <textarea x-model="resultText" 
                               rows="14" 
-                              class="w-full p-4 font-sans text-xs sm:text-sm leading-relaxed rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden selection:bg-indigo-500 selection:text-white shadow-inner"></textarea>
+                              class="w-full p-4.5 font-sans text-xs sm:text-sm leading-relaxed rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300/80 dark:border-zinc-700/80 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 focus:outline-hidden selection:bg-indigo-500 selection:text-white shadow-inner"></textarea>
                     
-                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 italic">
-                        Tip: Anda dapat langsung mengedit teks di atas sesuai kebutuhan sebelum menyalin atau mengunduhnya.
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                        <i class="fa-regular fa-lightbulb text-amber-500"></i>
+                        <span>Anda dapat langsung mengedit teks di atas sesuai kebutuhan sebelum menyalin atau mengunduhnya.</span>
                     </p>
                 </div>
 
             </div>
 
             <!-- Modal Footer -->
-            <div class="px-5 py-3.5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex flex-wrap items-center justify-between gap-3">
+            <div class="px-6 py-4 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/90 dark:bg-zinc-900/90 backdrop-blur-xs flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
                     <template x-if="hasResult">
                         <button type="button" 
                                 @click="hasResult = false" 
-                                class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
+                                class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 shadow-xs transition-all active:scale-95">
                             <i class="fa-solid fa-arrow-left text-[11px]"></i>
                             <span>Atur Ulang Data</span>
                         </button>
                     </template>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <template x-if="!hasResult">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-3">
                             <button type="button" 
                                     @click="closeModal()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 shadow-xs transition-all active:scale-95">
                                 Batal
                             </button>
                             <button type="button" 
                                     @click="generateLetter()" 
                                     :disabled="isLoading"
-                                    class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-                                <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                                    class="group cursor-pointer inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-md shadow-indigo-600/25 border border-indigo-500 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center text-[10px]">
+                                    <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin"></i>
+                                </span>
                                 <span x-text="isLoading ? 'Menyusun Surat Lamaran...' : 'Generate Surat Lamaran'"></span>
                             </button>
                         </div>
                     </template>
 
                     <template x-if="hasResult">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2.5">
                             <button type="button" 
                                     @click="copyToClipboard()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-medium shadow-xs transition-colors">
+                                    class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold border border-emerald-500 shadow-sm transition-all active:scale-95">
                                 <i :class="isCopied ? 'fa-solid fa-check' : 'fa-regular fa-copy'"></i>
                                 <span x-text="isCopied ? 'Tersalin!' : 'Salin Teks'"></span>
                             </button>
                             <button type="button" 
                                     @click="downloadTxt()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-medium shadow-xs transition-colors">
+                                    class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold border border-amber-500 shadow-sm transition-all active:scale-95">
                                 <i class="fa-solid fa-download"></i>
                                 <span>Unduh (.txt)</span>
                             </button>
                             <button type="button" 
                                     @click="printLetter()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-medium shadow-xs transition-colors">
+                                    class="cursor-pointer inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold border border-indigo-500 shadow-md shadow-indigo-600/20 transition-all active:scale-95">
                                 <i class="fa-solid fa-print"></i>
                                 <span>Cetak / PDF</span>
                             </button>
