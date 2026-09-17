@@ -1,4 +1,4 @@
-<div class="py-8 sm:py-12 bg-zinc-50/50 dark:bg-zinc-950/50 min-h-screen">
+<div class="py-8 sm:py-12 bg-[#fafaf9] dark:bg-[#0c0a09] min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
          x-data="fullCvBuilder({
             polishUrl: @js(route('career.cv-builder.polish')),
