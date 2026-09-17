@@ -55,30 +55,32 @@
     <!-- Modal Dialog -->
     <div x-show="isOpen" 
          x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
          x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6">
 
         <div @click.away="closeModal()" 
-             class="relative w-full max-w-2xl bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+             class="relative w-full max-w-xl mx-auto bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             
             <!-- Modal Header -->
             <div class="px-5 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <div>
                         <h3 class="font-bold text-sm text-zinc-950 dark:text-zinc-50">1-Click AI Cover Letter Generator</h3>
                         <p class="text-[11px] text-zinc-500 dark:text-zinc-400">
-                            Khusus untuk: <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $post->title }}</span> · {{ $companyName }}
+                            Khusus: <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $post->title }}</span> · {{ $companyName }}
                         </p>
                     </div>
                 </div>
-                <button type="button" @click="closeModal()" class="cursor-pointer w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 flex items-center justify-center transition-colors">
+                <button type="button" 
+                        @click="closeModal()" 
+                        class="cursor-pointer w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-zinc-700 text-zinc-400 transition-colors flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -215,7 +217,7 @@
                     <template x-if="hasResult">
                         <button type="button" 
                                 @click="hasResult = false" 
-                                class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                                class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition-colors">
                             <i class="fa-solid fa-arrow-left text-[11px]"></i>
                             <span>Atur Ulang Data</span>
                         </button>
@@ -224,29 +226,42 @@
 
                 <div class="flex items-center gap-2">
                     <template x-if="!hasResult">
-                        <button type="button" 
-                                @click="generateLetter()" 
-                                :disabled="isLoading"
-                                class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-bold tracking-wide transition-all shadow-md">
-                            <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-                            <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin text-xs"></i>
-                            <span x-text="isLoading ? 'Menyusun Surat Lamaran...' : 'Generate Surat Lamaran'"></span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" 
+                                    @click="closeModal()" 
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-colors">
+                                Batal
+                            </button>
+                            <button type="button" 
+                                    @click="generateLetter()" 
+                                    :disabled="isLoading"
+                                    class="cursor-pointer inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:shadow-indigo-500/25 disabled:opacity-50">
+                                <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                                <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                                <span x-text="isLoading ? 'Menyusun Surat Lamaran...' : 'Generate Surat Lamaran'"></span>
+                            </button>
+                        </div>
                     </template>
 
                     <template x-if="hasResult">
                         <div class="flex items-center gap-2">
                             <button type="button" 
                                     @click="copyToClipboard()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition-all">
-                                <i :class="isCopied ? 'fa-solid fa-check text-emerald-500' : 'fa-regular fa-copy'"></i>
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm">
+                                <i :class="isCopied ? 'fa-solid fa-check' : 'fa-regular fa-copy'"></i>
                                 <span x-text="isCopied ? 'Tersalin!' : 'Salin Teks'"></span>
                             </button>
                             <button type="button" 
+                                    @click="downloadTxt()" 
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-sm">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Unduh (.txt)</span>
+                            </button>
+                            <button type="button" 
                                     @click="printLetter()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold transition-all shadow-md">
                                 <i class="fa-solid fa-print"></i>
-                                <span>Cetak / Simpan PDF</span>
+                                <span>Cetak / PDF</span>
                             </button>
                         </div>
                     </template>
@@ -372,47 +387,108 @@
             });
         },
 
+        downloadTxt() {
+            if (!this.resultText) return;
+            const filename = `Surat-Lamaran-${(this.form.name || 'Pelamar').replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+            const blob = new Blob([this.resultText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        },
+
         printLetter() {
             if (!this.resultText) return;
-            const printWindow = window.open('', '_blank');
-            const safeText = this.resultText
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\n/g, '<br>');
 
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Surat Lamaran - ${config.jobTitle}</title>
-                    <style>
-                        @page { size: A4; margin: 2.5cm 2cm; }
-                        body {
-                            font-family: "Times New Roman", Times, serif;
-                            font-size: 12pt;
-                            line-height: 1.6;
-                            color: #111;
-                            margin: 0;
-                            padding: 2cm;
-                        }
-                        p { margin-bottom: 1em; text-align: justify; }
-                        @media print {
-                            body { padding: 0; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div>${safeText}</div>
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
+            // Buat atau bersihkan iframe tersembunyi untuk proses cetak
+            let printIframe = document.getElementById('printCoverLetterIframe');
+            if (printIframe) {
+                printIframe.remove();
+            }
+
+            printIframe = document.createElement('iframe');
+            printIframe.id = 'printCoverLetterIframe';
+            printIframe.style.position = 'fixed';
+            printIframe.style.right = '0';
+            printIframe.style.bottom = '0';
+            printIframe.style.width = '0';
+            printIframe.style.height = '0';
+            printIframe.style.border = '0';
+            printIframe.style.visibility = 'hidden';
+            document.body.appendChild(printIframe);
+
+            const safeParagraphs = this.resultText
+                .split(/\n\s*\n/)
+                .filter(p => p.trim().length > 0)
+                .map(p => {
+                    const clean = p
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/\n/g, '<br>');
+                    return `<p>${clean}</p>`;
+                })
+                .join('');
+
+            const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Surat Lamaran - ${config.jobTitle}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 25mm 25mm 20mm 25mm;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Times New Roman", Times, "Liberation Serif", serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #111;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+        p {
+            margin: 0 0 1.1em 0;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="letter-content">${safeParagraphs}</div>
+</body>
+</html>`;
+
+            const doc = printIframe.contentWindow || printIframe.contentDocument;
+            const iframeDoc = printIframe.contentDocument || printIframe.contentWindow.document;
+
+            iframeDoc.open();
+            iframeDoc.write(htmlContent);
+            iframeDoc.close();
+
+            setTimeout(() => {
+                try {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                } catch (e) {
+                    console.error('Print error:', e);
+                }
+            }, 250);
         }
     }));
     };
