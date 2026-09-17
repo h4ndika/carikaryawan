@@ -121,6 +121,10 @@
                                 {{ $navCat->name }}
                             </a>
                         @endforeach
+                        <a href="{{ route('career.cv-builder') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>CV Builder</span>
+                        </a>
                         <a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1 text-amber-800 dark:text-amber-400">
                             <span>Blog</span>
                         </a>

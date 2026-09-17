@@ -43,12 +43,13 @@
                 </div>
             </div>
 
-            <button type="button" 
-                    @click="openModal()" 
-                    class="cursor-pointer shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:scale-[1.02] active:scale-95">
-                <i class="fa-solid fa-address-card text-sm"></i>
-                <span>Buat CV ATS</span>
-            </button>
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="{{ route('career.cv-builder', ['job' => $post->id]) }}" 
+                   class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:scale-[1.02] active:scale-95">
+                    <i class="fa-solid fa-file-signature text-sm"></i>
+                    <span>Buka ATS CV Builder</span>
+                </a>
+            </div>
         </div>
     </div>
 
