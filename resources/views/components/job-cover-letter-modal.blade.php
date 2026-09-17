@@ -67,9 +67,15 @@
             
             <!-- Modal Header -->
             <div class="px-6 py-4.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-xs">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-indigo-600/20 ring-4 ring-indigo-500/10">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200/70 dark:border-indigo-800/60 flex items-center justify-center shrink-0 text-sm shadow-xs">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
@@ -95,11 +101,11 @@
                 <div x-show="!hasResult" class="space-y-5">
                     <!-- Helper Banner -->
                     <div class="p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 flex items-start gap-3">
-                        <div class="w-7 h-7 rounded-xl bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 text-xs">
-                            <i class="fa-solid fa-sparkles"></i>
+                        <div class="w-6 h-6 rounded-lg bg-indigo-600/10 dark:bg-indigo-400/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fa-solid fa-circle-info"></i>
                         </div>
                         <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                            Lengkapi profil singkat Anda. AI akan menyesuaikan kualifikasi dan pengalaman Anda dengan lowongan <strong class="text-indigo-600 dark:text-indigo-400">{{ $post->title }}</strong>.
+                            Lengkapi profil singkat Anda. AI akan menyelaraskan kualifikasi Anda dengan posisi <strong class="text-indigo-600 dark:text-indigo-400">{{ $post->title }}</strong> di {{ $companyName }}.
                         </p>
                     </div>
 
@@ -110,30 +116,20 @@
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
-                                        <i class="fa-regular fa-user"></i>
-                                    </span>
-                                    <input type="text" 
-                                           x-model="form.name" 
-                                           placeholder="Nama Anda"
-                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
-                                </div>
+                                <input type="text" 
+                                       x-model="form.name" 
+                                       placeholder="Nama Anda"
+                                       class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
                             </div>
 
                             <div class="space-y-1.5">
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Kota Domisili Surat
                                 </label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
-                                        <i class="fa-solid fa-location-dot"></i>
-                                    </span>
-                                    <input type="text" 
-                                           x-model="form.city" 
-                                           placeholder="Contoh: Bandung, Jakarta"
-                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
-                                </div>
+                                <input type="text" 
+                                       x-model="form.city" 
+                                       placeholder="Contoh: Bandung, Jakarta"
+                                       class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
                             </div>
                         </div>
 
@@ -143,29 +139,19 @@
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     No. WhatsApp / HP
                                 </label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </span>
-                                    <input type="text" 
-                                           x-model="form.phone" 
-                                           placeholder="081234567890"
-                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
-                                </div>
+                                <input type="text" 
+                                       x-model="form.phone" 
+                                       placeholder="081234567890"
+                                       class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                                     Alamat Email
                                 </label>
-                                <div class="relative">
-                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 text-xs">
-                                        <i class="fa-regular fa-envelope"></i>
-                                    </span>
-                                    <input type="email" 
-                                           x-model="form.email" 
-                                           placeholder="email.anda@gmail.com"
-                                           class="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
-                                </div>
+                                <input type="email" 
+                                       x-model="form.email" 
+                                       placeholder="email.anda@gmail.com"
+                                       class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white placeholder:text-zinc-400">
                             </div>
                         </div>
 
@@ -177,8 +163,8 @@
                                 </label>
                                 <select x-model="form.language"
                                         class="w-full px-3.5 py-2.5 text-xs rounded-xl bg-zinc-50/80 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700/80 focus:bg-white dark:focus:bg-zinc-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all text-zinc-900 dark:text-white">
-                                    <option value="id">🇮🇩 Bahasa Indonesia (Formal & Santun)</option>
-                                    <option value="en">🇬🇧 English (Professional & ATS)</option>
+                                    <option value="id">Bahasa Indonesia (Formal & Santun)</option>
+                                    <option value="en">English (Professional & ATS)</option>
                                 </select>
                             </div>
                             <div class="space-y-1.5">
@@ -253,7 +239,7 @@
                     <template x-if="hasResult">
                         <button type="button" 
                                 @click="hasResult = false" 
-                                class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 shadow-xs transition-all active:scale-95">
+                                class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-all active:scale-95">
                             <i class="fa-solid fa-arrow-left text-[11px]"></i>
                             <span>Atur Ulang Data</span>
                         </button>
@@ -265,8 +251,11 @@
                         <div class="flex items-center gap-3">
                             <button type="button" 
                                     @click="closeModal()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 shadow-xs transition-all active:scale-95">
-                                Batal
+                                    class="group cursor-pointer inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-xs font-bold shadow-md shadow-rose-600/20 border border-rose-500 transition-all active:scale-95">
+                                <span class="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center text-[10px]">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </span>
+                                <span>Batal</span>
                             </button>
                             <button type="button" 
                                     @click="generateLetter()" 
