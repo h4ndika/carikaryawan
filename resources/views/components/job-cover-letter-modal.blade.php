@@ -217,7 +217,7 @@
                     <template x-if="hasResult">
                         <button type="button" 
                                 @click="hasResult = false" 
-                                class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition-colors">
+                                class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
                             <i class="fa-solid fa-arrow-left text-[11px]"></i>
                             <span>Atur Ulang Data</span>
                         </button>
@@ -229,13 +229,13 @@
                         <div class="flex items-center gap-2">
                             <button type="button" 
                                     @click="closeModal()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-colors">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-colors">
                                 Batal
                             </button>
                             <button type="button" 
                                     @click="generateLetter()" 
                                     :disabled="isLoading"
-                                    class="cursor-pointer inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:shadow-indigo-500/25 disabled:opacity-50">
+                                    class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i x-show="!isLoading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
                                 <i x-show="isLoading" class="fa-solid fa-circle-notch fa-spin text-xs"></i>
                                 <span x-text="isLoading ? 'Menyusun Surat Lamaran...' : 'Generate Surat Lamaran'"></span>
@@ -247,19 +247,19 @@
                         <div class="flex items-center gap-2">
                             <button type="button" 
                                     @click="copyToClipboard()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-medium shadow-xs transition-colors">
                                 <i :class="isCopied ? 'fa-solid fa-check' : 'fa-regular fa-copy'"></i>
                                 <span x-text="isCopied ? 'Tersalin!' : 'Salin Teks'"></span>
                             </button>
                             <button type="button" 
                                     @click="downloadTxt()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-sm">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-medium shadow-xs transition-colors">
                                 <i class="fa-solid fa-download"></i>
                                 <span>Unduh (.txt)</span>
                             </button>
                             <button type="button" 
                                     @click="printLetter()" 
-                                    class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold transition-all shadow-md">
+                                    class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-medium shadow-xs transition-colors">
                                 <i class="fa-solid fa-print"></i>
                                 <span>Cetak / PDF</span>
                             </button>
@@ -370,7 +370,12 @@
                     throw new Error(data.message || 'Gagal membuat surat lamaran. Silakan coba lagi.');
                 }
 
-                this.resultText = data.cover_letter;
+                let letter = data.cover_letter || '';
+                // Bersihkan jika ada tag think tersisa
+                letter = letter.replace(/<think\b[^>]*>[\s\S]*?<\/think>/gi, '');
+                letter = letter.replace(/^[\s\S]*?<\/think>\s*/gi, '');
+                letter = letter.replace(/^```[a-zA-Z]*\s*/i, '').replace(/\s*```$/, '');
+                this.resultText = letter.trim();
                 this.hasResult = true;
             } catch (err) {
                 this.errorMessage = err.message || 'Terjadi gangguan jaringan atau server.';

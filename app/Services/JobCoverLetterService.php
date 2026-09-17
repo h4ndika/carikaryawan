@@ -94,6 +94,11 @@ ATURAN PENULISAN:
             );
 
             $cleanText = trim($response);
+            // Bersihkan tag <think>...</think> dari model reasoning (seperti DeepSeek R1 / Qwen reasoning)
+            $cleanText = preg_replace('/<think\b[^>]*>.*?<\/think>/is', '', $cleanText);
+            // Bersihkan tag penutup </think> jika tag pembukanya terpotong di awal
+            $cleanText = preg_replace('/^.*?<\/think>\s*/is', '', $cleanText);
+            // Bersihkan codeblock markdown ``` jika ada
             $cleanText = preg_replace('/^```[a-zA-Z]*\s*/i', '', $cleanText);
             $cleanText = preg_replace('/\s*```$/', '', $cleanText);
             $cleanText = trim($cleanText);
