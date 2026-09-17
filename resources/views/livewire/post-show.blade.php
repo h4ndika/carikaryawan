@@ -162,10 +162,11 @@
                     {!! $post->content !!}
                 </article>
 
-                <!-- 1-Click AI Cover Letter Generator for Jobs -->
+                <!-- 1-Click AI Career Tools for Jobs -->
                 @if ($post->isJob())
-                    <div class="mt-8">
+                    <div class="mt-8 space-y-4">
                         <x-job-cover-letter-modal :post="$post" />
+                        <x-job-cv-modal :post="$post" />
                     </div>
                 @endif
 

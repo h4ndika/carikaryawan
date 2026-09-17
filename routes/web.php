@@ -67,6 +67,11 @@ Route::post('/job-tools/generate-cover-letter', [\App\Http\Controllers\JobCoverL
     ->middleware('throttle:20,1')
     ->name('job.cover-letter.generate');
 
+// 1-Click AI ATS CV Maker for Jobs
+Route::post('/job-tools/generate-cv', [\App\Http\Controllers\JobCvController::class, 'generate'])
+    ->middleware('throttle:20,1')
+    ->name('job.cv.generate');
+
 // Category index: /hotel
 Route::get('/{category}', PostList::class)
     ->name('category.home')
