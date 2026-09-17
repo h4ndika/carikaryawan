@@ -249,23 +249,27 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('jobCoverLetterModal', (config) => ({
-        isOpen: false,
-        isLoading: false,
-        hasResult: false,
-        isCopied: false,
-        errorMessage: '',
-        resultText: '',
-        form: {
-            name: '',
-            phone: '',
-            email: '',
-            experience: '',
-            skills: '',
-            language: 'id',
-            tone: 'professional'
-        },
+(() => {
+    const defineComponent = () => {
+        if (!window.Alpine) return;
+        if (window.Alpine.data('jobCoverLetterModal')) return;
+
+        window.Alpine.data('jobCoverLetterModal', (config) => ({
+            isOpen: false,
+            isLoading: false,
+            hasResult: false,
+            isCopied: false,
+            errorMessage: '',
+            resultText: '',
+            form: {
+                name: '',
+                phone: '',
+                email: '',
+                experience: '',
+                skills: '',
+                language: 'id',
+                tone: 'professional'
+            },
 
         init() {
             try {
@@ -398,5 +402,12 @@ document.addEventListener('alpine:init', () => {
             printWindow.document.close();
         }
     }));
-});
+    };
+
+    if (window.Alpine) {
+        defineComponent();
+    } else {
+        document.addEventListener('alpine:init', defineComponent);
+    }
+})();
 </script>
