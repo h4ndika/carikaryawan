@@ -17,6 +17,7 @@ class JobCoverLetterController extends Controller
         $validated = $request->validate([
             'post_id' => 'required|integer|exists:posts,id',
             'name' => 'required|string|max:120',
+            'city' => 'nullable|string|max:100',
             'email' => 'nullable|email|max:120',
             'phone' => 'nullable|string|max:40',
             'experience' => 'nullable|string|max:500',

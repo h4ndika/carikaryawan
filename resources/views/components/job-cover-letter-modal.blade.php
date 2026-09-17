@@ -101,8 +101,20 @@
                                 <input type="text" 
                                        x-model="form.name" 
                                        placeholder="Contoh: Rian Pratama"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
                             </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                    Kota Asal / Domisili Surat
+                                </label>
+                                <input type="text" 
+                                       x-model="form.city" 
+                                       placeholder="Contoh: Bandung, Jakarta, Yogyakarta"
+                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                     No. WhatsApp / HP
@@ -110,11 +122,8 @@
                                 <input type="text" 
                                        x-model="form.phone" 
                                        placeholder="Contoh: 081234567890"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                     Alamat Email
@@ -122,16 +131,30 @@
                                 <input type="email" 
                                        x-model="form.email" 
                                        placeholder="Contoh: rian.pratama@gmail.com"
-                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                                       class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                     Bahasa Surat
                                 </label>
                                 <select x-model="form.language"
-                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
+                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
                                     <option value="id">Bahasa Indonesia (Formal & Sopan)</option>
                                     <option value="en">English (Professional & ATS Friendly)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                    Gaya Bahasa (Tone)
+                                </label>
+                                <select x-model="form.tone"
+                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
+                                    <option value="professional">Profesional & Santun (Standar)</option>
+                                    <option value="enthusiastic">Antusias & Energik</option>
+                                    <option value="concise">Singkat, Padat & Ringkas</option>
                                 </select>
                             </div>
                         </div>
@@ -143,7 +166,7 @@
                             <textarea x-model="form.experience" 
                                       rows="2" 
                                       placeholder="Contoh: Pengalaman 2 tahun sebagai admin operasional & customer service di bidang retail / Fresh graduate S1 Manajemen."
-                                      class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white"></textarea>
+                                      class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white"></textarea>
                         </div>
 
                         <div>
@@ -153,21 +176,7 @@
                             <input type="text" 
                                    x-model="form.skills" 
                                    placeholder="Contoh: Microsoft Excel tingkat lanjut, komunikasi persuasif, manajemen stok barang"
-                                   class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                    Gaya Bahasa (Tone)
-                                </label>
-                                <select x-model="form.tone"
-                                        class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 dark:text-white">
-                                    <option value="professional">Profesional & Santun (Standar)</option>
-                                    <option value="enthusiastic">Antusias & Energik</option>
-                                    <option value="concise">Singkat, Padat & Ringkas</option>
-                                </select>
-                            </div>
+                                   class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-300 dark:border-zinc-700 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-zinc-900 dark:text-white">
                         </div>
 
                         <div x-show="errorMessage" class="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
@@ -191,7 +200,7 @@
 
                     <textarea x-model="resultText" 
                               rows="14" 
-                              class="w-full p-4 font-sans text-xs sm:text-sm leading-relaxed rounded-xl bg-zinc-50 dark:bg-zinc-800/90 border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 dark:text-white focus:outline-hidden selection:bg-indigo-500 selection:text-white shadow-inner"></textarea>
+                              class="w-full p-4 font-sans text-xs sm:text-sm leading-relaxed rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden selection:bg-indigo-500 selection:text-white shadow-inner"></textarea>
                     
                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 italic">
                         Tip: Anda dapat langsung mengedit teks di atas sesuai kebutuhan sebelum menyalin atau mengunduhnya.
@@ -263,6 +272,7 @@
             resultText: '',
             form: {
                 name: '',
+                city: config.city || '',
                 phone: '',
                 email: '',
                 experience: '',
@@ -277,6 +287,7 @@
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     this.form.name = parsed.name || '';
+                    this.form.city = parsed.city || this.form.city;
                     this.form.phone = parsed.phone || '';
                     this.form.email = parsed.email || '';
                     this.form.experience = parsed.experience || '';
@@ -311,6 +322,7 @@
                 // Simpan profil pelamar ke localStorage agar tidak perlu ngetik ulang di loker berikutnya
                 localStorage.setItem('disekitar_applicant_profile', JSON.stringify({
                     name: this.form.name,
+                    city: this.form.city,
                     phone: this.form.phone,
                     email: this.form.email,
                     experience: this.form.experience,
@@ -327,6 +339,7 @@
                     body: JSON.stringify({
                         post_id: config.postId,
                         name: this.form.name,
+                        city: this.form.city,
                         phone: this.form.phone,
                         email: this.form.email,
                         experience: this.form.experience,

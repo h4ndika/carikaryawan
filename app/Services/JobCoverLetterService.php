@@ -15,8 +15,13 @@ class JobCoverLetterService
     {
         $jobTitle = trim($post->title);
         $company = $post->company_name ?: ($post->job_company ?: 'Bapak/Ibu HRD / Tim Perekrut');
-        $cityName = $post->city?->name ?? 'Indonesia';
-        $cleanCity = trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $cityName));
+        
+        // Kota pelamar / tanggal saat ini
+        $applicantCity = trim($applicantData['city'] ?? '');
+        if (empty($applicantCity)) {
+            $cityName = $post->city?->name ?? 'Indonesia';
+            $applicantCity = trim(preg_replace('/^(KOTA|KAB\.?|KABUPATEN)\s+/i', '', $cityName));
+        }
 
         $applicantName = trim($applicantData['name'] ?? 'Pelamar');
         $applicantPhone = trim($applicantData['phone'] ?? '');
@@ -25,6 +30,11 @@ class JobCoverLetterService
         $applicantExperience = trim($applicantData['experience'] ?? '');
         $language = strtolower($applicantData['language'] ?? 'id'); // 'id' or 'en'
         $tone = strtolower($applicantData['tone'] ?? 'professional'); // 'professional', 'enthusiastic', 'concise'
+
+        // Format tanggal hari ini (sekarang)
+        $currentDateId = now()->translatedFormat('d F Y');
+        $currentDateEn = now()->format('F d, Y');
+        $currentDate = ($language === 'en') ? $currentDateEn : $currentDateId;
 
         // Ambil cuplikan kualifikasi dan isi lowongan kerja
         $jobRequirements = strip_tags($post->content);
@@ -46,11 +56,12 @@ class JobCoverLetterService
 DATA LOWONGAN:
 - Posisi: {$jobTitle}
 - Perusahaan: {$company}
-- Kota/Lokasi: {$cleanCity}
 - Deskripsi & Kualifikasi Loker:
 {$jobRequirementsExcerpt}
 
-DATA PELAMAR:
+DATA PELAMAR & TANGGAL SURAT:
+- Kota Asal / Domisili Surat: {$applicantCity}
+- Tanggal Surat: {$currentDate}
 - Nama Lengkap: {$applicantName}
 - Kontak: " . ($applicantEmail ? "Email: {$applicantEmail}" : "") . " " . ($applicantPhone ? "Telp/WA: {$applicantPhone}" : "") . "
 - Riwayat / Latar Belakang: " . ($applicantExperience ?: 'Fresh graduate / profesional berdedikasi') . "
@@ -59,15 +70,17 @@ DATA PELAMAR:
 ATURAN PENULISAN:
 1. Bahasa: Gunakan {$languageText}.
 2. Tone: {$toneGuideline}.
-3. Struktur Surat Resmi:
-   - Header tanggal & tujuan ({$company} di {$cleanCity})
+3. Baris Pembuka / Header:
+   - WAJIB gunakan baris tempat dan tanggal berikut secara persis di bagian paling atas: '{$applicantCity}, {$currentDate}'
+   - Diikuti tujuan surat: Kepada Yth. Tim HRD / Perekrut {$company}
+4. Struktur Isi Surat:
    - Salam pembuka formal
    - Paragraf 1: Pengenalan diri, posisi yang dilamar ({$jobTitle}), dan motivasi melamar
    - Paragraf 2: Relevansi pengalaman/keterampilan pelamar dengan kebutuhan posisi di atas (hubungkan secara logis)
    - Paragraf 3: Nilai tambah, kontribusi nyata yang siap diberikan, dan harapan untuk sesi interview
    - Penutup formal & tanda tangan: {$applicantName}
-4. Jangan gunakan tanda kurung placeholder seperti [Nama Perusahaan] atau [Keterampilan] kecuali jika data pelamar benar-benar kosong. Gunakan data yang diberikan secara langsung.
-5. Keluarkan HANYA teks surat lamaran murni (plain text yang rapi dengan paragraf berjarak), tanpa bungkus markdown ``` atau catatan pengantar.";
+5. Jangan gunakan tanda kurung placeholder seperti [Nama Perusahaan] atau [Keterampilan]. Gunakan data yang diberikan secara langsung.
+6. Keluarkan HANYA teks surat lamaran murni (plain text yang rapi dengan paragraf berjarak), tanpa bungkus markdown ``` atau catatan pengantar.";
 
         $modelName = env('OPENAI_MODEL_CV', 'cv-generate');
 
@@ -99,7 +112,7 @@ ATURAN PENULISAN:
         // Fallback generator jika AI sedang timeout atau mengalami limitasi
         return [
             'success' => true,
-            'cover_letter' => $this->buildFallbackCoverLetter($jobTitle, $company, $cleanCity, $applicantName, $applicantEmail, $applicantPhone, $applicantExperience, $applicantSkills, $language),
+            'cover_letter' => $this->buildFallbackCoverLetter($jobTitle, $company, $applicantCity, $applicantName, $applicantEmail, $applicantPhone, $applicantExperience, $applicantSkills, $language),
             'model' => 'fallback',
         ];
     }
