@@ -244,41 +244,32 @@ class ThreadsService
             $company = $post->company_name ?: ($post->job_company ?: '');
             $topicTag = $topicTagCity ? "loker{$topicTagCity}" : 'lowongankerja';
 
-            // Format terstruktur bersih (format alternatif / fallback)
-            $buildStructuredFormat = function () use ($cleanTitle, $company, $titleCaseCity, $url, $topicTagCity) {
-                $cityUpper = mb_strtoupper($titleCaseCity);
-                $header = "📢 Lowongan Kerja Terbaru di {$cityUpper}!\n\n";
+            // Format bervariasi santai (tanpa kalimat pembuka berulang yang kaku)
+            $buildNaturalFormat = function () use ($cleanTitle, $company, $titleCaseCity, $topicTagCity) {
+                $hooks = [
+                    "Ada info loker baru nih buat area {$titleCaseCity} 👀",
+                    "Update lowongan kerja menarik di area {$titleCaseCity}:",
+                    "Buat yang lagi cari kerja disekitar {$titleCaseCity}, boleh dicek nih:",
+                    "Info kesempatan kerja terbaru di {$titleCaseCity}:",
+                ];
+                $hook = $hooks[array_rand($hooks)];
 
-                $position = "💼 Posisi: {$cleanTitle}";
+                $body = "{$hook}\n\n💼 Posisi: {$cleanTitle}";
                 if ($company) {
-                    $position .= " - {$company}";
+                    $body .= "\n🏢 Perusahaan: {$company}";
                 }
-                $position .= "\n\n";
+                $body .= "\n📍 Lokasi: {$titleCaseCity}";
+                $body .= "\n\n📌 Detail kualifikasi & cara melamar sudah kita share di komentar pertama ya 👇";
+                $body .= "\n\n#Loker{$topicTagCity} #LowonganKerja #LokerTerbaru #Disekitar";
 
-                $info = "📌 Info detail kualifikasi & cara melamar langsung:\n{$url}\n\n";
-                $hashtags = "#Loker{$topicTagCity} #LowonganKerja #LokerTerbaru #Disekitar";
-
-                $fixedLen = mb_strlen($header) + mb_strlen($info) + mb_strlen($hashtags);
-                $maxPositionLen = 495 - $fixedLen;
-
-                if (mb_strlen($position) > $maxPositionLen) {
-                    $position = mb_substr($position, 0, max(0, $maxPositionLen - 3)) . "...\n\n";
-                }
-
-                return $header . $position . $info . $hashtags;
+                return $body;
             };
 
-            // Variasi acak 50:50: separuh menggunakan model AI naratif, separuh menggunakan format terstruktur rapi
-            $useAi = (mt_rand(1, 100) <= 50);
+            // Coba buat narasi santai percakapan AI (tanpa link)
+            $text = $this->generateAiJobCopy($cleanTitle, $company, $titleCaseCity, $topicTagCity);
 
-            $text = null;
-            if ($useAi) {
-                $text = $this->generateAiJobCopy($cleanTitle, $company, $titleCaseCity, $url, $topicTagCity);
-            }
-
-            // Jika mode terstruktur atau AI gagal/null, gunakan format template terstruktur
             if (empty($text)) {
-                $text = $buildStructuredFormat();
+                $text = $buildNaturalFormat();
             }
         } else {
             $categoryName = $post->category?->name ?? 'Tempat';
@@ -287,26 +278,19 @@ class ThreadsService
 
             $topicTag = $topicTagCity ?: 'kuliner';
 
-            // Coba generate copy percakapan berbasis AI
-            $aiText = $this->generateAiPlaceCopy($cleanTitle, $categoryName, $titleCaseCity, $post->excerpt, $url, $cityTag, $catTag);
+            // Coba generate copy percakapan berbasis AI (tanpa link)
+            $aiText = $this->generateAiPlaceCopy($cleanTitle, $categoryName, $titleCaseCity, $post->excerpt, $cityTag, $catTag);
 
             if ($aiText) {
                 $text = $aiText;
             } else {
                 // Fallback template
-                $header = "✨ Rekomendasi Tempat disekitar {$titleCaseCity}!\n\n";
+                $header = "✨ Rekomendasi tempat disekitar {$titleCaseCity}!\n\n";
                 $headline = "📍 {$cleanTitle}\n\n";
 
                 $excerpt = $post->excerpt ? "{$post->excerpt}\n\n" : '';
-                $info = "Selengkapnya baca ulasan & info lokasi di sini:\n{$url}\n\n";
+                $info = "Info ulasan & lokasi lengkap kita taruh di komentar pertama ya 👇\n\n";
                 $hashtags = "#Kuliner{$cityTag} #Wisata{$cityTag} #{$catTag} #Disekitar";
-
-                $fixedLen = mb_strlen($header) + mb_strlen($headline) + mb_strlen($info) + mb_strlen($hashtags);
-                $maxExcerptLen = 495 - $fixedLen;
-
-                if ($excerpt && mb_strlen($excerpt) > $maxExcerptLen) {
-                    $excerpt = mb_substr($excerpt, 0, max(0, $maxExcerptLen - 3)) . "...\n\n";
-                }
 
                 $text = $header . $headline . $excerpt . $info . $hashtags;
             }
@@ -347,11 +331,26 @@ class ThreadsService
         if ($imageUrl) {
             $result = $this->postImage($imageUrl, $text, $topicTag);
         } else {
-            $result = $this->postText($text, $url, $topicTag);
+            $result = $this->postText($text, null, $topicTag);
         }
 
         // Mark post as shared to Threads
         $post->updateQuietly(['posted_to_threads_at' => now()]);
+
+        // Auto-reply: Letakkan link di komentar pertama (menghindari penalti jangkauan/shadowban)
+        $publishedThreadId = $result['id'] ?? null;
+        if ($publishedThreadId) {
+            try {
+                sleep(3); // Beri jeda 3 detik agar thread selesai terindeks oleh Meta
+                $replyComment = $post->isJob()
+                    ? "📌 Info kualifikasi lengkap, berkas, dan link lamaran langsung ada di sini ya:\n{$url}"
+                    : "📍 Info selengkapnya & panduan lokasi bisa dibaca di sini ya:\n{$url}";
+
+                $this->replyToThread($publishedThreadId, $replyComment);
+            } catch (\Throwable $e) {
+                Log::warning("Gagal auto-reply komentar pertama Threads post #{$post->id}: " . $e->getMessage());
+            }
+        }
 
         return $result;
     }
@@ -371,7 +370,7 @@ class ThreadsService
 
         $cleanTitle = trim($article->title);
 
-        $aiText = $this->generateAiArticleCopy($cleanTitle, $titleCaseCity, $article->excerpt, $url, $topicTagCity);
+        $aiText = $this->generateAiArticleCopy($cleanTitle, $titleCaseCity, $article->excerpt, $topicTagCity);
 
         if ($aiText) {
             $text = $aiText;
@@ -383,7 +382,7 @@ class ThreadsService
             ];
             $intro = $intros[array_rand($intros)];
 
-            $suffix = "\n\nDaftar tempat lengkapnya bisa dibaca di sini ya:\n{$url}";
+            $suffix = "\n\nDaftar tempat lengkapnya sudah kita share di komentar pertama ya 👇";
             $maxBodyLen = 500 - mb_strlen($suffix);
 
             $body = "{$intro}\n\n{$cleanTitle}";
@@ -417,11 +416,25 @@ class ThreadsService
         if ($imageUrl) {
             $result = $this->postImage($imageUrl, $text, $topicTag);
         } else {
-            $result = $this->postText($text, $url, $topicTag);
+            $result = $this->postText($text, null, $topicTag);
         }
 
         // Mark article as shared to Threads
         $article->updateQuietly(['posted_to_threads_at' => now()]);
+
+        // Auto-reply komentar pertama berisi link artikel
+        $publishedThreadId = $result['id'] ?? null;
+        if ($publishedThreadId) {
+            try {
+                sleep(3);
+                $this->replyToThread(
+                    $publishedThreadId,
+                    "📖 Baca artikel & daftar tempat selengkapnya di sini ya:\n{$url}"
+                );
+            } catch (\Throwable $e) {
+                Log::warning("Gagal auto-reply komentar pertama Threads article #{$article->id}: " . $e->getMessage());
+            }
+        }
 
         return $result;
     }
@@ -429,24 +442,23 @@ class ThreadsService
     /**
      * Generate conversation-driven job post copy using AI.
      */
-    protected function generateAiJobCopy(string $title, string $company, string $city, string $url, string $topicTagCity): ?string
+    protected function generateAiJobCopy(string $title, string $company, string $city, string $topicTagCity): ?string
     {
         try {
-            $systemInstruction = "Kamu adalah social media writer untuk Threads @disekitarcom. Tulislah postingan Threads yang santai, conversation-driven (seperti sesama pencari kerja/warga lokal, bukan robot/korporat). Balas HANYA dengan teks postingan murni (plain text), tanpa code block, tanpa penjelasan pembuka/penutup.";
+            $systemInstruction = "Kamu adalah social media writer untuk Threads @disekitarcom. Tulislah postingan Threads yang santai, conversation-driven (seperti sesama pencari kerja/warga lokal, bukan robot/korporat). Balas HANYA dengan teks postingan murni (plain text), tanpa code block, tanpa link URL, tanpa penjelasan pembuka/penutup.";
 
             $prompt = "Buat teks postingan Threads untuk lowongan kerja berikut:
 - Posisi: {$title}
 - Perusahaan: " . ($company ?: 'Brand Lokal') . "
 - Lokasi: disekitar {$city}
-- Link: {$url}
 
 ATURAN WAJIB:
-1. Mulai dengan kalimat pembuka santai atau observasi persaingan kerja di {$city}.
+1. Mulai dengan kalimat pembuka santai atau observasi persaingan kerja di {$city} (variasikan gayanya, JANGAN gunakan template kaku).
 2. Tulis posisi & perusahaan secara jelas tapi natural.
-3. Cantumkan link: {$url}
-4. Di bagian akhir, berikan 1 PERTANYAAN PEMANTIK REPLY yang relevan (misal tentang pengalaman interview, tantangan cari loker di kota tersebut).
+3. JANGAN sertakan link URL apa pun di teks ini. Sebutkan bahwa info detail & cara melamar ada di komentar pertama.
+4. Di bagian akhir, berikan 1 PERTANYAAN PEMANTIK REPLY yang ramah & relevan.
 5. Akhiri dengan hashtag: #Loker{$topicTagCity} #Disekitar
-6. Panjang TOTAL teks harus di bawah 450 karakter.";
+6. Panjang TOTAL teks harus di bawah 400 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
@@ -462,7 +474,7 @@ ATURAN WAJIB:
             $clean = preg_replace('/\s*```$/', '', $clean);
             $clean = trim($clean);
 
-            if (!empty($clean) && mb_strlen($clean) <= 495 && str_contains($clean, $url)) {
+            if (!empty($clean) && mb_strlen($clean) <= 495) {
                 return $clean;
             }
         } catch (\Throwable $e) {
@@ -475,25 +487,24 @@ ATURAN WAJIB:
     /**
      * Generate conversation-driven place discovery post copy using AI.
      */
-    protected function generateAiPlaceCopy(string $title, string $category, string $city, ?string $excerpt, string $url, string $cityTag, string $catTag): ?string
+    protected function generateAiPlaceCopy(string $title, string $category, string $city, ?string $excerpt, string $cityTag, string $catTag): ?string
     {
         try {
-            $systemInstruction = "Kamu adalah content writer Threads @disekitarcom yang gemar eksplorasi tempat lokal Indonesia. Tulislah postingan Threads yang santai, visual, dan memancing reply warga lokal. Balas HANYA dengan teks postingan murni (plain text), tanpa markdown code block, tanpa pembuka/penutup.";
+            $systemInstruction = "Kamu adalah content writer Threads @disekitarcom yang gemar eksplorasi tempat lokal Indonesia. Tulislah postingan Threads yang santai, visual, dan memancing reply warga lokal. Balas HANYA dengan teks postingan murni (plain text), tanpa link URL, tanpa markdown code block, tanpa pembuka/penutup.";
 
             $prompt = "Buat teks postingan Threads rekomendasi tempat:
 - Tempat: {$title}
 - Kategori: {$category}
 - Kota: disekitar {$city}
 - Catatan: " . ($excerpt ?: 'Spot asik dan nyaman') . "
-- Link: {$url}
 
 ATURAN WAJIB:
 1. Tulis pengalaman/observasi santai tentang suasana tempat atau kebiasaan nongkrong di {$city}.
 2. Sebutkan nama tempat: {$title}.
-3. Cantumkan link ulasan: {$url}
-4. Akhiri dengan 1 PERTANYAAN PEMICU REPLY yang ramah (misal tanya tempat nongkrong/hidden gem favorit warga lokal di {$city}).
+3. JANGAN sertakan link URL. Arahkan pembaca bahwa ulasan lengkap ada di komentar pertama.
+4. Akhiri dengan 1 PERTANYAAN PEMICU REPLY yang ramah.
 5. Sertakan hashtag: #Kuliner{$cityTag} #Wisata{$cityTag} #{$catTag} #Disekitar
-6. Panjang TOTAL teks harus di bawah 450 karakter.";
+6. Panjang TOTAL teks harus di bawah 400 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
@@ -508,7 +519,7 @@ ATURAN WAJIB:
             $clean = preg_replace('/\s*```$/', '', $clean);
             $clean = trim($clean);
 
-            if (!empty($clean) && mb_strlen($clean) <= 495 && str_contains($clean, $url)) {
+            if (!empty($clean) && mb_strlen($clean) <= 495) {
                 return $clean;
             }
         } catch (\Throwable $e) {
@@ -521,22 +532,21 @@ ATURAN WAJIB:
     /**
      * Generate conversation-driven article/curation post copy using AI.
      */
-    protected function generateAiArticleCopy(string $title, string $city, ?string $excerpt, string $url, string $topicTagCity): ?string
+    protected function generateAiArticleCopy(string $title, string $city, ?string $excerpt, string $topicTagCity): ?string
     {
         try {
-            $systemInstruction = "Kamu adalah editor kurasi perjalanan dan kuliner Threads @disekitarcom. Tulislah postingan Threads yang conversation-driven dan pancing opini warga lokal. Balas HANYA dengan teks murni tanpa code block.";
+            $systemInstruction = "Kamu adalah editor kurasi perjalanan dan kuliner Threads @disekitarcom. Tulislah postingan Threads yang conversation-driven dan pancing opini warga lokal. Balas HANYA dengan teks murni tanpa link URL dan tanpa code block.";
 
             $prompt = "Buat teks Threads untuk panduan kurasi:
 - Judul: {$title}
 - Kota: disekitar {$city}
-- Link: {$url}
 
 ATURAN WAJIB:
 1. Awali dengan rasa penasaran atau opini jujur seputar kuliner/tempat main di {$city}.
-2. Cantumkan link bacaan: {$url}
-3. Beri 1 PERTANYAAN PEMICU REPLY yang seru (misal mana tempat yang menurut warga lokal paling wajib dikunjungi).
+2. JANGAN sertakan link URL di teks utama. Sebutkan bahwa link daftar lengkap ada di komentar pertama.
+3. Beri 1 PERTANYAAN PEMICU REPLY yang seru.
 4. Akhiri dengan hashtag #{$topicTagCity} #Disekitar
-5. Panjang TOTAL di bawah 450 karakter.";
+5. Panjang TOTAL di bawah 400 karakter.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
