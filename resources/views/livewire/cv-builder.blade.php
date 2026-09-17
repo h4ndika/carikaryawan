@@ -37,10 +37,16 @@
             <!-- Action Buttons Top Bar -->
             <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
                 <button type="button" 
-                        @click="resetToTemplate()" 
+                        @click="clearForm()" 
                         class="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-zinc-200/80 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-all active:scale-95">
-                    <i class="fa-solid fa-arrow-rotate-left text-[11px]"></i>
-                    <span>Muat Contoh</span>
+                    <i class="fa-solid fa-eraser text-[11px]"></i>
+                    <span>Reset Form</span>
+                </button>
+                <button type="button" 
+                        @click="loadSample()" 
+                        class="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-zinc-200/80 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-all active:scale-95">
+                    <i class="fa-solid fa-fill-drip text-[11px]"></i>
+                    <span>Isi Contoh</span>
                 </button>
                 <button type="button" 
                         @click="downloadTxt()" 
@@ -620,8 +626,11 @@
 </div>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('fullCvBuilder', (config) => ({
+(() => {
+    const defineComponent = () => {
+        if (!window.Alpine) return;
+
+        window.Alpine.data('fullCvBuilder', (config) => ({
         isPolishingSummary: false,
         jobTarget: config.jobPost || {},
 
@@ -647,10 +656,10 @@ document.addEventListener('alpine:init', () => {
                     const parsed = JSON.parse(saved);
                     this.cv = Object.assign({}, this.cv, parsed);
                 } else {
-                    this.resetToTemplate();
+                    this.loadSample();
                 }
             } catch (e) {
-                this.resetToTemplate();
+                this.loadSample();
             }
         },
 
@@ -660,7 +669,25 @@ document.addEventListener('alpine:init', () => {
             } catch (e) {}
         },
 
-        resetToTemplate() {
+        clearForm() {
+            this.cv = {
+                name: '',
+                headline: this.jobTarget.title || '',
+                email: '',
+                phone: '',
+                city: this.jobTarget.city || '',
+                links_text: '',
+                summary: '',
+                experiences: [],
+                education: [],
+                skills_text: '',
+                languages_text: '',
+                certifications_text: ''
+            };
+            this.saveToStorage();
+        },
+
+        loadSample() {
             this.cv = {
                 name: 'Budi Pratama',
                 headline: this.jobTarget.title || 'Product Marketing & Growth Specialist',
@@ -1175,5 +1202,12 @@ document.addEventListener('alpine:init', () => {
             }, 300);
         }
     }));
-});
+    };
+
+    if (window.Alpine) {
+        defineComponent();
+    } else {
+        document.addEventListener('alpine:init', defineComponent);
+    }
+})();
 </script>
