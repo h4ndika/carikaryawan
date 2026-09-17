@@ -17,7 +17,7 @@ class CvBuilder extends Component
         if ($this->jobPostId) {
             $this->jobPost = Post::query()
                 ->where('id', $this->jobPostId)
-                ->where('is_published', true)
+                ->where('status', 'published')
                 ->first();
         }
     }
