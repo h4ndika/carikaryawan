@@ -62,6 +62,11 @@ Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::clas
 Route::get('/job-image/{slug}.svg', [\App\Http\Controllers\JobImageController::class, 'show'])->name('job.image');
 Route::get('/job-image/{slug}.png', [\App\Http\Controllers\JobImageController::class, 'png'])->name('job.image.png');
 
+// 1-Click AI Cover Letter Generator for Jobs
+Route::post('/job-tools/generate-cover-letter', [\App\Http\Controllers\JobCoverLetterController::class, 'generate'])
+    ->middleware('throttle:20,1')
+    ->name('job.cover-letter.generate');
+
 // Category index: /hotel
 Route::get('/{category}', PostList::class)
     ->name('category.home')

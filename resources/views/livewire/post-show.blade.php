@@ -162,6 +162,13 @@
                     {!! $post->content !!}
                 </article>
 
+                <!-- 1-Click AI Cover Letter Generator for Jobs -->
+                @if ($post->isJob())
+                    <div class="mt-8">
+                        <x-job-cover-letter-modal :post="$post" />
+                    </div>
+                @endif
+
                 <!-- Career Toolkit / Afiliasi Loker Section -->
                 @if ($post->isJob())
                     @php
@@ -334,7 +341,7 @@
                     </div>
 
                     @if ($post->isJob() && $applyUrl)
-                        <div>
+                        <div class="space-y-2.5">
                             @if ($post->isExpired())
                                 <button disabled class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 text-xs font-semibold tracking-wide cursor-not-allowed border border-zinc-200 dark:border-zinc-700/60">
                                     <i class="fa-solid fa-lock text-xs"></i>
@@ -349,6 +356,13 @@
                                     <span>Lamar Sekarang</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-70"></i>
                                 </a>
+
+                                <button type="button" 
+                                        @click="window.dispatchEvent(new CustomEvent('open-cover-letter-modal'))"
+                                        class="cursor-pointer w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 text-xs font-semibold transition-colors">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                                    <span>Buat Surat Lamaran AI</span>
+                                </button>
                             @endif
                         </div>
                     @endif
