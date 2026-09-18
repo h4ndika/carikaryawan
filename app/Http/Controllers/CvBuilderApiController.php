@@ -40,6 +40,23 @@ class CvBuilderApiController extends Controller
             $validated['language'] ?? 'id'
         );
 
+        $section = $validated['section'];
+        $action = match ($section) {
+            'summary' => 'polish_summary',
+            'achievement' => 'polish_achievement',
+            default => 'polish_' . $section,
+        };
+
+        \App\Models\ToolUsage::log(
+            toolName: 'cv_builder',
+            action: $action,
+            metadata: [
+                'section' => $section,
+                'language' => $validated['language'] ?? 'id',
+            ],
+            status: !empty($result['success']) ? 'success' : 'failed'
+        );
+
         return response()->json($result);
     }
 }

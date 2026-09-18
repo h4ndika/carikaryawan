@@ -36,6 +36,20 @@ class InterviewPrepController extends Controller
 
         $result = $this->interviewService->generateQuestions($validated);
 
+        \App\Models\ToolUsage::log(
+            toolName: 'interview_prep',
+            action: 'generate',
+            targetPosition: $validated['job_title'] ?? null,
+            companyName: $validated['company'] ?? null,
+            metadata: [
+                'level' => $validated['level'] ?? 'all',
+                'focus' => $validated['focus'] ?? 'all',
+                'language' => $validated['language'] ?? 'id',
+                'total_questions' => !empty($result['data']) ? count($result['data']) : 0,
+            ],
+            status: !empty($result['success']) ? 'success' : 'failed'
+        );
+
         return response()->json($result);
     }
 }

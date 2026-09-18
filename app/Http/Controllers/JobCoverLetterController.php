@@ -40,6 +40,21 @@ class JobCoverLetterController extends Controller
 
         $result = $service->generate($post, $validated);
 
+        \App\Models\ToolUsage::log(
+            toolName: 'cover_letter',
+            action: 'generate',
+            postId: $post->id,
+            targetPosition: $post->title,
+            companyName: $post->company_name ?: ($post->job_company ?: null),
+            metadata: [
+                'language' => $validated['language'] ?? 'id',
+                'tone' => $validated['tone'] ?? 'professional',
+                'applicant_name' => $validated['name'],
+                'model' => $result['model'] ?? 'cv-generate',
+            ],
+            status: !empty($result['cover_letter']) ? 'success' : 'failed'
+        );
+
         return response()->json([
             'success' => true,
             'cover_letter' => $result['cover_letter'],
