@@ -1,4 +1,4 @@
-<div class="py-8 sm:py-12 bg-[#fafaf9] dark:bg-[#0c0a09] min-h-screen">
+<div class="py-12 sm:py-16 pb-20 sm:pb-24 bg-[#fafaf9] dark:bg-[#0c0a09] min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Page Header -->
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Coming Soon Section -->
-        <div class="mb-20">
+        <div class="mb-28">
             <div class="text-center mb-10">
                 <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">Coming Soon</h2>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
@@ -219,9 +219,9 @@
                 </p>
                 <a href="{{ route('page.contact') }}" 
                    wire:navigate
-                   class="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white hover:bg-zinc-50 text-indigo-700 font-bold text-sm shadow-xl shadow-indigo-900/20 transition-all hover:scale-105 active:scale-95">
-                    <i class="fa-regular fa-paper-plane text-base"></i>
-                    <span>Kirim Saran Tool</span>
+                   class="inline-flex items-center justify-center gap-2.5 px-10 py-4.5 rounded-xl bg-white hover:bg-zinc-50 text-indigo-700 font-bold text-sm shadow-xl shadow-indigo-900/20 transition-all hover:scale-105 active:scale-95 min-w-[200px]">
+                    <i class="fa-regular fa-paper-plane text-base text-indigo-600"></i>
+                    <span class="text-indigo-700">Kirim Saran Tool</span>
                 </a>
             </div>
         </div>
