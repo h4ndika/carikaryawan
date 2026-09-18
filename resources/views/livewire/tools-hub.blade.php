@@ -1,8 +1,8 @@
-<div class="py-12 sm:py-16 pb-20 sm:pb-24 bg-[#fafaf9] dark:bg-[#0c0a09] min-h-screen">
+<div class="py-16 sm:py-20 pb-32 bg-[#fafaf9] dark:bg-[#0c0a09] min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Page Header -->
-        <div class="text-center mb-16">
+        <div class="text-center mb-20 sm:mb-24">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-6 shadow-sm">
                 <i class="fa-solid fa-sparkles text-indigo-500"></i>
                 <span>Tools & Resources</span>
@@ -16,7 +16,7 @@
         </div>
 
         <!-- Active Tools Grid (3 columns) -->
-        <div class="mb-20">
+        <div class="mb-32 sm:mb-40">
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">Tools Aktif</h2>
                 <span class="text-sm text-zinc-500 dark:text-zinc-400">2 tools tersedia</span>
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Coming Soon Section -->
-        <div class="mb-28">
+        <div class="mb-32 sm:mb-40">
             <div class="text-center mb-10">
                 <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">Coming Soon</h2>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 max-w-xl mx-auto">
@@ -219,9 +219,9 @@
                 </p>
                 <a href="{{ route('page.contact') }}" 
                    wire:navigate
-                   class="inline-flex items-center justify-center gap-2.5 px-10 py-4.5 rounded-xl bg-white hover:bg-zinc-50 text-indigo-700 font-bold text-sm shadow-xl shadow-indigo-900/20 transition-all hover:scale-105 active:scale-95 min-w-[200px]">
-                    <i class="fa-regular fa-paper-plane text-base text-indigo-600"></i>
-                    <span class="text-indigo-700">Kirim Saran Tool</span>
+                   class="inline-flex items-center justify-center gap-3 px-12 py-5 rounded-2xl bg-amber-400 hover:bg-amber-500 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-base shadow-2xl shadow-amber-900/30 dark:shadow-zinc-900/50 transition-all hover:scale-105 active:scale-95">
+                    <i class="fa-regular fa-paper-plane text-lg"></i>
+                    <span>Kirim Saran Tool</span>
                 </a>
             </div>
         </div>
