@@ -167,6 +167,7 @@
                     <div class="mt-8 space-y-4">
                         <x-job-cover-letter-modal :post="$post" />
                         <x-job-cv-modal :post="$post" />
+                        <x-job-interview-prep-banner :post="$post" />
                     </div>
                 @endif
 
