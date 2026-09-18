@@ -62,6 +62,10 @@ Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::clas
 Route::get('/job-image/{slug}.svg', [\App\Http\Controllers\JobImageController::class, 'show'])->name('job.image');
 Route::get('/job-image/{slug}.png', [\App\Http\Controllers\JobImageController::class, 'png'])->name('job.image.png');
 
+// Tools Hub — Landing page for all tools
+Route::get('/tools', \App\Livewire\ToolsHub::class)
+    ->name('tools.hub');
+
 // Full-page ATS CV & Resume Builder
 Route::get('/karir/cv-builder', \App\Livewire\CvBuilder::class)
     ->name('career.cv-builder');
