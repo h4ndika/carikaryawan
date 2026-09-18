@@ -20,35 +20,36 @@
      class="relative">
 
     <!-- Modal Trigger Banner / Button -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 via-zinc-900 to-zinc-950 p-5 sm:p-6 text-white border border-indigo-500/30 shadow-lg">
-        <div class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-1/3 -mb-8 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 text-lg shrink-0 mt-0.5">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Fitur Karir AI</span>
-                        <span class="bg-indigo-500/30 text-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-full">1-Click</span>
-                    </div>
-                    <h3 class="font-serif-title text-base sm:text-lg font-bold text-white mt-0.5">
-                        Buat Surat Lamaran Instan (Cover Letter)
-                    </h3>
-                    <p class="text-xs text-zinc-300 mt-1 max-w-xl leading-relaxed">
-                        Generate surat lamaran kerja terstruktur otomatis khusus posisi <span class="text-indigo-200 font-semibold">{{ $post->title }}</span> di <span class="text-indigo-200 font-semibold">{{ $companyName }}</span>.
-                    </p>
-                </div>
+    <div class="rounded-2xl border border-indigo-200 dark:border-indigo-800/60 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 p-6 hover:shadow-lg transition-all duration-300">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <!-- Icon -->
+            <div class="shrink-0 w-14 h-14 rounded-2xl bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                <i class="fa-solid fa-file-pen text-white text-2xl"></i>
             </div>
 
-            <button type="button" 
-                    @click="openModal()" 
-                    class="cursor-pointer shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:scale-[1.02] active:scale-95">
-                <i class="fa-solid fa-file-pen text-sm"></i>
-                <span>Buat Surat Lamaran</span>
-            </button>
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <h3 class="font-bold text-base text-zinc-900 dark:text-zinc-100">Buat Surat Lamaran Instan (Cover Letter)</h3>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>AI Powered</span>
+                    </span>
+                </div>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Generate surat lamaran profesional khusus posisi <strong class="text-indigo-700 dark:text-indigo-400">{{ $post->title }}</strong> di {{ $companyName }}. Sesuaikan tone dan bahasa sesuai kebutuhan.
+                </p>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="shrink-0 w-full sm:w-auto">
+                <button type="button" 
+                        @click="openModal()" 
+                        class="cursor-pointer block w-full sm:w-auto text-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm shadow-md shadow-indigo-600/25 transition-all hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-arrow-right mr-2"></i>
+                    <span>Buat Surat Lamaran</span>
+                </button>
+            </div>
         </div>
     </div>
 

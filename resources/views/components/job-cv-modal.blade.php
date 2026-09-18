@@ -20,34 +20,34 @@
      class="relative">
 
     <!-- Modal Trigger Card / Button -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-950 via-zinc-900 to-zinc-950 p-5 sm:p-6 text-white border border-emerald-500/30 shadow-lg">
-        <div class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-1/3 -mb-8 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-                <div class="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-300 text-lg shrink-0 mt-0.5">
-                    <i class="fa-solid fa-file-lines"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Fitur Karir AI</span>
-                        <span class="bg-emerald-500/30 text-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full">ATS Ready</span>
-                    </div>
-                    <h3 class="font-serif-title text-base sm:text-lg font-bold text-white mt-0.5">
-                        ATS CV & Resume Builder Instan
-                    </h3>
-                    <p class="text-xs text-zinc-300 mt-1 max-w-xl leading-relaxed">
-                        Susun ringkasan profesional, kualifikasi teroptimasi kata kunci ATS, dan poin pencapaian spesifik posisi <span class="text-emerald-200 font-semibold">{{ $post->title }}</span> di <span class="text-emerald-200 font-semibold">{{ $companyName }}</span>.
-                    </p>
-                </div>
+    <div class="rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 hover:shadow-lg transition-all duration-300">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <!-- Icon -->
+            <div class="shrink-0 w-14 h-14 rounded-2xl bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-600/30">
+                <i class="fa-solid fa-file-lines text-white text-2xl"></i>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <h3 class="font-bold text-base text-zinc-900 dark:text-zinc-100">ATS CV & Resume Builder</h3>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>AI Powered</span>
+                    </span>
+                </div>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Buat CV profesional yang lolos screening ATS untuk posisi <strong class="text-emerald-700 dark:text-emerald-400">{{ $post->title }}</strong> di {{ $companyName }}. Dengan analisis real-time dan AI polish.
+                </p>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="shrink-0 w-full sm:w-auto">
                 <a href="{{ route('career.cv-builder', ['job' => $post->id]) }}" 
-                   class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold tracking-wide transition-all shadow-md hover:scale-[1.02] active:scale-95">
-                    <i class="fa-solid fa-file-signature text-sm"></i>
-                    <span>Buka ATS CV Builder</span>
+                   wire:navigate
+                   class="cursor-pointer block w-full sm:w-auto text-center px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-md shadow-emerald-600/25 transition-all hover:scale-105 active:scale-95">
+                    <i class="fa-solid fa-arrow-right mr-2"></i>
+                    <span>Buka CV Builder</span>
                 </a>
             </div>
         </div>
