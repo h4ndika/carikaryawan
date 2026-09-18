@@ -86,5 +86,24 @@ Dengan konsep:
   * **Client-Side Canvas 2D Story Generator (9:16 - 1080×1920)**: Pembuatan gambar infografis estetik untuk Instagram Story / WhatsApp Status diproses 100% di browser pengguna tanpa membebani storage dan CPU server.
   * **Interactive Embed Widget (iFrame)**: Komponen embed ringan yang menyajikan informasi tempat, rating kurasi, atau cuaca lokal yang bisa disematkan di website mitra/pemilik tempat dengan atribusi backlink otoritas (*dofollow/nofollow*).
 
+---
 
+### 💼 8. Platform Tools Karir & Produktivitas AI (Career Tools Hub)
+*(Terpusat di halaman `/tools` untuk mendukung pencari kerja, profesional, dan talenta lokal)*
 
+* **Tools yang Sudah Aktif (Live)**:
+  * **ATS CV & Resume Builder (`/karir/cv-builder`)**: Pembuat CV ramah ATS dengan live checklist 8 kriteria skor ATS, AI poles ringkasan profil & pencapaian bullet points, ekspor PDF/TXT/Print.
+  * **Interview Prep AI (`/karir/interview-prep`)**: Generator 15–25 pertanyaan interview terarah (General, Behavioral STAR, Technical, Company-Specific) lengkap dengan tips jawaban collapsible.
+  * **AI Cover Letter Generator (Modal di Detail Loker)**: Generator surat lamaran instan yang mengontekstualisasikan profil pelamar dengan detail kriteria loker yang sedang dilihat.
+
+* **Rencana Alat Masa Depan (Coming Soon & Roadmap)**:
+  * **Email Writer AI (`/tools/email-writer`)**:
+    * Pembuat draf email bisnis & karir profesional (follow-up hasil interview, email terima kasih wawancara, negosiasi penawaran kerja, surat pengunduran diri terhormat).
+    * Opsi kustomisasi tone (formal, ramah, to-the-point) dan dwibahasa (ID/EN).
+  * **Salary Calculator (`/tools/salary-calculator`)**:
+    * Kalkulator estimasi rentang dan median gaji yang realistis berdasarkan posisi pekerjaan, industri, jenjang pengalaman, skala perusahaan, dan UMR/biaya hidup kota di Indonesia.
+    * Dilengkapi visualisasi perbandingan grafik dan panduan negosiasi gaji.
+  * **Career Path Planner (`/tools/career-planner`)**:
+    * Generator roadmap karir 1–5 tahun menggunakan AI: pemetaan target peran impian, analisis kesenjangan keterampilan (*skill gap*), kurasi materi belajar/sertifikasi yang relevan, serta visualisasi milestone langkah demi langkah.
+  * **LinkedIn Profile & Portfolio Optimizer**:
+    * Analisis headline, ringkasan profil, dan optimasi kata kunci pencarian rekruter di LinkedIn, serta generator website portofolio statis dari data CV.
