@@ -74,6 +74,14 @@ Route::post('/job-tools/generate-cover-letter', [\App\Http\Controllers\JobCoverL
     ->middleware('throttle:20,1')
     ->name('job.cover-letter.generate');
 
+// Full-page Interview Prep AI
+Route::get('/karir/interview-prep', \App\Livewire\InterviewPrep::class)
+    ->name('career.interview-prep');
+Route::post('/job-tools/generate-interview-questions', [\App\Http\Controllers\InterviewPrepController::class, 'generate'])
+    ->middleware('throttle:15,1')
+    ->name('career.interview-prep.generate');
+
+
 // 1-Click AI ATS CV Maker for Jobs
 Route::post('/job-tools/generate-cv', [\App\Http\Controllers\JobCvController::class, 'generate'])
     ->middleware('throttle:20,1')
