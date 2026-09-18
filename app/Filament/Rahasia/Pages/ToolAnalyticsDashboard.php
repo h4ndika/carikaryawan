@@ -21,8 +21,6 @@ class ToolAnalyticsDashboard extends Page
 
     protected static ?string $slug = 'tool-analytics';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Statistik & Analitik';
-
     protected static ?int $navigationSort = 2;
 
     protected string $view = 'filament.rahasia.pages.tool-analytics-dashboard';
