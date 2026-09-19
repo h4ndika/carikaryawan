@@ -46,6 +46,12 @@ class ManageThreadsSettings extends Page
             'threads_access_token' => Setting::get('threads_access_token', config('services.threads.access_token', '')),
             'threads_content_type' => Setting::get('threads_content_type', 'all'),
             'threads_target_cities' => $targetCities,
+            'threads_schedule_slot_1_enabled' => (bool) Setting::get('threads_schedule_slot_1_enabled', true),
+            'threads_schedule_slot_2_enabled' => (bool) Setting::get('threads_schedule_slot_2_enabled', true),
+            'threads_schedule_slot_3_enabled' => (bool) Setting::get('threads_schedule_slot_3_enabled', true),
+            'threads_schedule_slot_4_enabled' => (bool) Setting::get('threads_schedule_slot_4_enabled', true),
+            'threads_schedule_slot_5_enabled' => (bool) Setting::get('threads_schedule_slot_5_enabled', true),
+            'threads_schedule_slot_6_enabled' => (bool) Setting::get('threads_schedule_slot_6_enabled', true),
         ]);
     }
 
@@ -54,14 +60,48 @@ class ManageThreadsSettings extends Page
         return $schema
             ->statePath('data')
             ->components([
+                Section::make('Master Sakelar Otomasi')
+                    ->description('Sakelar utama untuk menghidupkan atau mematikan seluruh otomasi Threads sekaligus.')
+                    ->schema([
+                        Toggle::make('threads_auto_post_enabled')
+                            ->label('Aktifkan Auto-Post Terjadwal ke Threads (Master On/Off)')
+                            ->helperText('Jika dinonaktifkan, semua jadwal posting di bawah otomatis berhenti tanpa mengirim request ke Meta.'),
+                    ]),
+
+                Section::make('Jadwal Harian Posting (6 Slot)')
+                    ->description('Pilih slot jam posting mana saja yang ingin diaktifkan atau diistirahatkan.')
+                    ->icon(Heroicon::OutlinedClock)
+                    ->columns(2)
+                    ->schema([
+                        Toggle::make('threads_schedule_slot_1_enabled')
+                            ->label('🌅 Pagi (07:30 WIB)')
+                            ->helperText('Konten: Lowongan Kerja Terbaru #1'),
+
+                        Toggle::make('threads_schedule_slot_2_enabled')
+                            ->label('☀️ Menjelang Siang (10:30 WIB)')
+                            ->helperText('Konten: Lowongan Kerja Terbaru #2'),
+
+                        Toggle::make('threads_schedule_slot_3_enabled')
+                            ->label('🍽️ Istirahat Siang (12:30 WIB)')
+                            ->helperText('Konten: Rekomendasi Tempat (Kuliner, Kafe, Wisata)'),
+
+                        Toggle::make('threads_schedule_slot_4_enabled')
+                            ->label('☕ Sore Hari (15:30 WIB)')
+                            ->helperText('Konten: Lowongan Kerja Terbaru #3'),
+
+                        Toggle::make('threads_schedule_slot_5_enabled')
+                            ->label('🚌 Pulang Kerja (18:30 WIB)')
+                            ->helperText('Konten: Lowongan Kerja Terbaru #4'),
+
+                        Toggle::make('threads_schedule_slot_6_enabled')
+                            ->label('🌙 Santai Malam (20:30 WIB)')
+                            ->helperText('Konten: Artikel Blog & Panduan Kurasi'),
+                    ]),
+
                 Section::make('Kredensial Meta Threads API')
                     ->description('Akun pengembang Meta resmi untuk memublikasikan konten otomatis ke profil Threads @disekitarcom.')
                     ->icon(Heroicon::OutlinedKey)
                     ->schema([
-                        Toggle::make('threads_auto_post_enabled')
-                            ->label('Aktifkan Auto-Post Terjadwal ke Threads')
-                            ->helperText('Jika aktif, scheduler akan memposting 1 artikel/loker baru 3x sehari (08:00, 12:30, 19:00 WIB).'),
-
                         TextInput::make('threads_user_id')
                             ->label('Threads User ID')
                             ->required()

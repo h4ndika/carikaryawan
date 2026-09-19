@@ -26,22 +26,22 @@ Schedule::command('photos:recover-stale')->everyMinute()->withoutOverlapping();
 
 // Broadcast Threads 6x sehari: 4x Loker (performa tertinggi), 1x Tempat Maps, 1x Artikel Blog:
 // 1. Pagi (07:30 WIB / 00:30 UTC): Lowongan Kerja Terbaru #1
-Schedule::command('threads:broadcast --type=jobs')->dailyAt('00:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=jobs --slot=slot_1')->dailyAt('00:30')->withoutOverlapping();
 
 // 2. Siang Menjelang Siang (10:30 WIB / 03:30 UTC): Lowongan Kerja Terbaru #2
-Schedule::command('threads:broadcast --type=jobs')->dailyAt('03:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=jobs --slot=slot_2')->dailyAt('03:30')->withoutOverlapping();
 
 // 3. Istirahat Siang (12:30 WIB / 05:30 UTC): Rekomendasi Tempat (Kuliner, Kafe, Wisata, Hotel)
-Schedule::command('threads:broadcast --type=places')->dailyAt('05:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=places --slot=slot_3')->dailyAt('05:30')->withoutOverlapping();
 
 // 4. Sore Hari (15:30 WIB / 08:30 UTC): Lowongan Kerja Terbaru #3
-Schedule::command('threads:broadcast --type=jobs')->dailyAt('08:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=jobs --slot=slot_4')->dailyAt('08:30')->withoutOverlapping();
 
 // 5. Pulang Kerja (18:30 WIB / 11:30 UTC): Lowongan Kerja Terbaru #4
-Schedule::command('threads:broadcast --type=jobs')->dailyAt('11:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=jobs --slot=slot_5')->dailyAt('11:30')->withoutOverlapping();
 
 // 6. Santai Malam (20:30 WIB / 13:30 UTC): Artikel Blog & Panduan Kurasi
-Schedule::command('threads:broadcast --type=articles')->dailyAt('13:30')->withoutOverlapping();
+Schedule::command('threads:broadcast --type=articles --slot=slot_6')->dailyAt('13:30')->withoutOverlapping();
 
 // Auto-reply responder komentar di Threads (dijalankan setiap 15 menit agar memenuhi respon cepat 30-90 menit)
 Schedule::command('threads:monitor-replies --hours=12')

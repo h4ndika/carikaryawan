@@ -6,7 +6,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('threads:broadcast {--post-id= : ID postingan spesifik yang ingin di-publish} {--article-id= : ID artikel blog spesifik yang ingin di-publish} {--type=all : Tipe konten (all, jobs, places, articles)}')]
+#[Signature('threads:broadcast {--post-id= : ID postingan spesifik yang ingin di-publish} {--article-id= : ID artikel blog spesifik yang ingin di-publish} {--type=all : Tipe konten (all, jobs, places, articles)} {--slot= : Kunci jadwal slot spesifik (slot_1, slot_2, dst)}')]
 #[Description('Publikasikan artikel blog / lowongan kerja / tempat terbaru ke akun resmi Threads')]
 class ThreadsBroadcastCommand extends Command
 {
@@ -18,9 +18,16 @@ class ThreadsBroadcastCommand extends Command
         $enabled = (bool) \App\Models\Setting::get('threads_auto_post_enabled', true);
         $specificPostId = $this->option('post-id');
         $specificArticleId = $this->option('article-id');
+        $slot = $this->option('slot');
 
         if (!$enabled && !$specificPostId && !$specificArticleId) {
-            $this->warn('Otomasi Threads sedang dinonaktifkan di pengaturan.');
+            $this->warn('Otomasi Threads sedang dinonaktifkan di pengaturan utama.');
+            return self::SUCCESS;
+        }
+
+        // Cek apakah slot jadwal ini dinonaktifkan secara khusus
+        if ($slot && !\App\Models\Setting::get("threads_schedule_{$slot}_enabled", true)) {
+            $this->warn("Jadwal Threads untuk slot {$slot} sedang dinonaktifkan.");
             return self::SUCCESS;
         }
 
