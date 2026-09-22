@@ -63,16 +63,25 @@ class ListArticles extends ListRecords
                         ->placeholder('misal: Cocok untuk liburan keluarga, ramah kantong, atau spot foto instagramable'),
                 ])
                 ->action(function (array $data) {
+                    $curationJob = \App\Models\ArticleCurationJob::create([
+                        'city_id' => (int) $data['city_id'],
+                        'category_id' => !empty($data['category_id']) ? (int) $data['category_id'] : null,
+                        'limit' => (int) ($data['limit'] ?? 5),
+                        'custom_angle' => $data['custom_angle'] ?? null,
+                        'status' => 'pending',
+                    ]);
+
                     \App\Jobs\CurateArticleJob::dispatch(
                         cityId: (int) $data['city_id'],
                         categoryId: !empty($data['category_id']) ? (int) $data['category_id'] : null,
                         limit: (int) ($data['limit'] ?? 5),
-                        customAngle: $data['custom_angle'] ?? null
+                        customAngle: $data['custom_angle'] ?? null,
+                        curationJobId: $curationJob->id
                     );
 
                     Notification::make()
                         ->title('Permintaan Kurasi Dikirim ke Antrean')
-                        ->body('Proses pembuatan artikel sedang berjalan di latar belakang (queue). Artikel akan otomatis muncul setelah selesai.')
+                        ->body('Proses pembuatan artikel telah dicatat. Anda dapat memantau perkembangannya di menu "Antrean Artikel".')
                         ->success()
                         ->send();
                 }),

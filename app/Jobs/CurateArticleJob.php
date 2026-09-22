@@ -22,7 +22,8 @@ class CurateArticleJob implements ShouldQueue
         public int $cityId,
         public ?int $categoryId = null,
         public int $limit = 5,
-        public ?string $customAngle = null
+        public ?string $customAngle = null,
+        public ?int $curationJobId = null
     ) {
         $this->onQueue('ai');
     }
@@ -30,6 +31,15 @@ class CurateArticleJob implements ShouldQueue
     public function handle(ArticleCuratorService $curator): void
     {
         Log::info("CurateArticleJob: Memulai kurasi artikel otomatis untuk city_id={$this->cityId}, category_id={$this->categoryId}, limit={$this->limit}");
+
+        $record = $this->curationJobId ? \App\Models\ArticleCurationJob::find($this->curationJobId) : null;
+        if ($record) {
+            $record->update([
+                'status' => 'processing',
+                'started_at' => now(),
+                'error_message' => null,
+            ]);
+        }
 
         try {
             $article = $curator->curateListicle(
@@ -39,8 +49,24 @@ class CurateArticleJob implements ShouldQueue
                 customAngle: $this->customAngle
             );
 
+            if ($record) {
+                $record->update([
+                    'status' => 'completed',
+                    'article_id' => $article->id,
+                    'finished_at' => now(),
+                ]);
+            }
+
             Log::info("CurateArticleJob: Berhasil membuat artikel '{$article->title}' (ID: {$article->id})");
         } catch (Throwable $e) {
+            if ($record) {
+                $record->update([
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage(),
+                    'finished_at' => now(),
+                ]);
+            }
+
             Log::error("CurateArticleJob: Gagal membuat artikel - " . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);

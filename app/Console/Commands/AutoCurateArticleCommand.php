@@ -134,14 +134,23 @@ class AutoCurateArticleCommand extends Command
                 return self::FAILURE;
             }
         } else {
+            $curationJob = \App\Models\ArticleCurationJob::create([
+                'city_id' => $cityId,
+                'category_id' => $categoryId,
+                'limit' => $limit,
+                'custom_angle' => $angle,
+                'status' => 'pending',
+            ]);
+
             \App\Jobs\CurateArticleJob::dispatch(
                 cityId: $cityId,
                 categoryId: $categoryId,
                 limit: $limit,
-                customAngle: $angle
+                customAngle: $angle,
+                curationJobId: $curationJob->id
             );
 
-            $this->info("Job kurasi artikel berhasil dikirim ke antrean latar belakang (Queue: 'ai').");
+            $this->info("Job kurasi artikel berhasil dikirim ke antrean latar belakang (Queue: 'ai', Tracking ID: {$curationJob->id}).");
             return self::SUCCESS;
         }
     }
