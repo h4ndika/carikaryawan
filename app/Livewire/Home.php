@@ -110,7 +110,7 @@ class Home extends Component
                 ->published()
                 ->with(['city', 'category'])
                 ->latest('published_at')
-                ->limit(6)
+                ->limit(7)
                 ->get(),
         ])->layout('layouts.app', [
             'canonicalUrl' => $siteUrl,
