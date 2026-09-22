@@ -61,12 +61,13 @@ Schedule::command('jobs:auto-harvest --limit=20 --engine=auto')
     ->runInBackground();
 
 // Auto-curate artikel blog harian se-Indonesia 2x sehari (06:30 WIB & 15:00 WIB)
-Schedule::command('articles:auto-curate --limit=5')
+// Generate 3 artikel per run dengan limit rekomendasi acak (3, 5, 7, 10 tempat)
+Schedule::command('articles:auto-curate --count=3')
     ->dailyAt('23:30') // 06:30 WIB
     ->withoutOverlapping()
     ->runInBackground();
 
-Schedule::command('articles:auto-curate --limit=5')
+Schedule::command('articles:auto-curate --count=3')
     ->dailyAt('08:00') // 15:00 WIB
     ->withoutOverlapping()
     ->runInBackground();

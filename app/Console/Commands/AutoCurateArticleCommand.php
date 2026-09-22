@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 #[Signature('articles:auto-curate 
                             {--city-id= : ID kota spesifik (opsional)}
                             {--category-id= : ID kategori spesifik (opsional)}
-                            {--limit=5 : Jumlah rekomendasi tempat dalam artikel}
+                            {--limit= : Jumlah rekomendasi tempat dalam artikel (default: random 3, 5, 7, 10)}
                             {--count=1 : Jumlah artikel yang ingin digenerate dalam satu kali run}
                             {--sync : Jalankan secara sinkron tanpa queue (untuk testing)}')]
 #[Description('Otomatis kurasi artikel blog listicle dari database berdasarkan rotasi kota & topik populer')]
@@ -53,18 +53,24 @@ class AutoCurateArticleCommand extends Command
     protected function processSingleArticle(\App\Services\ArticleCuratorService $curator): int
     {
         $forcedCityId = $this->option('city-id');
-        $limit = (int) ($this->option('limit') ?: 5);
+        $forcedLimit = $this->option('limit');
+        if (!empty($forcedLimit)) {
+            $limit = (int) $forcedLimit;
+        } else {
+            $allowedLimits = [3, 5, 7, 10];
+            $limit = $allowedLimits[array_rand($allowedLimits)];
+        }
         $sync = (bool) $this->option('sync');
 
         // 1. Tentukan Kota
         $cityId = $forcedCityId ? (int) $forcedCityId : null;
         if (!$cityId) {
-            // Cari kota yang memiliki minimal $limit tempat published (non-loker)
+            // Cari kota yang memiliki minimal tempat published (non-loker)
             // Prioritaskan kota yang paling jarang / belum pernah dibuat artikelnya baru-baru ini
             $city = \App\Models\City::query()
                 ->whereHas('posts', function ($q) {
                     $q->published()->whereHas('category', fn ($c) => $c->where('slug', 'not like', '%loker%'));
-                }, '>=', $limit)
+                }, '>=', min($limit, 3))
                 ->withCount(['posts' => function ($q) {
                     $q->published()->whereHas('category', fn ($c) => $c->where('slug', 'not like', '%loker%'));
                 }])
@@ -75,14 +81,27 @@ class AutoCurateArticleCommand extends Command
                 ->first();
 
             if (!$city) {
-                $this->error("Tidak ada kota dengan minimal {$limit} tempat yang memenuhi syarat.");
+                $this->error("Tidak ada kota dengan minimal 3 tempat yang memenuhi syarat.");
                 return self::FAILURE;
+            }
+
+            // Jika stok tempat kota terpilih ternyata lebih sedikit dari limit acak, sesuaikan limit
+            if ($city->posts_count < $limit) {
+                $limit = max(3, $city->posts_count);
             }
 
             $cityId = $city->id;
             $cityName = $city->name;
         } else {
-            $cityName = \App\Models\City::find($cityId)?->name ?? "City #{$cityId}";
+            $city = \App\Models\City::find($cityId);
+            $cityName = $city?->name ?? "City #{$cityId}";
+            $postCount = \App\Models\Post::published()
+                ->where('city_id', $cityId)
+                ->whereHas('category', fn ($c) => $c->where('slug', 'not like', '%loker%'))
+                ->count();
+            if ($postCount > 0 && $postCount < $limit) {
+                $limit = max(3, $postCount);
+            }
         }
 
         // 2. Tentukan Kategori / Topik
