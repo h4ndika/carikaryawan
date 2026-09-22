@@ -30,13 +30,15 @@
                 </div>
 
                 @if ($cities->isNotEmpty())
-                    <div class="w-full sm:w-auto">
-                        <select wire:model.live="selectedCity" class="w-full sm:w-auto text-xs font-semibold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 focus:ring-amber-500 focus:border-amber-500">
-                            <option value="">Semua Kota</option>
-                            @foreach ($cities as $ct)
-                                <option value="{{ $ct->slug }}">{{ $ct->name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="w-full sm:w-56">
+                        @include('partials.searchable-select', [
+                            'model' => 'selectedCity',
+                            'options' => $cities,
+                            'placeholder' => 'Pilih kota...',
+                            'emptyLabel' => 'Semua Kota',
+                            'allowEmpty' => true,
+                            'id' => 'filter-city',
+                        ])
                     </div>
                 @endif
             </div>
