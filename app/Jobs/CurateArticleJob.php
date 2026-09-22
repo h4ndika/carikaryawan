@@ -16,7 +16,8 @@ class CurateArticleJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $timeout = 240;
-    public int $tries = 2;
+    // ponytail: tries=1 stops duplicate articles if AI request times out or worker restarts. Retry manually via Antrean UI.
+    public int $tries = 1;
 
     public function __construct(
         public int $cityId,

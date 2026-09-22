@@ -89,9 +89,17 @@ class AutoCurateArticleCommand extends Command
         $categoryId = $this->option('category-id') ? (int) $this->option('category-id') : null;
         if (!$categoryId) {
             // Cari kategori di kota ini yang punya minimal 3 tempat published
+            // Hindari kategori yang sudah pernah dibuatkan artikel di kota ini dalam 30 hari terakhir
+            $recentCategoryIds = \App\Models\Article::where('city_id', $cityId)
+                ->where('created_at', '>=', now()->subDays(30))
+                ->whereNotNull('category_id')
+                ->pluck('category_id')
+                ->all();
+
             $availableCategory = \App\Models\Category::query()
                 ->where('slug', 'not like', '%loker%')
                 ->where('slug', 'not like', '%lowongan%')
+                ->when(!empty($recentCategoryIds), fn ($q) => $q->whereNotIn('id', $recentCategoryIds))
                 ->whereHas('posts', function ($q) use ($cityId) {
                     $q->published()->where('city_id', $cityId);
                 }, '>=', min($limit, 3))
