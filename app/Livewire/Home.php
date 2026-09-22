@@ -105,11 +105,12 @@ class Home extends Component
                 ->latest('published_at')
                 ->limit(12)
                 ->get(),
+            'prioritizeArticles' => (bool) \App\Models\Setting::get('home_prioritize_articles', false),
             'latestArticles' => \App\Models\Article::query()
                 ->published()
                 ->with(['city', 'category'])
                 ->latest('published_at')
-                ->limit(3)
+                ->limit(6)
                 ->get(),
         ])->layout('layouts.app', [
             'canonicalUrl' => $siteUrl,

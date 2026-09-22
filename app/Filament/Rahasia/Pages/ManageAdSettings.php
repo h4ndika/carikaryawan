@@ -44,7 +44,8 @@ class ManageAdSettings extends Page
             'adsterra_popunder_code' => Setting::get('adsterra_popunder_code', ''),
             'adsterra_socialbar_code' => Setting::get('adsterra_socialbar_code', ''),
 
-            // Home ads
+            // Home display & ads
+            'home_prioritize_articles' => (bool) Setting::get('home_prioritize_articles', false),
             'ad_home_hero_enabled' => (bool) Setting::get('ad_home_hero_enabled', false),
             'ad_home_hero_code' => Setting::get('ad_home_hero_code', ''),
             'ad_home_sidebar_enabled' => (bool) Setting::get('ad_home_sidebar_enabled', false),
@@ -131,10 +132,15 @@ class ManageAdSettings extends Page
                             ->helperText('Dimuat di bagian bawah <body>. Biarkan kosong jika tidak ingin menggunakan popunder demi kenyamanan pembaca.'),
                     ]),
 
-                Section::make('Tata Letak Iklan: Beranda (Home)')
-                    ->description('Posisi penempatan iklan pada halaman utama.')
+                Section::make('Tata Letak & Konten: Beranda (Home)')
+                    ->description('Pengaturan prioritas konten editorial serta penempatan iklan pada halaman utama.')
                     ->icon(Heroicon::OutlinedHome)
                     ->schema([
+                        Toggle::make('home_prioritize_articles')
+                            ->label('Utamakan Tampilan Artikel Blog di Beranda')
+                            ->helperText('Jika diaktifkan, artikel editorial berbobot tinggi akan dijadikan headline utama (Lead Hero Story) dan ditempatkan di posisi teratas halaman Beranda. Sangat disarankan saat proses peninjauan Google AdSense.')
+                            ->default(false),
+
                         Toggle::make('ad_home_hero_enabled')
                             ->label('Iklan di Bawah Hero Banner (Sebelum Tab Kategori)')
                             ->helperText('Tampilkan slot iklan horizontal di bawah hero.'),

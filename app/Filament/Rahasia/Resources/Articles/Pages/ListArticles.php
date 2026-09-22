@@ -93,6 +93,31 @@ class ListArticles extends ListRecords
                         ->send();
                 }),
 
+            Action::make('toggleHomePriority')
+                ->label(fn () => (bool) \App\Models\Setting::get('home_prioritize_articles', false)
+                    ? 'Utamakan Artikel di Home: AKTIF'
+                    : 'Utamakan Artikel di Home: NONAKTIF')
+                ->icon(fn () => (bool) \App\Models\Setting::get('home_prioritize_articles', false)
+                    ? 'heroicon-s-check-circle'
+                    : 'heroicon-o-home')
+                ->color(fn () => (bool) \App\Models\Setting::get('home_prioritize_articles', false)
+                    ? 'success'
+                    : 'gray')
+                ->tooltip('Klik untuk mengubah apakah artikel blog editorial diposisikan utama di Beranda (Home)')
+                ->action(function () {
+                    $current = (bool) \App\Models\Setting::get('home_prioritize_articles', false);
+                    $new = ! $current;
+                    \App\Models\Setting::set('home_prioritize_articles', $new ? '1' : '0');
+
+                    Notification::make()
+                        ->title($new ? 'Artikel Blog Diutamakan di Home' : 'Mode Default Home Diaktifkan')
+                        ->body($new 
+                            ? 'Halaman Beranda sekarang mengutamakan tampilan artikel editorial di posisi teratas.' 
+                            : 'Halaman Beranda kembali ke susunan direktori tempat rekomendasi.')
+                        ->color($new ? 'success' : 'info')
+                        ->send();
+                }),
+
             CreateAction::make()
                 ->label('Tulis Manual'),
         ];
