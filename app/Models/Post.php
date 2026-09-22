@@ -157,6 +157,26 @@ class Post extends Model
     }
 
     /**
+     * Get a verified working image URL, avoiding hotlink-protected Google scraper URLs (gps-cs-s).
+     */
+    public function getVerifiedImageUrlAttribute(): ?string
+    {
+        $primary = $this->primary_image_url;
+        if (!empty($primary) && !str_contains($primary, '/gps-cs-s/')) {
+            return $primary;
+        }
+
+        foreach ($this->fallback_image_urls as $url) {
+            if (!empty($url) && !str_contains($url, '/gps-cs-s/')) {
+                return $url;
+            }
+        }
+
+        // Return primary as last resort if no alternative exists
+        return $primary;
+    }
+
+    /**
      * Extract human-friendly source domain from an image URL.
      */
     public static function extractImageSourceDomain(?string $url): ?string

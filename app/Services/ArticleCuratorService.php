@@ -53,7 +53,7 @@ class ArticleCuratorService
             $addr = $p->formatted_address ?: $p->address ?: "{$city->name}";
             $rating = $p->rating ? "Rating Google: {$p->rating} ({$p->reviews_count} ulasan)" : '';
             $desc = Str::limit(strip_tags($p->content), 350);
-            $imgUrl = $p->primary_image_url ?: '';
+            $imgUrl = $p->verified_image_url ?: '';
             
             // Ambil info jam buka & harga jika ada
             $jamBuka = $p->details?->first(fn($d) => in_array(strtolower(trim($d->meta_key)), ['jam_buka', 'jam_operasional', 'opening_hours']))?->meta_value;
@@ -169,8 +169,18 @@ class ArticleCuratorService
         // Jika AI masih mengawali konten dengan tag <h1> atau <h2> judul artikel yang sama persis, bersihkan agar tidak dobel
         $cleanContent = preg_replace('/^\s*<h[12][^>]*>.*?<\/h[12]>\s*/i', '', $cleanContent, 1);
 
-        // Pilih featured image dari foto tempat pertama yang tersedia
-        $featuredImage = $places->first()?->primary_image_url ?: null;
+        // Pilih featured image dari foto tempat pertama yang tersedia dan valid
+        $featuredImage = null;
+        foreach ($places as $p) {
+            $candidate = $p->verified_image_url;
+            if (!empty($candidate) && !str_contains($candidate, '/gps-cs-s/')) {
+                $featuredImage = $candidate;
+                break;
+            }
+        }
+        if (empty($featuredImage)) {
+            $featuredImage = $places->first()?->verified_image_url ?: null;
+        }
 
         // Simpan sebagai draft atau langsung published
         $article = Article::create([

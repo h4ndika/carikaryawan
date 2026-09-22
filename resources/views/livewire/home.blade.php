@@ -102,6 +102,7 @@
                                     <div class="col-span-1 aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-center relative">
                                         <img src="{{ $sArticle->featured_image_url ?: asset('images/placeholder.svg') }}" 
                                              alt="{{ $sArticle->title }}" 
+                                             onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';"
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                              loading="lazy">
                                     </div>
@@ -274,6 +275,7 @@
                         <a href="{{ $art->url() }}" wire:navigate class="block relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                             <img src="{{ $art->featured_image_url ?: asset('images/placeholder.svg') }}" 
                                  alt="{{ $art->title }}" 
+                                 onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                  loading="lazy">
                             <span class="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-semibold text-white tracking-wide uppercase">
@@ -320,6 +322,7 @@
                         <a href="{{ $art->url() }}" wire:navigate class="block relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                             <img src="{{ $art->featured_image_url ?: asset('images/placeholder.svg') }}" 
                                  alt="{{ $art->title }}" 
+                                 onerror="this.onerror=null; this.src='{{ asset('images/placeholder.svg') }}';"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                  loading="lazy">
                             <span class="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-semibold text-white tracking-wide uppercase">
