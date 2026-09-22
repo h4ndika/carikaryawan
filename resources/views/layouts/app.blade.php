@@ -116,14 +116,14 @@
 
                     <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600 dark:text-zinc-400">
                         <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a>
+                        <a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1 text-amber-800 dark:text-amber-400">
+                            <span>Blog</span>
+                        </a>
                         @foreach ($navCategories as $navCat)
                             <a href="{{ $navCat->url() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                                 {{ $navCat->name }}
                             </a>
                         @endforeach
-                        <a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1 text-amber-800 dark:text-amber-400">
-                            <span>Blog</span>
-                        </a>
                         <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                             Jelajah
                         </a>
