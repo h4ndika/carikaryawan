@@ -50,7 +50,7 @@ class AutoCurateArticleCommand extends Command
         return self::SUCCESS;
     }
 
-    protected function processSingleArticle(\App\Services\ArticleCuratorService $curator): void
+    protected function processSingleArticle(\App\Services\ArticleCuratorService $curator): int
     {
         $forcedCityId = $this->option('city-id');
         $limit = (int) ($this->option('limit') ?: 5);
