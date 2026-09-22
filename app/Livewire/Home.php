@@ -105,6 +105,12 @@ class Home extends Component
                 ->latest('published_at')
                 ->limit(12)
                 ->get(),
+            'latestArticles' => \App\Models\Article::query()
+                ->published()
+                ->with(['city', 'category'])
+                ->latest('published_at')
+                ->limit(3)
+                ->get(),
         ])->layout('layouts.app', [
             'canonicalUrl' => $siteUrl,
             'metaDescription' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',

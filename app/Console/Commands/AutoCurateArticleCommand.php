@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
                             {--city-id= : ID kota spesifik (opsional)}
                             {--category-id= : ID kategori spesifik (opsional)}
                             {--limit=5 : Jumlah rekomendasi tempat dalam artikel}
+                            {--count=1 : Jumlah artikel yang ingin digenerate dalam satu kali run}
                             {--sync : Jalankan secara sinkron tanpa queue (untuk testing)}')]
 #[Description('Otomatis kurasi artikel blog listicle dari database berdasarkan rotasi kota & topik populer')]
 class AutoCurateArticleCommand extends Command
@@ -32,12 +33,26 @@ class AutoCurateArticleCommand extends Command
     {
         $enabled = (bool) \App\Models\Setting::get('blog_auto_curate_enabled', true);
         $forcedCityId = $this->option('city-id');
+        $batchCount = max(1, (int) $this->option('count'));
 
         if (!$enabled && !$forcedCityId) {
             $this->warn('Otomasi kurasi artikel blog sedang dinonaktifkan di pengaturan.');
             return self::SUCCESS;
         }
 
+        for ($iteration = 1; $iteration <= $batchCount; $iteration++) {
+            if ($batchCount > 1) {
+                $this->line("=== Menjalankan Batch Artikel {$iteration} dari {$batchCount} ===");
+            }
+            $this->processSingleArticle($curator);
+        }
+
+        return self::SUCCESS;
+    }
+
+    protected function processSingleArticle(\App\Services\ArticleCuratorService $curator): void
+    {
+        $forcedCityId = $this->option('city-id');
         $limit = (int) ($this->option('limit') ?: 5);
         $sync = (bool) $this->option('sync');
 

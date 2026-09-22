@@ -125,19 +125,19 @@
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Jaringan Periklanan Pihak Ketiga (Google AdSense, Adsterra, dll.)</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Jaringan Periklanan Pihak Ketiga (Google AdSense)</h2>
                         <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-zinc-800 dark:text-zinc-200">
-                            <p class="text-sm font-semibold mb-2">Pemberitahuan Transparansi Iklan Pihak Ketiga:</p>
+                            <p class="text-sm font-semibold mb-2">Pemberitahuan Transparansi Iklan Pihak Ketiga (Google AdSense):</p>
                             <p class="text-xs sm:text-sm leading-relaxed">
-                                Situs kami bermitra dengan penyedia jaringan periklanan pihak ketiga terpercaya, termasuk <strong>Google AdSense</strong> dan mitra periklanan digital lainnya (seperti <strong>Adsterra</strong>). Mitra periklanan ini menggunakan cookie, web beacon, dan teknologi penargetan serupa untuk menayangkan iklan yang relevan kepada pengunjung berdasarkan riwayat kunjungan ke situs kami maupun situs web lain di internet.
+                                Situs kami bermitra dengan penyedia jaringan periklanan resmi pihak ketiga terpercaya, yaitu <strong>Google LLC (Google AdSense)</strong>. Google menggunakan cookie dan web beacon untuk menayangkan iklan yang relevan kepada pengunjung berdasarkan riwayat kunjungan ke situs kami maupun situs web lain di internet.
                             </p>
                         </div>
                         <ul class="list-disc pl-5 space-y-2 mt-3">
                             <li>
-                                <strong>Kuki DART / DoubleClick (Google):</strong> Google menggunakan kuki untuk menayangkan iklan kepada pengguna kami berdasarkan kunjungan mereka ke DISEKITAR dan situs web lainnya di internet.
+                                <strong>Kuki DART / DoubleClick (Google):</strong> Google sebagai vendor pihak ketiga menggunakan kuki DART untuk menayangkan iklan kepada pengguna situs berdasarkan kunjungan mereka ke DISEKITAR dan situs web lainnya di internet.
                             </li>
                             <li>
-                                <strong>Jaringan Periklanan Mitra Pihak Ketiga:</strong> Vendor dan jaringan iklan pihak ketiga lainnya juga dapat menayangkan iklan di situs kami. Kuki pihak ketiga digunakan untuk mengukur efektivitas kampanye iklan dan mempersonalisasi konten iklan.
+                                <strong>Penyedia Iklan Terverifikasi:</strong> Iklan yang ditampilkan mematuhi Pedoman Kebijakan Program Google AdSense dan undang-undang privasi internasional yang berlaku (termasuk GDPR dan CCPA).
                             </li>
                             <li>
                                 <strong>Pilihan Menyisih Iklan Google (Opt-Out):</strong> Anda dapat menyisih dari periklanan berbasis minat Google dengan mengunjungi 

@@ -145,6 +145,59 @@
         <!-- Ad Slot: Bawah Hero -->
         <x-ad-slot slotName="ad_home_hero" class="!my-0 mb-12" />
 
+        <!-- Panduan & Jurnal Editorial Pilihan (AdSense High-Value Content Anchor) -->
+        @if (isset($latestArticles) && $latestArticles->isNotEmpty())
+        <section class="mb-14 pb-12 border-b border-zinc-200 dark:border-zinc-800">
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 mb-2">
+                        <i class="fa-solid fa-feather-pointed"></i> Jurnal Kurasi
+                    </span>
+                    <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50">
+                        Panduan Eksplorasi & Editorial
+                    </h2>
+                </div>
+                <a href="{{ route('blog.index') }}" wire:navigate class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 flex items-center gap-1 transition-colors">
+                    <span>Lihat Semua Artikel</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach ($latestArticles as $art)
+                    <article class="flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 group">
+                        <a href="{{ $art->url() }}" wire:navigate class="block relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                            <img src="{{ $art->featured_image_url ?: asset('images/placeholder.svg') }}" 
+                                 alt="{{ $art->title }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                 loading="lazy">
+                            <span class="absolute top-3 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-semibold text-white tracking-wide uppercase">
+                                {{ $art->city->name ?? 'Indonesia' }}
+                            </span>
+                        </a>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 mb-2">
+                                {{ $art->category->name ?? 'Kurasi Tempat' }}
+                            </div>
+                            <h3 class="font-serif-title font-bold text-base text-zinc-950 dark:text-zinc-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2 mb-2">
+                                <a href="{{ $art->url() }}" wire:navigate>
+                                    {{ $art->title }}
+                                </a>
+                            </h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-4 flex-grow">
+                                {{ $art->excerpt }}
+                            </p>
+                            <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                                <span>{{ $art->published_at ? $art->published_at->translatedFormat('d M Y') : 'Baru' }}</span>
+                                <span class="group-hover:translate-x-1 transition-transform text-amber-800 dark:text-amber-400 font-semibold">Baca &rarr;</span>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
         <!-- Category Filter Tabs -->
         @include('partials.category-tabs', ['categories' => $categories])
 
