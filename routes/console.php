@@ -85,5 +85,16 @@ Schedule::command('maps:auto-harvest --limit=300 --min-stock=50')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Auto-harvest Landmark Kota se-Indonesia (Prioritas kota tanpa landmark, 3 kota per eksekusi, 2x sehari jam 03:00 WIB & 14:00 WIB)
+Schedule::command('landmark:auto-harvest --cities-count=3 --limit=25 --method=ai')
+    ->dailyAt('20:00') // 03:00 WIB
+    ->withoutOverlapping()
+    ->runInBackground();
+
+Schedule::command('landmark:auto-harvest --cities-count=3 --limit=25 --method=ai')
+    ->dailyAt('07:00') // 14:00 WIB
+    ->withoutOverlapping()
+    ->runInBackground();
+
 
 

@@ -43,7 +43,8 @@ class ListLandmarks extends ListRecords
                         ->helperText('Pilih metode ekstraksi landmark yang ingin digunakan.'),
 
                     Select::make('city_id')
-                        ->label('Target Kota / Kabupaten')
+                        ->label('Target Kota / Kabupaten (Opsional)')
+                        ->placeholder('⚡ Otomatis pilih kota yang belum punya landmark')
                         ->options(function () {
                             return City::query()
                                 ->with('province')
@@ -54,8 +55,7 @@ class ListLandmarks extends ListRecords
                                 ]);
                         })
                         ->searchable()
-                        ->required()
-                        ->helperText('Pilih kota yang ingin dicari/di-generate landmark-nya.'),
+                        ->helperText('Kosongkan jika ingin sistem otomatis memilih kota yang belum memiliki data landmark.'),
 
                     TextInput::make('limit')
                         ->label('Target Jumlah Landmark')
@@ -86,11 +86,25 @@ class ListLandmarks extends ListRecords
                         ->helperText('Jika aktif, landmark dengan nama/slug serupa yang sudah ada tidak akan ditimpa.'),
                 ])
                 ->action(function (array $data, LandmarkScraperService $service): void {
-                    $city = City::with('province')->find($data['city_id']);
+                    $cityId = $data['city_id'] ?? null;
+                    if ($cityId) {
+                        $city = City::with('province')->find($cityId);
+                    } else {
+                        // Otomatis prioritaskan kota yang punya postingan tempat tapi belum punya landmark
+                        $city = City::with('province')
+                            ->whereDoesntHave('landmarks')
+                            ->whereHas('posts')
+                            ->withCount('posts')
+                            ->orderByDesc('posts_count')
+                            ->first()
+                            ?: City::with('province')->whereDoesntHave('landmarks')->inRandomOrder()->first();
+                    }
+
                     if (!$city) {
                         Notification::make()
-                            ->title('Kota tidak ditemukan')
-                            ->danger()
+                            ->title('Tidak ada kota yang memenuhi syarat')
+                            ->body('Semua kota sudah memiliki landmark atau database kota kosong.')
+                            ->warning()
                             ->send();
                         return;
                     }
