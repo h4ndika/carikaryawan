@@ -15,14 +15,16 @@ class ThreadsMonitorRepliesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'threads:monitor-replies {--hours=24 : Jam rentang postingan yang dimonitor}';
+    protected $signature = 'threads:monitor-replies 
+                            {--posts-limit=100 : Jumlah postingan Threads yang dipindai (default 100 post)}
+                            {--reply-hours=48 : Rentang jam ke belakang untuk komentar yang akan dibalas}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Monitor komentar masuk di postingan Threads kita dan balas otomatis menggunakan AI';
+    protected $description = 'Monitor komentar masuk di postingan Threads (baru maupun lama) dan balas otomatis menggunakan AI';
 
     /**
      * Execute the console command.
@@ -34,12 +36,13 @@ class ThreadsMonitorRepliesCommand extends Command
             return self::FAILURE;
         }
 
-        $hours = (int) $this->option('hours');
-        $since = Carbon::now()->subHours($hours);
+        $postsLimit = (int) ($this->option('posts-limit') ?: 100);
+        $replyHours = (int) ($this->option('reply-hours') ?: 48);
+        $commentSince = Carbon::now()->subHours($replyHours);
 
-        $this->info("Memeriksa postingan Threads dalam {$hours} jam terakhir...");
+        $this->info("Memindai hingga {$postsLimit} postingan Threads untuk komentar dalam {$replyHours} jam terakhir...");
 
-        $threads = $service->getUserThreads(limit: 25);
+        $threads = $service->getUserThreads(limit: $postsLimit);
         if (empty($threads)) {
             $this->info('Tidak ada postingan yang ditemukan.');
             return self::SUCCESS;
@@ -47,30 +50,35 @@ class ThreadsMonitorRepliesCommand extends Command
 
         $repliedCount = 0;
 
+        $ourProfile = $service->verifyProfile();
+        $ourUsername = strtolower($ourProfile['username'] ?? 'disekitarcom');
+
         foreach ($threads as $thread) {
             $mediaId = $thread['id'] ?? null;
             $postText = $thread['text'] ?? '';
-            $postTime = isset($thread['timestamp']) ? Carbon::parse($thread['timestamp']) : null;
 
-            if (!$mediaId || ($postTime && $postTime->lt($since))) {
+            if (!$mediaId) {
                 continue;
             }
 
-            // Ambil komentar / balasan pada thread ini
+            // Ambil komentar / balasan pada thread ini (termasuk pada postingan lama)
             $replies = $service->getThreadConversation($mediaId);
             if (empty($replies)) {
                 continue;
             }
 
-            $ourProfile = $service->verifyProfile();
-            $ourUsername = strtolower($ourProfile['username'] ?? 'disekitarcom');
-
             foreach ($replies as $reply) {
                 $replyId = $reply['id'] ?? null;
                 $author = $reply['username'] ?? 'pengguna';
                 $commentText = trim($reply['text'] ?? '');
+                $replyTime = isset($reply['timestamp']) ? Carbon::parse($reply['timestamp']) : null;
 
                 if (!$replyId || empty($commentText)) {
+                    continue;
+                }
+
+                // Abaikan komentar yang dibuat lebih lama dari batas waktu jendela (misal > 48 jam lalu)
+                if ($replyTime && $replyTime->lt($commentSince)) {
                     continue;
                 }
 

@@ -43,8 +43,8 @@ Schedule::command('threads:broadcast --type=jobs --slot=slot_5')->dailyAt('11:30
 // 6. Santai Malam (20:30 WIB / 13:30 UTC): Artikel Blog & Panduan Kurasi
 Schedule::command('threads:broadcast --type=articles --slot=slot_6')->dailyAt('13:30')->withoutOverlapping();
 
-// Auto-reply responder komentar di Threads (dijalankan setiap 15 menit agar memenuhi respon cepat 30-90 menit)
-Schedule::command('threads:monitor-replies --hours=12')
+// Auto-reply responder komentar di Threads (memantau hingga 100 post, baik post baru maupun lama, untuk komentar 48 jam terakhir)
+Schedule::command('threads:monitor-replies --posts-limit=100 --reply-hours=48')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->runInBackground();
