@@ -247,10 +247,11 @@ class ThreadsService
             // Format bervariasi santai (tanpa kalimat pembuka berulang yang kaku)
             $buildNaturalFormat = function () use ($cleanTitle, $company, $titleCaseCity, $topicTagCity) {
                 $hooks = [
-                    "Ada info loker baru nih buat area {$titleCaseCity} 👀",
-                    "Update lowongan kerja menarik di area {$titleCaseCity}:",
-                    "Buat yang lagi cari kerja disekitar {$titleCaseCity}, boleh dicek nih:",
-                    "Info kesempatan kerja terbaru di {$titleCaseCity}:",
+                    "Capek juga ya kalau tiap hari desak-desakan KRL atau macet ke kota seberang. Mending merapat nih warga {$titleCaseCity} 👀",
+                    "Daripada habis waktu di jalan tiap hari, mending cari kerja yang deket rumah disekitar {$titleCaseCity}:",
+                    "Ada info loker baru nih buat area {$titleCaseCity}, siapa tahu jodoh karirmu di sini:",
+                    "Buat yang lagi cari kerja disekitar {$titleCaseCity} dan pengen kerja lebih santai dekat rumah, boleh dicek nih:",
+                    "Warga {$titleCaseCity} merapat dulu! Ada update lowongan kerja menarik yang baru rilis:",
                 ];
                 $hook = $hooks[array_rand($hooks)];
 
@@ -259,8 +260,9 @@ class ThreadsService
                     $body .= "\n🏢 Perusahaan: {$company}";
                 }
                 $body .= "\n📍 Lokasi: {$titleCaseCity}";
-                $body .= "\n\n📌 Detail kualifikasi & cara melamar sudah kita share di komentar pertama ya 👇";
-                $body .= "\n\n#Loker{$topicTagCity} #LowonganKerja #LokerTerbaru #Disekitar";
+                $body .= "\n\nInfo detail & cara daftarnya sudah kita spill di komentar pertama ya!";
+                $body .= "\n\nAda yang lagi berjuang cari kerja atau pernah kerja di bidang ini juga? Spill dong pengalamannya 👇";
+                $body .= "\n\n#Loker{$topicTagCity} #Disekitar";
 
                 return $body;
             };
@@ -445,20 +447,20 @@ class ThreadsService
     protected function generateAiJobCopy(string $title, string $company, string $city, string $topicTagCity): ?string
     {
         try {
-            $systemInstruction = "Kamu adalah social media writer untuk Threads @disekitarcom. Tulislah postingan Threads yang santai, conversation-driven (seperti sesama pencari kerja/warga lokal, bukan robot/korporat). Balas HANYA dengan teks postingan murni (plain text), tanpa code block, tanpa link URL, tanpa penjelasan pembuka/penutup.";
+            $systemInstruction = "Kamu adalah social media writer untuk Threads @disekitarcom. Tulislah postingan Threads yang santai, sangat relatable untuk warga lokal atau komuter (seperti sesama pencari kerja/pejuang KRL/warga setempat yang curhat santai, BUKAN robot korporat atau akun broadcast kaku). Balas HANYA dengan teks postingan murni (plain text), tanpa code block, tanpa link URL, tanpa tanda petik pembuka/penutup.";
 
             $prompt = "Buat teks postingan Threads untuk lowongan kerja berikut:
 - Posisi: {$title}
 - Perusahaan: " . ($company ?: 'Brand Lokal') . "
 - Lokasi: disekitar {$city}
 
-ATURAN WAJIB:
-1. Mulai dengan kalimat pembuka santai atau observasi persaingan kerja di {$city} (variasikan gayanya, JANGAN gunakan template kaku).
-2. Tulis posisi & perusahaan secara jelas tapi natural.
-3. JANGAN sertakan link URL apa pun di teks ini. Sebutkan bahwa info detail & cara melamar ada di komentar pertama.
-4. Di bagian akhir, berikan 1 PERTANYAAN PEMANTIK REPLY yang ramah & relevan.
-5. Akhiri dengan hashtag: #Loker{$topicTagCity} #Disekitar
-6. Panjang TOTAL teks harus di bawah 400 karakter.";
+FORMULA HOOK VIRAL (WAJIB DIIKUTI):
+1. Mulai dengan hook emosional/relatable yang nendang terkait rutinitas warga/komuter {$city} (contoh topik: capek desak-desakan KRL/busway, macet di jalan tiap hari, pengen kerja deket rumah, struggle cari kerja di area {$city}, atau ajakan warga setempat merapat). Variasikan gayanya agar selalu segar!
+2. Sebutkan posisi & perusahaan dengan luwes dalam satu alur cerita.
+3. Sebutkan dengan santai: 'Info detail & cara daftarnya udah aku spill di komentar pertama ya!' (JANGAN taruh link URL di sini).
+4. Akhiri dengan 1 PERTANYAAN PEMANTIK REPLY/DISKUSI yang ramah dan memancing orang bercerita di kolom komentar (contoh: tanya struggle posisi tsb, tanya siapa yang anak jurusan tsb, dsb).
+5. Sertakan hashtag: #Loker{$topicTagCity} #Disekitar
+6. Panjang TOTAL teks maksimal 380 karakter agar nyaman dibaca dan tidak kepotong.";
 
             $agent = new DisekitarAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
@@ -561,7 +563,7 @@ ATURAN WAJIB:
             $clean = preg_replace('/\s*```$/', '', $clean);
             $clean = trim($clean);
 
-            if (!empty($clean) && mb_strlen($clean) <= 495 && str_contains($clean, $url)) {
+            if (!empty($clean) && mb_strlen($clean) <= 495) {
                 return $clean;
             }
         } catch (\Throwable $e) {
