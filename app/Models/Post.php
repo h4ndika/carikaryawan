@@ -514,9 +514,17 @@ class Post extends Model
         }
 
         if ($this->isJob()) {
-            $validThrough = $this->expired_at
-                ? $this->expired_at->toIso8601String()
-                : ($this->published_at ? $this->published_at->addDays(21)->toIso8601String() : null);
+            // Google for Jobs validThrough rule:
+            // Jika expired_at sudah ditentukan dan berada di masa depan, gunakan itu.
+            // Jika tidak, berikan jendela aktif 30 hari ke depan dari tanggal update/sekarang,
+            // sehingga postingan aktif tidak mendadak gugur ke 0 di Google Search Console.
+            if ($this->expired_at && $this->expired_at->isFuture()) {
+                $validThrough = $this->expired_at->toIso8601String();
+            } else {
+                $baseTime = $this->published_at ? $this->published_at : ($this->created_at ?: now());
+                // Jika postingan masih aktif dan belum di-expire manual, rentangkan hingga 30 hari dari sekarang
+                $validThrough = now()->addDays(30)->toIso8601String();
+            }
 
             // Ekstrak nama perusahaan dan posisi secara presisi
             $companyName = $this->company_name ?: ($this->getDetailValue(['perusahaan', 'nama_perusahaan', 'company']) ?: '');
