@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info Lowongan Kerja Terbaru</title>
+    <meta name="description" content="Portal lowongan kerja dan karir terbaru se-Indonesia">
+</head>
+<body style="margin: 0; background-color: #f8fafc;">
+
+    <!-- 1. Wadah tempat CSR Engine merender UI -->
+    <div id="csr-app"></div>
+
+    <!-- 2. Script CSR Engine Mandiri (Bisa di-host di Vercel / GitHub / CDN manapun) -->
+    <script 
+        src="/csr/csr-engine.js" 
+        data-api="/api/csr"
+        data-container="csr-app"
+    ></script>
+
+</body>
+</html>
