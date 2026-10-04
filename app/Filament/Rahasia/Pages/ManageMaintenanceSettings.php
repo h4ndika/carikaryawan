@@ -57,7 +57,7 @@ class ManageMaintenanceSettings extends Page
                     ->schema([
                         Toggle::make('maintenance_mode_enabled')
                             ->label('Aktifkan Mode Maintenance')
-                            ->helperText('Jika ON, semua pengunjung publik & request API akan menerima status maintenance (HTTP 503). Anda yang login sebagai admin tetap dapat mengakses web.'),
+                            ->helperText('Jika ON, semua pengunjung halaman publik web akan melihat tampilan pemeliharaan. Seluruh endpoint API (/api/...) dan Admin Panel tetap aktif normal 24/7.'),
                     ]),
 
                 Section::make('Pesan & Tampilan')

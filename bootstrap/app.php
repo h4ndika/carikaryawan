@@ -18,9 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ], append: [
             \App\Http\Middleware\TrackVisitor::class,
         ]);
-        $middleware->api(prepend: [
-            \App\Http\Middleware\CheckMaintenanceMode::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

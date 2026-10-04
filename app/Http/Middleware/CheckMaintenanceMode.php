@@ -48,17 +48,7 @@ class CheckMaintenanceMode
         $message = Setting::get('maintenance_message', 'Kami sedang melakukan peningkatan performa dan pemeliharaan berkala untuk memberikan pengalaman terbaik. Layanan akan segera kembali normal.');
         $estimated = Setting::get('maintenance_estimated_time', 'Segera / Dalam beberapa saat');
 
-        // 5. Jika request berupa API atau JSON (termasuk API CSR jika ikut dimatikan)
-        if ($request->expectsJson() || str_starts_with($path, 'api/')) {
-            return response()->json([
-                'success' => false,
-                'status' => 'maintenance',
-                'message' => $message,
-                'estimated_time' => $estimated,
-            ], 503)->header('Retry-After', '3600');
-        }
-
-        // 6. Tampilkan layout maintenance langsung di URL yang sedang diakses (HTTP 503 Service Unavailable, no redirect)
+        // Tampilkan layout maintenance langsung di URL yang sedang diakses (HTTP 503 Service Unavailable, no redirect)
         return response()->view('maintenance', [
             'title' => $title,
             'message' => $message,
@@ -69,6 +59,7 @@ class CheckMaintenanceMode
     protected function isExcludedPath(string $path): bool
     {
         $excluded = [
+            'api',
             'rahasia',
             'livewire',
             'filament',
