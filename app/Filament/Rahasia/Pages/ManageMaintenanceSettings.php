@@ -35,6 +35,7 @@ class ManageMaintenanceSettings extends Page
     {
         $this->form->fill([
             'maintenance_mode_enabled' => (bool) Setting::get('maintenance_mode_enabled', false),
+            'csr_api_enabled' => (bool) Setting::get('csr_api_enabled', true),
             'maintenance_title' => Setting::get('maintenance_title', 'Sistem Sedang Dalam Pemeliharaan'),
             'maintenance_message' => Setting::get('maintenance_message', 'Kami sedang melakukan peningkatan performa dan pemeliharaan berkala untuk memberikan pengalaman terbaik. Layanan akan segera kembali normal.'),
             'maintenance_estimated_time' => Setting::get('maintenance_estimated_time', 'Segera / Dalam beberapa saat'),
@@ -58,6 +59,15 @@ class ManageMaintenanceSettings extends Page
                         Toggle::make('maintenance_mode_enabled')
                             ->label('Aktifkan Mode Maintenance')
                             ->helperText('Jika ON, semua pengunjung halaman publik web akan melihat tampilan pemeliharaan. Seluruh endpoint API (/api/...) dan Admin Panel tetap aktif normal 24/7.'),
+                    ]),
+
+                Section::make('Saklar Layanan API CSR (Headless Engine)')
+                    ->description('Kontrol on/off untuk API yang dikonsumsi oleh web-web frontend CSR (Vercel, GitHub Pages, dll).')
+                    ->icon(Heroicon::OutlinedServer)
+                    ->schema([
+                        Toggle::make('csr_api_enabled')
+                            ->label('Aktifkan Layanan API CSR (/api/csr/...)')
+                            ->helperText('Jika OFF, semua request data loker dan sitemap dari web-web CSR eksternal akan dimatikan (HTTP 403 Forbidden).'),
                     ]),
 
                 Section::make('Pesan & Tampilan')
