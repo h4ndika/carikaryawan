@@ -120,6 +120,10 @@
             .csr-cta-btn { display: inline-block; background: #16a34a; color: #ffffff !important; padding: 14px 28px; border-radius: 8px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3); transition: background .2s; cursor: pointer; }
             .csr-cta-btn:hover { background: #15803d; }
             .csr-rich-text { font-size: 14px; line-height: 1.7; color: #334155; }
+            .csr-rich-text h2, .csr-rich-text h3 { font-size: 17px; font-weight: 700; color: #0f172a; margin-top: 20px; margin-bottom: 8px; }
+            .csr-rich-text p { margin: 8px 0; }
+            .csr-rich-text ul, .csr-rich-text ol { margin: 8px 0; padding-left: 20px; }
+            .csr-rich-text li { margin-bottom: 6px; }
             .csr-pagination { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
         `;
         document.head.appendChild(style);
@@ -296,7 +300,13 @@
 
     function formatText(text) {
         if (!text) return '';
-        return escapeHtml(text).replace(/\n/g, '<br>');
+        const trimmed = text.toString().trim();
+        // Jika teks sudah berisi tag HTML (seperti <p>, <h2>, <ul>, <li>), render langsung
+        if (/<(p|h\d|ul|ol|li|div|strong|br|em)[^>]*>/i.test(trimmed)) {
+            return trimmed;
+        }
+        // Jika plain text biasa, escape dan ubah newline ke <br>
+        return escapeHtml(trimmed).replace(/\n/g, '<br>');
     }
 
     // 7. Inisialisasi & Popstate Listener
