@@ -157,9 +157,85 @@ class CsrJobApiController extends Controller
             ];
         });
 
-        return response()->json($data)
-            ->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    }
+
+    /**
+     * Generate dynamic Google-compliant XML sitemap for any CSR frontend domain.
+     * GET /api/csr/sitemap.xml?domain=https://example.vercel.app&page=1&url_format=path
+     */
+    public function sitemap(Request $request): \Illuminate\Http\Response
+    {
+        $domain = rtrim((string) $request->input('domain', url('/')), '/');
+        // Validate or fallback domain
+        if (!filter_var($domain, FILTER_VALIDATE_URL)) {
+            $domain = url('/');
+        }
+
+        $page = max((int) $request->input('page', 1), 1);
+        $perPage = min(max((int) $request->input('limit', 1000), 100), 5000);
+        $urlFormat = $request->input('url_format', 'path'); // 'path' (/loker/{slug}) or 'query' (?slug={slug}) or 'hash' (#/loker/{slug})
+
+        $cacheKey = 'csr_sitemap_' . md5("{$domain}_{$page}_{$perPage}_{$urlFormat}");
+
+        $xml = Cache::remember($cacheKey, 1800, function () use ($domain, $page, $perPage, $urlFormat) {
+            $catIds = $this->getJobCategoryIds();
+
+            $posts = Post::query()
+                ->where('status', 'published')
+                ->where(function ($sub) use ($catIds) {
+                    if (!empty($catIds)) {
+                        $sub->whereIn('category_id', $catIds);
+                    } else {
+                        $sub->where('title', 'LIKE', '%lowongan%')
+                            ->orWhere('title', 'LIKE', '%loker%');
+                    }
+                })
+                ->select(['id', 'slug', 'updated_at', 'published_at'])
+                ->latest('published_at')
+                ->forPage($page, $perPage)
+                ->get();
+
+            $xmlContent = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+            $xmlContent .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+            // Root homepage
+            if ($page === 1) {
+                $xmlContent .= "  <url>\n";
+                $xmlContent .= "    <loc>" . htmlspecialchars($domain . '/', ENT_XML1) . "</loc>\n";
+                $xmlContent .= "    <changefreq>daily</changefreq>\n";
+                $xmlContent .= "    <priority>1.0</priority>\n";
+                $xmlContent .= "  </url>\n";
+            }
+
+            foreach ($posts as $post) {
+                if ($urlFormat === 'query') {
+                    $jobUrl = $domain . '/?slug=' . urlencode($post->slug);
+                } elseif ($urlFormat === 'hash') {
+                    $jobUrl = $domain . '/#/loker/' . urlencode($post->slug);
+                } else {
+                    $jobUrl = $domain . '/loker/' . urlencode($post->slug);
+                }
+
+                $lastmod = ($post->updated_at ?: $post->published_at ?: now())->toIso8601String();
+
+                $xmlContent .= "  <url>\n";
+                $xmlContent .= "    <loc>" . htmlspecialchars($jobUrl, ENT_XML1) . "</loc>\n";
+                $xmlContent .= "    <lastmod>{$lastmod}</lastmod>\n";
+                $xmlContent .= "    <changefreq>weekly</changefreq>\n";
+                $xmlContent .= "    <priority>0.8</priority>\n";
+                $xmlContent .= "  </url>\n";
+            }
+
+            $xmlContent .= '</urlset>';
+
+            return $xmlContent;
+        });
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=utf-8',
+            'Access-Control-Allow-Origin' => '*',
+            'Cache-Control' => 'public, max-age=1800',
+        ]);
     }
 
     /**
