@@ -3,14 +3,14 @@
  * CSR Engine Client (Lightweight Vanilla JS Engine)
  * =========================================================================
  * Engine Client-Side Rendering mandiri untuk web Vercel/GitHub Pages/Blogger
- * Menarik data dari Headless API Laravel disekitar.com dan merender UI lowongan.
+ * Menarik data dari Headless API dan merender UI lowongan kerja.
  *
  * Cara Pasang di HTML manapun:
  *   <div id="csr-app"></div>
  *   <script 
- *     src="https://disekitar.com/csr/csr-engine.js" 
- *     data-api="https://disekitar.com/api/csr"
- *     data-theme="indigo"
+ *     src="/csr-engine.js" 
+ *     data-api="https://YOUR-API-DOMAIN.com/api/csr"
+ *     data-container="csr-app"
  *   ></script>
  */
 
@@ -23,9 +23,17 @@
         return scripts[scripts.length - 1];
     })();
 
+    // Ambil base URL dari data-api, atau auto-resolve dari host script itu sendiri
+    let scriptOrigin = '';
+    try {
+        if (currentScript && currentScript.src) {
+            scriptOrigin = new URL(currentScript.src).origin + '/api/csr';
+        }
+    } catch (e) {}
+
     const API_BASE = (currentScript && currentScript.getAttribute('data-api')) 
         ? currentScript.getAttribute('data-api').replace(/\/$/, '')
-        : 'https://disekitar.com/api/csr';
+        : (scriptOrigin || '/api/csr');
 
     const CONTAINER_ID = (currentScript && currentScript.getAttribute('data-container')) || 'csr-app';
     const appEl = document.getElementById(CONTAINER_ID);
