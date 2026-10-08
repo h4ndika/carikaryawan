@@ -236,6 +236,18 @@ class Post extends Model
     }
 
     /**
+     * Canonical place_id for job posts, shared by JobStreet & Glints for cross-engine dedup.
+     * Do NOT change the formula: existing rows were backfilled with it (disekitar:backfill-job-place-ids).
+     */
+    public static function jobPlaceId(string $company, string $position, string $city): string
+    {
+        $norm = fn (string $s) => strtolower(preg_replace('/[^a-z0-9]/i', '', $s));
+        $company = preg_replace('/^(pt\.?|cv\.?|ud\.?|yayasan)\s+/i', '', trim($company));
+
+        return 'job_' . substr(md5($norm($company) . '_' . $norm($position) . '_' . $norm($city)), 0, 24);
+    }
+
+    /**
      * Determine if this post is a job listing.
      */
     public function isJob(): bool

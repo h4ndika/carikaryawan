@@ -43,11 +43,7 @@ class BackfillJobPlaceIdsCommand extends Command
                 }
             }
 
-            $cleanCompany = preg_replace('/^(pt\.?|cv\.?|ud\.?|yayasan)\s+/i', '', trim($comp));
-            $normCompany  = strtolower(preg_replace('/[^a-z0-9]/i', '', $cleanCompany));
-            $normPosition = strtolower(preg_replace('/[^a-z0-9]/i', '', $pos));
-            $normCity     = strtolower(preg_replace('/[^a-z0-9]/i', '', $loc));
-            $placeId      = 'job_' . substr(md5("{$normCompany}_{$normPosition}_{$normCity}"), 0, 24);
+            $placeId = \App\Models\Post::jobPlaceId($comp, $pos, $loc);
 
             $existingWithPlaceId = Post::where('place_id', $placeId)->where('id', '!=', $post->id)->first();
             if ($existingWithPlaceId) {

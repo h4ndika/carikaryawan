@@ -101,7 +101,7 @@ it('rejects sync queues rather than blocking the Filament request', function () 
     expect($row->fresh()->processing_token)->toBeNull();
 });
 
-it('starts once with category all and completes on a later queue invocation', function () {
+it('starts once and completes on a later queue invocation', function () {
     $row = photoRow();
     fakePhotoRun([['placeId' => 'ChI-test', 'imageUrl' => 'https://lh3.googleusercontent.com/photo1']]);
     $worker = photoWorker([$row]);
@@ -111,7 +111,7 @@ it('starts once with category all and completes on a later queue invocation', fu
     expect(DB::table('photo_scrape_jobs')->value('apify_token'))->not->toBe('test-secret');
     expect($row->fresh()->toArray())->not->toHaveKey('apify_token');
     Http::assertSentCount(1);
-    Http::assertSent(fn ($request) => $request['categories'] === ['all'] && $request['outputPlaceIds'] === true && str_contains($request->url(), 'lurkapi~google-maps-photos-and-videos-scraper'));
+    Http::assertSent(fn ($request) => $request['scrapePhotos'] === true && $request['startUrls'][0]['url'] === 'https://www.google.com/maps/place/?q=place_id:ChI-test' && str_contains($request->url(), 'compass~crawler-google-places'));
     $worker->handle(app(PhotoScraperService::class));
     expect($row->fresh()->status)->toBe('completed')->and($row->fresh()->photos_count)->toBe(1)
         ->and($row->fresh()->processing_token)->toBeNull()->and($row->fresh()->apify_token)->toBeNull();
@@ -260,7 +260,7 @@ it('bounds transient polling retries without starting another run', function () 
     expect($row->fresh()->status)->toBe('failed')->and($row->fresh()->error_message)->toContain('503');
 });
 
-it('rejects foreign place IDs, videos, bad URLs and duplicates in dataset', function () {
+it('rejects foreign place IDs, bad URLs and duplicates but keeps video thumbnails', function () {
     Http::fake(['*' => Http::response([
         ['placeId' => 'ChI-foreign', 'imageUrl' => 'https://example.com/foreign.jpg'],
         ['placeId' => 'ChI-test', 'type' => 'video', 'imageUrl' => 'https://example.com/video.jpg'],
@@ -269,7 +269,7 @@ it('rejects foreign place IDs, videos, bad URLs and duplicates in dataset', func
         ['placeId' => 'ChI-test', 'imageUrl' => 'https://example.com/good.jpg'],
     ])]);
     expect(app(PhotoScraperService::class)->fetchPhotoRunResults('d', 't', ['ChI-test'], 8))
-        ->toBe(['ChI-test' => ['https://example.com/good.jpg']]);
+        ->toBe(['ChI-test' => ['https://example.com/video.jpg', 'https://example.com/good.jpg']]);
 });
 
 it('honours deadline even when the actor remains RUNNING', function () {
@@ -316,14 +316,14 @@ it('keeps payloads credential-free and completes with the real database queue', 
     fakePhotoRun([['placeId' => 'ChI-test', 'imageUrl' => 'https://example.com/a.jpg']]);
     app(PhotoScrapeQueue::class)->enqueue([$row->id]);
     $connection = Queue::connection('database');
-    $queued = $connection->pop();
+    $queued = $connection->pop('photos');
     expect($queued)->not->toBeNull();
     $queued->fire();
     expect($queued->isReleased())->toBeTrue();
     $payload = DB::table('jobs')->value('payload');
     expect($payload)->not->toContain('test-secret');
     $this->travel(16)->seconds();
-    $queued = $connection->pop();
+    $queued = $connection->pop('photos');
     $queued->fire();
     expect($row->fresh()->status)->toBe('completed')->and(DB::table('jobs')->count())->toBe(0);
 });
@@ -333,7 +333,7 @@ it('terminalizes rows from Laravel queue timeout callback', function () {
     $row = photoRow();
     fakePhotoRun();
     app(PhotoScrapeQueue::class)->enqueue([$row->id]);
-    $queued = Queue::connection('database')->pop();
+    $queued = Queue::connection('database')->pop('photos');
     $queued->fail(TimeoutExceededException::forJob($queued));
     expect($row->fresh()->status)->toBe('failed')->and($row->fresh()->finished_at)->not->toBeNull();
 });
@@ -390,9 +390,9 @@ it('keeps duplicate queued messages from starting a second actor run', function 
     fakePhotoRun([], 'RUNNING');
     app(PhotoScrapeQueue::class)->enqueue([$row->id]);
     $connection = Queue::connection('database');
-    $a = $connection->pop();
-    $connection->pushRaw($a->getRawBody());
-    $b = $connection->pop();
+    $a = $connection->pop('photos');
+    $connection->pushRaw($a->getRawBody(), 'photos');
+    $b = $connection->pop('photos');
     $a->fire();
     $b->fire();
     Http::assertSentCount(2);
@@ -409,7 +409,7 @@ it('rejects concurrent handling with a shared batch lock', function () {
     $lock = Cache::lock($middleware->getLockKey($worker), 80);
     $lock->get();
     try {
-        $queued = Queue::connection('database')->pop();
+        $queued = Queue::connection('database')->pop('photos');
         $queued->fire();
         expect($queued->isReleased())->toBeTrue();
         Http::assertNothingSent();
