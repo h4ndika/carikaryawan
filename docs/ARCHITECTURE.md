@@ -10,7 +10,7 @@ Dokumen ini menjelaskan **kondisi kode saat ini**, bukan target ideal. Jika kode
 | Frontend publik | Livewire (`app/Livewire`) + Blade + Vite/Tailwind |
 | Admin | Filament 5, panel `rahasia` → `/rahasia` (`app/Filament/Rahasia`) |
 | Database | MySQL/MariaDB (prod), SQLite in-memory (test) |
-| Queue / Cache | Queue `database`; cache `redis` di VPS (lihat `deploy/setup-vps.sh`) |
+| Queue / Cache | Queue `database` dengan 4 antrean: `ai`, `photos`, `maps`, `jobs` (+`default`); cache `redis` di VPS (lihat `deploy/setup-vps.sh`) |
 | AI | `openai-php/laravel` (konten, tools karier), `laravel/ai` (`app/Ai/DisekitarAgent.php` untuk AI Playground) |
 | Scraping | Apify (Google Maps, JobStreet, Glints, foto) via token di tabel `apify_accounts` |
 | Sosial | Threads API (`app/Services/ThreadsService.php`) |
@@ -63,7 +63,7 @@ Setiap otomasi punya saklar on/off di tabel `settings` (misal `maps_auto_harvest
 `PhotoScrapeQueue::enqueue` adalah satu-satunya pintu masuk. Job di-dispatch ke queue **`photos`** dengan batch maksimal 3 baris, lalu di-release setiap 15 detik selama polling Apify (worker tidak tidur). Run punya deadline 600 detik. Aturan wajib:
 - Queue harus async (bukan `sync`) dan cache lock harus dibagi semua worker.
 - `retry_after` > 80 detik (default 90).
-- Worker harus mendengarkan queue `photos` (lihat [DEPLOYMENT](DEPLOYMENT.md)).
+- Worker khusus `photos` harus berjalan (lihat [DEPLOYMENT](DEPLOYMENT.md#worker-queue)).
 - `APP_KEY` harus stabil karena token Apify disimpan terenkripsi di baris job.
 
 ## Konfigurasi runtime: tabel `settings`

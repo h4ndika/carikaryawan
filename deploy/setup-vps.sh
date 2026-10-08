@@ -185,9 +185,9 @@ php artisan icons:cache || true
 
 echo -e "\n${YELLOW}▶ Step 15: Configuring Supervisor for Queue Worker...${NC}"
 cat > /etc/supervisor/conf.d/disekitar-worker.conf << 'EOF'
-[program:disekitar-worker]
+[program:disekitar-worker-fast]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --queue=default,photos --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/disekitar/artisan queue:work --queue=ai,default --sleep=2 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -195,13 +195,52 @@ killasgroup=true
 user=www-data
 numprocs=2
 redirect_stderr=true
-stdout_logfile=/var/www/disekitar/storage/logs/worker.log
+stdout_logfile=/var/www/disekitar/storage/logs/worker-fast.log
+stopwaitsecs=3600
+
+[program:disekitar-worker-photos]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/disekitar/artisan queue:work --queue=photos --sleep=2 --tries=3 --timeout=120 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/disekitar/storage/logs/worker-photos.log
+stopwaitsecs=3600
+
+[program:disekitar-worker-maps]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/disekitar/artisan queue:work --queue=maps --sleep=3 --tries=1 --timeout=900 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/disekitar/storage/logs/worker-maps.log
+stopwaitsecs=3600
+
+[program:disekitar-worker-jobs]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/disekitar/artisan queue:work --queue=jobs --sleep=3 --tries=1 --timeout=900 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/disekitar/storage/logs/worker-jobs.log
 stopwaitsecs=3600
 EOF
 
 supervisorctl reread
 supervisorctl update
-supervisorctl start disekitar-worker:*
+supervisorctl start all
 
 echo -e "\n${YELLOW}▶ Step 16: Setting Up Laravel Cron Schedule...${NC}"
 (crontab -l 2>/dev/null | grep -v 'artisan schedule:run'; echo "* * * * * cd /var/www/disekitar && php artisan schedule:run >> /dev/null 2>&1") | crontab -

@@ -20,13 +20,21 @@ php artisan queue:restart
 
 ## Worker queue
 
-Job foto dikirim ke queue **`photos`**, sedangkan sisanya ke `default`. Worker wajib mendengarkan keduanya:
+Supervisor (`/etc/supervisor/conf.d/disekitar-worker.conf`, dibuat oleh `setup-vps.sh`) menjalankan 4 grup worker terpisah. Tujuannya agar scrape yang lama tidak memblokir job AI yang cepat:
 
-```ini
-command=php /var/www/disekitar/artisan queue:work --queue=default,photos --sleep=3 --tries=3 --max-time=3600
+| Program | Queue | Proses | Timeout | Dipakai oleh |
+|---|---|---|---|---|
+| `disekitar-worker-fast` | `ai,default` | 2 | default | `GeneratePostContentJob`, `ProcessBatchAiQueueJob`, `CurateArticleJob` |
+| `disekitar-worker-photos` | `photos` | 2 | 120s | `ProcessBatchPhotoScrapeJob` |
+| `disekitar-worker-maps` | `maps` | 2 | 900s | `RunGoogleMapsScrapeJob` (engine Maps) |
+| `disekitar-worker-jobs` | `jobs` | 1 | 900s | `RunGoogleMapsScrapeJob` (JobStreet/Glints) |
+
+Jika menambah `onQueue('baru')` di sebuah job, tambahkan juga worker untuk queue tersebut di Supervisor dan di `setup-vps.sh`. Tanpa itu, job akan menumpuk tanpa error.
+
+```bash
+sudo supervisorctl status               # semua harus RUNNING
+sudo supervisorctl reread && sudo supervisorctl update   # setelah mengubah .conf
 ```
-
-Jika worker hanya menjalankan `queue:work` tanpa `--queue`, job foto akan menumpuk dan akhirnya ditandai gagal oleh `photos:recover-stale`.
 
 ## Scheduler
 
