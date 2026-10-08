@@ -187,7 +187,7 @@ echo -e "\n${YELLOW}▶ Step 15: Configuring Supervisor for Queue Worker...${NC}
 cat > /etc/supervisor/conf.d/disekitar-worker.conf << 'EOF'
 [program:disekitar-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/disekitar/artisan queue:work --queue=default,photos --sleep=3 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true

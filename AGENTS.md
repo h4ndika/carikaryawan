@@ -1,3 +1,12 @@
+## Project context
+
+Baca `docs/README.md` sebelum mengerjakan task. Aturan singkat:
+- Pola kode: Livewire/Controller/Command → `app/Services` → Model. Jangan menambah layer baru (Action/Repository) tanpa diminta.
+- Konfigurasi runtime ada di tabel `settings` (`Setting::get/set`), bukan `.env`.
+- Jangan ubah formula `Post::jobPlaceId`, format slug/URL, atau aturan kedaluwarsa loker tanpa migrasi data + redirect.
+- Semua HTTP eksternal di tes wajib `Http::fake()`. Jalankan `php artisan test` sebelum commit.
+- Ubah kode → perbarui `docs/` di commit yang sama.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
