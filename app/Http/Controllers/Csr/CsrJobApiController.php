@@ -157,6 +157,9 @@ class CsrJobApiController extends Controller
             ];
         });
 
+        return response()->json($data)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS');
     }
 
     /**
