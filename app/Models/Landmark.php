@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Landmark extends Model
 {
+    public const MIN_PLACES = 3;
+
+    public function radiusKm(): float
+    {
+        return (float) ($this->default_radius_km ?: 3);
+    }
+
     protected $guarded = [
         'id',
     ];

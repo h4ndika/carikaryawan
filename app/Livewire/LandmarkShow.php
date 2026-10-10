@@ -63,7 +63,7 @@ class LandmarkShow extends Component
             ->withinDistanceOf(
                 (float) $this->landmark->latitude,
                 (float) $this->landmark->longitude,
-                (float) ($this->landmark->default_radius_km ?: 3)
+                $this->landmark->radiusKm()
             )
             ->with(['category', 'city', 'province', 'images']);
 
@@ -84,7 +84,7 @@ class LandmarkShow extends Component
         // SEO Meta setup
         $landmarkName = $this->landmark->name;
         $cityName = $this->landmark->city?->name ?? '';
-        $radius = round((float) ($this->landmark->default_radius_km ?: 3), 1);
+        $radius = round($this->landmark->radiusKm(), 1);
 
         if ($this->selectedCategory) {
             $pageTitle = "{$this->selectedCategory->name} di Sekitar {$landmarkName} ({$cityName}) — DISEKITAR";
@@ -164,7 +164,7 @@ class LandmarkShow extends Component
             ->layout('layouts.app', [
                 'metaDescription' => $metaDescription,
                 // Landmark pages with almost no places are thin content; keep them out of the index.
-                'metaRobots' => $posts->total() >= 3 ? 'index,follow' : 'noindex,follow',
+                'metaRobots' => $posts->total() >= Landmark::MIN_PLACES ? 'index,follow' : 'noindex,follow',
                 'canonicalUrl' => $canonical,
                 'jsonLd' => $jsonLd,
             ])

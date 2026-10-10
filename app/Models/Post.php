@@ -700,7 +700,8 @@ class Post extends Model
             ->selectRaw("{$haversine} AS distance_km", [$latitude, $longitude, $latitude])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->whereRaw("{$haversine} <= ?", [$latitude, $longitude, $latitude, $radiusKm])
+            ->whereRaw("{$haversine} <= (? + 0)", [$latitude, $longitude, $latitude, $radiusKm])
+            // Numeric coercion also keeps SQLite from comparing distance against a text-bound radius.
             ->orderBy('distance_km', 'asc');
     }
 
