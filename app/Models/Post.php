@@ -312,6 +312,11 @@ class Post extends Model
 
     public function seoRobots(): string
     {
+        // Closed jobs stay reachable but must leave the index (Google Jobs guideline).
+        if ($this->isJob() && $this->isExpired()) {
+            return 'noindex,follow';
+        }
+
         return $this->robots ?: 'index,follow';
     }
 
@@ -361,7 +366,7 @@ class Post extends Model
     /**
      * Extract or estimate baseSalary for Google JobPosting schema.
      */
-    public function getJobBaseSalary(): array
+    public function getJobBaseSalary(): ?array
     {
         $rawSalary = (string) ($this->getDetailValue(['gaji', 'salary', 'rentang_gaji', 'upah']) ?? '');
 
@@ -407,17 +412,8 @@ class Post extends Model
             ];
         }
 
-        // Fallback default UMR/Gaji kompetitif standar jika tidak dicantumkan spesifik
-        return [
-            '@type' => 'MonetaryAmount',
-            'currency' => 'IDR',
-            'value' => [
-                '@type' => 'QuantitativeValue',
-                'minValue' => 3000000,
-                'maxValue' => 6000000,
-                'unitText' => 'MONTH',
-            ],
-        ];
+        // Gaji tidak diketahui: jangan dikarang (Google menganggap data palsu sebagai pelanggaran).
+        return null;
     }
 
     /**
@@ -525,18 +521,11 @@ class Post extends Model
             $placeSchema['hasMap'] = "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->title) . "&query_place_id=" . $this->place_id;
         }
 
-        if ($this->isJob()) {
-            // Google for Jobs validThrough rule:
-            // Jika expired_at sudah ditentukan dan berada di masa depan, gunakan itu.
-            // Jika tidak, berikan jendela aktif 30 hari ke depan dari tanggal update/sekarang,
-            // sehingga postingan aktif tidak mendadak gugur ke 0 di Google Search Console.
-            if ($this->expired_at && $this->expired_at->isFuture()) {
-                $validThrough = $this->expired_at->toIso8601String();
-            } else {
-                $baseTime = $this->published_at ? $this->published_at : ($this->created_at ?: now());
-                // Jika postingan masih aktif dan belum di-expire manual, rentangkan hingga 30 hari dari sekarang
-                $validThrough = now()->addDays(30)->toIso8601String();
-            }
+        // Loker tutup: tanpa JobPosting sama sekali (halaman juga noindex via seoRobots()).
+        if ($this->isJob() && ! $this->isExpired()) {
+            // validThrough harus sama dengan aturan isExpired(); jangan pernah digeser maju.
+            $validThrough = ($this->expired_at ?: ($this->published_at ?: $this->created_at ?: now())->copy()->addDays(21))
+                ->toIso8601String();
 
             // Ekstrak nama perusahaan dan posisi secara presisi
             $companyName = $this->company_name ?: ($this->getDetailValue(['perusahaan', 'nama_perusahaan', 'company']) ?: '');
@@ -561,12 +550,11 @@ class Post extends Model
                 'description' => strip_tags($this->content ?: $this->seoDescription()),
                 'datePosted' => optional($this->published_at)->toIso8601String() ?? now()->toIso8601String(),
                 'employmentType' => $this->getJobEmploymentType(),
-                'baseSalary' => $this->getJobBaseSalary(),
-                'directApply' => true,
+                // Pelamar diarahkan ke situs sumber, jadi bukan direct apply.
+                'directApply' => false,
                 'hiringOrganization' => [
                     '@type' => 'Organization',
                     'name' => $companyName,
-                    'sameAs' => $siteUrl,
                 ],
                 'jobLocation' => [
                     '@type' => 'Place',
@@ -581,12 +569,13 @@ class Post extends Model
                 ],
             ];
 
-            if ($validThrough) {
-                $jobSchema['validThrough'] = $validThrough;
+            $jobSchema['validThrough'] = $validThrough;
+            if ($salary = $this->getJobBaseSalary()) {
+                $jobSchema['baseSalary'] = $salary;
             }
 
             $graph[] = $jobSchema;
-        } else {
+        } elseif (! $this->isJob()) {
             $graph[] = $placeSchema;
         }
 
