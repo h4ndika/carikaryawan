@@ -2,6 +2,14 @@
 
 Dokumentasi playbook strategi konten, tone of voice, dan formula konversi untuk akun Threads `@disekitarcom`.
 
+## Mode Chain Post di admin
+
+Di `/rahasia/settings/threads`, aktifkan **Chain Post** dan simpan. Default OFF mempertahankan 2 post (utama + link). Saat ON, jumlah total dapat diatur 3–6 (default 4), tanpa nomor, dengan link hanya di post terakhir. Satu permintaan AI menghasilkan seluruh teks yang saling menyambung: hook → pembahasan → lanjutan → penutup. AI diminta hanya memakai fakta sumber, bukan mengarang pengalaman pribadi atau detail yang tidak tersedia; kepatuhan faktual/koherensi tetap perlu diperiksa, tidak dijamin oleh validasi format.
+
+Tombol **Kirim Tes Post** mengirim postingan nyata, termasuk rantai saat aktif. Jika output AI tidak valid, sistem memakai format biasa. Jika rantai gagal di tengah, sistem berhenti dan mencoba link ke post terakhir yang berhasil; tidak ada resume otomatis, dan link bisa tetap gagal. Periksa log `Threads chain reply failed` / `Threads fallback link failed`. Penempatan link terakhir adalah pilihan format, bukan jaminan kenaikan jangkauan atau pencegahan shadowban. Tidak ada perubahan jumlah slot scheduler atau klaim kuota Meta yang diasumsikan.
+
+Setting runtime: `threads_chain_mode_enabled` dan `threads_chain_posts` (gunakan `Setting::set`, bukan SQL langsung).
+
 ---
 
 ## 1. Prinsip Utama (Mindset)

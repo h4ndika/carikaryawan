@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -42,6 +43,8 @@ class ManageThreadsSettings extends Page
 
         $this->form->fill([
             'threads_auto_post_enabled' => (bool) Setting::get('threads_auto_post_enabled', true),
+            'threads_chain_mode_enabled' => (bool) Setting::get('threads_chain_mode_enabled', false),
+            'threads_chain_posts' => Setting::get('threads_chain_posts', 4),
             'threads_user_id' => Setting::get('threads_user_id', config('services.threads.user_id', '')),
             'threads_access_token' => Setting::get('threads_access_token', config('services.threads.access_token', '')),
             'threads_content_type' => Setting::get('threads_content_type', 'all'),
@@ -66,6 +69,24 @@ class ManageThreadsSettings extends Page
                         Toggle::make('threads_auto_post_enabled')
                             ->label('Aktifkan Auto-Post Terjadwal ke Threads (Master On/Off)')
                             ->helperText('Jika dinonaktifkan, semua jadwal posting di bawah otomatis berhenti tanpa mengirim request ke Meta.'),
+                    ]),
+
+                Section::make('Mode Chain Post')
+                    ->description('AI membuat satu rangkaian teks yang saling menyambung, tanpa nomor. Link ada di post terakhir.')
+                    ->schema([
+                        Toggle::make('threads_chain_mode_enabled')
+                            ->label('Aktifkan Chain Post (On/Off)')
+                            ->live()
+                            ->helperText('Default OFF: tetap 1 post utama + 1 balasan link. Tombol Kirim Post Uji juga mengikuti mode ini dan mengirim postingan nyata.'),
+                        TextInput::make('threads_chain_posts')
+                            ->label('Jumlah post per rantai (termasuk post utama dan link terakhir)')
+                            ->numeric()
+                            ->rules(['integer'])
+                            ->minValue(3)
+                            ->maxValue(6)
+                            ->required()
+                            ->default(4)
+                            ->visible(fn (Get $get): bool => (bool) $get('threads_chain_mode_enabled')),
                     ]),
 
                 Section::make('Jadwal Harian Posting (6 Slot)')
@@ -205,7 +226,7 @@ class ManageThreadsSettings extends Page
                                 ->action('sendTestPost')
                                 ->requiresConfirmation()
                                 ->modalHeading('Kirim Tes Publikasi ke Threads')
-                                ->modalDescription('Aksi ini akan mempublikasikan 1 postingan terbaru ke akun Threads @disekitarcom untuk memverifikasi koneksi API.'),
+                                ->modalDescription('Aksi ini mengirim postingan nyata ke @disekitarcom: 2 post pada mode biasa, atau 3–6 post saat mode chain aktif. Pengaturan formulir akan disimpan terlebih dahulu.'),
                         ]),
                     ]),
             ]);

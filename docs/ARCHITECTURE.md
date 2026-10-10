@@ -58,6 +58,12 @@ photos:recover-stale (tiap menit)  → menandai job foto yatim sebagai gagal
 
 Setiap otomasi punya saklar on/off di tabel `settings` (misal `maps_auto_harvest_enabled`, `auto_job_harvest_enabled`, `threads_auto_post_enabled`), diatur dari halaman Settings di Filament.
 
+### Threads broadcast
+
+`ThreadsService::publishPost/publishArticle` mengikuti `threads_chain_mode_enabled` (default **OFF**) dari menu **Otomasi Threads**. OFF tetap 1 post utama + 1 balasan link. ON memakai `threads_chain_posts` (default **4**, rentang **3–6**, termasuk post utama dan post link): satu panggilan `DisekitarAgent` (`openai-compatible`, `Content-blog`) menghasilkan seluruh narasi, lalu setiap balasan menunjuk ID post sebelumnya. Gambar dan topic tag tetap pada post utama.
+
+Output AI wajib JSON array dengan jumlah tepat, teks tidak kosong, tanpa nomor/URL, dan maksimal 480 karakter. Ruang untuk link terakhir dihitung sebelum AI dipanggil; teks tidak dipotong untuk menyisipkan link. Output tidak valid/error AI kembali ke format 2 post. `posted_to_threads_at` diisi setelah post utama berhasil; kegagalan balasan dicatat di log dan, bila gagal sebelum post terakhir, dicoba balasan link ke ID terakhir yang berhasil. Tidak ada penyimpanan progres/resume atau retry post link terakhir (timeout bisa berarti sudah terbit). Link fallback juga bisa gagal. Jadwal dan monitor balasan tidak berubah; tombol tes admin mengirim postingan nyata sesuai mode yang disimpan.
+
 ### Antrean foto
 
 `PhotoScrapeQueue::enqueue` adalah satu-satunya pintu masuk. Job di-dispatch ke queue **`photos`** dengan batch maksimal 3 baris, lalu di-release setiap 15 detik selama polling Apify (worker tidak tidur). Run punya deadline 600 detik. Aturan wajib:
