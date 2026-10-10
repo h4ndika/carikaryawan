@@ -2,6 +2,9 @@
 
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Landmark;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use App\Models\Post;
 use App\Models\Province;
 use App\Models\Setting;
@@ -80,3 +83,43 @@ it('keeps closed jobs out of the index, sitemap and Google Jobs', function () {
 
     $this->get('/sitemap.xml')->assertSee('loker-buka')->assertDontSee('loker-tutup');
 });
+
+it('includes only landmarks whose pages are indexable', function (int $nearbyCount, float $radius, bool $indexable) {
+    Cache::forget('sitemap_indexable_landmark_ids');
+    // Exercise the unchanged SQL distance scope on SQLite as well as the PHP sitemap filter.
+    $pdo = DB::connection()->getPdo();
+    foreach (['radians' => 'deg2rad', 'cos' => 'cos', 'sin' => 'sin', 'acos' => 'acos'] as $sql => $php) {
+        $pdo->sqliteCreateFunction($sql, $php, 1);
+    }
+
+    $far = publishedPost(attrs: ['slug' => 'far', 'latitude' => -6.92, 'longitude' => 107.6]);
+    $landmark = Landmark::create([
+        'name' => 'Landmark Uji', 'slug' => 'landmark-uji', 'type' => 'mall',
+        'city_id' => $far->city_id, 'province_id' => $far->province_id,
+        'latitude' => -6.9, 'longitude' => 107.6, 'default_radius_km' => $radius,
+    ]);
+    for ($i = 0; $i < $nearbyCount; $i++) {
+        publishedPost(attrs: ['slug' => 'near-' . $i, 'latitude' => -6.9004, 'longitude' => 107.6]);
+    }
+    publishedPost(attrs: ['slug' => 'draft', 'status' => 'draft', 'latitude' => -6.9004, 'longitude' => 107.6]);
+    publishedPost(attrs: ['slug' => 'deleted', 'latitude' => -6.9004, 'longitude' => 107.6])->delete();
+    publishedPost(attrs: ['slug' => 'no-coordinates']);
+
+    $pageUrl = route('landmark.show', $landmark);
+    $this->get($pageUrl)->assertOk()->assertSee(
+        'name="robots" content="' . ($indexable ? 'index,follow' : 'noindex,follow') . '"', false
+    );
+    $sitemap = $this->get('/sitemap.xml')->assertOk();
+    $loc = '<loc>' . $pageUrl . '</loc>';
+    if ($indexable) {
+        $sitemap->assertSee($loc, false);
+    } else {
+        $sitemap->assertDontSee($loc, false);
+    }
+    Cache::forget('sitemap_indexable_landmark_ids');
+})->with([
+    'empty' => [0, 1, false],
+    'two places' => [2, 1, false],
+    'three places' => [3, 1, true],
+    'default three-kilometre radius' => [2, 0, true],
+]);

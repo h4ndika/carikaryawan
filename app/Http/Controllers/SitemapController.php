@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Landmark;
 use App\Models\Post;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
@@ -65,8 +66,38 @@ class SitemapController extends Controller
 
         // 4. Landmark Pages. Category+landmark combos are left out: most are thin/empty
         // and flooded Google with low-value URLs (they stay reachable via internal links).
-        $landmarks = Landmark::query()->with('city:id,slug')->get(['id', 'slug', 'city_id', 'updated_at']);
-        foreach ($landmarks as $landmark) {
+        $landmarks = Landmark::query()->get(['id', 'slug', 'updated_at', 'latitude', 'longitude', 'default_radius_km']);
+        $indexableIds = Cache::remember('sitemap_indexable_landmark_ids', 3600, function () use ($landmarks) {
+            $points = Post::published()->whereNotNull('latitude')->whereNotNull('longitude')
+                ->get(['latitude', 'longitude'])
+                ->map(fn (Post $post) => [deg2rad((float) $post->latitude), deg2rad((float) $post->longitude)])
+                ->all();
+
+            // ponytail: bounded by current inventory; precompute counts in a scheduled command if cold builds get slow.
+            $ids = [];
+            foreach ($landmarks as $landmark) {
+                $latitude = deg2rad((float) $landmark->latitude);
+                $longitude = deg2rad((float) $landmark->longitude);
+                $angularRadius = $landmark->radiusKm() / 6371;
+                $sinLatitude = sin($latitude);
+                $cosLatitude = cos($latitude);
+                $count = 0;
+                foreach ($points as [$lat, $lng]) {
+                    // Latitude bound avoids most trig calls, including at poles / across the date line.
+                    if (abs($lat - $latitude) > $angularRadius) {
+                        continue;
+                    }
+                    $cosDistance = $cosLatitude * cos($lat) * cos($lng - $longitude) + $sinLatitude * sin($lat);
+                    if (acos(max(-1, min(1, $cosDistance))) <= $angularRadius && ++$count >= Landmark::MIN_PLACES) {
+                        $ids[] = $landmark->id;
+                        break;
+                    }
+                }
+            }
+
+            return $ids;
+        });
+        foreach ($landmarks->whereIn('id', $indexableIds) as $landmark) {
             $urls[] = [
                 'loc' => route('landmark.show', ['landmark' => $landmark->slug]),
                 'lastmod' => optional($landmark->updated_at)->toAtomString() ?? now()->toAtomString(),
