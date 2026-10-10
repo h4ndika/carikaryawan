@@ -163,7 +163,8 @@ class LandmarkShow extends Component
         ])
             ->layout('layouts.app', [
                 'metaDescription' => $metaDescription,
-                'metaRobots' => 'index,follow',
+                // Landmark pages with almost no places are thin content; keep them out of the index.
+                'metaRobots' => $posts->total() >= 3 ? 'index,follow' : 'noindex,follow',
                 'canonicalUrl' => $canonical,
                 'jsonLd' => $jsonLd,
             ])

@@ -60,3 +60,23 @@ it('expires job posts after 21 days', function () {
     $job->published_at = now()->subDays(5);
     expect($job->isExpired())->toBeFalse();
 });
+
+it('keeps closed jobs out of the index, sitemap and Google Jobs', function () {
+    $open = publishedPost('Lowongan Kerja', ['slug' => 'loker-buka', 'published_at' => now()->subDays(5)]);
+    $closed = publishedPost('Lowongan Kerja', ['slug' => 'loker-tutup', 'published_at' => now()->subDays(22)]);
+
+    $types = fn (Post $p) => collect($p->generateJsonLd()['@graph'] ?? [])->pluck('@type')->all();
+
+    expect($open->seoRobots())->toBe('index,follow')
+        ->and($closed->seoRobots())->toBe('noindex,follow')
+        ->and($types($open))->toContain('JobPosting')
+        ->and($types($closed))->not->toContain('JobPosting');
+
+    // validThrough follows the 21-day rule instead of sliding forward on every crawl.
+    $job = collect($open->generateJsonLd()['@graph'])->firstWhere('@type', 'JobPosting');
+    expect($job['validThrough'])->toBe($open->published_at->copy()->addDays(21)->toIso8601String())
+        ->and($job)->not->toHaveKey('baseSalary') // no invented salary
+        ->and($job['directApply'])->toBeFalse();
+
+    $this->get('/sitemap.xml')->assertSee('loker-buka')->assertDontSee('loker-tutup');
+});

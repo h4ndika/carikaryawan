@@ -35,6 +35,9 @@
 - URL kanonik: `/{category}/{city}/{slug}`. Jangan ubah format slug tanpa redirect 301.
 - `Post::generateJsonLd()` menghasilkan schema (LocalBusiness / JobPosting).
 - Sitemap dinamis: `/sitemap.xml`. Untuk frontend CSR: `/api/csr/sitemap.xml?domain=...`.
+- **Loker tutup** (`isExpired()`): tetap bisa dibuka, tapi `noindex,follow`, tanpa `JobPosting`, dan tidak masuk sitemap.
+- `JobPosting` wajib jujur (pedoman Google Jobs): `validThrough` = `expired_at` atau `published_at` + 21 hari (jangan digeser maju), `baseSalary` hanya jika gaji diketahui, `directApply: false` karena pelamar diarahkan ke situs sumber.
+- Sitemap hanya berisi halaman bernilai: listing kategori+kota minimal 3 post, tanpa kombinasi kategori+landmark. Halaman landmark dengan < 3 tempat diberi `noindex`.
 
 ## Peta URL publik
 

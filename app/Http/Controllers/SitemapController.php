@@ -9,6 +9,8 @@ use Illuminate\Http\Response;
 
 class SitemapController extends Controller
 {
+    private const MIN_LISTING_POSTS = 3;
+
     public function __invoke(): Response
     {
         $urls = [];
@@ -61,7 +63,8 @@ class SitemapController extends Controller
             ];
         }
 
-        // 4. Landmark Pages & Category + Landmark
+        // 4. Landmark Pages. Category+landmark combos are left out: most are thin/empty
+        // and flooded Google with low-value URLs (they stay reachable via internal links).
         $landmarks = Landmark::query()->with('city:id,slug')->get(['id', 'slug', 'city_id', 'updated_at']);
         foreach ($landmarks as $landmark) {
             $urls[] = [
@@ -70,15 +73,6 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
             ];
-
-            foreach ($categories as $cat) {
-                $urls[] = [
-                    'loc' => route('category.landmark.show', ['category' => $cat->slug, 'landmark' => $landmark->slug]),
-                    'lastmod' => optional($landmark->updated_at)->toAtomString() ?? now()->toAtomString(),
-                    'changefreq' => 'weekly',
-                    'priority' => '0.7',
-                ];
-            }
         }
 
         // 5. Category + City and Post Details
@@ -87,16 +81,18 @@ class SitemapController extends Controller
             ->with(['category:id,slug', 'city:id,slug'])
             ->latest('published_at')
             ->limit(5000)
-            ->get(['id', 'slug', 'category_id', 'city_id', 'updated_at', 'published_at']);
+            ->get(['id', 'slug', 'category_id', 'city_id', 'updated_at', 'published_at', 'expired_at'])
+            // Closed jobs are noindex, so they must not be in the sitemap either.
+            ->reject(fn (Post $post) => !$post->category || !$post->city || ($post->isJob() && $post->isExpired()));
+
+        // Only list category+city pages with enough posts to be worth indexing.
+        // ponytail: counted within the 5000-post sample; switch to a GROUP BY query if the sitemap is split.
+        $listCounts = $posts->countBy(fn (Post $post) => $post->category->slug . '|' . $post->city->slug);
 
         $listKeys = [];
         foreach ($posts as $post) {
-            if (!$post->category || !$post->city) {
-                continue;
-            }
-
             $listKey = $post->category->slug . '|' . $post->city->slug;
-            if (!isset($listKeys[$listKey])) {
+            if (!isset($listKeys[$listKey]) && $listCounts[$listKey] >= self::MIN_LISTING_POSTS) {
                 $listKeys[$listKey] = true;
                 $urls[] = [
                     'loc' => route('posts.list', [
