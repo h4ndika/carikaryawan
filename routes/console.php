@@ -72,8 +72,8 @@ Schedule::command('articles:auto-curate --count=3')
     ->withoutOverlapping()
     ->runInBackground();
 
-// Drip-Publish stok tempat ke AI & publish (50 post setiap 1 jam)
-Schedule::command('maps:drip-publish --limit=50 --concurrency=10')
+// Drip-Publish stok tempat ke AI & publish (10 post setiap 1 jam; dulu 50, diturunkan karena volume tinggi memperburuk indexing)
+Schedule::command('maps:drip-publish --limit=10 --concurrency=10')
     ->hourly()
     ->withoutOverlapping()
     ->runInBackground();

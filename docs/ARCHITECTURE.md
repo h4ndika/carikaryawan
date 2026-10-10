@@ -44,7 +44,7 @@ Semua berjalan lewat scheduler di `routes/console.php`. Jam scheduler dalam **UT
 ├─ jobs:auto-harvest (05:00 WIB) ── JobStreet ⇄ Glints ─┼─► posts (status draft, stok)
 └─ Filament "Ekstraksi" (manual/batch) ─────────────────┘
                      │
-   maps:drip-publish (tiap jam, 50 post) / ai:process-batch (tiap menit)
+   maps:drip-publish (tiap jam, 10 post) / ai:process-batch (tiap menit)
                      │  PostAiContentService → OpenAI
                      ▼
              posts (published) ──► PhotoScrapeQueue (antrean `photos`)
