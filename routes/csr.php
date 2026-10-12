@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 | CSR (Client-Side Rendering) Headless API Routes
 |--------------------------------------------------------------------------
 | Route terisolasi khusus melayani frontend CSR mandiri (Vercel, GitHub Pages,
-| Cloudflare Pages, Blogspot, dll) tanpa mengganggu routing/MVC disekitar.
+| Cloudflare Pages, Blogspot, dll) tanpa mengganggu routing/MVC CariKaryawan.
 |
 | Prefix: /api/csr/...
 | Response: Pure JSON (CORS open)

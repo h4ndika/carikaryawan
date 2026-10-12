@@ -15,8 +15,6 @@ class PostShow extends Component
 
     public ?Post $post = null;
 
-    public ?string $lightbox = null;
-
     public function mount(
         Category|string|null $category = null,
         City|string|null $city = null,
@@ -30,6 +28,9 @@ class PostShow extends Component
             $this->categorySlug = $categorySlug;
             $categoryModel = Category::query()->where('slug', $categorySlug)->firstOrFail();
         }
+
+        // Only job categories are public.
+        abort_unless($categoryModel->isJob(), 404);
 
         if ($city instanceof City) {
             $cityModel = $city;
@@ -56,16 +57,6 @@ class PostShow extends Component
         }
     }
 
-    public function openLightbox(string $url): void
-    {
-        $this->lightbox = $url;
-    }
-
-    public function closeLightbox(): void
-    {
-        $this->lightbox = null;
-    }
-
     public function render()
     {
         $canonical = $this->post->canonical_url ?: $this->post->url();
@@ -86,19 +77,8 @@ class PostShow extends Component
             ->limit(6)
             ->get();
 
-        $nearbyOtherCategories = collect();
-        if ($this->post->latitude && $this->post->longitude) {
-            $nearbyOtherCategories = $this->post->getNearbyPostsFromOtherCategories(
-                (float) $this->post->latitude,
-                (float) $this->post->longitude,
-                radiusKm: 5,
-                limit: 4
-            )->load(['category', 'city', 'images']);
-        }
-
         return view('livewire.post-show', [
             'related' => $related,
-            'nearbyOtherCategories' => $nearbyOtherCategories,
         ])
             ->layout('layouts.app', [
                 'metaDescription' => $this->post->seoDescription(),
@@ -108,6 +88,6 @@ class PostShow extends Component
                 'ogType' => 'article',
                 'jsonLd' => $this->post->generateJsonLd($canonical),
             ])
-            ->title($this->post->seoTitle() . ' — DISEKITAR');
+            ->title($this->post->seoTitle() . ' — CariKaryawan');
     }
 }

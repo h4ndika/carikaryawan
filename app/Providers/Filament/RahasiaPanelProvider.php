@@ -25,6 +25,7 @@ class RahasiaPanelProvider extends PanelProvider
     {
         return $panel
             ->id('rahasia')
+            ->brandName('CariKaryawan')
             ->path('rahasia')
             ->login()
             ->colors([

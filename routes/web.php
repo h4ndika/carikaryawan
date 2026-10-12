@@ -1,10 +1,7 @@
 <?php
 
 use App\Http\Controllers\SitemapController;
-use App\Livewire\BlogIndex;
-use App\Livewire\BlogShow;
 use App\Livewire\Home;
-use App\Livewire\LandmarkShow;
 use App\Livewire\PageShow;
 use App\Livewire\PostList;
 use App\Livewire\PostShow;
@@ -16,9 +13,10 @@ Route::get('/', Home::class)->name('home');
 Route::get('/cari', Search::class)->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
-// Blog Editorial routes
-Route::get('/blog', BlogIndex::class)->name('blog.index');
-Route::get('/blog/{slug}', BlogShow::class)->name('blog.show');
+// Legacy blog & landmark URLs (feature removed) -> home, before the catch-all routes
+Route::redirect('/blog/{any?}', '/', 301)->where('any', '.*');
+Route::redirect('/disekitar/{any?}', '/', 301)->where('any', '.*');
+Route::redirect('/{category}/disekitar/{any?}', '/', 301)->where('any', '.*');
 
 // Mandatory Legal & Editorial Policy Routes
 Route::get('/tentang-kami', PageShow::class)->name('page.about')->defaults('page', 'tentang-kami');
@@ -49,14 +47,6 @@ Route::get('/ads.txt', function () {
     }
     return response($content, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('ads.txt');
-
-// Landmark SEO routes (must be before generic /{category} routes)
-Route::get('/disekitar/{landmark:slug}', LandmarkShow::class)->name('landmark.show');
-Route::get('/{category}/disekitar/{landmark:slug}', LandmarkShow::class)->name('category.landmark.show');
-
-// Embeddable Widgets & Badges (Featured on DISEKITAR)
-Route::get('/widget/post/{slug}', [\App\Http\Controllers\WidgetController::class, 'postWidget'])->name('widget.post');
-Route::get('/widget/badge/{slug}', [\App\Http\Controllers\WidgetController::class, 'badgeWidget'])->name('widget.badge');
 
 // Dynamic Job Cover Image (for OpenGraph & Hero Banner)
 Route::get('/job-image/{slug}.svg', [\App\Http\Controllers\JobImageController::class, 'show'])->name('job.image');

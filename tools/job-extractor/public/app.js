@@ -40,8 +40,6 @@ const elements = {
     dropdownLocation: $('#location-dropdown'),
     inputLimit: $('#input-limit'),
     valLimit: $('#val-limit'),
-    selectAccountMode: $('#select-account-mode'),
-    selectAccountId: $('#select-account-id'),
     btnStartScrape: $('#btn-start-scrape'),
     btnStartText: $('#btn-start-text'),
     terminalLogs: $('#terminal-logs'),
@@ -233,35 +231,6 @@ function initLocationAutocomplete() {
             dropdown.classList.remove('open');
         }
     });
-}
-
-// ─── Apify Accounts from Google Map Extractor ───────────────────
-async function loadApifyAccounts() {
-    try {
-        const res = await fetch('/api/accounts');
-        const data = await res.json();
-        state.accounts = data.accounts || [];
-        populateAccountSelect();
-    } catch {
-        state.accounts = [];
-    }
-}
-
-function populateAccountSelect() {
-    const sel = elements.selectAccountId;
-    if (!sel) return;
-
-    if (!state.accounts || state.accounts.length === 0) {
-        sel.innerHTML = '<option value="">Tidak ada akun aktif di SQLite (Gunakan .env)</option>';
-        return;
-    }
-
-    sel.innerHTML = '<option value="">— Pilih Akun Apify —</option>' +
-        state.accounts.map(a => {
-            const label = a.email || (a.token ? `${a.token.slice(0, 10)}...` : `Akun #${a.id}`);
-            const usage = a.usageCount ?? 0;
-            return `<option value="${a.id}">#${a.id} ${escapeHtml(label)} (${usage}x digunakan)</option>`;
-        }).join('');
 }
 
 // ─── SSE Real-time Logs ─────────────────────────────────────────
@@ -613,7 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial API calls
     loadStats();
     loadFilesList();
-    loadApifyAccounts();
     initLocationAutocomplete();
 
     // Tab buttons
@@ -634,13 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.valLimit.textContent = e.target.value;
     });
 
-    // Account Mode change
-    if (elements.selectAccountMode && elements.selectAccountId) {
-        elements.selectAccountMode.addEventListener('change', (e) => {
-            elements.selectAccountId.style.display = e.target.value === 'manual' ? 'block' : 'none';
-        });
-    }
-
     // Scrape Form Submit
     elements.formScrape.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -649,16 +610,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = elements.inputQuery.value.trim();
         const location = elements.inputLocation ? elements.inputLocation.value.trim() : '';
         const maxItems = parseInt(elements.inputLimit.value, 10) || 20;
-        const accountMode = elements.selectAccountMode ? elements.selectAccountMode.value : 'auto';
-        const accountId = elements.selectAccountId ? elements.selectAccountId.value : null;
 
         if (!query) {
             showToast('Harap masukkan keyword pencarian atau username!', 'error');
-            return;
-        }
-
-        if (accountMode === 'manual' && !accountId) {
-            showToast('Harap pilih salah satu akun Apify atau ganti ke mode Auto-Rotate!', 'error');
             return;
         }
 
@@ -669,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/scrape', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ engine, query, location, maxItems, accountMode, accountId })
+                body: JSON.stringify({ engine, query, location, maxItems })
             });
             const data = await res.json();
 

@@ -21,12 +21,12 @@ class ListPosts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('importGoogleMaps')
-                ->label('Import Google Maps')
+            Action::make('importJobs')
+                ->label('Import Loker (JSON)')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('success')
-                ->modalHeading('Import Data Google Maps (JSON)')
-                ->modalDescription('Upload file JSON hasil scraper Google Maps. Post yang baru akan otomatis berstatus draft.')
+                ->modalHeading('Import Data Loker (JSON)')
+                ->modalDescription('Upload file JSON hasil scraper loker (JobStreet/Glints). Post yang baru akan otomatis berstatus draft.')
                 ->modalSubmitActionLabel('Mulai Import')
                 ->form([
                     FileUpload::make('file')
@@ -35,12 +35,12 @@ class ListPosts extends ListRecords
                         ->disk('local')
                         ->directory('temp-imports')
                         ->required()
-                        ->helperText('Upload file .json berformat data Google Maps.'),
+                        ->helperText('Upload file .json berformat hasil scraper loker.'),
                     Select::make('default_category_id')
                         ->label('Kategori Default')
-                        ->options(Category::query()->pluck('name', 'id'))
+                        ->options(Category::jobs()->pluck('name', 'id'))
                         ->searchable()
-                        ->helperText('Digunakan bila kategori dari Google Maps tidak ditemukan di database.'),
+                        ->helperText('Digunakan bila kategori dari data tidak ditemukan di database.'),
                     Toggle::make('skip_duplicates')
                         ->label('Lewati Duplikat (Berdasarkan Place ID)')
                         ->default(false)
@@ -86,7 +86,7 @@ class ListPosts extends ListRecords
                     }
 
                     Notification::make()
-                        ->title('Import Google Maps Selesai')
+                        ->title('Import Loker Selesai')
                         ->body("Hasil Import:\n• {$stats['imported']} Baru\n• {$stats['updated']} Diperbarui\n• {$stats['skipped']} Dilewati\n• {$stats['failed']} Gagal")
                         ->success()
                         ->send();

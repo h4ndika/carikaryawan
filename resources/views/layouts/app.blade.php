@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer">
     @php
-        $pageTitle = $title ?? config('app.name', 'DISEKITAR');
-        $desc = $metaDescription ?? 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.';
+        $pageTitle = $title ?? config('app.name', 'CariKaryawan');
+        $desc = $metaDescription ?? 'Agregator lowongan kerja terbaru di seluruh Indonesia, lengkap dengan tools CV, surat lamaran, dan persiapan interview.';
         $currentUrl = !empty($canonicalUrl) ? $canonicalUrl : url()->current();
         $shareImage = !empty($ogImage) && !str_ends_with(strtolower($ogImage), '.svg') ? $ogImage : asset('android-chrome-512x512.png');
     @endphp
@@ -19,7 +19,7 @@
     @endif
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:site_name" content="DISEKITAR">
+    <meta property="og:site_name" content="CariKaryawan">
     <meta property="og:locale" content="id_ID">
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
     <meta property="og:url" content="{{ $currentUrl }}">
@@ -83,15 +83,13 @@
 <body class="min-h-screen bg-[#fafaf9] dark:bg-[#0c0a09] text-zinc-900 dark:text-zinc-100 antialiased selection:bg-zinc-900 dark:selection:bg-amber-500 selection:text-white dark:selection:text-zinc-950">
     @include('partials.analytics-body-start')
     <div class="min-h-screen flex flex-col">
-        <!-- Top Editorial Masthead & Navigation -->
+        <!-- Top Masthead & Navigation -->
         <header class="bg-white dark:bg-zinc-900/95 dark:backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 sticky top-0 z-50 transition-colors duration-200">
             <!-- Masthead Top Info Bar -->
             <div class="border-b border-zinc-100 dark:border-zinc-800 hidden sm:block">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-medium">
                     <div>
-                        <span>Jurnal Kurasi Lokal</span>
-                        <span class="mx-2 text-zinc-300 dark:text-zinc-700">/</span>
-                        <span>Edisi {{ date('Y') }}</span>
+                        <span>Lowongan Kerja Indonesia</span>
                     </div>
                     <div>
                         <span>{{ \Illuminate\Support\Carbon::now()->translatedFormat('l, d F Y') }}</span>
@@ -104,28 +102,25 @@
                 <div class="flex items-center gap-8">
                     <a href="{{ route('home') }}" wire:navigate class="group flex items-center gap-2.5">
                         <span class="font-serif-title text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
-                            disekitar.
+                            carikaryawan.
                         </span>
                     </a>
 
                     @php
-                        $navCategories = \Illuminate\Support\Facades\Cache::remember('nav_categories', 3600, function () {
-                            return \App\Models\Category::orderBy('name')->take(4)->get();
+                        $navCategories = \Illuminate\Support\Facades\Cache::remember('nav_job_categories', 3600, function () {
+                            return \App\Models\Category::jobs()->orderBy('name')->take(4)->get();
                         });
                     @endphp
 
                     <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-widest font-semibold text-zinc-600 dark:text-zinc-400">
                         <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a>
-                        <a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1 text-amber-800 dark:text-amber-400">
-                            <span>Blog</span>
-                        </a>
                         @foreach ($navCategories as $navCat)
                             <a href="{{ $navCat->url() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
                                 {{ $navCat->name }}
                             </a>
                         @endforeach
                         <a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">
-                            Jelajah
+                            Cari Loker
                         </a>
                         <a href="{{ route('tools.hub') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold">
                             <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
@@ -137,11 +132,11 @@
                 <div class="flex items-center gap-3">
                     <a href="{{ route('search') }}" 
                        wire:navigate 
-                       aria-label="Cari tempat dan cerita"
+                       aria-label="Cari lowongan kerja"
                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition-colors"
-                       title="Cari cerita atau tempat">
+                       title="Cari lowongan kerja">
                         <i class="fa-solid fa-magnifying-glass text-zinc-500 dark:text-zinc-400 text-xs" aria-hidden="true"></i>
-                        <span class="hidden sm:inline">Cari tempat & cerita...</span>
+                        <span class="hidden sm:inline">Cari lowongan...</span>
                     </a>
 
                     <!-- Theme Toggle Switch -->
@@ -196,18 +191,18 @@
             {{ $slot }}
         </main>
 
-        <!-- Clean Journal Footer -->
+        <!-- Footer -->
         <footer class="mt-20 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 transition-colors duration-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                 <div class="grid gap-10 md:grid-cols-12 items-start">
                     <div class="md:col-span-6 space-y-3">
-                        <span class="font-serif-title text-2xl font-bold text-zinc-950 dark:text-zinc-50">disekitar.</span>
+                        <span class="font-serif-title text-2xl font-bold text-zinc-950 dark:text-zinc-50">carikaryawan.</span>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
-                            Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa, dan dinamika kehidupan kota di Indonesia.
+                            Agregator lowongan kerja di Indonesia. Kami mengumpulkan info lowongan dari berbagai sumber dan mengarahkan pelamar ke tautan aslinya.
                         </p>
                         <div class="pt-1 text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-4">
-                            <a href="mailto:redaksi@disekitar.com" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                                <i class="fa-solid fa-envelope text-amber-500"></i> redaksi@disekitar.com
+                            <a href="mailto:kontak@carikaryawan.com" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-envelope text-amber-500"></i> kontak@carikaryawan.com
                             </a>
                         </div>
                     </div>
@@ -217,14 +212,13 @@
                         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Beranda</a></li>
                             <li><a href="{{ route('tools.hub') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors text-indigo-600 dark:text-indigo-400 font-medium">Tools & Resources</a></li>
-                            <li><a href="{{ route('blog.index') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Blog Editorial</a></li>
-                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Pencarian Cerita</a></li>
+                            <li><a href="{{ route('search') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Cari Lowongan</a></li>
                             <li><a href="{{ route('sitemap') }}" class="hover:text-zinc-950 dark:hover:text-white transition-colors">Peta Situs (Sitemap)</a></li>
                         </ul>
                     </div>
 
                     <div class="md:col-span-3 space-y-2">
-                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Kebijakan & Redaksi</h4>
+                        <h4 class="text-xs uppercase tracking-widest font-bold text-zinc-900 dark:text-zinc-200">Informasi & Kebijakan</h4>
                         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                             <li><a href="{{ route('page.about') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Tentang Kami</a></li>
                             <li><a href="{{ route('page.contact') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-white transition-colors">Hubungi Kami</a></li>
@@ -236,7 +230,7 @@
                 </div>
 
                 <div class="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400 dark:text-zinc-500">
-                    <p>&copy; {{ date('Y') }} DISEKITAR. Hak cipta dilindungi.</p>
+                    <p>&copy; {{ date('Y') }} CariKaryawan. Hak cipta dilindungi.</p>
                     <div class="flex items-center gap-4">
                         <a href="{{ route('page.privacy') }}" wire:navigate class="hover:underline">Privasi</a>
                         <span>&bull;</span>

@@ -1,4 +1,20 @@
-# DISEKITAR — Milestone & Progress Log
+# CariKaryawan — Milestone & Progress Log
+
+> **Catatan:** proyek ini sebelumnya bernama **DISEKITAR** (direktori tempat, landmark, blog, loker). Seluruh entri di bawah entri 2026-10-12 adalah **riwayat DISEKITAR (legacy)** dan sengaja tidak ditulis ulang; fitur tempat/landmark/blog, `tools/google-map-extractor`, dan `tools/photo-scraper-admin` yang disebut di dalamnya sudah dihapus.
+
+## Milestone: Rebrand CariKaryawan & Pemangkasan ke Lowongan + Tools Karier (12 Oktober 2026)
+
+- **Cakupan baru:** hanya lowongan kerja dan tools karier AI (CV builder, cover letter, interview prep, tools hub). Tempat, landmark, dan blog dihapus dari produk.
+- **Branding:** `carikaryawan.com`; `robots.txt` (sitemap), `site.webmanifest`, placeholder SVG, `routes/csr.php`, `config/ai.php`, dokumentasi, dan `tools/job-extractor` memakai nama CariKaryawan.
+- **Pipeline loker dipertahankan:** `jobs:auto-harvest` (JobStreet/Glints) → `GoogleMapsImportService` → `ai:process-batch` → Threads. `GoogleMapsImportService`, `GoogleMapsScrapeJob`, `RunGoogleMapsScrapeJob` tetap ada secara internal hanya untuk ekstraksi loker. Worker: `ai,default` dan `jobs`.
+- **Threads:** 4 slot harian, semuanya `--type=jobs` (bukan enam slot campuran).
+- **Tools:** `tools/google-map-extractor` dan `tools/photo-scraper-admin` dihapus. `tools/job-extractor` kini mandiri: tidak lagi membaca token/SQLite dari `google-map-extractor`; token hanya dari `APIFY_TOKEN` di `.env` atau input dashboard (pemilihan akun Apify di dashboard dihapus). `LandmarkSeeder` dihapus.
+- **Deploy:** `deploy/setup-vps.sh` memakai path `/var/www/carikaryawan`, worker `carikaryawan-worker-fast|jobs`, tanpa worker `photos`/`maps`, dan **mewajibkan env `DB_PASS`** (password hardcoded dihapus; script berhenti sebelum aksi apa pun bila kosong).
+- **Database:** disiapkan migrasi purge destruktif (hapus post non-loker, drop tabel/kolom tempat/landmark/artikel). **Belum dijalankan** di database aplikasi; prosedur backup, staging, drain antrean, dan pemulihan dari backup ada di [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+- **Perlu tindak lanjut:** logo/ikon biner lama (`favicon.ico`, PNG, `android-chrome-*`, `apple-touch-icon`) masih bermerek DISEKITAR dan perlu didesain ulang.
+
+---
+
 
 ## Milestone: Pilar Lowongan Kerja, Deduplikasi Kanonikal, Batch Scraping Multi-Wilayah & Resilience Engine (6 - 10 September 2026)
 
@@ -133,7 +149,7 @@
 - Halaman eksplorasi interaktif (`/cari`) dengan pagination editorial kustom.
 
 ---
-**Next Milestone Targets:**
+**Next Milestone Targets (legacy DISEKITAR, tidak berlaku lagi):**
 1. Persetujuan Akun Google AdSense & Monitoring Penayangan Iklan Live.
 2. Otomasi Mirroring Gambar (penyimpanan lokal/S3 untuk backup foto Google Maps).
 3. Peningkatan cakupan konten kurasi ke destinasi kota-kota sekunder.

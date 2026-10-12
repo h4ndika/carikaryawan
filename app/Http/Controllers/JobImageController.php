@@ -14,7 +14,7 @@ class JobImageController extends Controller
      */
     public function show(string $slug): Response
     {
-        $post = Post::with(['category', 'city', 'province'])
+        $post = Post::jobs()->with(['category', 'city', 'province'])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
@@ -32,7 +32,12 @@ class JobImageController extends Controller
      */
     public function png(string $slug): Response
     {
-        $cachePath = storage_path("app/public/job-banners/{$slug}.png");
+        $post = Post::jobs()->with(['category', 'city', 'province'])
+            ->published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $cachePath = storage_path("app/public/job-banners/carikaryawan/{$post->slug}.png");
 
         if (file_exists($cachePath) && filesize($cachePath) > 1000) {
             return response(file_get_contents($cachePath), 200, [
@@ -40,11 +45,6 @@ class JobImageController extends Controller
                 'Cache-Control' => 'public, max-age=604800, immutable',
             ]);
         }
-
-        $post = Post::with(['category', 'city', 'province'])
-            ->published()
-            ->where('slug', $slug)
-            ->firstOrFail();
 
         $svg = $this->generateSvg($post);
 
@@ -127,7 +127,7 @@ class JobImageController extends Controller
 
         // Text wrapping for SVG
         $roleLines = $this->wrapText($role, 32, 2);
-        $companyEscaped = htmlspecialchars(Str::limit($company ?: 'Perusahaan Rekanan', 45), ENT_XML1, 'UTF-8');
+        $companyEscaped = htmlspecialchars(Str::limit($company ?: 'Perusahaan', 45), ENT_XML1, 'UTF-8');
         $locationEscaped = htmlspecialchars(Str::limit($location, 40), ENT_XML1, 'UTF-8');
         $categoryEscaped = htmlspecialchars($categoryName, ENT_XML1, 'UTF-8');
 
@@ -173,7 +173,7 @@ class JobImageController extends Controller
     </g>
 
     <g transform="translate(970, 105)">
-        <text x="140" y="27" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="end" letter-spacing="2">DISEKITAR<tspan fill="#f59e0b">.</tspan></text>
+        <text x="140" y="27" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="end" letter-spacing="2">CARIKARYAWAN<tspan fill="#f59e0b">.</tspan></text>
     </g>
 
     <g>
@@ -196,7 +196,7 @@ class JobImageController extends Controller
 
     <g transform="translate(90, 520)">
         <circle cx="6" cy="6" r="4" fill="#22c55e" />
-        <text x="20" y="10" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#a1a1aa">Kurasi Lowongan Kerja Terverifikasi · disekitar.com</text>
+        <text x="20" y="10" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#a1a1aa">Informasi Lowongan Kerja · carikaryawan.com</text>
     </g>
 </svg>
 SVG;

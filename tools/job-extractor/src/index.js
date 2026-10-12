@@ -6,8 +6,8 @@ import { scrapeJobs, ENGINE_GOOGLE_JOBS, ENGINE_INSTAGRAM } from './scraper.js';
 const program = new Command();
 
 program
-  .name('disekitar-job-extractor')
-  .description('Ekstraktor Lowongan Kerja Lokal untuk DiSekitar (Google Jobs & Instagram)')
+  .name('carikaryawan-job-extractor')
+  .description('Ekstraktor Lowongan Kerja Lokal untuk CariKaryawan (Google Jobs & Instagram)')
   .version('1.0.0');
 
 program
@@ -23,7 +23,7 @@ program
       const selectedEngine = options.engine === 'instagram' ? ENGINE_INSTAGRAM : ENGINE_GOOGLE_JOBS;
       
       console.log(`\n========================================`);
-      console.log(`🔍 DiSekitar Job Extractor CLI`);
+      console.log(`🔍 CariKaryawan Job Extractor CLI`);
       console.log(`========================================`);
       console.log(`Engine : ${selectedEngine}`);
       console.log(`Query  : ${options.query}`);
@@ -38,7 +38,7 @@ program
         outputDir: options.output
       });
 
-      console.log(`\n✨ Sukses! ${result.count} data lowongan siap diimpor ke DiSekitar.`);
+      console.log(`\n✨ Sukses! ${result.count} data lowongan siap diimpor ke CariKaryawan.`);
       console.log(`File: ${result.filePath}\n`);
     } catch (err) {
       console.error(`\n❌ Error: ${err.message}\n`);

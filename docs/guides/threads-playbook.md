@@ -1,6 +1,6 @@
-# Threads Strategy & Content Playbook (DISEKITAR)
+# Threads Strategy & Content Playbook (CariKaryawan)
 
-Dokumentasi playbook strategi konten, tone of voice, dan formula konversi untuk akun Threads `@disekitarcom`.
+Dokumentasi playbook strategi konten, tone of voice, dan formula konversi untuk akun Threads akun Threads CariKaryawan (handle diatur di akun Threads, bukan di kode).
 
 ## Mode Chain Post di admin
 
@@ -29,7 +29,7 @@ Setting runtime: `threads_chain_mode_enabled` dan `threads_chain_posts` (gunakan
 | **15%** | Tips & Micro-Guides | Saves & Reposts | Panduan ringkas (WFC spot, rute, parkir) |
 | **10%** | Fakta Menarik & Sejarah Lokal | Brand Affinity & Shares | Trivia kota / asal-usul tempat |
 | **10%** | Konten Timely / Trending / Hot Takes | High-velocity Debates & Reach | Opini jujur yang membelah ruangan |
-| **10%** | Promosi Platform & Loker DISEKITAR | Traffic Web & Registrasi | Kurasi loker/tempat bernada manusia |
+| **10%** | Promosi Platform & Loker CariKaryawan | Traffic Web & Registrasi | Kurasi loker/tempat bernada manusia |
 
 ---
 
@@ -61,7 +61,7 @@ Setting runtime: `threads_chain_mode_enabled` dan `threads_chain_posts` (gunakan
 - **Contoh**:
   > *Cari kerja posisi admin atau customer service di Bandung sekarang saingannya lumayan padat ya.*
   >
-  > *Baru aja masuk beberapa listing baru untuk staff admin & CS brand lokal di disekitar.com/lowongan*
+  > *Baru aja masuk beberapa listing baru untuk staff admin & CS brand lokal di carikaryawan.com/lowongan-kerja*
   >
   > *Buat yang lagi aktif cari kerja: kota mana dan posisi apa yang paling susah dapet panggilan interview belakangan ini?*
 - **Topic Tag**: `lokerbandung`
@@ -84,4 +84,4 @@ Setting runtime: `threads_chain_mode_enabled` dan `threads_chain_posts` (gunakan
    - Reply minimal 3–5 komentar pertama dengan pertanyaan lanjutan untuk menjaga thread tetap hidup di puncak algoritma feed.
 2. **Niche Hopping (10–15 Menit/Hari)**:
    - Buka tag `#kuliner[kota]`, `#loker[kota]`, `#explore[kota]`.
-   - Berikan respon informatif atau opini hangat di thread akun lain sebagai perwakilan `@disekitarcom`.
+   - Berikan respon informatif atau opini hangat di thread akun lain sebagai perwakilan akun Threads CariKaryawan.

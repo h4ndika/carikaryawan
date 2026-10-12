@@ -1,6 +1,6 @@
 # Panduan Setup Web Frontend CSR (Vercel / Cloudflare Pages / Static Hosting)
 
-Dokumen ini berisi panduan lengkap cara menghubungkan web frontend statis gratisan (seperti **Vercel**, **Cloudflare Pages**, atau **GitHub Pages**) ke Headless API Laravel `disekitar.com` untuk kebutuhan Client-Side Rendering (CSR), indexing ribuan loker ke Google Search Console (GSC), dan monetisasi Adsterra/Smartlink.
+Dokumen ini berisi panduan lengkap cara menghubungkan web frontend statis gratisan (seperti **Vercel**, **Cloudflare Pages**, atau **GitHub Pages**) ke Headless API Laravel `carikaryawan.com` untuk kebutuhan Client-Side Rendering (CSR), indexing ribuan loker ke Google Search Console (GSC), dan monetisasi Adsterra/Smartlink.
 
 ---
 
@@ -34,10 +34,10 @@ File ini berfungsi sebagai wadah penampung UI yang akan di-render secara instan 
     <!-- 1. Wadah tempat CSR Engine merender UI loker -->
     <div id="csr-app"></div>
 
-    <!-- 2. Script CSR Engine Mandiri dari Backend Disekitar -->
+    <!-- 2. Script CSR Engine Mandiri dari Backend CariKaryawan -->
     <script 
-        src="https://disekitar.com/csr/csr-engine.js" 
-        data-api="https://disekitar.com/api/csr"
+        src="https://carikaryawan.com/csr/csr-engine.js"
+        data-api="https://carikaryawan.com/api/csr"
         data-container="csr-app"
     ></script>
 
@@ -60,7 +60,7 @@ File konfigurasi ini wajib ada agar:
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://disekitar.com/api/csr/sitemap.xml?domain=https://domain-anda.vercel.app"
+      "destination": "https://carikaryawan.com/api/csr/sitemap.xml?domain=https://domain-anda.vercel.app"
     },
     {
       "source": "/loker/(.*)",
@@ -82,12 +82,12 @@ File konfigurasi ini wajib ada agar:
    sitemap.xml
    ```
 5. Klik **Submit**.
-   - Googlebot akan membaca sitemap XML yang di-generate langsung dari ribuan database loker `disekitar.com`.
+   - Googlebot akan membaca sitemap XML yang di-generate langsung dari ribuan database loker `carikaryawan.com`.
    - Tiap kali auto-harvest di VPS scrape loker baru, isi sitemap ini akan update secara otomatis tanpa Anda perlu upload ulang file XML!
 
 ---
 
-## 5. Referensi Endpoint Backend (`disekitar.com`)
+## 5. Referensi Endpoint Backend (`carikaryawan.com`)
 
 | Endpoint | Kegunaan | Parameter Opsional |
 | :--- | :--- | :--- |

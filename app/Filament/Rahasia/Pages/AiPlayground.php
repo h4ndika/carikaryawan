@@ -2,14 +2,14 @@
 
 namespace App\Filament\Rahasia\Pages;
 
-use App\Ai\Tools\DisekitarDatabaseTool;
+use App\Ai\Tools\CariKaryawanDatabaseTool;
 use App\Models\AiChatSession;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
-use App\Ai\DisekitarAgent;
+use App\Ai\CariKaryawanAgent;
 use Laravel\Ai\Messages\Message;
 use Laravel\Ai\Messages\MessageRole;
 use UnitEnum;
@@ -34,7 +34,7 @@ class AiPlayground extends Page
 
     public string $model = '';
 
-    public string $systemPrompt = 'Kamu adalah asisten AI yang cerdas, faktual, dan ramah untuk platform ulasan & rekomendasi lokal DiSekitar.';
+    public string $systemPrompt = 'Kamu adalah asisten AI yang cerdas, faktual, dan ramah untuk platform lowongan kerja & tools karier CariKaryawan.';
 
     public string $userPrompt = '';
 
@@ -155,24 +155,24 @@ class AiPlayground extends Page
     {
         switch ($val) {
             case 'analytics':
-                $this->systemPrompt = "Kamu adalah analis data cerdas untuk direktori DiSekitar. Gunakan tool database yang tersedia untuk memeriksa data riil (posts, cities, categories, landmarks, page_views) dan jawab dengan angka/informasi akurat.";
-                $this->userPrompt = "Berapa jumlah post di kota Bandung?";
+                $this->systemPrompt = "Kamu adalah analis data cerdas untuk CariKaryawan (portal lowongan kerja). Gunakan tool database yang tersedia untuk memeriksa data riil (posts lowongan kerja, cities, categories, page_views) dan jawab dengan angka/informasi akurat.";
+                $this->userPrompt = "Berapa jumlah lowongan kerja di kota Bandung?";
                 $this->enableDatabaseAccess = true;
                 break;
-            case 'article':
-                $this->systemPrompt = "Kamu adalah content writer profesional & pakar SEO untuk platform direktori wisata & kuliner DiSekitar.\nTulis artikel yang komprehensif, menarik, dan informatif dengan gaya bahasa casual semi-formal.";
-                $this->userPrompt = "Tolong buatkan ulasan menarik dan rekomendasi lengkap untuk: [Nama Tempat, Kota]. Cantumkan keunggulan tempat, tips berkunjung, dan perkiraan suasana.";
+            case 'job_description':
+                $this->systemPrompt = "Kamu adalah content writer profesional & pakar SEO untuk portal lowongan kerja CariKaryawan.\nTulis deskripsi lowongan yang jelas, menarik, dan informatif dengan gaya bahasa profesional semi-formal.";
+                $this->userPrompt = "Tolong buatkan deskripsi lowongan lengkap untuk: [Posisi, Perusahaan, Kota]. Cantumkan tanggung jawab, kualifikasi, benefit, dan tips melamar.";
                 break;
             case 'seo':
                 $this->systemPrompt = "Kamu adalah spesialis SEO on-page. Tugasmu adalah membuat Meta Title dan Meta Description yang memikat, natural, dan memiliki Click-Through-Rate (CTR) tinggi.";
-                $this->userPrompt = "Buatkan 3 variasi Meta Title (maksimal 60 karakter) dan Meta Description (maksimal 155 karakter) untuk ulasan tempat berikut: [Nama Tempat, Kategori, Kota].";
+                $this->userPrompt = "Buatkan 3 variasi Meta Title (maksimal 60 karakter) dan Meta Description (maksimal 155 karakter) untuk lowongan kerja berikut: [Posisi, Perusahaan, Kota].";
                 break;
             case 'summary':
                 $this->systemPrompt = "Kamu adalah editor ringkasan konten. Buatkan ringkasan padat dan menarik dalam 2-3 paragraf.";
-                $this->userPrompt = "Ringkas keistimewaan tempat berikut ini beserta alasan mengapa wajib dikunjungi: [Nama Tempat].";
+                $this->userPrompt = "Ringkas lowongan berikut beserta alasan mengapa menarik dilamar: [Posisi, Perusahaan].";
                 break;
             case 'general':
-                $this->systemPrompt = 'Kamu adalah asisten AI yang cerdas, faktual, dan ramah untuk platform ulasan & rekomendasi lokal DiSekitar.';
+                $this->systemPrompt = 'Kamu adalah asisten AI yang cerdas, faktual, dan ramah untuk platform lowongan kerja & tools karier CariKaryawan.';
                 $this->userPrompt = '';
                 break;
         }
@@ -230,8 +230,8 @@ class AiPlayground extends Page
             $dbInstructions = '';
 
             if ($this->enableDatabaseAccess) {
-                $tools[] = new DisekitarDatabaseTool();
-                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live DiSekitar melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah postingan, data kota, kategori, landmarks, page_views, rating, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil (khusus page_views hari ini gunakan kolom viewed_date = CURDATE() atau DATE(created_at) = CURDATE(), bukan visited_at). Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat dalam format Markdown. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
+                $tools[] = new CariKaryawanDatabaseTool();
+                $dbInstructions = "\n\nKamu memiliki akses langsung ke database live CariKaryawan melalui tool database yang tersedia. Jika pertanyaan berkaitan dengan jumlah lowongan, data kota, kategori, page_views, atau statistik lainnya, WAJIB panggil tool untuk mengecek data riil (khusus page_views hari ini gunakan kolom viewed_date = CURDATE() atau DATE(created_at) = CURDATE(), bukan visited_at). Jawab langsung hasilnya dalam bahasa Indonesia yang ramah, informatif, dan akurat dalam format Markdown. JANGAN hanya menyajikan perintah query SQL mentah kecuali diminta secara eksplisit.";
             }
 
             $instructions = (!empty($this->systemPrompt) ? $this->systemPrompt : 'You are a helpful AI assistant.') . $dbInstructions;
@@ -253,7 +253,7 @@ class AiPlayground extends Page
                 }
             }
 
-            $agent = new DisekitarAgent(
+            $agent = new CariKaryawanAgent(
                 instructions: $instructions,
                 messages: $history,
                 tools: $tools

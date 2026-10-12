@@ -28,70 +28,64 @@
             </div>
         </div>
 
-        {{-- Main Editorial Container --}}
+        {{-- Main Content Container --}}
         <article class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 sm:p-10 shadow-xs">
             
             {{-- PAGE: TENTANG KAMI --}}
             @if ($page === 'tentang-kami')
                 <header class="mb-8 border-b border-zinc-100 dark:border-zinc-800/80 pb-6">
-                    <span class="inline-block text-xs uppercase tracking-widest font-bold text-amber-600 dark:text-amber-400 mb-2">Profil Redaksi</span>
+                    <span class="inline-block text-xs uppercase tracking-widest font-bold text-amber-600 dark:text-amber-400 mb-2">Profil</span>
                     <h1 class="font-serif-title text-3xl sm:text-4xl font-bold text-zinc-950 dark:text-zinc-50 leading-tight">
-                        Tentang DISEKITAR
+                        Tentang CariKaryawan
                     </h1>
                     <p class="mt-3 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        Publikasi kurasi independen yang mengangkat cerita di balik tempat, cita rasa kuliner, dan dinamika ruang perkotaan di Indonesia.
+                        Agregator lowongan kerja di Indonesia, dilengkapi tools untuk membantu proses melamar.
                     </p>
                 </header>
 
                 <div class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 space-y-6 text-sm sm:text-base leading-relaxed">
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Misi Kami</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Apa Itu CariKaryawan</h2>
                         <p>
-                            <strong>DISEKITAR</strong> lahir dari kesadaran bahwa setiap sudut kota menyimpan narasi unik yang layak diceritakan. Di tengah membanjirnya informasi tempat yang sering kali seragam dan dangkal, kami berupaya menghadirkan kurasi mendalam untuk membantu Anda menemukan hotel dengan karakter kuat, kedai kopi yang penuh ketenangan, tempat makan legendaris, hingga ruang publik tersembunyi.
+                            <strong>CariKaryawan</strong> mengumpulkan informasi lowongan kerja yang dipublikasikan di berbagai sumber di internet, lalu merangkumnya per kota dan kategori agar lebih mudah dicari.
                         </p>
                         <p>
-                            Fokus kami tidak sekadar menyajikan daftar alamat, melainkan menghadirkan konteks: suasana, keunikan arsitektur, kisah di balik dapur atau bangunan, serta panduan praktis yang memudahkan perjalanan Anda.
+                            CariKaryawan <strong>bukan pemberi kerja, bukan agen penyalur tenaga kerja, dan tidak menerima lamaran</strong>. Untuk melamar, Anda diarahkan ke tautan lowongan asli di situs sumbernya.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Prinsip & Nilai Editorial</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Cara Kerja</h2>
                         <ul class="list-disc pl-5 space-y-2">
-                            <li><strong>Kurasi Berbasis Nilai:</strong> Setiap tempat yang masuk dalam publikasi kami dipilih berdasarkan keunikan, kualitas pengalaman, dan relevansi budaya lokal.</li>
-                            <li><strong>Integritas & Kejujuran:</strong> Ulasan kami dibuat secara independen. Setiap konten promosi berbayar atau kerja sama komersial akan selalu ditandai secara transparan kepada pembaca.</li>
-                            <li><strong>Konektivitas Wilayah:</strong> Kami menghubungkan tempat dengan landmark ikonik di sekitarnya, sehingga memudahkan pembaca merencanakan rute eksplorasi kota secara menyeluruh.</li>
-                            <li><strong>Pembaruan Berkelanjutan:</strong> Dinamika tempat usaha dapat berubah dengan cepat. Kami secara berkala meninjau dan memperbarui informasi operasional, harga, dan fasilitas.</li>
+                            <li><strong>Pengumpulan otomatis:</strong> Data lowongan dikumpulkan secara otomatis dari sumber publik dan dapat dirapikan dengan bantuan AI.</li>
+                            <li><strong>Tautan asli:</strong> Setiap lowongan menyertakan tautan lamaran ke sumber aslinya bila tersedia.</li>
+                            <li><strong>Masa tayang:</strong> Lowongan ditandai ditutup setelah masa tayangnya berakhir (21 hari sejak dipublikasikan) atau jika sumbernya sudah tidak tersedia.</li>
+                            <li><strong>Tanpa verifikasi:</strong> Kami tidak memverifikasi keaslian lowongan maupun perusahaan. Selalu periksa sendiri sebelum mengirim data pribadi, dan waspada terhadap lowongan yang meminta biaya.</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Kategori Publikasi</h2>
-                        <p>
-                            Dokumentasi kami mencakup ragam kategori tempat dan pengalaman hidup:
-                        </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose my-4">
-                            <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60">
-                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">🏨 Akomodasi & Hotel</h4>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Ulasan hotel butik, penginapan bernuansa heritage, hingga resor peristirahatan yang nyaman.</p>
-                            </div>
-                            <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60">
-                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">☕ Kafe & Ruang Temu</h4>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Kedai kopi berkarakter, tempat kerja ramah laptop (work-from-cafe), dan ruang komunitas.</p>
-                            </div>
-                            <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60">
-                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">🍲 Kuliner & Gastronomi</h4>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Eksplorasi cita rasa tradisional, kuliner legendaris turun-temurun, dan kuliner kontemporer.</p>
-                            </div>
-                            <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60">
-                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">🏛️ Destinasi & Ruang Budaya</h4>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Landmark bersejarah, galeri seni, taman kota, dan titik wisata ikonik di berbagai kota.</p>
-                            </div>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">Tools Karier</h2>
+                        <p>Selain lowongan, tersedia tools gratis untuk persiapan melamar:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 not-prose my-4">
+                            <a href="{{ route('career.cv-builder') }}" wire:navigate class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60 hover:border-amber-400 transition-colors">
+                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">CV Builder</h4>
+                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Susun CV ramah ATS.</p>
+                            </a>
+                            <a href="{{ route('career.interview-prep') }}" wire:navigate class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60 hover:border-amber-400 transition-colors">
+                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">Interview Prep</h4>
+                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Latihan pertanyaan wawancara.</p>
+                            </a>
+                            <a href="{{ route('tools.hub') }}" wire:navigate class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60 hover:border-amber-400 transition-colors">
+                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">Surat Lamaran</h4>
+                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Buat draf surat lamaran dari halaman lowongan.</p>
+                            </a>
                         </div>
                     </section>
 
                     <section class="border-t border-zinc-100 dark:border-zinc-800 pt-6">
                         <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                            Punya cerita tempat menarik di sekitar Anda yang layak diulas? Kirimkan saran Anda melalui <a href="{{ route('page.contact') }}" wire:navigate class="text-amber-600 dark:text-amber-400 underline font-medium">halaman kontak kami</a>.
+                            Pemilik lowongan yang ingin lowongannya diperbarui atau diturunkan dapat menghubungi kami lewat <a href="{{ route('page.contact') }}" wire:navigate class="text-amber-600 dark:text-amber-400 underline font-medium">halaman kontak</a>.
                         </p>
                     </section>
                 </div>
@@ -110,74 +104,54 @@
 
                 <div class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 space-y-6 text-sm sm:text-base leading-relaxed">
                     <p>
-                        Selamat datang di <strong>DISEKITAR</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://disekitar.com</a>). Kami menghargai dan berkomitmen penuh untuk melindungi privasi setiap pengunjung. Dokumen Kebijakan Privasi ini menerangkan jenis data apa yang dikumpulkan saat Anda mengakses situs kami, bagaimana data tersebut diproses, serta hak-hak privasi yang Anda miliki.
+                        Selamat datang di <strong>CariKaryawan</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://carikaryawan.com</a>). Dokumen ini menjelaskan data apa yang diproses saat Anda memakai situs dan tools kami, serta pilihan yang Anda miliki.
                     </p>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Data yang Kami Kumpulkan</h2>
-                        <p>
-                            DISEKITAR membatasi pengumpulan data hanya pada informasi teknis non-identitas pribadi (*non-personally identifiable information*) untuk tujuan operasional dan analitik situs:
-                        </p>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Data yang Kami Proses</h2>
                         <ul class="list-disc pl-5 space-y-2">
-                            <li><strong>Informasi Log Teknis:</strong> Ketika Anda mengakses situs, sistem mencatat alamat IP yang telah disamarkan/di-hash (*salted hash*), jenis peramban (*browser*), jenis perangkat (ponsel, desktop, atau tablet), resolusi layar, halaman yang dikunjungi, serta stempel waktu kunjungan. Kami tidak mengaitkan data log ini dengan nama lengkap atau identitas pribadi Anda.</li>
-                            <li><strong>Komunikasi Sukarela:</strong> Jika Anda menghubungi redaksi melalui surat elektronik atau formulir kontak, kami menyimpan alamat email dan konten pesan Anda semata-mata untuk merespons pertanyaan atau permohonan Anda.</li>
+                            <li><strong>Data kunjungan:</strong> alamat IP yang di-hash, jenis peramban dan perangkat, halaman yang dikunjungi, dan waktu kunjungan, untuk statistik penggunaan situs.</li>
+                            <li><strong>Data pada tools karier:</strong> teks yang Anda masukkan ke CV Builder, pembuat surat lamaran, atau Interview Prep (misalnya riwayat kerja dan pendidikan) dikirim ke penyedia layanan AI untuk menghasilkan keluaran. Hindari memasukkan data sensitif seperti nomor identitas, nomor rekening, atau kata sandi.</li>
+                            <li><strong>Komunikasi:</strong> jika Anda mengirim email ke kami, kami menyimpan alamat email dan isi pesan untuk menanggapinya.</li>
                         </ul>
+                        <p>Kami tidak menyediakan akun pengguna atau fitur pengiriman lamaran. Lamaran dikirim langsung ke situs sumber lowongan, dan data yang Anda berikan di sana tunduk pada kebijakan privasi situs tersebut.</p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Jaringan Periklanan Pihak Ketiga (Google AdSense)</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Cookie dan Iklan Pihak Ketiga</h2>
                         <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-zinc-800 dark:text-zinc-200">
-                            <p class="text-sm font-semibold mb-2">Pemberitahuan Transparansi Iklan Pihak Ketiga (Google AdSense):</p>
                             <p class="text-xs sm:text-sm leading-relaxed">
-                                Situs kami bermitra dengan penyedia jaringan periklanan resmi pihak ketiga terpercaya, yaitu <strong>Google LLC (Google AdSense)</strong>. Google menggunakan cookie dan web beacon untuk menayangkan iklan yang relevan kepada pengunjung berdasarkan riwayat kunjungan ke situs kami maupun situs web lain di internet.
+                                Situs ini dapat menampilkan iklan dari <strong>Google AdSense</strong>. Google dan mitranya menggunakan cookie untuk menayangkan iklan berdasarkan kunjungan Anda ke situs ini dan situs lain.
                             </p>
                         </div>
                         <ul class="list-disc pl-5 space-y-2 mt-3">
                             <li>
-                                <strong>Kuki DART / DoubleClick (Google):</strong> Google sebagai vendor pihak ketiga menggunakan kuki DART untuk menayangkan iklan kepada pengguna situs berdasarkan kunjungan mereka ke DISEKITAR dan situs web lainnya di internet.
+                                Anda dapat menyisih dari iklan yang dipersonalisasi melalui
+                                <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">Setelan Iklan Google</a>
+                                atau <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">www.aboutads.info</a>.
                             </li>
-                            <li>
-                                <strong>Penyedia Iklan Terverifikasi:</strong> Iklan yang ditampilkan mematuhi Pedoman Kebijakan Program Google AdSense dan undang-undang privasi internasional yang berlaku (termasuk GDPR dan CCPA).
-                            </li>
-                            <li>
-                                <strong>Pilihan Menyisih Iklan Google (Opt-Out):</strong> Anda dapat menyisih dari periklanan berbasis minat Google dengan mengunjungi 
-                                <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">Setelan Iklan Google (Google Ads Settings)</a>.
-                            </li>
-                            <li>
-                                <strong>Pilihan Menyisih Umum:</strong> Pengguna dapat menyisih dari penggunaan kuki vendor pihak ketiga untuk iklan yang dipersonalisasi dengan mengunjungi situs inisiatif regulasi periklanan di 
-                                <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">www.aboutads.info</a> atau <a href="https://youradchoices.com/" target="_blank" rel="noopener noreferrer" class="text-amber-600 dark:text-amber-400 underline font-medium">YourAdChoices</a>.
-                            </li>
+                            <li>Sebagian tautan di situs dapat berupa tautan afiliasi dan ditandai <code>sponsored</code>; kami dapat menerima komisi bila Anda membeli lewat tautan tersebut.</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Penggunaan Cookie & Layanan Analitik</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Analitik</h2>
                         <p>
-                            Selain jaringan periklanan, kami menggunakan layanan analitik seperti Google Analytics dan Umami Analytics untuk menganalisis tren penggunaan situs secara agregat (seperti statistik kunjungan halaman dan durasi baca). Layanan ini beroperasi secara anonim dan mematuhi prinsip privasi data.
-                        </p>
-                        <p>
-                            Anda memiliki kendali penuh untuk menerima, menonaktifkan, atau menghapus kuki melalui pengaturan peramban web Anda (Google Chrome, Mozilla Firefox, Apple Safari, atau Microsoft Edge). Harap dicatat bahwa menonaktifkan kuki tertentu dapat memengaruhi fungsionalitas interaktif situs (seperti preferensi tema gelap).
+                            Kami dapat memakai layanan analitik seperti Google Analytics dan Umami untuk memahami penggunaan situs secara agregat. Anda dapat mengatur atau menghapus cookie melalui pengaturan peramban; menonaktifkannya dapat memengaruhi fitur seperti preferensi tema gelap.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Keamanan Data & Perlindungan Konsumen</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Tautan ke Situs Eksternal</h2>
                         <p>
-                            Kami menerapkan protokol keamanan standar industri (termasuk enkripsi SSL/HTTPS) untuk mencegah akses tidak sah, pengungkapan, atau modifikasi data yang kami simpan. Kami tidak pernah memperjualbelikan, menyewakan, atau mendistribusikan data pengunjung kepada pihak mana pun di luar ketentuan operasional situs yang sah.
+                            Lowongan di CariKaryawan menautkan ke situs pihak ketiga. Kami tidak mengendalikan kebijakan privasi dan praktik data situs tersebut.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">5. Tautan ke Situs Eksternal</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">5. Kontak Privasi</h2>
                         <p>
-                            Artikel di DISEKITAR dapat memuat tautan ke situs web pihak ketiga, seperti tautan Google Maps untuk navigasi lokasi atau akun media sosial resmi tempat usaha yang diulas. Harap perhatikan bahwa kami tidak memiliki kendali atas kebijakan privasi dan praktik pengumpulan data dari situs-situs eksternal tersebut. Kami menyarankan Anda membaca kebijakan privasi masing-masing situs yang Anda tuju.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">6. Pertanyaan & Kontak Privasi</h2>
-                        <p>
-                            Jika Anda memiliki pertanyaan, klarifikasi, atau permintaan penghapusan data sehubungan dengan Kebijakan Privasi ini, silakan hubungi tim kami melalui email: <strong>redaksi@disekitar.com</strong> atau melalui halaman <a href="{{ route('page.contact') }}" wire:navigate class="text-amber-600 dark:text-amber-400 underline">Kontak</a>.
+                            Pertanyaan atau permintaan terkait data Anda dapat dikirim ke <strong>kontak@carikaryawan.com</strong> atau melalui halaman <a href="{{ route('page.contact') }}" wire:navigate class="text-amber-600 dark:text-amber-400 underline">Kontak</a>.
                         </p>
                     </section>
                 </div>
@@ -196,42 +170,50 @@
 
                 <div class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 space-y-6 text-sm sm:text-base leading-relaxed">
                     <p>
-                        Dengan mengakses dan menggunakan situs <strong>DISEKITAR</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://disekitar.com</a>), Anda menyetujui untuk terikat oleh Syarat dan Ketentuan berikut. Jika Anda tidak menyetujui salah satu bagian dari ketentuan ini, Anda disarankan untuk tidak melanjutkan akses ke situs ini.
+                        Dengan mengakses <strong>CariKaryawan</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://carikaryawan.com</a>), Anda menyetujui ketentuan berikut. Jika tidak setuju, mohon hentikan penggunaan situs.
                     </p>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Hak Kekayaan Intelektual</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Sifat Layanan</h2>
                         <p>
-                            Seluruh konten orisinal yang diterbitkan di DISEKITAR — termasuk namun tidak terbatas pada artikel kurasi, analisis editorial, tata letak antarmuka, grafik, logo, dan kode sumber — adalah milik sah <strong>DISEKITAR</strong> dan dilindungi oleh Undang-Undang Hak Cipta Republik Indonesia.
-                        </p>
-                        <p>
-                            Pengutipan teks diperbolehkan maksimal 1 (satu) paragraf untuk keperluan wajar (*fair use*), dengan syarat wajib menyertakan atribusi yang jelas serta tautan aktif (*dofollow*) ke halaman sumber asli di DISEKITAR. Penggandaan massal, scraping otomatis tanpa izin, atau penerbitan ulang seluruh artikel dilarang keras.
+                            CariKaryawan adalah agregator informasi lowongan kerja. Kami <strong>bukan pemberi kerja dan bukan penyalur tenaga kerja</strong>, dan tidak menjadi pihak dalam hubungan antara pelamar dan perusahaan. Proses melamar, seleksi, dan keputusan perekrutan sepenuhnya ada pada pemberi kerja di situs sumber.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Penggunaan Informasi</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Informasi Lowongan</h2>
                         <p>
-                            Seluruh informasi yang disajikan di DISEKITAR dimaksudkan sebagai referensi dan panduan wisata, kuliner, serta gaya hidup perkotaan. Meskipun tim kami berusaha memastikan seluruh data (seperti lokasi, fasilitas, jam buka, dan kisaran harga) akurat pada saat penulisan, perubahan operasional di lapangan dapat terjadi tanpa pemberitahuan dari pihak pengelola tempat terkait.
+                            Informasi lowongan dikumpulkan dari sumber pihak ketiga dan dapat berubah, tidak lengkap, atau sudah tidak berlaku. Kami tidak memverifikasi keaslian lowongan atau perusahaan, dan tidak menjamin Anda akan mendapatkan pekerjaan. Jangan membayar biaya apa pun kepada pihak yang mengaku mewakili lowongan, dan periksa kembali informasi di tautan sumber asli.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Perilaku Pengguna</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Tools Karier Berbasis AI</h2>
                         <p>
-                            Dalam menggunakan situs DISEKITAR, pengguna dilarang:
+                            Keluaran CV Builder, pembuat surat lamaran, dan Interview Prep dihasilkan dengan bantuan AI dan dapat mengandung kesalahan. Anda bertanggung jawab memeriksa dan menyesuaikan hasilnya sebelum digunakan, serta atas kebenaran data yang Anda masukkan.
                         </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Hak Kekayaan Intelektual</h2>
+                        <p>
+                            Tata letak, kode, dan logo CariKaryawan dilindungi hak cipta. Hak atas teks dan merek pada lowongan tetap dimiliki masing-masing pemilik sumbernya. Penyalinan massal atau scraping otomatis tanpa izin dilarang.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">5. Perilaku Pengguna</h2>
                         <ul class="list-disc pl-5 space-y-2">
-                            <li>Melakukan tindakan yang merusak, membebani secara berlebih (*DDoS*), atau mengganggu stabilitas infrastruktur server situs.</li>
-                            <li>Memanfaatkan bot, spider, scraper, atau perangkat otomatis untuk mengambil database konten tanpa izin tertulis dari redaksi.</li>
-                            <li>Menyalahgunakan formulir kontak untuk aktivitas spamming, promosi ilegal, atau pengiriman materi berbahaya.</li>
+                            <li>Dilarang membebani atau mengganggu infrastruktur situs (misalnya DDoS).</li>
+                            <li>Dilarang memakai bot atau scraper untuk mengambil data tanpa izin tertulis.</li>
+                            <li>Dilarang menyalahgunakan tools atau formulir kontak untuk spam atau materi berbahaya.</li>
                         </ul>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Hukum yang Berlaku</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">6. Hukum yang Berlaku</h2>
                         <p>
-                            Syarat dan Ketentuan ini diatur dan ditafsirkan sesuai dengan hukum yang berlaku di Negara Kesatuan Republik Indonesia. Setiap perselisihan yang timbul sehubungan dengan penggunaan situs ini akan diselesaikan secara musyawarah untuk mencapai mufakat.
+                            Ketentuan ini diatur menurut hukum Republik Indonesia. Perselisihan diselesaikan terlebih dahulu secara musyawarah.
                         </p>
                     </section>
                 </div>
@@ -239,87 +221,41 @@
             {{-- PAGE: KONTAK --}}
             @elseif ($page === 'kontak')
                 <header class="mb-8 border-b border-zinc-100 dark:border-zinc-800/80 pb-6">
-                    <span class="inline-block text-xs uppercase tracking-widest font-bold text-amber-600 dark:text-amber-400 mb-2">Komunikasi Redaksi</span>
+                    <span class="inline-block text-xs uppercase tracking-widest font-bold text-amber-600 dark:text-amber-400 mb-2">Kontak</span>
                     <h1 class="font-serif-title text-3xl sm:text-4xl font-bold text-zinc-950 dark:text-zinc-50 leading-tight">
                         Hubungi Kami
                     </h1>
                     <p class="mt-3 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        Kami selalu terbuka untuk saran, koreksi data tempat, pengajuan ulasan, kerja sama editorial, maupun pertanyaan umum.
+                        Untuk pertanyaan umum, kemitraan, atau permintaan perubahan dan penghapusan lowongan.
                     </p>
                 </header>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-                    <div class="md:col-span-6 space-y-6 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                        <section>
-                            <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Alamat Surat Elektronik</h3>
-                            <p>Untuk pertanyaan editorial, kemitraan media, atau pertanyaan umum seputar publikasi:</p>
-                            <div class="mt-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 space-y-2">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm">
-                                        <i class="fa-solid fa-envelope"></i>
-                                    </span>
-                                    <div>
-                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Redaksi & Liputan:</div>
-                                        <a href="mailto:redaksi@disekitar.com" class="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-amber-600 dark:hover:text-amber-400">redaksi@disekitar.com</a>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3 pt-2 border-t border-zinc-200/50 dark:border-zinc-700/50">
-                                    <span class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm">
-                                        <i class="fa-solid fa-shield-halved"></i>
-                                    </span>
-                                    <div>
-                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Dukungan Teknis & Privasi:</div>
-                                        <a href="mailto:admin@disekitar.com" class="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400">admin@disekitar.com</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section>
-                            <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Koreksi Data Tempat</h3>
-                            <p>
-                                Apakah Anda adalah pengelola tempat makan, hotel, atau kafe yang diulas di DISEKITAR dan ingin memperbarui jam operasional, menu, atau informasi kontak? Cantumkan tautan artikel yang dimaksud dalam email Anda agar tim kami dapat segera memperbaruinya.
-                            </p>
-                        </section>
-
-                        <section>
-                            <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Waktu Respons</h3>
-                            <p>
-                                Tim redaksi kami berusaha menanggapi setiap surat masuk dalam kurun waktu 1x24 jam hingga 2x24 jam kerja (Senin - Jumat).
-                            </p>
-                        </section>
-                    </div>
-
-                    <div class="md:col-span-6 bg-zinc-50 dark:bg-zinc-800/40 p-6 rounded-xl border border-zinc-200/70 dark:border-zinc-700/60">
-                        <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-1">Panduan Pengajuan Tempat</h3>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-4">Ingin tempat Anda dikurasi oleh tim DISEKITAR? Kirimkan informasi berikut ke email kami:</p>
-                        
-                        <div class="space-y-3 text-xs text-zinc-600 dark:text-zinc-300">
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 text-[10px]">1</span>
-                                <div><strong>Nama & Lokasi Tempat:</strong> Nama lengkap bisnis, alamat fisik, dan tautan titik Google Maps.</div>
-                            </div>
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 text-[10px]">2</span>
-                                <div><strong>Kategori:</strong> Hotel / Kafe / Restoran / Kuliner / Destinasi Budaya.</div>
-                            </div>
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 text-[10px]">3</span>
-                                <div><strong>Cerita Unik:</strong> Apa yang membedakan tempat Anda dari tempat lainnya di kota Anda.</div>
-                            </div>
-                            <div class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold shrink-0 text-[10px]">4</span>
-                                <div><strong>Foto Berkualitas:</strong> Lampirkan beberapa dokumentasi suasana tempat dan sajian utama.</div>
+                <div class="max-w-xl space-y-6 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    <section>
+                        <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Surel</h3>
+                        <div class="mt-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm" aria-hidden="true">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </span>
+                                <a href="mailto:kontak@carikaryawan.com" class="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-amber-600 dark:hover:text-amber-400">kontak@carikaryawan.com</a>
                             </div>
                         </div>
+                    </section>
 
-                        <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700 text-center">
-                            <a href="mailto:redaksi@disekitar.com?subject=Rekomendasi%20Tempat%20Disekitar" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold text-xs hover:bg-amber-600 dark:hover:bg-amber-500 transition-colors">
-                                <i class="fa-solid fa-paper-plane"></i>
-                                Kirim Email Rekomendasi
-                            </a>
-                        </div>
-                    </div>
+                    <section>
+                        <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Perubahan atau Penghapusan Lowongan</h3>
+                        <p>
+                            Jika Anda mewakili pemberi kerja dan ingin lowongan diperbarui atau diturunkan, sertakan tautan halaman lowongan di CariKaryawan dalam email Anda.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="font-serif-title text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Waktu Respons</h3>
+                        <p>
+                            Kami berusaha menanggapi dalam 1-3 hari kerja.
+                        </p>
+                    </section>
                 </div>
 
             {{-- PAGE: DISCLAIMER --}}
@@ -336,34 +272,41 @@
 
                 <div class="prose dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 space-y-6 text-sm sm:text-base leading-relaxed">
                     <p>
-                        Seluruh materi yang dipublikasikan di situs <strong>DISEKITAR</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://disekitar.com</a>) diterbitkan dengan itikad baik untuk tujuan informasi umum dan panduan eksplorasi tempat saja.
+                        Materi di <strong>CariKaryawan</strong> (<a href="{{ url('/') }}" class="text-amber-600 dark:text-amber-400 underline">https://carikaryawan.com</a>) disediakan untuk tujuan informasi umum.
                     </p>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Keakuratan Informasi Tempat</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">1. Bukan Pemberi Kerja</h2>
                         <p>
-                            Informasi mengenai jam buka operasional, harga menu makanan, tarif kamar penginapan, ketersediaan fasilitas, nomor telepon, dan status operasional tempat usaha dapat berubah sewaktu-waktu oleh pihak manajemen bisnis tanpa pemberitahuan kepada kami. DISEKITAR tidak memberikan jaminan mutlak atas kelengkapan, keandalan, atau keakuratan mutakhir dari rincian operasional tersebut. Setiap tindakan yang Anda ambil berdasarkan informasi di situs ini merupakan risiko Anda sendiri.
+                            CariKaryawan hanya mengumpulkan dan menampilkan informasi lowongan dari sumber lain. Kami bukan pemberi kerja atau agen penyalur, dan tidak menerima lamaran. Lamaran dikirim melalui tautan asli lowongan di situs sumber.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Independensi Ulasan</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">2. Keakuratan Informasi</h2>
                         <p>
-                            Pendapat, ulasan suasana, dan deskripsi rasa atau kenyamanan yang tertuang dalam artikel merupakan pandangan subjektif dari tim kurasi editorial DISEKITAR pada saat kunjungan atau kurasi dilakukan. Pengalaman setiap individu terhadap sebuah tempat dapat berbeda-beda.
+                            Posisi, gaji, persyaratan, lokasi, dan status lowongan dapat berubah tanpa pemberitahuan. Kami tidak memverifikasi keaslian lowongan maupun perusahaan dan tidak menjamin kelengkapan atau keakuratannya. Gunakan penilaian Anda sendiri, dan waspada terhadap lowongan yang meminta pembayaran atau data sensitif.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Hak Cipta Gambar & Materi Visual</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">3. Hasil Tools Berbasis AI</h2>
                         <p>
-                            Foto-foto yang ditampilkan pada publikasi DISEKITAR berasal dari dokumentasi mandiri, materi promosi resmi tempat usaha, atau sumber terbuka dengan atribusi yang layak. Jika Anda adalah pemegang hak cipta sah atas salah satu foto yang ditampilkan dan tidak berkenan materi tersebut dimuat, silakan hubungi kami di <strong>redaksi@disekitar.com</strong> dengan menyertakan bukti kepemilikan. Kami akan segera memperbarui atribusi atau menurunkan materi tersebut dalam waktu 1x24 jam kerja.
+                            CV, surat lamaran, dan pertanyaan wawancara yang dihasilkan tools kami dibuat dengan bantuan AI dan bukan jaminan diterima kerja. Periksa dan sesuaikan sebelum digunakan.
                         </p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Tautan Eksternal</h2>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">4. Hak Cipta dan Penghapusan</h2>
                         <p>
-                            Situs ini menyediakan tautan ke situs eksternal (seperti tautan peta Google Maps, situs resmi pemesanan, atau profil media sosial pengelola tempat). Meskipun kami berupaya hanya menyediakan tautan ke situs yang bermanfaat dan beretika, kami tidak memiliki kendali atas konten dan sifat situs-situs tersebut. Pemilik situs eksternal dapat mengubah konten sebelum kami sempat menghapus tautan yang mungkin telah berubah statusnya.
+                            Hak atas konten lowongan dimiliki masing-masing sumbernya. Jika Anda pemilik konten atau pemberi kerja dan ingin lowongan diubah atau diturunkan, hubungi <strong>kontak@carikaryawan.com</strong> dengan menyertakan tautan halaman terkait.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif-title">5. Tautan Eksternal dan Afiliasi</h2>
+                        <p>
+                            Kami tidak mengendalikan konten situs eksternal yang ditautkan. Sebagian tautan dapat berupa tautan afiliasi dan ditandai <code>sponsored</code>.
                         </p>
                     </section>
                 </div>

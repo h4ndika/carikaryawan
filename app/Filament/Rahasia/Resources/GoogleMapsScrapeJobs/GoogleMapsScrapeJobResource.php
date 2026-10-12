@@ -15,15 +15,15 @@ class GoogleMapsScrapeJobResource extends Resource
 {
     protected static ?string $model = GoogleMapsScrapeJob::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Google Maps Extractor';
+    protected static string | UnitEnum | null $navigationGroup = 'Loker';
 
-    protected static ?string $navigationLabel = 'Ekstraksi Maps';
+    protected static ?string $navigationLabel = 'Ekstraksi Loker';
 
-    protected static ?string $modelLabel = 'Ekstraksi Maps';
+    protected static ?string $modelLabel = 'Ekstraksi Loker';
 
-    protected static ?string $pluralModelLabel = 'Ekstraksi Google Maps';
+    protected static ?string $pluralModelLabel = 'Ekstraksi Loker';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlassPlus;
 
     protected static ?int $navigationSort = 1;
 

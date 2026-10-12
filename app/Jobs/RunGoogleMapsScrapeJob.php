@@ -24,8 +24,7 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
     public function __construct(
         public int $scrapeJobId
     ) {
-        $engine = GoogleMapsScrapeJob::where('id', $scrapeJobId)->value('engine');
-        $this->queue = in_array($engine, ['jobstreet', 'glints']) ? 'jobs' : 'maps';
+        $this->queue = 'jobs';
     }
 
     public function handle(
@@ -66,41 +65,28 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
 
         try {
             // 3. Start Apify Actor based on engine
-            $engine = $scrapeJob->engine ?? 'google-maps';
-
-            if ($engine === 'jobstreet' || $engine === 'glints') {
-                $locationStr = $scrapeJob->location;
-                if (empty($locationStr) && $scrapeJob->city) {
-                    $locationStr = $scrapeJob->city->name;
-                }
-
-                // Bersihkan prefix administratif (KOTA, KABUPATEN, KAB., KODYA) agar dikenali oleh search API JobStreet/Glints
-                if (!empty($locationStr)) {
-                    $locationStr = trim(preg_replace('/^(KOTA|KABUPATEN|KAB\.?|KODYA)\s+/i', '', trim($locationStr)));
-                }
-
-                $runData = $apifyService->startJobCrawler(
-                    token: $token,
-                    query: $scrapeJob->query,
-                    engine: $engine,
-                    location: $locationStr,
-                    maxItems: $scrapeJob->target_limit
-                );
-            } else {
-                $locationStr = $scrapeJob->location;
-                if (empty($locationStr) && $scrapeJob->city) {
-                    $locationStr = $scrapeJob->city->name . ', Indonesia';
-                }
-
-                $runData = $apifyService->startGooglePlacesCrawler(
-                    token: $token,
-                    query: $scrapeJob->query,
-                    location: $locationStr,
-                    maxPlaces: $scrapeJob->target_limit,
-                    includeImages: $scrapeJob->include_images,
-                    includeReviews: $scrapeJob->include_reviews
-                );
+            $engine = $scrapeJob->engine;
+            if (!in_array($engine, ['jobstreet', 'glints'], true)) {
+                throw new \RuntimeException("Engine ekstraksi tidak didukung: {$engine}. Gunakan jobstreet atau glints.");
             }
+
+            $locationStr = $scrapeJob->location;
+            if (empty($locationStr) && $scrapeJob->city) {
+                $locationStr = $scrapeJob->city->name;
+            }
+
+            // Bersihkan prefix administratif (KOTA, KABUPATEN, KAB., KODYA) agar dikenali oleh search API JobStreet/Glints
+            if (!empty($locationStr)) {
+                $locationStr = trim(preg_replace('/^(KOTA|KABUPATEN|KAB\.?|KODYA)\s+/i', '', trim($locationStr)));
+            }
+
+            $runData = $apifyService->startJobCrawler(
+                token: $token,
+                query: $scrapeJob->query,
+                engine: $engine,
+                location: $locationStr,
+                maxItems: $scrapeJob->target_limit
+            );
 
             $runId = $runData['runId'];
             $datasetId = $runData['datasetId'];
@@ -159,7 +145,7 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
             $totalScraped = count($items);
             $scrapeJob->update(['total_scraped' => $totalScraped]);
 
-            // 6. If engine is jobstreet/glints, normalize items before import
+            // 6. Normalize engine items before import
             if ($engine === 'jobstreet') {
                 $items = array_map(function ($item) {
                     $pos = $item['title'] ?? 'Lowongan Kerja';
@@ -273,7 +259,7 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                 'finished_at' => now(),
             ]);
 
-            Log::error("Google Maps Scrape Job #{$this->scrapeJobId} failed: {$errorMessage}");
+            Log::error("Job extraction #{$this->scrapeJobId} failed: {$errorMessage}");
             throw $e;
         }
     }

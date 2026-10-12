@@ -2,8 +2,8 @@
 
 namespace App\Filament\Rahasia\Pages;
 
-use App\Ai\DisekitarAgent;
-use App\Ai\Tools\DisekitarDatabaseTool;
+use App\Ai\CariKaryawanAgent;
+use App\Ai\Tools\CariKaryawanDatabaseTool;
 use App\Models\AiReport as AiReportModel;
 use BackedEnum;
 use Filament\Notifications\Notification;
@@ -189,12 +189,12 @@ class AiReport extends Page
         try {
             $tools = [];
             if ($this->enableDatabaseAccess) {
-                $tools[] = new DisekitarDatabaseTool();
+                $tools[] = new CariKaryawanDatabaseTool();
             }
 
             $instructions = $this->getSystemPrompt();
 
-            $agent = new DisekitarAgent(
+            $agent = new CariKaryawanAgent(
                 instructions: $instructions,
                 messages: [],
                 tools: $tools
@@ -290,17 +290,16 @@ class AiReport extends Page
     protected function getSystemPrompt(): string
     {
         return <<<'PROMPT'
-Kamu adalah Chief Intelligence Officer & Analis Eksekutif platform direktori lokal DiSekitar.
+Kamu adalah Chief Intelligence Officer & Analis Eksekutif portal lowongan kerja CariKaryawan.
 Tugas utamamu adalah menganalisis data riil dan menyusun laporan intelijen bisnis eksekutif tingkat tinggi yang interaktif, profesional, dan berbasis visual dashboard (cards, charts, tables, recommendations).
 
-Kamu memiliki akses langsung ke database live DiSekitar melalui tool `DisekitarDatabaseTool`.
+Kamu memiliki akses langsung ke database live CariKaryawan melalui tool `CariKaryawanDatabaseTool`.
 PANDUAN DATABASE:
 - Tabel utama:
-  * `posts` (id, title, slug, city_id, category_id, status, rating, reviews_count, views_count, created_at, updated_at, ...)
+  * `posts` (hanya lowongan kerja; id, title, slug, city_id, category_id, status, views_count, created_at, updated_at, ...)
   * `cities` (id, name, slug, province_id, ...)
   * `provinces` (id, name, slug, ...)
   * `categories` (id, name, slug, ...)
-  * `landmarks` (id, name, city_id, type, latitude, longitude, ...)
   * `page_views` (id, post_id, viewed_date, ip_address, user_agent, created_at, ...)
 - Untuk menghitung views/kunjungan hari ini gunakan: `viewed_date = CURDATE()` atau `DATE(created_at) = CURDATE()`.
 - WAJIB panggil tool query SQL untuk menarik data riil agar metrik dan grafik akurat sesuai isi database!
@@ -316,7 +315,7 @@ Setelah melakukan query dan menarik data, kembalikan respon laporan akhir HANYA 
   "executive_summary": "Ringkasan eksekutif 2-4 paragraf yang menganalisis temuan penting, tren, dan temuan kunci dalam format Markdown.",
   "cards": [
     {
-      "label": "Nama Metrik (misal: Total Listing Aktif)",
+      "label": "Nama Metrik (misal: Total Loker Aktif)",
       "value": "1,840",
       "description": "Keterangan singkat metrik",
       "badge": "+15.2%",
@@ -389,7 +388,7 @@ PROMPT;
         // Fallback: If AI returned standard markdown/narrative text instead of JSON
         return [
             'title' => 'Laporan Eksekutif: ' . Str::limit($fallbackPrompt, 50),
-            'subtitle' => 'Hasil analisa otomatis data DiSekitar',
+            'subtitle' => 'Hasil analisa otomatis data CariKaryawan',
             'period_or_scope' => 'Data Terkini',
             'executive_summary' => $cleanText,
             'cards' => [],
@@ -402,7 +401,7 @@ PROMPT;
     protected function normalizeReportData(array $data): array
     {
         return [
-            'title' => $data['title'] ?? 'Laporan Eksekutif DiSekitar',
+            'title' => $data['title'] ?? 'Laporan Eksekutif CariKaryawan',
             'subtitle' => $data['subtitle'] ?? 'Analisis Intelijen Platform',
             'period_or_scope' => $data['period_or_scope'] ?? 'Data Terkini',
             'executive_summary' => $data['executive_summary'] ?? '',

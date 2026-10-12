@@ -1,6 +1,6 @@
-# DISEKITAR Tools - Development Roadmap
+# CariKaryawan Tools - Development Roadmap
 
-**Last Updated:** 2026-09-18
+**Last Updated:** 2026-10-12 (rebrand dari DISEKITAR; nama kelas `DisekitarAgent` sengaja tidak diganti)
 
 ## Status: Completed Tools
 
@@ -16,7 +16,7 @@
   - LocalStorage auto-save
   - Dark mode support
 - **Tech Stack:** Livewire, Alpine.js, Tailwind CSS, OpenAI API
-- **Model:** `cv-generate` (via DisekitarAgent)
+- **Model:** `cv-generate` (via `DisekitarAgent`, nama kelas legacy)
 
 ### 2. ✅ AI Cover Letter Generator
 - **Route:** Modal on job post pages

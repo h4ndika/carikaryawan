@@ -10,7 +10,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Cari — DISEKITAR')]
+#[Title('Cari Lowongan — CariKaryawan')]
 class Search extends Component
 {
     use WithPagination;
@@ -43,6 +43,7 @@ class Search extends Component
     {
         $query = Post::query()
             ->published()
+            ->jobs()
             ->with(['category', 'city', 'province', 'images']);
 
         $term = trim($this->q);
@@ -65,10 +66,10 @@ class Search extends Component
 
         return view('livewire.search', [
             'posts' => $query->latest('published_at')->paginate(12),
-            'categories' => Category::query()->orderBy('name')->get(['id', 'name', 'slug']),
+            'categories' => Category::query()->jobs()->orderBy('name')->get(['id', 'name', 'slug']),
             'cities' => City::query()->orderBy('name')->get(['id', 'name', 'slug']),
         ])->layout('layouts.app', [
-                    'metaDescription' => 'Cari tempat, kuliner, wisata, dan lowongan di sekitarmu.',
+                    'metaDescription' => 'Cari lowongan kerja berdasarkan posisi, kategori, dan kota di seluruh Indonesia.',
                     'metaRobots' => 'noindex,follow',
                 ]);
     }

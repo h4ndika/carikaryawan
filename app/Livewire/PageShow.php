@@ -22,28 +22,28 @@ class PageShow extends Component
     {
         $meta = match ($this->page) {
             'tentang-kami' => [
-                'title' => 'Tentang Kami — Redaksi Jurnal Kurasi Tempat',
-                'description' => 'Mengenal DISEKITAR: publikasi kurasi editorial independen yang mengangkat cerita di balik tempat, kuliner, dan kehidupan kota di Indonesia.',
+                'title' => 'Tentang Kami',
+                'description' => 'Mengenal CariKaryawan: agregator lowongan kerja Indonesia dengan tools CV, surat lamaran, dan persiapan interview.',
             ],
             'kebijakan-privasi' => [
                 'title' => 'Kebijakan Privasi (Privacy Policy)',
-                'description' => 'Kebijakan privasi DISEKITAR mengenai pengumpulan data, penggunaan kuki, dan kepatuhan Google AdSense dalam menjaga privasi pengunjung.',
+                'description' => 'Kebijakan privasi CariKaryawan mengenai pengumpulan data, penggunaan kuki, iklan, dan pemrosesan data pada tools karier.',
             ],
             'syarat-ketentuan' => [
                 'title' => 'Syarat dan Ketentuan Layanan',
-                'description' => 'Syarat dan ketentuan umum penggunaan situs dan panduan kurasi editorial di platform DISEKITAR.',
+                'description' => 'Syarat dan ketentuan penggunaan situs dan tools karier CariKaryawan.',
             ],
             'kontak' => [
-                'title' => 'Hubungi Kami — Redaksi & Layanan Informasi',
-                'description' => 'Hubungi tim redaksi DISEKITAR untuk saran, pertanyaan liputan, kemitraan, atau koreksi data tempat.',
+                'title' => 'Hubungi Kami',
+                'description' => 'Hubungi CariKaryawan untuk pertanyaan, kemitraan, atau permintaan penghapusan/koreksi lowongan.',
             ],
             'disclaimer' => [
                 'title' => 'Penafian (Disclaimer)',
-                'description' => 'Pernyataan penafian terkait keakuratan data, jam operasional, harga, dan kepemilikan hak cipta materi di DISEKITAR.',
+                'description' => 'Penafian CariKaryawan terkait keakuratan lowongan, tautan sumber asli, dan hasil tools berbasis AI.',
             ],
             default => [
                 'title' => 'Informasi',
-                'description' => 'Informasi publikasi DISEKITAR.',
+                'description' => 'Informasi CariKaryawan.',
             ],
         };
 
@@ -54,11 +54,11 @@ class PageShow extends Component
             'meta' => $meta,
         ])
             ->layout('layouts.app', [
-                'title' => $meta['title'] . ' | DISEKITAR',
+                'title' => $meta['title'] . ' | CariKaryawan',
                 'metaDescription' => $meta['description'],
                 'canonicalUrl' => $canonical,
                 'metaRobots' => 'index,follow',
             ])
-            ->title($meta['title'] . ' | DISEKITAR');
+            ->title($meta['title'] . ' | CariKaryawan');
     }
 }

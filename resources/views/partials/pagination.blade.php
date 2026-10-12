@@ -1,12 +1,12 @@
 @if ($paginator->hasPages())
     <nav role="navigation" aria-label="Navigasi Halaman" class="border-t border-zinc-200/80 dark:border-zinc-800 pt-8 pb-6 flex flex-col sm:flex-row items-center justify-between gap-5">
-        {{-- Status Counter (Menampilkan X - Y dari Z tempat) --}}
+        {{-- Status Counter (Menampilkan X - Y dari Z lowongan) --}}
         <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium order-2 sm:order-1 flex items-center gap-1.5">
             <span>Menampilkan</span>
             <span class="font-bold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-xs">{{ $paginator->firstItem() ?? 0 }} - {{ $paginator->lastItem() ?? 0 }}</span>
             <span>dari</span>
             <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $paginator->total() }}</span>
-            <span>tempat</span>
+            <span>lowongan</span>
         </div>
 
         {{-- Page Numbers & Nav Controls --}}

@@ -8,7 +8,7 @@
                 <span>Tools & Resources</span>
             </div>
             <h1 class="font-serif-title text-4xl sm:text-5xl lg:text-6xl font-bold text-zinc-950 dark:text-zinc-50 mb-6 tracking-tight">
-                Tools DISEKITAR
+                Tools CariKaryawan
             </h1>
             <p class="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
                 Kumpulan tools gratis berbasis AI untuk membantu perjalanan karir dan produktivitas Anda

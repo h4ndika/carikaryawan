@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Ai\DisekitarAgent;
+use App\Ai\CariKaryawanAgent;
 use Illuminate\Support\Facades\Log;
 
 class CvBuilderService
@@ -37,7 +37,7 @@ Instruksi:
         };
 
         try {
-            $agent = new DisekitarAgent(instructions: $systemInstruction);
+            $agent = new CariKaryawanAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
                 prompt: $prompt,
                 provider: 'openai-compatible',

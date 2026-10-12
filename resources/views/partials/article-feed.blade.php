@@ -24,7 +24,7 @@
                 @else
                     <div class="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 p-4">
                         <i class="fa-solid fa-camera text-2xl mb-1.5 text-zinc-300 dark:text-zinc-600"></i>
-                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">CARIKARYAWAN</span>
                     </div>
                 @endif
 
@@ -42,12 +42,12 @@
                     @if ($isJob)
                         <i class="fa-solid fa-briefcase text-[10px]"></i>
                     @endif
-                    <span>{{ $post->category->name ?? 'CERITA' }}</span>
+                    <span>{{ $post->category->name ?? 'LOWONGAN' }}</span>
                     @if ($post->isJob() && $post->isExpired())
                         <span class="text-red-600 dark:text-red-400 font-bold text-[10px] bg-red-50 dark:bg-red-950/50 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900">Ditutup</span>
                     @endif
                     <span class="text-zinc-300 dark:text-zinc-700">•</span>
-                    <span class="text-zinc-500 dark:text-zinc-400 font-medium">{{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
+                    <span class="text-zinc-500 dark:text-zinc-400 font-medium">{{ $post->published_at?->diffForHumans() }}</span>
                 </div>
                 
                 <h3 class="font-serif-title text-xl sm:text-2xl font-bold leading-snug text-zinc-950 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
@@ -70,7 +70,7 @@
                 <a href="{{ $post->url() }}" 
                    wire:navigate
                    class="font-semibold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 flex items-center gap-1.5 transition-colors">
-                    Baca Catatan <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    Lihat Lowongan <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
             </div>
         </div>

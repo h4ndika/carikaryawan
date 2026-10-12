@@ -19,7 +19,7 @@ class ApifyAccountResource extends Resource
 {
     protected static ?string $model = ApifyAccount::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Google Maps Extractor';
+    protected static string | UnitEnum | null $navigationGroup = 'Loker';
 
     protected static ?string $navigationLabel = 'Akun Apify';
 

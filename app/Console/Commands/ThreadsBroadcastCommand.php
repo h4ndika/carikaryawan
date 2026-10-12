@@ -2,31 +2,33 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Post;
+use App\Models\Setting;
+use App\Services\ThreadsService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('threads:broadcast {--post-id= : ID postingan spesifik yang ingin di-publish} {--article-id= : ID artikel blog spesifik yang ingin di-publish} {--type=all : Tipe konten (all, jobs, places, articles)} {--slot= : Kunci jadwal slot spesifik (slot_1, slot_2, dst)}')]
-#[Description('Publikasikan artikel blog / lowongan kerja / tempat terbaru ke akun resmi Threads')]
+#[Signature('threads:broadcast {--post-id= : ID lowongan spesifik yang ingin di-publish} {--type=jobs : Tipe konten (hanya jobs, dipertahankan agar jadwal lama tetap valid)} {--slot= : Kunci jadwal slot spesifik (slot_1, slot_2, dst)}')]
+#[Description('Publikasikan lowongan kerja terbaru ke akun resmi Threads')]
 class ThreadsBroadcastCommand extends Command
 {
     /**
      * Execute the console command.
      */
-    public function handle(\App\Services\ThreadsService $threadsService)
+    public function handle(ThreadsService $threadsService)
     {
-        $enabled = (bool) \App\Models\Setting::get('threads_auto_post_enabled', true);
+        $enabled = (bool) Setting::get('threads_auto_post_enabled', true);
         $specificPostId = $this->option('post-id');
-        $specificArticleId = $this->option('article-id');
         $slot = $this->option('slot');
 
-        if (!$enabled && !$specificPostId && !$specificArticleId) {
+        if (!$enabled && !$specificPostId) {
             $this->warn('Otomasi Threads sedang dinonaktifkan di pengaturan utama.');
             return self::SUCCESS;
         }
 
         // Cek apakah slot jadwal ini dinonaktifkan secara khusus
-        if ($slot && !\App\Models\Setting::get("threads_schedule_{$slot}_enabled", true)) {
+        if ($slot && !Setting::get("threads_schedule_{$slot}_enabled", true)) {
             $this->warn("Jadwal Threads untuk slot {$slot} sedang dinonaktifkan.");
             return self::SUCCESS;
         }
@@ -36,158 +38,35 @@ class ThreadsBroadcastCommand extends Command
             return self::FAILURE;
         }
 
-        // 1. Jika ada specific article ID yang diminta
-        if ($specificArticleId) {
-            $article = \App\Models\Article::query()->published()->find($specificArticleId);
-            if (!$article) {
-                $this->error("Artikel ID {$specificArticleId} tidak ditemukan atau belum published.");
-                return self::FAILURE;
-            }
-
-            $this->info("Memublikasikan Artikel Blog ke Threads: [ID: {$article->id}] {$article->title}");
-            try {
-                $res = $threadsService->publishArticle($article);
-                $this->info('Berhasil terbit di Threads! Thread ID: ' . ($res['id'] ?? 'N/A'));
-                return self::SUCCESS;
-            } catch (\Throwable $e) {
-                $this->error('Gagal memublikasikan ke Threads: ' . $e->getMessage());
-                return self::FAILURE;
-            }
-        }
-
-        // 2. Jika ada specific post ID yang diminta
+        // 1. Jika ada specific post ID yang diminta
         if ($specificPostId) {
-            $post = \App\Models\Post::query()->where('status', 'published')->find($specificPostId);
+            $post = Post::query()->where('status', 'published')->find($specificPostId);
             if (!$post) {
                 $this->error("Postingan ID {$specificPostId} tidak ditemukan atau belum published.");
                 return self::FAILURE;
             }
 
-            $this->info("Memublikasikan Tempat/Loker ke Threads: [ID: {$post->id}] {$post->title}");
-            try {
-                $res = $threadsService->publishPost($post);
-                $this->info('Berhasil terbit di Threads! Thread ID: ' . ($res['id'] ?? 'N/A'));
-                return self::SUCCESS;
-            } catch (\Throwable $e) {
-                $this->error('Gagal memublikasikan ke Threads: ' . $e->getMessage());
-                return self::FAILURE;
-            }
+            $this->info("Memublikasikan Loker ke Threads: [ID: {$post->id}] {$post->title}");
+            return $this->publish($threadsService, $post);
         }
 
-        // 3. Mode Antrean Otomatis Berdasarkan Tipe
-        $type = $this->option('type') ?: \App\Models\Setting::get('threads_content_type', 'all');
-
+        // 2. Mode antrean otomatis: loker aktif yang belum terbit di Threads
         // Dapatkan filter kota target (Bandung, Jakarta, Yogyakarta, Bali, dll.)
-        $targetCityIds = \App\Services\ThreadsService::getTargetCityIds();
+        $targetCityIds = ThreadsService::getTargetCityIds();
 
-        // Jika type adalah 'articles', khusus ambil artikel blog yang belum terbit di Threads
-        if ($type === 'articles') {
-            $articleQuery = \App\Models\Article::query()
-                ->published()
-                ->whereNull('posted_to_threads_at');
-
-            if (!empty($targetCityIds)) {
-                $articleQuery->where(function ($q) use ($targetCityIds) {
-                    $q->whereIn('city_id', $targetCityIds)
-                      ->orWhereNull('city_id'); // Izinkan artikel umum/nasional
-                });
-            }
-
-            $article = $articleQuery->latest('published_at')->first();
-
-            // Fallback: Jika tidak ada artikel baru di kota prioritas, ambil artikel baru dari kota manapun
-            if (!$article) {
-                $article = \App\Models\Article::query()
-                    ->published()
-                    ->whereNull('posted_to_threads_at')
-                    ->latest('published_at')
-                    ->first();
-            }
-
-            if (!$article) {
-                $this->info('Tidak ada artikel blog baru yang perlu di-broadcast ke Threads.');
-                return self::SUCCESS;
-            }
-
-            $this->info("Memublikasikan Artikel Blog ke Threads: [ID: {$article->id}] {$article->title}");
-            try {
-                $res = $threadsService->publishArticle($article);
-                $this->info('Berhasil terbit di Threads! Thread ID: ' . ($res['id'] ?? 'N/A'));
-                return self::SUCCESS;
-            } catch (\Throwable $e) {
-                $this->error('Gagal memublikasikan ke Threads: ' . $e->getMessage());
-                return self::FAILURE;
-            }
-        }
-
-        // Jika type 'all', prioritaskan artikel blog jika ada artikel baru yang belum pernah diposting
-        if ($type === 'all') {
-            $pendingArticleQuery = \App\Models\Article::query()
-                ->published()
-                ->whereNull('posted_to_threads_at');
-
-            if (!empty($targetCityIds)) {
-                $pendingArticleQuery->where(function ($q) use ($targetCityIds) {
-                    $q->whereIn('city_id', $targetCityIds)
-                      ->orWhereNull('city_id');
-                });
-            }
-
-            $pendingArticle = $pendingArticleQuery->latest('published_at')->first();
-
-            // Jika ada artikel blog yang belum pernah terbit ke Threads, bagikan artikel blog
-            if ($pendingArticle) {
-                $this->info("Memublikasikan Artikel Blog ke Threads: [ID: {$pendingArticle->id}] {$pendingArticle->title}");
-                try {
-                    $res = $threadsService->publishArticle($pendingArticle);
-                    $this->info('Berhasil terbit di Threads! Thread ID: ' . ($res['id'] ?? 'N/A'));
-                    return self::SUCCESS;
-                } catch (\Throwable $e) {
-                    $this->error('Gagal memublikasikan artikel ke Threads: ' . $e->getMessage());
-                    return self::FAILURE;
-                }
-            }
-        }
-
-        // Query default untuk Posts (Loker / Rekomendasi Tempat)
-        $query = \App\Models\Post::query()
+        $baseQuery = fn () => Post::query()
             ->where('status', 'published')
-            ->whereNull('posted_to_threads_at');
+            ->whereNull('posted_to_threads_at')
+            ->jobs()
+            ->activeJob();
 
-        if ($type === 'jobs') {
-            $query->whereHas('category', fn ($q) => $q->where('slug', 'lowongan-kerja'))
-                  ->where(function ($q) {
-                      $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
-                  });
-        } elseif ($type === 'places') {
-            $query->whereHas('category', fn ($q) => $q->where('slug', '!=', 'lowongan-kerja'));
-        }
-
-        // Terapkan filter kota prioritas trafik tinggi jika ada
-        if (!empty($targetCityIds)) {
-            $query->whereIn('city_id', $targetCityIds);
-        }
-
-        // Prioritaskan konten terbitan terbaru
-        $post = $query->latest('published_at')->first();
+        // Prioritaskan konten terbitan terbaru di kota prioritas trafik tinggi
+        $post = !empty($targetCityIds)
+            ? $baseQuery()->whereIn('city_id', $targetCityIds)->latest('published_at')->first()
+            : null;
 
         // Fallback: Jika tidak ada postingan baru di kota prioritas, ambil dari kota manapun
-        if (!$post && !empty($targetCityIds)) {
-            $fallbackQuery = \App\Models\Post::query()
-                ->where('status', 'published')
-                ->whereNull('posted_to_threads_at');
-
-            if ($type === 'jobs') {
-                $fallbackQuery->whereHas('category', fn ($q) => $q->where('slug', 'lowongan-kerja'))
-                              ->where(function ($q) {
-                                  $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
-                              });
-            } elseif ($type === 'places') {
-                $fallbackQuery->whereHas('category', fn ($q) => $q->where('slug', '!=', 'lowongan-kerja'));
-            }
-
-            $post = $fallbackQuery->latest('published_at')->first();
-        }
+        $post ??= $baseQuery()->latest('published_at')->first();
 
         if (!$post) {
             $this->info('Tidak ada postingan baru yang perlu di-broadcast ke Threads.');
@@ -196,6 +75,11 @@ class ThreadsBroadcastCommand extends Command
 
         $this->info("Memublikasikan ke Threads: [ID: {$post->id}] {$post->title}");
 
+        return $this->publish($threadsService, $post);
+    }
+
+    private function publish(ThreadsService $threadsService, Post $post): int
+    {
         try {
             $res = $threadsService->publishPost($post);
             $this->info('Berhasil terbit di Threads! Thread ID: ' . ($res['id'] ?? 'N/A'));

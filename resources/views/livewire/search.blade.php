@@ -7,10 +7,10 @@
                 Eksplorasi & Direktori
             </span>
             <h1 class="font-serif-title text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">
-                Cari Tempat & Cerita di Sekitarmu
+                Cari Lowongan Kerja
             </h1>
             <p class="mt-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Temukan ulasan kuliner autentik, rekomendasi penginapan, dan destinasi terkurasi dengan filter lokasi serta kategori.
+                Temukan lowongan kerja terbaru dengan filter kota dan kategori.
             </p>
         </header>
 
@@ -29,7 +29,7 @@
                             id="q"
                             type="search"
                             wire:model.live.debounce.400ms="q"
-                            placeholder="Ketik nama tempat, makanan, atau topik..."
+                            placeholder="Ketik posisi, perusahaan, atau kata kunci..."
                             class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/80 py-2.5 pl-9 pr-4 text-xs sm:text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition focus:border-zinc-900 dark:focus:border-zinc-400 focus:bg-white dark:focus:bg-zinc-800 focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-400"
                         >
                     </div>
@@ -84,7 +84,7 @@
             <!-- Result Meta Bar -->
             <div class="flex items-center justify-between mb-6 pb-3 border-b border-zinc-200 dark:border-zinc-800">
                 <p class="text-xs uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-400">
-                    Menampilkan <span class="text-zinc-950 dark:text-zinc-100 font-bold">{{ $posts->total() }}</span> cerita terkurasi
+                    Menampilkan <span class="text-zinc-950 dark:text-zinc-100 font-bold">{{ $posts->total() }}</span> lowongan
                 </p>
                 @if ($q || $category || $city)
                     <button wire:click="$set('q', ''); $set('category', ''); $set('city', '')" 

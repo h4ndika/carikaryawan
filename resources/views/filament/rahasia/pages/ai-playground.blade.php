@@ -472,7 +472,7 @@
                             <input type="checkbox" wire:model.live="enableDatabaseAccess" style="width: 1.15rem; height: 1.15rem; accent-color: #f59e0b; cursor: pointer;">
                         </label>
                         <div class="ai-hint" style="margin: 0; font-size: 0.72rem; line-height: 1.35;">
-                            AI membaca data real-time DiSekitar (posts, cities, categories, landmarks, page_views) via safe read-only SQL tool.
+                            AI membaca data real-time CariKaryawan (posts loker, cities, categories, page_views) via safe read-only SQL tool.
                         </div>
                     </div>
 
@@ -503,10 +503,10 @@
                         <select wire:model.live="template" class="ai-select">
                             <option value="">-- Pilih Template --</option>
                             <option value="analytics">📊 Tanya Data / Statistik Database (Live)</option>
-                            <option value="article">Artikel Ulasan & Wisata (SEO)</option>
+                            <option value="job_description">Deskripsi Lowongan (SEO)</option>
                             <option value="seo">Meta Title & Description Generator</option>
-                            <option value="summary">Ringkasan Tempat & Highlight</option>
-                            <option value="general">Asisten Umum DiSekitar</option>
+                            <option value="summary">Ringkasan Lowongan & Highlight</option>
+                            <option value="general">Asisten Umum CariKaryawan</option>
                         </select>
                     </div>
 
@@ -565,7 +565,7 @@
                             </div>
                             <h4 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; font-weight: 600; color: inherit;">AI Playground Siap</h4>
                             <p style="margin: 0; font-size: 0.875rem; max-width: 420px; line-height: 1.5;">
-                                Tulis pertanyaan atau pilih contoh pertanyaan di bawah untuk berinteraksi dengan AI DiSekitar secara live.
+                                Tulis pertanyaan atau pilih contoh pertanyaan di bawah untuk berinteraksi dengan AI CariKaryawan secara live.
                             </p>
                         </div>
                     @else
@@ -610,7 +610,7 @@
                                                 <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" x-on:click="showToolDetail = !showToolDetail">
                                                     <span style="display: flex; align-items: center; gap: 0.35rem; font-weight: 600;">
                                                         <x-heroicon-m-circle-stack class="ai-icon-sm" style="color: #059669;" />
-                                                        <span>Data diverifikasi live dari Database DiSekitar</span>
+                                                        <span>Data diverifikasi live dari Database CariKaryawan</span>
                                                     </span>
                                                     <span style="font-size: 0.7rem; text-decoration: underline; color: #047857;" x-text="showToolDetail ? 'Tutup Detail Query' : 'Lihat Query Database'"></span>
                                                 </div>
@@ -694,7 +694,7 @@
                             <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah post di kota Bandung?')" class="ai-chip">📍 Total post Bandung</button>
                             <button type="button" wire:click="$set('userPrompt', 'Tampilkan 5 kota dengan jumlah postingan terbanyak')" class="ai-chip">🏆 Top 5 Kota</button>
                             <button type="button" wire:click="$set('userPrompt', 'Berapa jumlah postingan berdasarkan kategori?')" class="ai-chip">📂 Post per Kategori</button>
-                            <button type="button" wire:click="$set('userPrompt', 'Tampilkan landmark apa saja yang ada di kota Jakarta Selatan')" class="ai-chip">🏛️ Landmark Jakarta</button>
+                            <button type="button" wire:click="$set('userPrompt', 'Tampilkan 10 lowongan kerja terbaru beserta kota dan perusahaannya')" class="ai-chip">🆕 Loker Terbaru</button>
                             <button type="button" wire:click="$set('userPrompt', 'Berapa total pengunjung page_views hari ini?')" class="ai-chip">📈 Views Hari Ini</button>
                         </div>
                     @endif
