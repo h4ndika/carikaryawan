@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class BackfillJobPlaceIdsCommand extends Command
 {
-    protected $signature = 'disekitar:backfill-job-place-ids';
+    protected $signature = 'carikaryawan:backfill-job-place-ids';
     protected $description = 'Backfill canonical place_id for existing job postings in database';
 
     public function handle(): int

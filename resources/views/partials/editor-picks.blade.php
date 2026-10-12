@@ -13,7 +13,7 @@
                 </span>
                 <div class="flex-grow">
                     <span class="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-widest block mb-1">
-                        {{ $pick->category->name ?? 'CERITA' }}
+                        {{ $pick->category->name ?? 'LOWONGAN' }}
                     </span>
                     <h4 class="font-serif-title font-bold text-sm leading-snug text-zinc-900 dark:text-zinc-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
                         {{ $pick->title }}
@@ -45,6 +45,6 @@
         </article>
         @endforeach
     @else
-        <p class="text-xs text-zinc-400 dark:text-zinc-500 py-4 text-center">Belum ada cerita pilihan.</p>
+        <p class="text-xs text-zinc-400 dark:text-zinc-500 py-4 text-center">Belum ada lowongan.</p>
     @endif
 </div>

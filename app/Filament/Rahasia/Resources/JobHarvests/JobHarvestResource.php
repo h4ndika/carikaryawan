@@ -46,10 +46,7 @@ class JobHarvestResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->where(function (Builder $query) {
-                $query->where('place_id', 'LIKE', 'job_%')
-                    ->orWhere('category_id', 7);
-            });
+            ->jobs();
     }
 
     public static function form(Schema $schema): Schema

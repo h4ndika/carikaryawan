@@ -115,7 +115,7 @@ class AnalyticsDashboard extends Page
         // Post views specifically
         $postViews = PageView::query()
             ->whereBetween('viewed_date', [$start, $end])
-            ->whereNotNull('post_id')
+            ->whereIn('post_id', Post::jobs()->select('posts.id'))
             ->count();
 
         // Today's views vs yesterday
@@ -228,7 +228,7 @@ class AnalyticsDashboard extends Page
         $rows = PageView::query()
             ->select('post_id', DB::raw('COUNT(*) as range_views'), DB::raw('COUNT(DISTINCT ip_hash) as unique_readers'))
             ->whereBetween('viewed_date', [$this->startDate, $this->endDate])
-            ->whereNotNull('post_id')
+            ->whereIn('post_id', Post::jobs()->select('posts.id'))
             ->groupBy('post_id')
             ->orderByDesc('range_views')
             ->limit($limit)
@@ -236,7 +236,7 @@ class AnalyticsDashboard extends Page
 
         if ($rows->isEmpty()) {
             // Fallback: If no page_views recorded yet, show top posts by views_count
-            return Post::query()
+            return Post::jobs()
                 ->published()
                 ->with(['category', 'city'])
                 ->orderByDesc('views_count')
@@ -259,9 +259,9 @@ class AnalyticsDashboard extends Page
         }
 
         $postIds = $rows->pluck('post_id')->all();
-        $posts = Post::query()
+        $posts = Post::jobs()
             ->with(['category', 'city'])
-            ->whereIn('id', $postIds)
+            ->whereIn('posts.id', $postIds)
             ->get()
             ->keyBy('id');
 

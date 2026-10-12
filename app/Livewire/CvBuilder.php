@@ -27,7 +27,7 @@ class CvBuilder extends Component
         return view('livewire.cv-builder', [
             'jobPost' => $this->jobPost,
         ])->layout('layouts.app', [
-            'title' => 'ATS CV & Resume Builder · Kurasi Karir DISEKITAR',
+            'title' => 'ATS CV & Resume Builder · CariKaryawan',
             'description' => 'Buat CV ATS-friendly yang rapi, profesional, dan siap cetak. Lengkapi data diri, pengalaman, pendidikan, serta keahlian dengan panduan analisis real-time.',
         ]);
     }

@@ -37,14 +37,22 @@ class Category extends Model
             || str_contains($name, 'loker');
     }
 
+    /**
+     * Limit to job categories (same case-insensitive lowongan/loker substring rule as isJob()).
+     */
+    public function scopeJobs($query)
+    {
+        return $query->where(function ($q) {
+            foreach (['slug', 'name'] as $col) {
+                $q->orWhereRaw("LOWER({$col}) LIKE ?", ['%lowongan%'])
+                  ->orWhereRaw("LOWER({$col}) LIKE ?", ['%loker%']);
+            }
+        });
+    }
+
     public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Post::class);
-    }
-
-    public function articles(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Article::class);
     }
 }
 

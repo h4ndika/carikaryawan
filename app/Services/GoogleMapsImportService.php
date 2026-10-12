@@ -29,10 +29,9 @@ class GoogleMapsImportService
     protected ?int $overrideCityId = null;
     protected ?int $overrideProvinceId = null;
     protected string $defaultStatus = 'draft';
-    protected bool $enrichPhotos = false;
 
     /**
-     * Import directly from an array of Google Maps records (e.g. from Apify Crawler)
+     * Import directly from an array of normalized job records (e.g. from Apify JobStreet/Glints crawler)
      */
     public function importFromRecords(array $records, array $options = []): array
     {
@@ -40,9 +39,6 @@ class GoogleMapsImportService
 
         if (isset($options['skip_duplicates'])) {
             $this->skipDuplicates = (bool) $options['skip_duplicates'];
-        }
-        if (isset($options['enrich_photos'])) {
-            $this->enrichPhotos = (bool) $options['enrich_photos'];
         }
         if (isset($options['category_id'])) {
             $this->defaultCategoryId = (int) $options['category_id'];
@@ -63,32 +59,6 @@ class GoogleMapsImportService
         }
 
         $this->processRecords($records);
-
-        return $this->stats;
-    }
-
-    /**
-     * Import from directory containing JSON files
-     */
-    public function importFromDirectory(string $directory): array
-    {
-        $this->resetStats();
-
-        if (!is_dir($directory)) {
-            Log::error("Directory not found: {$directory}");
-            return $this->stats;
-        }
-
-        $jsonFiles = glob($directory . '/*.json');
-
-        if (empty($jsonFiles)) {
-            Log::warning("No JSON files found in: {$directory}");
-            return $this->stats;
-        }
-
-        foreach ($jsonFiles as $filePath) {
-            $this->importFromFile($filePath);
-        }
 
         return $this->stats;
     }
@@ -191,26 +161,8 @@ class GoogleMapsImportService
                 $this->stats['imported_post_ids'][] = $postId;
             }
 
-            // Extract all Google Maps image URLs
-            $mapsImages = self::extractImageUrls($data);
-
-            // Optional multi-source scraping to enrich photos (disabled by default to prevent slow requests)
-            $combinedImages = $mapsImages;
-            if ($this->enrichPhotos && !empty($data['title'])) {
-                try {
-                    $photoScraper = app(PhotoScraperService::class);
-                    $queryStr = $data['title'];
-                    if (!empty($data['address'])) {
-                        $queryStr .= ' ' . $data['address'];
-                    }
-                    $combinedImages = $photoScraper->scrapePhotos($queryStr, 12, [
-                        'place_id' => $data['placeId'] ?? null,
-                        'existing_photos' => $mapsImages,
-                    ]);
-                } catch (\Throwable) {
-                    $combinedImages = $mapsImages;
-                }
-            }
+            // Company logo / image URLs
+            $combinedImages = self::extractImageUrls($data);
 
             // Save related data
             if ($postId) {
@@ -245,7 +197,10 @@ class GoogleMapsImportService
             ?: $this->findCategoryByName($data['category'] ?? '', $data['title'] ?? '');
 
         if (!$categoryId) {
-            $categoryId = Category::query()->first()?->id;
+            $categoryId = Category::jobs()->first()?->id;
+        }
+        if (!$categoryId || !Category::jobs()->whereKey($categoryId)->exists()) {
+            throw new \InvalidArgumentException('Import requires a lowongan/loker category.');
         }
 
         // Generate slug
@@ -259,13 +214,7 @@ class GoogleMapsImportService
         $status = $this->defaultStatus ?: 'draft';
         $publishedAt = $status === 'published' ? now() : null;
 
-        $isJob = false;
-        if ($categoryId) {
-            $cat = Category::find($categoryId);
-            if ($cat && (str_contains(strtolower($cat->slug), 'lowongan') || str_contains(strtolower($cat->slug), 'loker') || str_contains(strtolower($cat->name), 'lowongan'))) {
-                $isJob = true;
-            }
-        }
+        $isJob = $categoryId && Category::find($categoryId)?->isJob();
         $expiredAt = $isJob ? ($publishedAt ? $publishedAt->copy()->addDays(21) : now()->addDays(21)) : null;
 
         return [
@@ -283,17 +232,10 @@ class GoogleMapsImportService
             'province_id' => $provinceId,
             'city_id' => $cityId,
 
-            // Google Maps / Job fields
+            // Job fields (place_id = canonical job_ dedup key, website = original apply URL)
             'place_id' => $data['placeId'] ?? null,
-            'latitude' => $data['latitude'] ?? null,
-            'longitude' => $data['longitude'] ?? null,
             'phone' => $data['phone'] ?? null,
             'website' => $data['website'] ?? ($data['apply_url'] ?? null),
-            'rating' => $data['rating'] ?? null,
-            'reviews_count' => $data['reviewsCount'] ?? 0,
-            'google_maps_url' => $data['googleMapsUrl'] ?? null,
-            'price_level' => $data['price'] ?? null,
-            'cid' => $data['cid'] ?? null,
 
             // Use first image as thumbnail
             'thumbnail' => self::extractImageUrls($data)[0] ?? null,
@@ -349,52 +291,9 @@ class GoogleMapsImportService
                 }
             }
 
-            // Check common hospitality / culinary keywords
-            if (preg_match('/\b(hotel|resort|villa|homestay|guest house|guesthouse|inn|penginapan|hostel)\b/i', $lowerTitle)) {
-                $hotelCat = Category::where('name', 'LIKE', '%hotel%')
-                    ->orWhere('name', 'LIKE', '%penginapan%')
-                    ->orWhere('name', 'LIKE', '%stay%')
-                    ->first();
-                if ($hotelCat) return $hotelCat->id;
-            }
-
-            if (preg_match('/\b(kafe|cafe|kopi|coffee|roastery|warkop)\b/i', $lowerTitle)) {
-                $cafeCat = Category::where('name', 'LIKE', '%kafe%')
-                    ->orWhere('name', 'LIKE', '%cafe%')
-                    ->orWhere('name', 'LIKE', '%kopi%')
-                    ->first();
-                if ($cafeCat) return $cafeCat->id;
-            }
-
-            if (preg_match('/\b(resto|restoran|restaurant|warung|kuliner|bakso|mie|ayam|soto|seafood|dapur)\b/i', $lowerTitle)) {
-                $restoCat = Category::where('name', 'LIKE', '%kuliner%')
-                    ->orWhere('name', 'LIKE', '%resto%')
-                    ->orWhere('name', 'LIKE', '%makan%')
-                    ->first();
-                if ($restoCat) return $restoCat->id;
-            }
-
-            if (preg_match('/\b(wisata|taman|pantai|curug|museum|candi|waterpark|spot)\b/i', $lowerTitle)) {
-                $wisataCat = Category::where('name', 'LIKE', '%wisata%')
-                    ->orWhere('name', 'LIKE', '%destinasi%')
-                    ->orWhere('name', 'LIKE', '%rekreasi%')
-                    ->first();
-                if ($wisataCat) return $wisataCat->id;
-            }
-
-            if (preg_match('/\b(lowongan|karir|career|recruitment|rekrutmen|dibutuhkan|hiring|loker\b|job vacancy)\b/i', $lowerTitle)) {
-                $jobCat = Category::where('name', 'LIKE', '%lowongan%')
-                    ->orWhere('name', 'LIKE', '%karir%')
-                    ->orWhere('name', 'LIKE', '%loker%')
-                    ->first();
+            if (preg_match('/\b(lowongan|karir|career|recruitment|rekrutmen|dibutuhkan|hiring|loker|job vacancy)\b/i', $lowerTitle)) {
+                $jobCat = Category::jobs()->first();
                 if ($jobCat) return $jobCat->id;
-            }
-
-            if (preg_match('/\b(penitipan|bagasi|koper|shower|mandi|coworking|apotek|lounge|transit|stasiun|bandara|terminal|laundry|atm|money changer|shuttle)\b/i', $lowerTitle)) {
-                $fasilitasCat = Category::where('name', 'LIKE', '%fasilitas%')
-                    ->orWhere('name', 'LIKE', '%transit%')
-                    ->first();
-                if ($fasilitasCat) return $fasilitasCat->id;
             }
         }
 
@@ -471,40 +370,7 @@ class GoogleMapsImportService
 
         $details = [];
 
-        // Opening hours
-        if (!empty($data['openingHours'])) {
-            $details[] = [
-                'post_id' => $postId,
-                'meta_key' => 'jam_buka',
-                'meta_value' => $data['openingHours'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        // Facilities
-        if (!empty($data['facilities'])) {
-            $details[] = [
-                'post_id' => $postId,
-                'meta_key' => 'fasilitas',
-                'meta_value' => $data['facilities'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        // CID (if not stored in main post)
-        if (!empty($data['cid'])) {
-            $details[] = [
-                'post_id' => $postId,
-                'meta_key' => 'google_cid',
-                'meta_value' => $data['cid'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        // Custom details array (e.g. from Job extractor: posisi, perusahaan, gaji, dll.)
+        // Custom details array (from job extractor: posisi, perusahaan, gaji, dll.)
         if (!empty($data['details']) && is_array($data['details'])) {
             foreach ($data['details'] as $k => $v) {
                 if (!empty($v) && is_scalar($v)) {
@@ -575,15 +441,6 @@ class GoogleMapsImportService
     }
 
     /**
-     * Set enrich photos flag (external photo scraping)
-     */
-    public function setEnrichPhotos(bool $enrich): self
-    {
-        $this->enrichPhotos = $enrich;
-        return $this;
-    }
-
-    /**
      * Reset statistics
      */
     protected function resetStats(): void
@@ -598,7 +455,7 @@ class GoogleMapsImportService
     }
 
     /**
-     * Extract normalized image URLs from various Apify/Google Maps data structures.
+     * Extract normalized image URLs from various Apify job data structures.
      */
     public static function extractImageUrls(array $data): array
     {
@@ -652,7 +509,7 @@ class GoogleMapsImportService
         return array_values(array_unique(array_filter($list, function ($url) {
             if (!is_string($url) || str_starts_with($url, 'data:')) return false;
             $lower = strtolower($url);
-            return !str_contains($lower, 'favicon') && !str_contains($lower, 'logo');
+            return !str_contains($lower, 'favicon');
         })));
     }
 }

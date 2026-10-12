@@ -3,7 +3,7 @@
         <a href="{{ route('home') }}" 
            wire:navigate
            class="pb-2 {{ empty($selectedCategory) ? 'border-b-2 border-zinc-950 dark:border-zinc-100 text-zinc-950 dark:text-zinc-50 font-bold' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100' }} whitespace-nowrap transition-colors">
-            Semua Cerita
+            Semua Lowongan
         </a>
         @if (isset($categories) && $categories->count() > 0)
             @foreach ($categories as $category)

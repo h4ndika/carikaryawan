@@ -336,11 +336,11 @@
                 </div>
             </div>
 
-            {{-- Article / Post Views --}}
+            {{-- Job Post Views --}}
             <div class="analytics-card stat-card">
                 <div>
                     <div class="stat-value">{{ number_format($stats['post_views']) }}</div>
-                    <div class="stat-label">Pembaca Artikel / Post</div>
+                    <div class="stat-label">Pembaca Loker</div>
                     <div style="font-size: 0.7rem; color: #059669; margin-top: 0.25rem;">
                         {{ $stats['total_views'] > 0 ? round(($stats['post_views'] / $stats['total_views']) * 100, 1) : 0 }}% dari total kunjungan
                     </div>
@@ -403,8 +403,8 @@
             <div class="analytics-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <div>
-                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 600;">Post Paling Banyak Dilihat</h3>
-                        <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #71717a;">Peringkat artikel dan tempat ulasan terpopuler.</p>
+                        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 600;">Loker Paling Banyak Dilihat</h3>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #71717a;">Peringkat lowongan kerja terpopuler.</p>
                     </div>
                     <span class="pill-badge">Top 10</span>
                 </div>
@@ -414,7 +414,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 45px;">No</th>
-                                <th>Post / Tempat</th>
+                                <th>Lowongan</th>
                                 <th>Kategori</th>
                                 <th style="text-align: right;">Tayangan Periode</th>
                                 <th style="text-align: right;">Total Views</th>

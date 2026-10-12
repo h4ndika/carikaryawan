@@ -7,22 +7,22 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 
-class DisekitarDatabaseTool implements Tool
+class CariKaryawanDatabaseTool implements Tool
 {
     public function description(): string
     {
         return <<<'DESC'
-Execute a safe, read-only SQL query (SELECT, DESCRIBE, SHOW) on the DiSekitar database to retrieve live facts, counts, statistics, schema, and records.
+Execute a safe, read-only SQL query (SELECT, DESCRIBE, SHOW) on the CariKaryawan job-board database to retrieve live facts, counts, statistics, schema, and records.
 The available tables and exact columns are:
-- posts: id, category_id, city_id, province_id, title, slug, status ('draft','published'), rating, reviews_count, views_count, address, latitude, longitude, published_at, created_at
-- categories: id, name, slug
+- posts: job listings. id, category_id, city_id, province_id, title, slug, excerpt, content, status ('draft','published'), place_id (canonical job_ dedup key), phone, website (original apply URL), views_count, published_at, expired_at (job closes; NULL means 21 days after published_at), posted_to_threads_at, created_at, deleted_at (soft delete: add `deleted_at IS NULL`)
+- categories: id, name, slug (job categories contain 'lowongan' or 'loker')
 - cities: id, name, slug, province_id
 - provinces: id, name, slug
-- landmarks: id, city_id, province_id, name, slug, type, latitude, longitude, default_radius_km, description
 - page_views: id, post_id, path, url, ip_hash, referrer, referrer_domain, device, viewed_date, created_at
-- post_details: id, post_id, field_name, field_value
-- ai_queues: id, post_id, status ('pending','processing','completed','failed'), error, created_at
-- photo_scrape_jobs: id, post_id, status ('pending','processing','completed','failed'), photos_count, created_at
+- post_details: id, post_id, meta_key, meta_value (e.g. posisi, perusahaan, lokasi, gaji, tipe_pekerjaan, cara_melamar)
+- post_images: id, post_id, image_url, caption, order
+- ai_generation_jobs: id, post_id, post_title, status ('pending','processing','completed','failed'), error_message, started_at, finished_at, created_at
+- google_maps_scrape_jobs: id, engine ('jobstreet','glints'), query, location, city_id, category_id, status, total_scraped, total_imported, total_updated, total_skipped, total_failed, error_message, created_at (job extraction runs)
 
 Important Schema Notes:
 - page_views: to query views by date, use `viewed_date = CURDATE()` (e.g. `SELECT COUNT(*) FROM page_views WHERE viewed_date = CURDATE()`) or `DATE(created_at) = CURDATE()`. The column `visited_at` DOES NOT EXIST, use `viewed_date` or `created_at`.

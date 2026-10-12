@@ -9,7 +9,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-#[Title('DISEKITAR — Apa saja di sekitarmu')]
+#[Title('CariKaryawan — Lowongan Kerja Terbaru di Seluruh Indonesia')]
 class Home extends Component
 {
     #[Url(as: 'category', history: true)]
@@ -43,13 +43,14 @@ class Home extends Component
     {
         $postQuery = Post::query()
             ->published()
+            ->jobs()
             ->with(['category', 'city', 'province', 'images']);
 
         if ($this->selectedCategory !== '') {
             $postQuery->whereHas('category', fn($q) => $q->where('slug', $this->selectedCategory));
         }
 
-        $categories = Category::query()->orderBy('name')->get();
+        $categories = Category::query()->jobs()->orderBy('name')->get();
 
         // Resolve slug ke nama kategori yang sebenarnya
         $activeCategoryName = '';
@@ -65,8 +66,8 @@ class Home extends Component
                     '@type' => 'WebSite',
                     '@id' => $siteUrl . '#website',
                     'url' => $siteUrl,
-                    'name' => 'DISEKITAR',
-                    'description' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',
+                    'name' => 'CariKaryawan',
+                    'description' => 'Agregator lowongan kerja terbaru di seluruh Indonesia, lengkap dengan tools CV, surat lamaran, dan persiapan interview.',
                     'inLanguage' => 'id-ID',
                     'potentialAction' => [
                         '@type' => 'SearchAction',
@@ -80,7 +81,7 @@ class Home extends Component
                 [
                     '@type' => 'Organization',
                     '@id' => $siteUrl . '#organization',
-                    'name' => 'DISEKITAR',
+                    'name' => 'CariKaryawan',
                     'url' => $siteUrl,
                     'logo' => [
                         '@type' => 'ImageObject',
@@ -96,7 +97,7 @@ class Home extends Component
             'categories' => $categories,
             // Limit kota untuk select (full list berat). Prioritas kota yang punya post.
             'cities' => City::query()
-                ->whereHas('posts', fn($q) => $q->published())
+                ->whereHas('posts', fn($q) => $q->published()->jobs())
                 ->orderBy('name')
                 ->limit(200)
                 ->get()
@@ -105,16 +106,9 @@ class Home extends Component
                 ->latest('published_at')
                 ->limit(12)
                 ->get(),
-            'prioritizeArticles' => (bool) \App\Models\Setting::get('home_prioritize_articles', false),
-            'latestArticles' => \App\Models\Article::query()
-                ->published()
-                ->with(['city', 'category'])
-                ->latest('published_at')
-                ->limit(7)
-                ->get(),
         ])->layout('layouts.app', [
             'canonicalUrl' => $siteUrl,
-            'metaDescription' => 'Jurnal & panduan editorial lokal untuk menemukan tempat, kuliner, wisata, dan cerita bermakna di sekitarmu.',
+            'metaDescription' => 'Agregator lowongan kerja terbaru di seluruh Indonesia. Temukan loker per kota dan kategori, lalu lamar langsung ke sumber aslinya.',
             'ogImage' => asset('android-chrome-512x512.png'),
             'jsonLd' => $jsonLd,
         ]);

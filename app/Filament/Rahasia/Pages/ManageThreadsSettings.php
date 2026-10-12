@@ -47,14 +47,12 @@ class ManageThreadsSettings extends Page
             'threads_chain_posts' => Setting::get('threads_chain_posts', 4),
             'threads_user_id' => Setting::get('threads_user_id', config('services.threads.user_id', '')),
             'threads_access_token' => Setting::get('threads_access_token', config('services.threads.access_token', '')),
-            'threads_content_type' => Setting::get('threads_content_type', 'all'),
+            'threads_content_type' => 'jobs',
             'threads_target_cities' => $targetCities,
             'threads_schedule_slot_1_enabled' => (bool) Setting::get('threads_schedule_slot_1_enabled', true),
             'threads_schedule_slot_2_enabled' => (bool) Setting::get('threads_schedule_slot_2_enabled', true),
-            'threads_schedule_slot_3_enabled' => (bool) Setting::get('threads_schedule_slot_3_enabled', true),
             'threads_schedule_slot_4_enabled' => (bool) Setting::get('threads_schedule_slot_4_enabled', true),
             'threads_schedule_slot_5_enabled' => (bool) Setting::get('threads_schedule_slot_5_enabled', true),
-            'threads_schedule_slot_6_enabled' => (bool) Setting::get('threads_schedule_slot_6_enabled', true),
         ]);
     }
 
@@ -89,7 +87,7 @@ class ManageThreadsSettings extends Page
                             ->visible(fn (Get $get): bool => (bool) $get('threads_chain_mode_enabled')),
                     ]),
 
-                Section::make('Jadwal Harian Posting (6 Slot)')
+                Section::make('Jadwal Harian Posting (4 Slot Lowongan Kerja)')
                     ->description('Pilih slot jam posting mana saja yang ingin diaktifkan atau diistirahatkan.')
                     ->icon(Heroicon::OutlinedClock)
                     ->columns(2)
@@ -102,10 +100,6 @@ class ManageThreadsSettings extends Page
                             ->label('☀️ Menjelang Siang (10:30 WIB)')
                             ->helperText('Konten: Lowongan Kerja Terbaru #2'),
 
-                        Toggle::make('threads_schedule_slot_3_enabled')
-                            ->label('🍽️ Istirahat Siang (12:30 WIB)')
-                            ->helperText('Konten: Rekomendasi Tempat (Kuliner, Kafe, Wisata)'),
-
                         Toggle::make('threads_schedule_slot_4_enabled')
                             ->label('☕ Sore Hari (15:30 WIB)')
                             ->helperText('Konten: Lowongan Kerja Terbaru #3'),
@@ -113,14 +107,10 @@ class ManageThreadsSettings extends Page
                         Toggle::make('threads_schedule_slot_5_enabled')
                             ->label('🚌 Pulang Kerja (18:30 WIB)')
                             ->helperText('Konten: Lowongan Kerja Terbaru #4'),
-
-                        Toggle::make('threads_schedule_slot_6_enabled')
-                            ->label('🌙 Santai Malam (20:30 WIB)')
-                            ->helperText('Konten: Artikel Blog & Panduan Kurasi'),
                     ]),
 
                 Section::make('Kredensial Meta Threads API')
-                    ->description('Akun pengembang Meta resmi untuk memublikasikan konten otomatis ke profil Threads @disekitarcom.')
+                    ->description('Akun pengembang Meta resmi untuk memublikasikan konten otomatis ke profil Threads CariKaryawan.')
                     ->icon(Heroicon::OutlinedKey)
                     ->schema([
                         TextInput::make('threads_user_id')
@@ -137,15 +127,12 @@ class ManageThreadsSettings extends Page
                             ->helperText('Token akses Threads yang valid.'),
 
                         Select::make('threads_content_type')
-                            ->label('Kategori Konten yang Diprioritaskan')
-                            ->options([
-                                'all' => 'Semua Konten (Blog Artikel, Lowongan Kerja & Tempat Rekomendasi)',
-                                'articles' => 'Hanya Artikel Blog (Panduan & Listicle)',
-                                'jobs' => 'Hanya Lowongan Kerja (Loker)',
-                                'places' => 'Hanya Tempat & Rekomendasi (Kafe, Hotel, Resto, Wisata)',
-                            ])
-                            ->default('all')
-                            ->helperText('Pilih jenis konten yang ingin dibagikan secara otomatis ke linimasa Threads.'),
+                            ->label('Jenis Konten')
+                            ->options(['jobs' => 'Lowongan Kerja (Loker)'])
+                            ->default('jobs')
+                            ->disabled()
+                            ->dehydrated()
+                            ->helperText('Otomasi Threads hanya membagikan lowongan kerja.'),
 
                         Select::make('threads_target_cities')
                             ->label('Kota Target untuk Otomasi Post')
@@ -188,8 +175,6 @@ class ManageThreadsSettings extends Page
                                         ->label('Topik Bahasan')
                                         ->options([
                                             'loker' => 'Lowongan Kerja / Karier / Interview',
-                                            'kuliner' => 'Kuliner / Tempat Makan / Kafe',
-                                            'wisata' => 'Wisata / Rekomendasi Tempat Lokal',
                                             'umum' => 'Santai / Percakapan Komunitas Umum',
                                         ])
                                         ->default('loker')
@@ -226,7 +211,7 @@ class ManageThreadsSettings extends Page
                                 ->action('sendTestPost')
                                 ->requiresConfirmation()
                                 ->modalHeading('Kirim Tes Publikasi ke Threads')
-                                ->modalDescription('Aksi ini mengirim postingan nyata ke @disekitarcom: 2 post pada mode biasa, atau 3–6 post saat mode chain aktif. Pengaturan formulir akan disimpan terlebih dahulu.'),
+                                ->modalDescription('Aksi ini mengirim postingan nyata ke akun Threads CariKaryawan: 2 post pada mode biasa, atau 3–6 post saat mode chain aktif. Pengaturan formulir akan disimpan terlebih dahulu.'),
                         ]),
                     ]),
             ]);
@@ -258,18 +243,18 @@ class ManageThreadsSettings extends Page
         try {
             $targetCityIds = ThreadsService::getTargetCityIds();
 
-            $query = \App\Models\Post::query()->where('status', 'published');
+            $query = \App\Models\Post::jobs()->where('status', 'published');
             if (!empty($targetCityIds)) {
                 $query->whereIn('city_id', $targetCityIds);
             }
 
             $post = $query->latest('published_at')->first() 
-                ?: \App\Models\Post::query()->where('status', 'published')->latest('published_at')->first();
+                ?: \App\Models\Post::jobs()->where('status', 'published')->latest('published_at')->first();
 
             if (!$post) {
                 Notification::make()
                     ->title('Tidak Ada Postingan')
-                    ->body('Belum ada postingan dengan status published untuk di-test.')
+                    ->body('Belum ada lowongan dengan status published untuk di-test.')
                     ->warning()
                     ->send();
                 return;

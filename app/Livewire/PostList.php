@@ -31,6 +31,9 @@ class PostList extends Component
             $this->category = Category::query()->where('slug', $categorySlug)->firstOrFail();
         }
 
+        // Only job categories are public.
+        abort_unless($this->category->isJob(), 404);
+
         if ($city instanceof City) {
             $this->city = $city;
             $this->citySlug = $city->slug;
@@ -72,12 +75,12 @@ class PostList extends Component
             ->get();
 
         $title = $this->citySlug 
-            ? $this->category->name . ' di ' . $this->city->name . ' — DISEKITAR'
-            : $this->category->name . ' — DISEKITAR';
+            ? $this->category->name . ' di ' . $this->city->name . ' — CariKaryawan'
+            : $this->category->name . ' — CariKaryawan';
 
         $metaDescription = $this->citySlug
-            ? "Temukan kurasi rekomendasi {$this->category->name} terbaik dan terpopuler di {$this->city->name}. Ulasan lengkap, alamat, rating, dan info terdekat."
-            : "Kumpulan kurasi editorial {$this->category->name} terbaik di berbagai kota di Indonesia. Temukan pilihan menarik dan terpercaya di sekitarmu.";
+            ? "Lowongan {$this->category->name} terbaru di {$this->city->name}. Lihat posisi, perusahaan, dan lamar langsung lewat tautan sumber aslinya."
+            : "Lowongan {$this->category->name} terbaru di berbagai kota di Indonesia. Lihat posisi, perusahaan, dan lamar lewat tautan sumber aslinya.";
 
         $canonicalUrl = $this->citySlug
             ? route('posts.list', ['category' => $this->category->slug, 'city' => $this->city->slug])

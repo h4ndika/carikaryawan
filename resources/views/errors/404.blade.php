@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>404 — Halaman Tidak Ditemukan | DISEKITAR</title>
+    <title>404 — Halaman Tidak Ditemukan | CariKaryawan</title>
     <meta name="robots" content="noindex,follow">
 
     <!-- Fonts -->
@@ -32,7 +32,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="group flex items-center gap-2.5">
                 <span class="font-serif-title text-2xl font-bold tracking-tight text-zinc-950 dark:text-white group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
-                    DISEKITAR<span class="text-amber-800 dark:text-amber-400">.</span>
+                    CariKaryawan<span class="text-amber-800 dark:text-amber-400">.</span>
                 </span>
             </a>
 
@@ -66,7 +66,7 @@
                     Jejak Terputus di Sini.
                 </h1>
                 <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                    Kategori, kota, atau catatan kurasi yang kamu tuju belum terbit atau mungkin sudah dipindahkan ke tempat lain.
+                    Halaman atau lowongan yang kamu tuju tidak ditemukan, mungkin sudah ditutup atau dipindahkan.
                 </p>
             </div>
 
@@ -80,14 +80,14 @@
                 <a href="{{ route('search') }}" 
                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-6 py-3 text-xs uppercase tracking-wider font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                    Jelajah Cerita
+                    Cari Lowongan
                 </a>
             </div>
 
             <!-- Subtle Hint -->
             <div class="pt-8 border-t border-zinc-200/80 dark:border-zinc-800/80">
                 <p class="text-xs text-zinc-400 dark:text-zinc-500">
-                    Ketik kata kunci nama tempat, kuliner, atau kota di menu pencarian untuk menemukan ulasan terkait.
+                    Ketik posisi, perusahaan, atau kota di menu pencarian untuk menemukan lowongan terkait.
                 </p>
             </div>
         </div>
@@ -95,7 +95,7 @@
 
     <!-- Minimal Footer -->
     <footer class="w-full border-t border-zinc-200/80 dark:border-zinc-800/80 py-6 text-center text-xs text-zinc-400 dark:text-zinc-500">
-        <p>&copy; {{ date('Y') }} DISEKITAR. Jurnal & direktori kurasi lokal nusantara.</p>
+        <p>&copy; {{ date('Y') }} CariKaryawan. Agregator lowongan kerja Indonesia.</p>
     </footer>
 
     <!-- Theme Toggle Function -->

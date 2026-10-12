@@ -1,7 +1,7 @@
 {
-  "name": "disekitar-job-extractor",
+  "name": "carikaryawan-job-extractor",
   "version": "1.0.0",
-  "description": "Scraper & normalizer untuk Lowongan Kerja Lokal DiSekitar (Google Jobs & Instagram Loker)",
+  "description": "Scraper & normalizer untuk Lowongan Kerja Lokal CariKaryawan (Google Jobs & Instagram Loker)",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 /**
  * Normalizer modul untuk menyeragamkan output data loker dari berbagai engine (Google Jobs & Instagram)
- * ke format standar JSON DiSekitar.
+ * ke format standar JSON CariKaryawan.
  */
 
 export function normalizeGoogleJob(item) {

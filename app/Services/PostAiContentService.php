@@ -18,26 +18,20 @@ use Throwable;
 class PostAiContentService
 {
     /**
-     * Build standard prompt for a Post model.
+     * Build the job-listing prompt for a Post model.
      */
     public function buildPrompt(Post $post, ?string $additionalPrompt = null): string
     {
         $post->loadMissing(['category', 'city', 'province']);
 
-        $categoryName = $post->category?->name ?? 'Tempat Menarik';
         $cityName = $post->city?->name ?? '';
         $provinceName = $post->province?->name ?? '';
         $title = $post->title;
-
-        $promptUser = $additionalPrompt ?: 'Deskripsikan dengan format Tentang, Fasilitas, Lokasi, dan Harga/Informasi Praktis.';
 
         // Build context from existing metadata if present
         $extraContext = [];
         if ($post->formatted_address) {
             $extraContext[] = "Alamat: {$post->formatted_address}";
-        }
-        if ($post->rating) {
-            $extraContext[] = "Rating: {$post->rating} ({$post->reviews_count} ulasan)";
         }
         if ($post->phone) {
             $extraContext[] = "Telepon: {$post->phone}";
@@ -45,61 +39,39 @@ class PostAiContentService
         if ($post->website) {
             $extraContext[] = "Website: {$post->website}";
         }
-        $isJob = $post->isJob();
-        if ($isJob) {
-            $post->loadMissing('details');
-            $existingDetails = $post->details->pluck('meta_value', 'meta_key')->toArray();
-            $existingDesc = trim(strip_tags($post->content));
-            if (!empty($existingDesc)) {
-                $extraContext[] = "Deskripsi Lowongan Asli dari Perusahaan: " . Str::limit($existingDesc, 800);
-            }
-            if (!empty($existingDetails['cara_melamar'])) {
-                $extraContext[] = "Cara Melamar Asli: " . $existingDetails['cara_melamar'];
-            }
+
+        $post->loadMissing('details');
+        $existingDetails = $post->details->pluck('meta_value', 'meta_key')->toArray();
+        $existingDesc = trim(strip_tags($post->content));
+        if (!empty($existingDesc)) {
+            $extraContext[] = "Deskripsi Lowongan Asli dari Perusahaan: " . Str::limit($existingDesc, 800);
+        }
+        if (!empty($existingDetails['cara_melamar'])) {
+            $extraContext[] = "Cara Melamar Asli: " . $existingDetails['cara_melamar'];
         }
 
         $extraContextStr = !empty($extraContext) ? 'Informasi pelengkap: ' . implode(' | ', $extraContext) . '.' : '';
 
-        if ($isJob) {
-            return "Buatkan artikel lowongan kerja yang sangat informatif, profesional, dan rapi untuk posisi dan perusahaan: \"$title\", yang berlokasi di $cityName, $provinceName. " .
-                ($extraContextStr ? "$extraContextStr " : '') .
-                'Tulis dengan bahasa Indonesia yang jelas, menarik bagi pencari kerja, dan terstruktur rapi. ' .
-                'Gunakan susunan subjudul: <h2>Ringkasan Lowongan</h2>, <h3>Kualifikasi & Persyaratan</h3>, <h3>Tanggung Jawab Pekerjaan</h3>, dan <h3>Benefit & Cara Melamar</h3>. ' .
-                'PENTING & WAJIB TERKAIT TAUTAN/URL: ' .
-                'Pada bagian Cara Melamar, JANGAN melampirkan atau menuliskan URL tautan mentah (raw link seperti https://glints.com/..., https://jobstreet.co.id/..., linkedin, dll.). ' .
-                'Sebagai gantinya, arahkan pembaca untuk mengklik tombol resmi "Lamar Sekarang" yang tersedia di halaman informasi lowongan ini, serta siapkan berkas CV/portofolio terbaik mereka. ' .
-                'Langsung mulai dengan judul artikel menggunakan tag <h2>. JANGAN berikan teks pengantar, instruksi, atau salam pembuka/penutup. ' .
-                'Format dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), tanpa blok markdown/backticks. ' .
-                'Sertakan juga data detail terstruktur dalam format JSON di akhir output, dibungkus tag <json>...</json>: ' .
-                'Format JSON: ' .
-                '{
-                    "posisi": "Nama Posisi",
-                    "perusahaan": "Nama Perusahaan",
-                    "lokasi": "' . ($cityName ?: 'Indonesia') . '",
-                    "gaji": "Perkiraan / Negosiasi / Kisaran Gaji",
-                    "kualifikasi": "Ringkasan kualifikasi utama",
-                    "tipe_pekerjaan": "Full Time / Kontrak / Part Time / Magang"
-                } ' .
-                ($additionalPrompt ? "Prompt tambahan: $additionalPrompt" : '');
-        }
-
-        return "Buatkan artikel editorial menarik dengan Judul : \"$title\", yang berlokasi di $cityName, $provinceName. " .
-            "Artikel ini berkategori $categoryName. " .
+        return "Buatkan artikel lowongan kerja yang sangat informatif, profesional, dan rapi untuk posisi dan perusahaan: \"$title\", yang berlokasi di $cityName, $provinceName. " .
             ($extraContextStr ? "$extraContextStr " : '') .
-            'Tulis dengan bahasa Indonesia yang natural, informatif, dan mengalir seperti majalah perjalanan/lifestyle terpercaya. ' .
-            'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2> atau <h1>. JANGAN berikan teks pengantar, penjelasan instruksi, pemikiran, atau salam pembuka/penutup. ' .
-            'Format artikel dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), jangan gunakan blok markdown atau backticks. ' .
-            'Tambahkan juga data detail dalam format JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal: ' .
-            '- Kategori Hotel, Wisata, Kuliner dll : harga, lokasi, jam_buka, fasilitas, rekomendasi ' .
-            '- Kategori Fasilitas Publik / Transit: jam_operasional, tarif, akses_stasiun_bandara, fasilitas_tersedia, tips_transit ' .
-            '- atau key spesifik lainnya yang relevan dengan topik ini. ' .
+            'Tulis dengan bahasa Indonesia yang jelas, menarik bagi pencari kerja, dan terstruktur rapi. ' .
+            'Gunakan susunan subjudul: <h2>Ringkasan Lowongan</h2>, <h3>Kualifikasi & Persyaratan</h3>, <h3>Tanggung Jawab Pekerjaan</h3>, dan <h3>Benefit & Cara Melamar</h3>. ' .
+            'PENTING & WAJIB TERKAIT TAUTAN/URL: ' .
+            'Pada bagian Cara Melamar, JANGAN melampirkan atau menuliskan URL tautan mentah (raw link seperti https://glints.com/..., https://jobstreet.co.id/..., linkedin, dll.). ' .
+            'Sebagai gantinya, arahkan pembaca untuk mengklik tombol resmi "Lamar Sekarang" yang tersedia di halaman informasi lowongan ini, serta siapkan berkas CV/portofolio terbaik mereka. ' .
+            'Langsung mulai dengan judul artikel menggunakan tag <h2>. JANGAN berikan teks pengantar, instruksi, atau salam pembuka/penutup. ' .
+            'Format dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), tanpa blok markdown/backticks. ' .
+            'Sertakan juga data detail terstruktur dalam format JSON di akhir output, dibungkus tag <json>...</json>: ' .
             'Format JSON: ' .
             '{
-                "key1": "value1",
-                "key2": "value2"
+                "posisi": "Nama Posisi",
+                "perusahaan": "Nama Perusahaan",
+                "lokasi": "' . ($cityName ?: 'Indonesia') . '",
+                "gaji": "Perkiraan / Negosiasi / Kisaran Gaji",
+                "kualifikasi": "Ringkasan kualifikasi utama",
+                "tipe_pekerjaan": "Full Time / Kontrak / Part Time / Magang"
             } ' .
-            (stripos($categoryName, 'fasilitas') !== false ? 'Untuk kategori Fasilitas/Transit ini, fokuskan konten sebagai panduan transit survival: jelaskan jarak/kemudahan akses dari pintu stasiun/bandara, ketersediaan colokan/wifi/loker/mandi, dan tips praktis saat transit. ' : '') .
-            "Prompt tambahan: $promptUser";
+            ($additionalPrompt ? "Prompt tambahan: $additionalPrompt" : '');
     }
 
     /**
@@ -207,7 +179,7 @@ class PostAiContentService
             ->post($endpoint, [
                 'model' => $model,
                 'messages' => [
-                    ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
+                    ['role' => 'system', 'content' => 'Kamu adalah editor konten lowongan kerja profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
                     ['role' => 'user', 'content' => $finalPrompt],
                 ],
                 'temperature' => 0.7,
@@ -292,7 +264,7 @@ class PostAiContentService
                         ->post($endpoint, [
                             'model' => $model,
                             'messages' => [
-                                ['role' => 'system', 'content' => 'Kamu adalah jurnalis dan editor konten profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
+                                ['role' => 'system', 'content' => 'Kamu adalah editor konten lowongan kerja profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/thinking, tanpa kata pembuka, dan tanpa penutup.'],
                                 ['role' => 'user', 'content' => $prompt],
                             ],
                             'temperature' => 0.7,

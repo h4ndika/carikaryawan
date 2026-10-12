@@ -3,7 +3,7 @@ import { readFile, stat, readdir, unlink, writeFile } from 'node:fs/promises';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { scrapeJobs, resolveApifyToken, getAvailableApifyAccounts, ENGINE_GOOGLE_JOBS, ENGINE_INSTAGRAM } from '../scraper.js';
+import { scrapeJobs, resolveApifyToken, ENGINE_GOOGLE_JOBS, ENGINE_INSTAGRAM } from '../scraper.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -145,7 +145,6 @@ const server = createServer(async (req, res) => {
         const files = await getOutputFilesList();
         const totalJobs = files.reduce((acc, f) => acc + (f.itemCount || 0), 0);
         const { token } = resolveApifyToken();
-        const availableAccounts = getAvailableApifyAccounts();
 
         return jsonResponse(res, 200, {
           totalFiles: files.length,
@@ -153,24 +152,15 @@ const server = createServer(async (req, res) => {
           isScraping,
           hasToken: !!token,
           maskedToken: token ? `${token.slice(0, 6)}...${token.slice(-4)}` : null,
-          availableAccountsCount: availableAccounts.length,
           defaultEngine: ENGINE_GOOGLE_JOBS,
         });
-      }
-
-      // GET /api/accounts — Ambil akun Apify aktif dari SQLite google-map-extractor
-      if (pathname === '/api/accounts' && req.method === 'GET') {
-        const accounts = getAvailableApifyAccounts();
-        return jsonResponse(res, 200, { accounts });
       }
 
       // GET /api/locations — Autocomplete kota / kabupaten / provinsi Indonesia
       if (pathname === '/api/locations' && req.method === 'GET') {
         const search = (parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('search') || '').toLowerCase().trim();
         const candidates = [
-          path.resolve(ROOT, '..', 'google-map-extractor', 'src', 'data', 'locations.json'),
-          path.resolve(ROOT, 'src', 'data', 'locations.json'),
-          '/var/www/html/tools/google-map-extractor/src/data/locations.json'
+          path.resolve(ROOT, 'src', 'data', 'locations.json')
         ];
 
         let list = [];
@@ -235,12 +225,9 @@ const server = createServer(async (req, res) => {
         const location = body.location ? body.location.trim() : '';
         const maxItems = parseInt(body.maxItems, 10) || 20;
         const customToken = body.token || null;
-        const accountMode = body.accountMode || 'auto';
-        const accountId = accountMode === 'manual' && body.accountId ? Number(body.accountId) : null;
-        const rotateAccount = accountMode === 'auto';
 
         isScraping = true;
-        broadcastLog('info', `🚀 Memulai ekstraksi: Engine = ${engine}, Query = "${query}"${location ? `, Lokasi = "${location}"` : ''}, Limit = ${maxItems}, Mode Akun = ${accountMode}${accountId ? ` (#${accountId})` : ''}`);
+        broadcastLog('info', `🚀 Memulai ekstraksi: Engine = ${engine}, Query = "${query}"${location ? `, Lokasi = "${location}"` : ''}, Limit = ${maxItems}`);
 
         // Run scraper asynchronously
         (async () => {
@@ -251,8 +238,6 @@ const server = createServer(async (req, res) => {
               location,
               maxItems,
               token: customToken,
-              accountId,
-              rotateAccount,
               outputDir: OUTPUT_DIR,
               onLog: (level, msg) => broadcastLog(level, msg)
             });
@@ -268,7 +253,7 @@ const server = createServer(async (req, res) => {
         return jsonResponse(res, 202, {
           success: true,
           message: 'Scraping lowongan kerja dimulai di background',
-          params: { engine, query, location, maxItems, accountMode, accountId }
+          params: { engine, query, location, maxItems }
         });
       }
 

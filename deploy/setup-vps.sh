@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# DISEKITAR.COM - Production VPS Setup Script (Ubuntu 24.04 LTS)
+# CARIKARYAWAN.COM - Production VPS Setup Script (Ubuntu 24.04 LTS)
 # Stack: Nginx + PHP 8.3 FPM + MariaDB/MySQL + Redis + Node.js 20 + Supervisor + Composer
 # ==============================================================================
 
@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${BLUE}   🚀 Starting DISEKITAR.COM Production VPS Setup    ${NC}"
+echo -e "${BLUE}   🚀 Starting CARIKARYAWAN.COM Production VPS Setup    ${NC}"
 echo -e "${BLUE}======================================================${NC}"
 
 # 1. Check Root
@@ -23,11 +23,22 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-DOMAIN="disekitar.com"
-APP_DIR="/var/www/disekitar"
-DB_NAME="disekitar"
-DB_USER="disekitar_user"
-DB_PASS="DisekitarSecurePass2026!"
+# 2. Require DB_PASS from the environment BEFORE any install/action (never hardcode it).
+#    Usage: sudo DB_PASS='<strong-password>' bash deploy/setup-vps.sh
+if [ -z "${DB_PASS:-}" ]; then
+  echo -e "${RED}❌ DB_PASS belum di-set. Jalankan: sudo DB_PASS='<password-kuat>' bash $0${NC}"
+  exit 1
+fi
+# Password disisipkan ke SQL dan sed; hanya izinkan karakter aman.
+if ! [[ "$DB_PASS" =~ ^[A-Za-z0-9@%+=:,._!-]{12,}$ ]]; then
+  echo -e "${RED}❌ DB_PASS harus >= 12 karakter dari set A-Z a-z 0-9 @ % + = : , . _ ! -${NC}"
+  exit 1
+fi
+
+DOMAIN="carikaryawan.com"
+APP_DIR="/var/www/carikaryawan"
+DB_NAME="carikaryawan"
+DB_USER="carikaryawan_user"
 
 echo -e "\n${YELLOW}▶ Step 1: Updating system packages...${NC}"
 export DEBIAN_FRONTEND=noninteractive
@@ -93,8 +104,8 @@ cat > /etc/nginx/sites-available/${DOMAIN} << 'EOF'
 server {
     listen 80;
     listen [::]:80;
-    server_name disekitar.com www.disekitar.com;
-    root /var/www/disekitar/public;
+    server_name carikaryawan.com www.carikaryawan.com;
+    root /var/www/carikaryawan/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -144,7 +155,7 @@ chmod 700 /root/.ssh 2>/dev/null || true
 chmod 600 /root/.ssh/id_ed25519 2>/dev/null || true
 ssh-keyscan -t ed25519,rsa github.com >> /root/.ssh/known_hosts 2>/dev/null || true
 if [ ! -d "${APP_DIR}" ]; then
-  git clone git@github.com:h4ndika/disekitar.git ${APP_DIR}
+  git clone git@github.com:h4ndika/carikaryawan.git ${APP_DIR}
 else
   cd ${APP_DIR} && git pull origin main
 fi
@@ -155,7 +166,7 @@ cp -n .env.example .env || true
 # Set production env settings
 sed -i "s|APP_ENV=.*|APP_ENV=production|" .env
 sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|" .env
-sed -i "s|APP_URL=.*|APP_URL=https://disekitar.com|" .env
+sed -i "s|APP_URL=.*|APP_URL=https://carikaryawan.com|" .env
 sed -i "s|DB_DATABASE=.*|DB_DATABASE=${DB_NAME}|" .env
 sed -i "s|DB_USERNAME=.*|DB_USERNAME=${DB_USER}|" .env
 sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${DB_PASS}|" .env
@@ -184,10 +195,10 @@ php artisan view:cache
 php artisan icons:cache || true
 
 echo -e "\n${YELLOW}▶ Step 15: Configuring Supervisor for Queue Worker...${NC}"
-cat > /etc/supervisor/conf.d/disekitar-worker.conf << 'EOF'
-[program:disekitar-worker-fast]
+cat > /etc/supervisor/conf.d/carikaryawan-worker.conf << 'EOF'
+[program:carikaryawan-worker-fast]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --queue=ai,default --sleep=2 --tries=3 --max-time=3600
+command=php /var/www/carikaryawan/artisan queue:work --queue=ai,default --sleep=2 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -195,38 +206,12 @@ killasgroup=true
 user=www-data
 numprocs=2
 redirect_stderr=true
-stdout_logfile=/var/www/disekitar/storage/logs/worker-fast.log
+stdout_logfile=/var/www/carikaryawan/storage/logs/worker-fast.log
 stopwaitsecs=3600
 
-[program:disekitar-worker-photos]
+[program:carikaryawan-worker-jobs]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --queue=photos --sleep=2 --tries=3 --timeout=120 --max-time=3600
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/var/www/disekitar/storage/logs/worker-photos.log
-stopwaitsecs=3600
-
-[program:disekitar-worker-maps]
-process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --queue=maps --sleep=3 --tries=1 --timeout=900 --max-time=3600
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/var/www/disekitar/storage/logs/worker-maps.log
-stopwaitsecs=3600
-
-[program:disekitar-worker-jobs]
-process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/disekitar/artisan queue:work --queue=jobs --sleep=3 --tries=1 --timeout=900 --max-time=3600
+command=php /var/www/carikaryawan/artisan queue:work --queue=jobs --sleep=3 --tries=1 --timeout=900 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -234,7 +219,7 @@ killasgroup=true
 user=www-data
 numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/www/disekitar/storage/logs/worker-jobs.log
+stdout_logfile=/var/www/carikaryawan/storage/logs/worker-jobs.log
 stopwaitsecs=3600
 EOF
 
@@ -243,7 +228,7 @@ supervisorctl update
 supervisorctl start all
 
 echo -e "\n${YELLOW}▶ Step 16: Setting Up Laravel Cron Schedule...${NC}"
-(crontab -l 2>/dev/null | grep -v 'artisan schedule:run'; echo "* * * * * cd /var/www/disekitar && php artisan schedule:run >> /dev/null 2>&1") | crontab -
+(crontab -l 2>/dev/null | grep -v 'artisan schedule:run'; echo "* * * * * cd /var/www/carikaryawan && php artisan schedule:run >> /dev/null 2>&1") | crontab -
 
 echo -e "\n${YELLOW}▶ Step 17: Fixing Permissions...${NC}"
 chown -R www-data:www-data ${APP_DIR}
@@ -255,12 +240,11 @@ ufw allow 'Nginx Full'
 echo "y" | ufw enable || true
 
 echo -e "\n${GREEN}======================================================${NC}"
-echo -e "${GREEN}   🎉 DISEKITAR.COM Setup Selesai dengan Sukses!      ${NC}"
+echo -e "${GREEN}   🎉 CARIKARYAWAN.COM Setup Selesai dengan Sukses!      ${NC}"
 echo -e "${GREEN}======================================================${NC}"
 echo -e "Informasi Database:"
 echo -e "  - DB Name : ${DB_NAME}"
 echo -e "  - DB User : ${DB_USER}"
-echo -e "  - DB Pass : ${DB_PASS}"
 echo -e "\nLangkah Terakhir untuk SSL Let's Encrypt (setelah domain diarahkan ke IP VPS):"
-echo -e "  ${YELLOW}sudo certbot --nginx -d disekitar.com -d www.disekitar.com${NC}"
+echo -e "  ${YELLOW}sudo certbot --nginx -d carikaryawan.com -d www.carikaryawan.com${NC}"
 echo -e "======================================================"

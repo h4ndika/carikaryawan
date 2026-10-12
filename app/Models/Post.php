@@ -30,10 +30,6 @@ class Post extends Model
     ];
 
     protected $casts = [
-        'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8',
-        'rating' => 'decimal:2',
-        'reviews_count' => 'integer',
         'views_count' => 'integer',
         'affiliate_links' => 'array',
         'published_at' => 'datetime',
@@ -227,6 +223,14 @@ class Post extends Model
     /**
      * Scope query to filter out expired jobs (for homepage/catalogue).
      */
+    /**
+     * Limit to posts in a job category (see Category::scopeJobs).
+     */
+    public function scopeJobs($query)
+    {
+        return $query->whereHas('category', fn ($q) => $q->jobs());
+    }
+
     public function scopeActiveJob($query)
     {
         return $query->where(function ($q) {
@@ -237,7 +241,7 @@ class Post extends Model
 
     /**
      * Canonical place_id for job posts, shared by JobStreet & Glints for cross-engine dedup.
-     * Do NOT change the formula: existing rows were backfilled with it (disekitar:backfill-job-place-ids).
+     * Do NOT change the formula: existing rows were backfilled with it (carikaryawan:backfill-job-place-ids).
      */
     public static function jobPlaceId(string $company, string $position, string $city): string
     {
@@ -423,20 +427,8 @@ class Post extends Model
     {
         $postUrl = $canonicalUrl ?: $this->url();
         $siteUrl = url('/');
-        $catName = $this->category?->name ?? 'Tempat';
-        $catSlug = strtolower($this->category?->slug ?? '');
         $cityName = $this->city?->name ?? '';
         $provName = $this->province?->name ?? '';
-
-        // Determine specific schema type for local place
-        $placeType = 'LocalBusiness';
-        if (str_contains($catSlug, 'hotel') || str_contains($catSlug, 'penginapan') || str_contains($catSlug, 'villa') || str_contains($catSlug, 'resort')) {
-            $placeType = 'LodgingBusiness';
-        } elseif (str_contains($catSlug, 'kuliner') || str_contains($catSlug, 'restoran') || str_contains($catSlug, 'cafe') || str_contains($catSlug, 'kopi') || str_contains($catSlug, 'makan')) {
-            $placeType = 'Restaurant';
-        } elseif (str_contains($catSlug, 'wisata') || str_contains($catSlug, 'rekreasi') || str_contains($catSlug, 'taman') || str_contains($catSlug, 'alam')) {
-            $placeType = 'TouristAttraction';
-        }
 
         $images = array_values(array_filter([
             $this->primary_image_url,
@@ -461,12 +453,12 @@ class Post extends Model
             'inLanguage' => 'id-ID',
             'author' => [
                 '@type' => 'Organization',
-                'name' => 'Redaksi DISEKITAR',
+                'name' => 'Redaksi CariKaryawan',
                 'url' => $siteUrl,
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => 'DISEKITAR',
+                'name' => 'CariKaryawan',
                 'url' => $siteUrl,
                 'logo' => [
                     '@type' => 'ImageObject',
@@ -478,48 +470,6 @@ class Post extends Model
             $articleSchema['image'] = $images;
         }
         $graph[] = $articleSchema;
-
-        // 2. Place / LocalBusiness Schema
-        $placeSchema = [
-            '@type' => $placeType,
-            '@id' => $postUrl . '#place',
-            'name' => $this->title,
-            'description' => $this->excerpt ?: $this->seoDescription(),
-            'url' => $postUrl,
-        ];
-        if (!empty($images)) {
-            $placeSchema['image'] = $images;
-        }
-        if ($this->formatted_address || $cityName) {
-            $placeSchema['address'] = [
-                '@type' => 'PostalAddress',
-                'streetAddress' => $this->formatted_address ?: ($this->city?->name ?: $this->title),
-                'addressLocality' => $cityName,
-                'addressRegion' => $provName,
-                'postalCode' => $this->city?->postal_code ?: '40111',
-                'addressCountry' => 'ID',
-            ];
-        }
-        if ($this->latitude && $this->longitude) {
-            $placeSchema['geo'] = [
-                '@type' => 'GeoCoordinates',
-                'latitude' => (float) $this->latitude,
-                'longitude' => (float) $this->longitude,
-            ];
-        }
-        if ($this->rating && (float) $this->rating > 0) {
-            $placeSchema['aggregateRating'] = [
-                '@type' => 'AggregateRating',
-                'ratingValue' => (float) $this->rating,
-                'reviewCount' => max(1, (int) ($this->reviews_count ?: 1)),
-                'bestRating' => 5,
-                'worstRating' => 1,
-            ];
-        }
-
-        if ($this->place_id) {
-            $placeSchema['hasMap'] = "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->title) . "&query_place_id=" . $this->place_id;
-        }
 
         // Loker tutup: tanpa JobPosting sama sekali (halaman juga noindex via seoRobots()).
         if ($this->isJob() && ! $this->isExpired()) {
@@ -575,8 +525,6 @@ class Post extends Model
             }
 
             $graph[] = $jobSchema;
-        } elseif (! $this->isJob()) {
-            $graph[] = $placeSchema;
         }
 
         // 3. BreadcrumbList Schema
@@ -644,20 +592,12 @@ class Post extends Model
     }
 
     /**
-     * Check if post was imported from Google Maps
-     */
-    public function isImportedFromGoogleMaps(): bool
-    {
-        return $this->hasPlaceId();
-    }
-
-    /**
      * Generate subdomain-based URL for this post
      */
     public function url(): string
     {
         return route('posts.show', [
-            'category' => $this->category?->slug ?? 'rekomendasi',
+            'category' => $this->category?->slug ?? 'lowongan-kerja',
             'city' => $this->city?->slug ?? 'indonesia',
             'slug' => $this->slug,
         ]);
@@ -682,46 +622,5 @@ class Post extends Model
             'category' => $this->category->slug,
             'city' => $this->city->slug,
         ]);
-    }
-
-    /**
-     * Haversine formula in SQL (kilometres).
-     * Earth radius = 6371 km.
-     *
-     * Usage:
-     *   Post::query()->withinDistanceOf(-6.917, 107.619, 3)->get();
-     */
-    public function scopeWithinDistanceOf($query, float $latitude, float $longitude, float $radiusKm = 3)
-    {
-        $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
-
-        return $query
-            ->select('*')
-            ->selectRaw("{$haversine} AS distance_km", [$latitude, $longitude, $latitude])
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereRaw("{$haversine} <= (? + 0)", [$latitude, $longitude, $latitude, $radiusKm])
-            // Numeric coercion also keeps SQLite from comparing distance against a text-bound radius.
-            ->orderBy('distance_km', 'asc');
-    }
-
-    /**
-     * Cross-category proximity linking.
-     *
-     * Mengambil post lain di sekitar koordinat (lat,lng) dalam radius tertentu,
-     * tetapi TIDAK termasuk kategori dari post ini sendiri.
-     *
-     * @param  int  $limit  jumlah maksimal post yang dikembalikan
-     * @return \Illuminate\Database\Eloquent\Collection<int, Post>
-     */
-    public function getNearbyPostsFromOtherCategories(float $latitude, float $longitude, float $radiusKm = 3, int $limit = 4)
-    {
-        return static::query()
-            ->published()
-            ->where('id', '!=', $this->id)
-            ->where('category_id', '!=', $this->category_id)
-            ->withinDistanceOf($latitude, $longitude, $radiusKm)
-            ->limit($limit)
-            ->get();
     }
 }

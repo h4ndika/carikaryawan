@@ -35,16 +35,12 @@ class GoogleMapsScrapeJobsTable
                     ->color(fn (?string $state): string => match ($state) {
                         'jobstreet' => 'success',
                         'glints' => 'info',
-                        'google-jobs' => 'warning',
-                        'instagram' => 'danger',
                         default => 'primary',
                     })
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'jobstreet' => 'JobStreet',
                         'glints' => 'Glints',
-                        'google-jobs' => 'Google Jobs',
-                        'instagram' => 'Instagram',
-                        default => 'Google Maps',
+                        default => ucfirst((string) $state),
                     }),
 
                 TextColumn::make('query')
@@ -56,7 +52,7 @@ class GoogleMapsScrapeJobsTable
 
                 TextColumn::make('category.name')
                     ->label('Kategori')
-                    ->default('Otomatis (Deteksi Maps)')
+                    ->default('Otomatis')
                     ->badge()
                     ->color('info'),
 

@@ -9,7 +9,7 @@ use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Attributes\MaxSteps;
 
 #[MaxSteps(10)]
-class DisekitarAgent implements Agent, Conversational, HasTools
+class CariKaryawanAgent implements Agent, Conversational, HasTools
 {
     use Promptable;
 

@@ -132,19 +132,6 @@
                             <input type="range" id="input-limit" class="form-range" min="5" max="100" step="5" value="20">
                         </div>
 
-                        <!-- Apify Account Selection Mode -->
-                        <div class="form-group">
-                            <label for="select-account-mode" class="form-label">Mode Pemilihan Akun Apify</label>
-                            <select id="select-account-mode" class="form-control">
-                                <option value="auto">🔄 Auto-Rotate Active Accounts (SQLite)</option>
-                                <option value="manual">🔑 Pilih Akun Tertentu</option>
-                            </select>
-                            <select id="select-account-id" class="form-control" style="display:none; margin-top: 0.5rem;">
-                                <option value="">Memuat akun Apify dari Google Map Extractor...</option>
-                            </select>
-                            <small class="form-hint">Diambil langsung dari database SQLite Google Map Extractor.</small>
-                        </div>
-
                         <!-- Submit Button -->
                         <button type="submit" id="btn-start-scrape" class="btn btn-primary btn-block">
                             <span class="btn-icon">⚡</span>
@@ -262,7 +249,7 @@
                         <label class="form-label">Apify API Token</label>
                         <input type="password" id="input-apify-token" class="form-control" placeholder="apify_api_...">
                         <small class="form-hint">
-                            Token ini otomatis disimpan ke berkas <code>.env</code> lokal. Jika kosong, sistem otomatis membaca fallback token dari <code>tools/google-map-extractor/.env</code>.
+                            Token ini otomatis disimpan ke berkas <code>.env</code> lokal. Jika kosong, sistem memakai <code>APIFY_TOKEN</code> dari <code>.env</code>.
                         </small>
                     </div>
                     <div class="alert alert-info">

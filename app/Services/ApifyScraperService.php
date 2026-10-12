@@ -9,8 +9,6 @@ use RuntimeException;
 
 class ApifyScraperService
 {
-    public const DEFAULT_ACTOR = 'compass~crawler-google-places';
-
     /**
      * Test token validity and retrieve account information.
      */
@@ -59,69 +57,7 @@ class ApifyScraperService
     }
 
     /**
-     * Start Google Places crawler Actor on Apify.
-     */
-    public function startGooglePlacesCrawler(
-        string $token,
-        string $query,
-        ?string $location = null,
-        int $maxPlaces = 20,
-        bool $includeImages = true,
-        bool $includeReviews = false,
-        string $actorId = self::DEFAULT_ACTOR
-    ): array {
-        $input = [
-            'searchStringsArray' => [$query],
-            'locationQuery' => $location ?: '',
-            'maxCrawledPlacesPerSearch' => $maxPlaces,
-            'language' => 'id',
-            'countryCode' => 'id',
-            'includeReviews' => $includeReviews,
-            'maxReviews' => $includeReviews ? 5 : 0,
-            'includeImages' => $includeImages,
-            'maxImages' => $includeImages ? 20 : 0,
-            'maxPhotos' => $includeImages ? 20 : 0,
-            'photosCount' => $includeImages ? 20 : 0,
-            'scrapePhotos' => $includeImages,
-            'scrapePhotosCount' => $includeImages ? 20 : 0,
-            'exportPlaceUrls' => true,
-            'scrapeCompanyContacts' => false,
-            'scrapeLeads' => false,
-            'proxyConfig' => [
-                'useApifyProxy' => true,
-            ],
-        ];
-
-        // Format actorId for REST URL (replace slash with tilde if needed)
-        $cleanActorId = str_replace('/', '~', $actorId);
-        $url = "https://api.apify.com/v2/acts/{$cleanActorId}/runs";
-
-        $response = Http::withToken($token)
-            ->timeout(30)
-            ->post($url, $input);
-
-        if (!$response->successful()) {
-            $status = $response->status();
-            $body = $response->body();
-            
-            if ($status === 402 || $status === 429) {
-                throw new RuntimeException("Apify Quota Exceeded (HTTP {$status}): Saldo/kuota token ini telah habis.");
-            }
-
-            throw new RuntimeException("Gagal memulai crawler Apify (HTTP {$status}): {$body}");
-        }
-
-        $data = $response->json('data', []);
-        return [
-            'runId' => $data['id'] ?? null,
-            'actorId' => $data['actId'] ?? null,
-            'datasetId' => $data['defaultDatasetId'] ?? null,
-            'status' => $data['status'] ?? 'READY',
-        ];
-    }
-
-    /**
-     * Start Job crawler Actor on Apify (Google Jobs or Instagram).
+     * Start Job crawler Actor on Apify (JobStreet or Glints).
      */
     public function startJobCrawler(
         string $token,

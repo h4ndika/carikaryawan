@@ -1052,7 +1052,7 @@
         <div class="print-only" style="border-bottom: 2px solid #000; padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
-                    <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; text-transform: uppercase;">DiSekitar Intelligence Report</h1>
+                    <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; text-transform: uppercase;">CariKaryawan Intelligence Report</h1>
                     <p style="font-size: 0.75rem; color: #555; margin: 0.25rem 0 0 0;">Dokumen Laporan Eksekutif & Intelijen Data Platform</p>
                 </div>
                 <div style="text-align: right; font-size: 0.75rem; color: #555;">
@@ -1130,17 +1130,17 @@
                     </button>
                     <button 
                         type="button" 
-                        wire:click="applyTemplate('Analisis kota mana yang memiliki listing tinggi namun views masih rendah dan butuh strategi boosting')"
+                        wire:click="applyTemplate('Analisis kota mana yang memiliki lowongan tinggi namun views masih rendah dan butuh strategi boosting')"
                         class="ai-pill-btn"
                     >
                         📈 Analisis Prioritas Boosting
                     </button>
                     <button 
                         type="button" 
-                        wire:click="applyTemplate('Laporan audit sebaran landmarks kota dan korelasi rating listing disekitarnya')"
+                        wire:click="applyTemplate('Laporan sebaran lowongan kerja per kategori dan per kota beserta tren loker baru')"
                         class="ai-pill-btn"
                     >
-                        🏛️ Audit Landmarks & Rating
+                        🗂️ Sebaran Loker
                     </button>
                     <button 
                         type="button" 
@@ -1229,7 +1229,7 @@
                         </svg>
                         <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem;">AI Sedang Menyusun Laporan Eksekutif</div>
                         <div style="font-size: 0.8125rem; color: #6b7280; max-width: 480px; margin: 0 auto;">
-                            Menghubungi AI Agent, mengeksekusi SQL live database DiSekitar, dan merender visual cards, charts, & data tables...
+                            Menghubungi AI Agent, mengeksekusi SQL live database CariKaryawan, dan merender visual cards, charts, & data tables...
                         </div>
                     </div>
                 </div>
@@ -1259,12 +1259,12 @@
                     <div class="ai-report-topbar">
                         <div class="ai-report-headings">
                             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                <h2>{{ $report['title'] ?? 'Laporan Eksekutif DiSekitar' }}</h2>
+                                <h2>{{ $report['title'] ?? 'Laporan Eksekutif CariKaryawan' }}</h2>
                                 @if(!empty($report['period_or_scope']))
                                     <span class="ai-badge">📍 {{ $report['period_or_scope'] }}</span>
                                 @endif
                             </div>
-                            <p>{{ $report['subtitle'] ?? 'Analisis intelijen platform berbasis data riil DiSekitar' }}</p>
+                            <p>{{ $report['subtitle'] ?? 'Analisis intelijen platform berbasis data riil CariKaryawan' }}</p>
                         </div>
 
                         <div class="no-print ai-report-actions">

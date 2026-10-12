@@ -27,7 +27,7 @@ class InterviewPrep extends Component
         return view('livewire.interview-prep', [
             'jobPost' => $this->jobPost,
         ])->layout('layouts.app', [
-            'title' => 'Interview Prep AI · Latihan Wawancara Kerja · DISEKITAR',
+            'title' => 'Interview Prep AI · Latihan Wawancara Kerja · CariKaryawan',
             'description' => 'Latih wawancara kerja dengan AI. Dapatkan pertanyaan general, behavioral, dan teknis yang disesuaikan dengan posisi target.',
         ]);
     }

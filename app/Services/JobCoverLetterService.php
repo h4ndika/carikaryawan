@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Ai\DisekitarAgent;
+use App\Ai\CariKaryawanAgent;
 use App\Models\Post;
 use Illuminate\Support\Facades\Log;
 
@@ -85,7 +85,7 @@ ATURAN PENULISAN:
         $modelName = env('OPENAI_MODEL_CV', 'cv-generate');
 
         try {
-            $agent = new DisekitarAgent(instructions: $systemInstruction);
+            $agent = new CariKaryawanAgent(instructions: $systemInstruction);
             $response = (string) $agent->prompt(
                 prompt: $prompt,
                 provider: 'openai-compatible',

@@ -1,8 +1,10 @@
-# DISEKITAR
+# CariKaryawan
 
-Platform informasi lokal Indonesia di [disekitar.com](https://disekitar.com): *"apa saja yang ada di sekitarmu"*. Berisi tempat (hotel, kuliner, wisata, fasilitas), lowongan kerja, landmark, blog kurasi, dan tools karier berbasis AI. Trafik utama berasal dari Google (SEO), monetisasi lewat iklan dan afiliasi.
+Portal lowongan kerja Indonesia di [carikaryawan.com](https://carikaryawan.com) plus tools karier berbasis AI (CV builder, cover letter, interview prep). Trafik utama dari Google (SEO), monetisasi lewat iklan dan afiliasi.
 
-Sebagian besar konten diisi otomatis: scraping Apify (Google Maps, JobStreet, Glints) → generate konten AI → publish bertahap → foto → broadcast ke Threads.
+Lowongan diisi otomatis: scraping Apify (JobStreet, Glints) → generate konten AI → publish → broadcast ke Threads. Ekstraksi manual/batch tersedia di admin.
+
+> Proyek ini diturunkan dari DISEKITAR (direktori tempat + landmark + blog). Fitur tempat/landmark/blog sudah dihapus dari kode; lihat [milestone.md](milestone.md) untuk riwayat dan [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) untuk purge database.
 
 ## Stack
 
@@ -39,10 +41,10 @@ Membutuhkan ekstensi `pdo_sqlite` (lihat [docs/TESTING.md](docs/TESTING.md)).
 ## Struktur singkat
 
 ```text
-app/Livewire          halaman publik
+app/Livewire          halaman publik (lowongan, tools karier)
 app/Filament/Rahasia  panel admin
 app/Services          logika bisnis & integrasi (OpenAI, Apify, Threads)
 app/Console/Commands  pipeline terjadwal (lihat routes/console.php)
-tools/                tool Node.js standalone (extractor & photo admin)
-deploy/setup-vps.sh   provisioning VPS
+tools/job-extractor   tool Node.js standalone untuk ekstraksi loker
+deploy/setup-vps.sh   provisioning VPS (wajib env DB_PASS)
 ```

@@ -39,7 +39,7 @@ class PostForm
 
                         Select::make('category_id')
                             ->label('Category')
-                            ->options(Category::query()->pluck('name', 'id'))
+                            ->options(Category::jobs()->pluck('name', 'id'))
                             ->searchable()
                             ->required(),
 
@@ -65,7 +65,7 @@ class PostForm
 
                         RichEditor::make('ai_prompt')
                             ->label('AI Prompt')
-                            ->default('Deskripsikan dengan format Tentang, Fasilitas, Lokasi, Harga')
+                            ->default('Deskripsikan dengan format Tanggung Jawab, Kualifikasi, Benefit, Cara Melamar')
                             ->hintAction(
                                 Action::make('generateContent')
                                     ->label('Generate AI')
@@ -78,16 +78,14 @@ class PostForm
                                         $category = Category::find($get('category_id'))?->name ?? '';
                                         $promptUser = $get('ai_prompt');
 
-                                        $finalPrompt = "Buatkan artikel dengan Judul : \"$judul\", yang berlokasi di $cityName, $provinceName. " .
-                                            "Artikel ini kategorinya $category. " .
+                                        $finalPrompt = "Buatkan deskripsi lowongan kerja dengan Judul : \"$judul\", yang berlokasi di $cityName, $provinceName. " .
+                                            "Kategorinya $category. " .
                                             'Tulis dengan bahasa Indonesia yang natural dan menarik seperti majalah editorial. ' .
                                             'PENTING: Langsung mulai dengan judul artikel menggunakan tag <h2> atau <h1>. JANGAN berikan teks pengantar, penjelasan instruksi, pemikiran/reasoning, atau salam pembuka/penutup. ' .
                                             'Format artikel dalam HTML bersih (gunakan tag <h2>, <h3>, <p>, <ul>, <li>), jangan gunakan blok markdown atau backticks. ' .
                                             'KHUSUS LOWONGAN KERJA: Jangan melampirkan URL link mentah (seperti glints, jobstreet, dll.) di dalam teks artikel; cukup arahkan pelamar untuk mengklik tombol resmi "Lamar Sekarang" di halaman ini. ' .
                                             'Tambahkan juga data detail dalam JSON di akhir output, dibungkus tag <json>...</json> sesuai kategori, misal:' .
-                                            '- Kalau kategori seperti Hotel, Tempat Makan dll : harga, lokasi, jam_buka, fasilitas' .
-                                            '- Kalau kategori Lowongan Kerja: posisi, nama_perusahaan, gaji, tipe_pekerjaan, lokasi, kualifikasi, deskripsi_pekerjaan' .
-                                            '- dan selanjutnya tolong pikirkan key nya berdasarkan kategori lainnya' .
+                                            '- Untuk Lowongan Kerja: posisi, nama_perusahaan, gaji, tipe_pekerjaan, lokasi, kualifikasi, deskripsi_pekerjaan' .
                                             'Dengan Format Universal seperti ini :' .
                                             '{
                                                 "key1": "value1",
@@ -101,7 +99,7 @@ class PostForm
                                             $response = OpenAI::chat()->create([
                                                 'model' => config('openai.model'),
                                                 'messages' => [
-                                                    ['role' => 'system', 'content' => 'Kamu adalah penulis artikel editorial profesional. JAWAB HANYA dengan konten HTML artikel langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/reasoning, dan tanpa penutup/salam.'],
+                                                    ['role' => 'system', 'content' => 'Kamu adalah penulis konten lowongan kerja profesional. JAWAB HANYA dengan konten HTML langsung (dimulai dengan <h2>/<h1> judul) tanpa pengantar, tanpa pemikiran/reasoning, dan tanpa penutup/salam.'],
                                                     ['role' => 'user', 'content' => $finalPrompt],
                                                 ],
                                                 'temperature' => 0.7,
@@ -298,8 +296,8 @@ class PostForm
                     ->columnSpanFull()
                     ->collapsed(),
 
-                Section::make('Link Afiliasi & Booking')
-                    ->description('Tombol booking/reservasi online (Traveloka, Tiket.com, Agoda, Booking.com, dll.) untuk konversi affiliate.')
+                Section::make('Link Afiliasi')
+                    ->description('Tombol link afiliasi/eksternal untuk konversi.')
                     ->schema([
                         Repeater::make('affiliate_links')
                             ->label('Daftar Link Afiliasi')
@@ -361,25 +359,13 @@ class PostForm
                     ->columnSpanFull()
                     ->collapsible(),
 
-                Section::make('Data Google Maps')
-                    ->description('Informasi terintegrasi dari Google Maps.')
+                Section::make('Data Sumber Loker')
+                    ->description('Identitas sumber dan kontak lowongan.')
                     ->schema([
                         TextInput::make('place_id')
                             ->label('Place ID')
                             ->maxLength(255)
                             ->disabled(),
-                        TextInput::make('rating')
-                            ->label('Rating')
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(5),
-                        TextInput::make('reviews_count')
-                            ->label('Jumlah Ulasan')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('price_level')
-                            ->label('Tingkat Harga')
-                            ->maxLength(50),
                         TextInput::make('phone')
                             ->label('Nomor Telepon')
                             ->tel()
@@ -388,17 +374,6 @@ class PostForm
                             ->label('Website Resmi')
                             ->url()
                             ->maxLength(255),
-                        TextInput::make('google_maps_url')
-                            ->label('Google Maps URL')
-                            ->url()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-                        TextInput::make('latitude')
-                            ->label('Latitude')
-                            ->numeric(),
-                        TextInput::make('longitude')
-                            ->label('Longitude')
-                            ->numeric(),
                     ])
                     ->columns(2)
                     ->columnSpanFull()

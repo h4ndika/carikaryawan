@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Csr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Post;
 use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
@@ -12,20 +11,6 @@ use Illuminate\Support\Facades\Cache;
 
 class CsrJobApiController extends Controller
 {
-    /**
-     * Helper to retrieve Job category IDs without affecting existing system.
-     */
-    protected function getJobCategoryIds(): array
-    {
-        return Cache::remember('csr_job_category_ids', 86400, function () {
-            return Category::where('slug', 'lowongan-kerja')
-                ->orWhere('name', 'LIKE', '%Lowongan%')
-                ->orWhere('name', 'LIKE', '%Loker%')
-                ->pluck('id')
-                ->toArray();
-        });
-    }
-
     /**
      * Get Paginated list of jobs for CSR frontend.
      * GET /api/csr/jobs?q=admin&city=jakarta&limit=15&page=1
@@ -37,21 +22,12 @@ class CsrJobApiController extends Controller
         $limit = min(max((int) $request->input('limit', 12), 1), 50);
         $page = max((int) $request->input('page', 1), 1);
 
-        $cacheKey = "csr_jobs_list_" . md5("{$q}_{$city}_{$limit}_{$page}");
+        $cacheKey = "csr_jobs_only_list_" . md5("{$q}_{$city}_{$limit}_{$page}");
 
         $response = Cache::remember($cacheKey, 600, function () use ($q, $city, $limit) {
-            $catIds = $this->getJobCategoryIds();
-
             $query = Post::query()
                 ->where('status', 'published')
-                ->where(function ($sub) use ($catIds) {
-                    if (!empty($catIds)) {
-                        $sub->whereIn('category_id', $catIds);
-                    } else {
-                        $sub->where('title', 'LIKE', '%lowongan%')
-                            ->orWhere('title', 'LIKE', '%loker%');
-                    }
-                })
+                ->jobs()
                 ->with(['city:id,name,slug', 'province:id,name', 'category:id,name,slug', 'details'])
                 ->latest('published_at');
 
@@ -99,10 +75,10 @@ class CsrJobApiController extends Controller
      */
     public function show(string $identifier): JsonResponse
     {
-        $cacheKey = "csr_job_detail_" . md5($identifier);
+        $cacheKey = "csr_jobs_only_detail_" . md5($identifier);
 
         $response = Cache::remember($cacheKey, 1800, function () use ($identifier) {
-            $query = Post::query()
+            $query = Post::jobs()
                 ->where('status', 'published')
                 ->with(['city:id,name,slug', 'province:id,name', 'category:id,name,slug', 'details', 'images']);
 
@@ -145,7 +121,7 @@ class CsrJobApiController extends Controller
         $data = Cache::remember($cacheKey, 300, function () {
             return [
                 'success' => true,
-                'site_name' => Setting::get('site_name', 'Portal Karir Indonesia'),
+                'site_name' => Setting::get('site_name', 'CariKaryawan'),
                 'contact_wa' => Setting::get('contact_whatsapp', ''),
                 'ads' => [
                     'adsterra_socialbar_code' => Setting::get('adsterra_socialbar_code', ''),
@@ -178,21 +154,12 @@ class CsrJobApiController extends Controller
         $perPage = min(max((int) $request->input('limit', 1000), 100), 5000);
         $urlFormat = $request->input('url_format', 'path'); // 'path' (/loker/{slug}) or 'query' (?slug={slug}) or 'hash' (#/loker/{slug})
 
-        $cacheKey = 'csr_sitemap_' . md5("{$domain}_{$page}_{$perPage}_{$urlFormat}");
+        $cacheKey = 'csr_jobs_only_sitemap_' . md5("{$domain}_{$page}_{$perPage}_{$urlFormat}");
 
         $xml = Cache::remember($cacheKey, 1800, function () use ($domain, $page, $perPage, $urlFormat) {
-            $catIds = $this->getJobCategoryIds();
-
             $posts = Post::query()
                 ->where('status', 'published')
-                ->where(function ($sub) use ($catIds) {
-                    if (!empty($catIds)) {
-                        $sub->whereIn('category_id', $catIds);
-                    } else {
-                        $sub->where('title', 'LIKE', '%lowongan%')
-                            ->orWhere('title', 'LIKE', '%loker%');
-                    }
-                })
+                ->jobs()
                 ->select(['id', 'slug', 'updated_at', 'published_at'])
                 ->latest('published_at')
                 ->forPage($page, $perPage)

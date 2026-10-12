@@ -23,7 +23,7 @@
         @else
             <div class="flex h-full w-full flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 p-4">
                 <i class="fa-solid fa-camera text-2xl mb-1 text-zinc-300 dark:text-zinc-600"></i>
-                <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">DISEKITAR</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">CARIKARYAWAN</span>
             </div>
         @endif
 
@@ -61,7 +61,7 @@
                 <i class="fa-solid fa-location-dot text-amber-800 dark:text-amber-400 text-[11px]"></i>
                 <span class="truncate">{{ $post->city?->name ?? 'Indonesia' }}</span>
             </div>
-            <span>{{ max(1, round(str_word_count(strip_tags($post->content ?? '')) / 200)) }} min baca</span>
+            <span>{{ $post->published_at?->diffForHumans() }}</span>
         </div>
     </div>
 </article>

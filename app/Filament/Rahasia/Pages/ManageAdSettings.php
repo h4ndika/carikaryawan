@@ -45,7 +45,6 @@ class ManageAdSettings extends Page
             'adsterra_socialbar_code' => Setting::get('adsterra_socialbar_code', ''),
 
             // Home display & ads
-            'home_prioritize_articles' => (bool) Setting::get('home_prioritize_articles', false),
             'ad_home_hero_enabled' => (bool) Setting::get('ad_home_hero_enabled', false),
             'ad_home_hero_code' => Setting::get('ad_home_hero_code', ''),
             'ad_home_sidebar_enabled' => (bool) Setting::get('ad_home_sidebar_enabled', false),
@@ -64,10 +63,6 @@ class ManageAdSettings extends Page
             // Search ads
             'ad_search_top_enabled' => (bool) Setting::get('ad_search_top_enabled', false),
             'ad_search_top_code' => Setting::get('ad_search_top_code', ''),
-
-            // Landmark ads
-            'ad_landmark_sidebar_enabled' => (bool) Setting::get('ad_landmark_sidebar_enabled', false),
-            'ad_landmark_sidebar_code' => Setting::get('ad_landmark_sidebar_code', ''),
         ]);
     }
 
@@ -102,7 +97,7 @@ class ManageAdSettings extends Page
                             ->label('Isi File ads.txt')
                             ->placeholder('google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0')
                             ->rows(3)
-                            ->helperText('Otomatis disajikan di URL https://disekitar.com/ads.txt untuk verifikasi kepemilikan oleh Google AdSense.'),
+                            ->helperText('Otomatis disajikan di URL https://carikaryawan.com/ads.txt untuk verifikasi kepemilikan oleh Google AdSense.'),
                     ]),
 
                 Section::make('Konfigurasi Jaringan Iklan Adsterra')
@@ -132,15 +127,10 @@ class ManageAdSettings extends Page
                             ->helperText('Dimuat di bagian bawah <body>. Biarkan kosong jika tidak ingin menggunakan popunder demi kenyamanan pembaca.'),
                     ]),
 
-                Section::make('Tata Letak & Konten: Beranda (Home)')
-                    ->description('Pengaturan prioritas konten editorial serta penempatan iklan pada halaman utama.')
+                Section::make('Tata Letak Iklan: Beranda (Home)')
+                    ->description('Pengaturan penempatan iklan pada halaman utama.')
                     ->icon(Heroicon::OutlinedHome)
                     ->schema([
-                        Toggle::make('home_prioritize_articles')
-                            ->label('Utamakan Tampilan Artikel Blog di Beranda')
-                            ->helperText('Jika diaktifkan, artikel editorial berbobot tinggi akan dijadikan headline utama (Lead Hero Story) dan ditempatkan di posisi teratas halaman Beranda. Sangat disarankan saat proses peninjauan Google AdSense.')
-                            ->default(false),
-
                         Toggle::make('ad_home_hero_enabled')
                             ->label('Iklan di Bawah Hero Banner (Sebelum Tab Kategori)')
                             ->helperText('Tampilkan slot iklan horizontal di bawah hero.'),
@@ -152,7 +142,7 @@ class ManageAdSettings extends Page
                             ->helperText('Masukkan kode unit iklan AdSense responsif atau kode banner iklan kustom.'),
 
                         Toggle::make('ad_home_sidebar_enabled')
-                            ->label('Iklan Sidebar (Antara Pilihan Redaksi & Jelajah Kota)')
+                            ->label('Iklan Sidebar (Antara Loker Pilihan & Jelajah Kota)')
                             ->helperText('Tampilkan slot iklan di sidebar kanan beranda.'),
 
                         Textarea::make('ad_home_sidebar_code')
@@ -161,12 +151,12 @@ class ManageAdSettings extends Page
                             ->rows(4),
                     ]),
 
-                Section::make('Tata Letak Iklan: Detail Post (Cerita Tempat)')
-                    ->description('Posisi penempatan iklan pada halaman ulasan/artikel tempat.')
+                Section::make('Tata Letak Iklan: Detail Lowongan')
+                    ->description('Posisi penempatan iklan pada halaman detail lowongan kerja.')
                     ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Toggle::make('ad_post_sidebar_top_enabled')
-                            ->label('Iklan Sidebar Atas (Di Atas Card "Informasi Tempat")')
+                            ->label('Iklan Sidebar Atas (Di Atas Card Info Lowongan)')
                             ->helperText('Tampilkan iklan di bagian paling atas sidebar detail post.'),
 
                         Textarea::make('ad_post_sidebar_top_code')
@@ -175,8 +165,8 @@ class ManageAdSettings extends Page
                             ->rows(4),
 
                         Toggle::make('ad_post_before_gallery_enabled')
-                            ->label('Iklan Tengah Konten (Di Atas "Galeri & Suasana")')
-                            ->helperText('Tampilkan iklan setelah isi artikel ulasan, sebelum grid foto galeri.'),
+                            ->label('Iklan Tengah Konten (Di Atas Bagian Galeri/Logo)')
+                            ->helperText('Tampilkan iklan setelah isi deskripsi lowongan, sebelum bagian galeri.'),
 
                         Textarea::make('ad_post_before_gallery_code')
                             ->label('Kode Iklan (Di Atas Galeri)')
@@ -185,11 +175,11 @@ class ManageAdSettings extends Page
                     ]),
 
                 Section::make('Tata Letak Iklan: Halaman Kategori')
-                    ->description('Posisi penempatan iklan pada halaman daftar kategori (Hotel, Kafe, Restoran, Wisata).')
+                    ->description('Posisi penempatan iklan pada halaman daftar kategori lowongan per kategori.')
                     ->icon(Heroicon::OutlinedSquares2x2)
                     ->schema([
                         Toggle::make('ad_category_sidebar_enabled')
-                            ->label('Iklan Sidebar Kategori (Antara Pilihan Redaksi & Jelajah Kota)')
+                            ->label('Iklan Sidebar Kategori (Antara Loker Pilihan & Jelajah Kota)')
                             ->helperText('Tampilkan slot iklan di sidebar kanan halaman kategori.'),
 
                         Textarea::make('ad_category_sidebar_code')
@@ -208,20 +198,6 @@ class ManageAdSettings extends Page
 
                         Textarea::make('ad_search_top_code')
                             ->label('Kode Iklan Halaman Cari')
-                            ->placeholder("<ins class=\"adsbygoogle\" ...></ins>\n<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>")
-                            ->rows(4),
-                    ]),
-
-                Section::make('Tata Letak Iklan: Halaman Landmark')
-                    ->description('Posisi penempatan iklan pada halaman kurasi di sekitar landmark.')
-                    ->icon(Heroicon::OutlinedMapPin)
-                    ->schema([
-                        Toggle::make('ad_landmark_sidebar_enabled')
-                            ->label('Iklan Sidebar Landmark (Antara Tentang Landmark & Landmark Lain)')
-                            ->helperText('Tampilkan slot iklan di sidebar kanan halaman landmark.'),
-
-                        Textarea::make('ad_landmark_sidebar_code')
-                            ->label('Kode Iklan Sidebar Landmark')
                             ->placeholder("<ins class=\"adsbygoogle\" ...></ins>\n<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>")
                             ->rows(4),
                     ]),

@@ -133,6 +133,8 @@ return [
             'store' => env('OPENAI_STORE', true),
         ],
 
+        // CariKaryawan memakai endpoint OpenAI-compatible. Default URL di bawah masih host lama
+        // (ai.disekitar.com); override lewat OPENAI_COMPATIBLE_URL / OPENAI_BASE_URL di environment.
         'openai-compatible' => [
             'driver' => 'openai-compatible',
             'url' => env('OPENAI_COMPATIBLE_URL', env('OPENAI_BASE_URL') ? (str_starts_with(env('OPENAI_BASE_URL'), 'http') ? env('OPENAI_BASE_URL') : 'https://' . env('OPENAI_BASE_URL')) : 'https://ai.disekitar.com/v1'),
