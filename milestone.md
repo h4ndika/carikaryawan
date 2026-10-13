@@ -2,6 +2,12 @@
 
 > **Catatan:** proyek ini sebelumnya bernama **DISEKITAR** (direktori tempat, landmark, blog, loker). Seluruh entri di bawah entri 2026-10-12 adalah **riwayat DISEKITAR (legacy)** dan sengaja tidak ditulis ulang; fitur tempat/landmark/blog, `tools/google-map-extractor`, dan `tools/photo-scraper-admin` yang disebut di dalamnya sudah dihapus.
 
+## Milestone: Ikon CariKaryawan (13 Oktober 2026)
+
+- Logo huruf “d” diganti ikon **C / kaca pembesar dengan siluet orang** pada SVG, ICO, seluruh favicon PNG, Apple touch icon, dan Android app icon.
+- Warna mengikuti situs: zinc gelap, putih, dan amber. URL ikon publik, admin, serta manifest diberi versi `ck1` untuk menghindari cache lama.
+- Generator raster dan pemeriksaan ukuran: `tools/generate-icons.py`; panduan di [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#ikon-produk).
+
 ## Milestone: Rebrand CariKaryawan & Pemangkasan ke Lowongan + Tools Karier (12 Oktober 2026)
 
 - **Cakupan baru:** hanya lowongan kerja dan tools karier AI (CV builder, cover letter, interview prep, tools hub). Tempat, landmark, dan blog dihapus dari produk.

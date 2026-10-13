@@ -15,6 +15,12 @@ Dokumen ini menjelaskan **kondisi kode saat ini**, bukan target ideal. Jika kode
 | Scraping | Apify (JobStreet, Glints) via token di tabel `apify_accounts` |
 | Sosial | Threads API (`app/Services/ThreadsService.php`) |
 
+## Ikon produk
+
+Ikon CariKaryawan berupa huruf **C / kaca pembesar dengan siluet orang**, berwarna zinc gelap (`#18181b`), putih (`#fafaf9`), dan amber (`#fbbf24`). Sumber vektor: `public/favicon.svg`. PNG tersedia dalam ukuran 16, 32, 48, 180, 192, dan 512 piksel; `favicon.ico` memuat ukuran 16/32/48. Layout publik, favicon admin, dan `site.webmanifest` memakai versi URL `ck1` agar cache logo DISEKITAR tidak digunakan kembali.
+
+Untuk membuat ulang aset raster: `python -I tools/generate-icons.py` (membutuhkan Pillow di mesin pengembang, bukan di server). Geometri generator harus disesuaikan bersama SVG jika desain diubah; generator juga memeriksa dimensi PNG dan ukuran ICO.
+
 ## Struktur folder
 
 ```text

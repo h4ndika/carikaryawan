@@ -1,32 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#18181b"/>
-      <stop offset="100%" stop-color="#09090b"/>
-    </linearGradient>
-    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#d97706"/>
-    </linearGradient>
-    <filter id="subtleShadow" x="-10%" y="-10%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.25"/>
-    </filter>
-  </defs>
-
-  <!-- Base Rounded Squircle -->
-  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
-  <rect x="8" y="8" width="496" height="496" rx="120" fill="none" stroke="#27272a" stroke-width="6" opacity="0.6"/>
-
-  <!-- Subtle compass / exploration orbit ring -->
-  <circle cx="256" cy="256" r="180" fill="none" stroke="#27272a" stroke-width="4" stroke-dasharray="8 8" opacity="0.4"/>
-
-  <!-- Serif Letter 'd' Graphic -->
-  <g filter="url(#subtleShadow)">
-    <!-- Main stem of d -->
-    <path d="M308 120 C308 114 312 110 320 110 L342 110 C346 110 348 114 348 118 L348 370 C348 376 352 380 358 380 L368 380 C372 380 374 384 374 388 C374 392 372 396 366 396 L298 396 C292 396 290 392 290 388 C290 384 292 380 298 380 L308 380 C314 380 318 376 318 370 L318 338 C298 372 262 394 218 394 C148 394 100 338 100 258 C100 178 152 122 222 122 C262 122 294 140 314 172 L314 126 C314 122 312 120 308 120 Z M318 258 C318 198 280 156 226 156 C172 156 138 200 138 258 C138 316 172 360 226 360 C280 360 318 318 318 258 Z" fill="#fafaf9"/>
-    
-    <!-- Editorial Accent Dot (.) in Golden Amber -->
-    <circle cx="396" cy="382" r="18" fill="url(#amberGrad)"/>
-    <circle cx="396" cy="382" r="6" fill="#fef3c7" opacity="0.8"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>CariKaryawan</title>
+  <rect width="512" height="512" rx="112" fill="#18181b"/>
+  <path d="M330.51 314.51 A128 128 0 1 1 330.51 133.49" fill="none" stroke="#fafaf9" stroke-width="36" stroke-linecap="round"/>
+  <path d="M336 320 L392 376" stroke="#fbbf24" stroke-width="40" stroke-linecap="round"/>
+  <circle cx="240" cy="205" r="28" fill="#fbbf24"/>
+  <rect x="190" y="250" width="100" height="64" rx="32" fill="#fbbf24"/>
 </svg>
