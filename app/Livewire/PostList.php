@@ -57,7 +57,7 @@ class PostList extends Component
         }
 
         $posts = $postQuery
-            ->with(['category', 'city', 'province', 'images'])
+            ->with(['category', 'city', 'province', 'images', 'details'])
             ->latest('published_at')
             ->paginate(10);
 
@@ -69,7 +69,7 @@ class PostList extends Component
         $editorPicks = Post::query()
             ->published()
             ->where('category_id', $this->category->id)
-            ->with(['category', 'city', 'province', 'images'])
+            ->with(['category', 'city', 'province', 'images', 'details'])
             ->latest('published_at')
             ->limit(4)
             ->get();

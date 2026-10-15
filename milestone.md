@@ -2,6 +2,12 @@
 
 > **Catatan:** proyek ini sebelumnya bernama **DISEKITAR** (direktori tempat, landmark, blog, loker). Seluruh entri di bawah entri 2026-10-12 adalah **riwayat DISEKITAR (legacy)** dan sengaja tidak ditulis ulang; fitur tempat/landmark/blog, `tools/google-map-extractor`, dan `tools/photo-scraper-admin` yang disebut di dalamnya sudah dihapus.
 
+## Milestone: Papan Loker & Menu Kota (15 Oktober 2026)
+
+- Identitas publik beralih dari masthead/serif majalah ke papan loker sans, zinc, dan biru. Beranda mengutamakan pencarian posisi/kota; kartu memuat metadata pekerjaan asli tanpa foto editorial besar.
+- Admin **Menu Kota** mengatur maksimal 8 kota pada header, pintasan beranda, dan footer. Menu ponsel, fokus keyboard, serta tema terang/gelap dipertahankan.
+- URL loker, formula deduplikasi, aturan kedaluwarsa, dan penyimpanan CV lama tidak diubah. Detail teknis dan setting `nav_city_ids` ada di [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#antarmuka-publik--menu-kota).
+
 ## Milestone: Ikon CariKaryawan (13 Oktober 2026)
 
 - Logo huruf “d” diganti ikon **C / kaca pembesar dengan siluet orang** pada SVG, ICO, seluruh favicon PNG, Apple touch icon, dan Android app icon.

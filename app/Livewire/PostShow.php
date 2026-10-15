@@ -66,7 +66,7 @@ class PostShow extends Component
             ->where('category_id', $this->post->category_id)
             ->where('city_id', $this->post->city_id)
             ->where('id', '!=', $this->post->id)
-            ->with(['category', 'city', 'province', 'images']);
+            ->with(['category', 'city', 'province', 'images', 'details']);
 
         if ($this->post->isJob()) {
             $relatedQuery->activeJob();

@@ -21,6 +21,14 @@ Ikon CariKaryawan berupa huruf **C / kaca pembesar dengan siluet orang**, berwar
 
 Untuk membuat ulang aset raster: `python -I tools/generate-icons.py` (membutuhkan Pillow di mesin pengembang, bukan di server). Geometri generator harus disesuaikan bersama SVG jika desain diubah; generator juga memeriksa dimensi PNG dan ukuran ICO.
 
+## Antarmuka publik & menu kota
+
+Tampilan papan loker memakai Plus Jakarta Sans, netral zinc, dan biru untuk aksi utama. Beranda berisi pencarian posisi/kota dan seluruh 12 lowongan terbaru, bukan susunan artikel berfoto. Kartu bersama `partials/post-card` menampilkan nama perusahaan, gaji, dan tipe pekerjaan dari `post_details` bila tersedia; thumbnail menjadi logo kecil dengan fallback inisial. Relasi `details` dimuat bersama daftar agar tidak menambah kueri per kartu. Tema terang/gelap dan menu ponsel tersedia; preferensi tema tersimpan di browser.
+
+Admin memilih maksimal 8 kota melalui **Menu Kota** (`/rahasia/settings/navigation`). Setting `nav_city_ids` menyimpan JSON array ID berurutan lewat `Setting::set`. `City::navigation()` mengabaikan JSON rusak, ID tidak valid, duplikat, dan kota terhapus. Pilihan yang sama dipakai di header, pintasan beranda, serta footer; tanpa pilihan, tautan pencarian umum tetap tersedia. Tidak ada cache menu terpisah sehingga perubahan langsung berlaku. Tautan kota tetap `/{kategori-loker}/{slug-kota}`; tidak ada perubahan slug, deduplikasi, atau masa aktif lowongan.
+
+Arah desain: *The product performs*, seed `1313370506`; pencarian kota yang dikelola admin menjadi kontrol nyata, bukan ilustrasi produk. Geometri landing page kosong/pinned demo tidak digunakan karena bertentangan dengan papan loker dan menu kota yang diminta. Tidak ada foto, statistik, atau bukti sosial buatan. Gerakan terbatas pada umpan balik kontrol, bukan animasi dekoratif pada daftar lowongan. Banner interview di detail memakai gaya yang sama tanpa badge AI atau gradien ungu; alamat/kontak dan integrasi tools tetap tersedia.
+
 ## Struktur folder
 
 ```text
@@ -100,4 +108,4 @@ Halaman `/tools` (hub), `/karir/cv-builder`, `/karir/interview-prep`, serta cove
 ## Admin (Filament `/rahasia`)
 
 Resources: Posts, Categories, Cities, Provinces, GoogleMapsScrapeJobs (label: Ekstraksi), JobHarvests, AiGenerationJobs, ApifyAccounts.
-Pages: AiPlayground, AiReport, AnalyticsDashboard, ToolAnalyticsDashboard, Manage{Ad,Analytics,JobAffiliate,Maintenance,Threads}Settings.
+Pages: AiPlayground, AiReport, AnalyticsDashboard, ToolAnalyticsDashboard, Manage{Ad,Analytics,JobAffiliate,Maintenance,Nav,Threads}Settings.

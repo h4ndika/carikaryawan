@@ -39,12 +39,18 @@ class Search extends Component
         $this->resetPage();
     }
 
+    public function resetFilters(): void
+    {
+        $this->reset('q', 'category', 'city');
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = Post::query()
             ->published()
             ->jobs()
-            ->with(['category', 'city', 'province', 'images']);
+            ->with(['category', 'city', 'province', 'images', 'details']);
 
         $term = trim($this->q);
         if ($term !== '') {

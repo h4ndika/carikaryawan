@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Breadcrumb & Category -->
-        <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-medium mb-6">
+        <nav aria-label="Jejak halaman" class="flex flex-wrap items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300 font-medium mb-6">
             <a href="{{ route('home') }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">Beranda</a>
             <span class="text-zinc-300 dark:text-zinc-700">/</span>
             <a href="{{ $post->categoryUrl() }}" wire:navigate class="hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors">
@@ -16,11 +16,8 @@
         <header class="w-full mb-8">
             <div class="max-w-4xl space-y-4 mb-6">
                 <div class="flex flex-wrap items-center gap-3">
-                    <span class="px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 text-xs font-bold uppercase tracking-wider">
-                        {{ $post->category->name }}
-                    </span>
                     <span class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                        <i class="fa-solid fa-location-dot text-amber-800 dark:text-amber-400 text-[11px]"></i>
+                        <i class="fa-solid fa-location-dot text-blue-700 dark:text-blue-400 text-[11px]"></i>
                         {{ $post->city->name }}@if($post->province), {{ $post->province->name }}@endif
                     </span>
                 </div>
@@ -67,16 +64,6 @@
             </div>
         </header>
 
-            <!-- Dynamic Job Cover Visual (1200x630 format) -->
-            <div class="mb-6">
-                <figure class="relative rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 dark:border-zinc-800 bg-zinc-950">
-                    <img src="{{ route('job.image', ['slug' => $post->slug]) }}" 
-                         alt="{{ $post->title }}" 
-                         class="w-full h-auto object-cover max-h-[460px]"
-                         loading="eager"
-                         fetchpriority="high">
-                </figure>
-            </div>
 
         <!-- Main 2-Column Content Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -133,7 +120,7 @@
                     @endphp
 
                     @if ($affiliateEnabled && !empty($affiliateItems))
-                        <section class="mt-8 bg-gradient-to-br from-amber-500/5 via-white to-orange-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-orange-950/10 p-6 sm:p-8 rounded-2xl border border-amber-200/70 dark:border-amber-900/40 shadow-xs">
+                        <section class="mt-8 bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl">
                             <div class="flex items-start gap-3.5 mb-5">
                                 <div class="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0 text-lg mt-0.5">
                                     <i class="fa-solid fa-briefcase"></i>
@@ -219,8 +206,8 @@
                 @endphp
                 <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-6">
                     <div class="pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                        <span class="text-[10px] uppercase font-bold tracking-widest text-amber-800 dark:text-amber-400 block mb-1">
-                            Informasi Lowongan
+                        <span class="text-sm font-semibold text-blue-700 dark:text-blue-400 block mb-2">
+                            Informasi lowongan
                         </span>
                         <h3 class="font-serif-title font-bold text-xl text-zinc-950 dark:text-zinc-50">
                             {{ $post->title }}
@@ -239,7 +226,7 @@
                                 <a href="{{ $applyUrl }}" 
                                    target="_blank" 
                                    rel="noopener noreferrer" 
-                                   class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-950 text-xs font-semibold tracking-wide transition-colors shadow-xs">
+                                   class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-brand hover:bg-blue-800 text-white text-sm font-semibold transition-colors">
                                     <i class="fa-solid fa-paper-plane text-xs"></i>
                                     <span>Lamar Sekarang</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-70"></i>
@@ -255,11 +242,23 @@
                         </div>
                     @endif
 
+                    <dl class="space-y-4 text-sm">
+                        <div>
+                            <dt class="text-zinc-500 dark:text-zinc-400">Lokasi</dt>
+                            <dd class="mt-1 font-semibold">{{ $post->city?->name ?? 'Indonesia' }}</dd>
+                        </div>
+                        @if ($post->published_at)
+                            <div>
+                                <dt class="text-zinc-500 dark:text-zinc-400">Publikasi aktif sampai</dt>
+                                <dd class="mt-1 font-semibold">{{ ($post->expired_at ?? $post->published_at->copy()->addDays(21))->translatedFormat('d F Y') }}</dd>
+                            </div>
+                        @endif
+                    </dl>
                     <!-- Job Info Attributes -->
-                    <div class="space-y-5 text-xs overflow-hidden">
+                    <div class="space-y-5 text-sm overflow-hidden">
                         @if ($post->formatted_address)
                             <div class="flex items-start gap-3">
-                                <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-amber-800 dark:text-amber-400 flex-shrink-0 mt-0.5">
+                                <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-blue-700 dark:text-blue-400 flex-shrink-0 mt-0.5">
                                     <i class="fa-solid fa-location-dot text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -271,12 +270,12 @@
 
                         @if ($post->phone)
                             <div class="flex items-start gap-3">
-                                <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-amber-800 dark:text-amber-400 flex-shrink-0 mt-0.5">
+                                <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-blue-700 dark:text-blue-400 flex-shrink-0 mt-0.5">
                                     <i class="fa-solid fa-phone text-xs"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block mb-0.5">Kontak & Telepon</span>
-                                    <a href="tel:{{ $post->phone }}" class="text-zinc-900 dark:text-zinc-100 font-semibold hover:text-amber-800 dark:hover:text-amber-400 transition-colors break-words">
+                                    <a href="tel:{{ $post->phone }}" class="text-zinc-900 dark:text-zinc-100 font-semibold hover:text-blue-700 dark:hover:text-blue-400 transition-colors break-words">
                                         {{ $post->phone }}
                                     </a>
                                 </div>
@@ -303,7 +302,12 @@
                             @endphp
 
                             <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
-                                @foreach ($post->details as $detail)
+                                @foreach ($post->details->sortBy(fn ($detail) => match (strtolower(trim($detail->meta_key))) {
+                                    'nama_perusahaan', 'perusahaan' => 0,
+                                    'gaji' => 1,
+                                    'tipe_pekerjaan' => 2,
+                                    default => 3,
+                                }) as $detail)
                                     @php
                                         $normKey = strtolower(trim($detail->meta_key));
                                         $normVal = trim($detail->meta_value);
@@ -338,7 +342,7 @@
                                     @endphp
 
                                     <div class="flex items-start gap-3">
-                                        <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-amber-800 dark:text-amber-400 flex-shrink-0 mt-0.5">
+                                        <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-blue-700 dark:text-blue-400 flex-shrink-0 mt-0.5">
                                             <i class="{{ $metaConfig['icon'] }} text-xs"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -346,7 +350,7 @@
                                                 {{ $metaConfig['label'] }}
                                             </span>
                                             @if ($isUrl)
-                                                <a href="{{ $detail->meta_value }}" target="_blank" rel="noopener noreferrer" class="text-amber-800 dark:text-amber-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
+                                                <a href="{{ $detail->meta_value }}" target="_blank" rel="noopener noreferrer" class="text-blue-700 dark:text-blue-400 font-semibold hover:underline inline-flex items-center gap-1 break-all">
                                                     Kunjungi Tautan <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                                 </a>
                                             @else
@@ -365,7 +369,7 @@
                     <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-3">Mencari lowongan lain di {{ $post->city->name }}?</p>
                     <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
                        wire:navigate
-                       class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 transition-colors">
+                       class="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
                         Lihat Semua Lowongan di {{ $post->city->name }} <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
@@ -376,15 +380,14 @@
             <section class="mt-20 pt-12 border-t border-zinc-200 dark:border-zinc-800">
                 <div class="mb-8 flex items-baseline justify-between">
                     <div>
-                        <span class="text-xs uppercase tracking-widest font-bold text-amber-800 dark:text-amber-400 block mb-1">Eksplorasi Lanjutan</span>
                         <h2 class="font-serif-title text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50">
-                            Lowongan Kerja Terkait di {{ $post->city?->name ?? 'Sekitar' }}
+                            Lowongan lain di {{ $post->city?->name ?? 'Indonesia' }}
                         </h2>
                     </div>
                     @if ($post->city)
                         <a href="{{ route('search', ['city' => $post->city->slug]) }}" 
                            wire:navigate
-                           class="text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-amber-800 dark:hover:text-amber-400 hidden sm:inline-flex items-center gap-1">
+                           class="text-xs font-bold text-zinc-900 dark:text-zinc-200 hover:text-blue-700 dark:hover:text-blue-400 hidden sm:inline-flex items-center gap-1">
                             Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>
                     @endif
