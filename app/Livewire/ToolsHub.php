@@ -10,7 +10,8 @@ class ToolsHub extends Component
     {
         return view('livewire.tools-hub')->layout('layouts.app', [
             'title' => 'Tools & Resources · CariKaryawan',
-            'description' => 'Kumpulan tools dan resources untuk membantu perjalanan karir Anda: CV Builder, Interview Prep, dan lainnya.',
+            'metaDescription' => 'Kumpulan tools dan resources untuk membantu perjalanan karir Anda: CV Builder, Interview Prep, dan lainnya.',
+            'canonicalUrl' => route('tools.hub'),
         ]);
     }
 }

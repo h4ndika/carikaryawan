@@ -2,6 +2,13 @@
 
 > **Catatan:** proyek ini sebelumnya bernama **DISEKITAR** (direktori tempat, landmark, blog, loker). Seluruh entri di bawah entri 2026-10-12 adalah **riwayat DISEKITAR (legacy)** dan sengaja tidak ditulis ulang; fitur tempat/landmark/blog, `tools/google-map-extractor`, dan `tools/photo-scraper-admin` yang disebut di dalamnya sudah dihapus.
 
+## Milestone: Perbaikan Audit SEO (17 Oktober 2026)
+
+- Harvest memakai kota dari data sumber, bukan kota pencarian; item tanpa kota pasti tidak diimpor. AI tidak lagi menimpa fakta sumber atau menebak gaji.
+- Schema `JobPosting` jujur: judul = posisi, tanpa kode pos/alamat tebakan, logo publisher valid.
+- `www` → apex 301, pagination crawlable dengan canonical per halaman, canonical tools, `lastmod` sitemap stabil.
+- `jobs:fix-locations` (dry-run default, apply wajib backup + ID yang ditinjau) dengan redirect 301 dari URL lama. Detail di [docs/DOMAIN.md](docs/DOMAIN.md#seo).
+
 ## Milestone: Papan Loker & Menu Kota (15 Oktober 2026)
 
 - Identitas publik beralih dari masthead/serif majalah ke papan loker sans, zinc, dan biru. Beranda mengutamakan pencarian posisi/kota; kartu memuat metadata pekerjaan asli tanpa foto editorial besar.

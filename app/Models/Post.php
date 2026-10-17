@@ -462,7 +462,7 @@ class Post extends Model
                 'url' => $siteUrl,
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => asset('images/logo.png'),
+                    'url' => asset('android-chrome-512x512.png'),
                 ],
             ],
         ];
@@ -479,19 +479,21 @@ class Post extends Model
 
             // Ekstrak nama perusahaan dan posisi secara presisi
             $companyName = $this->company_name ?: ($this->getDetailValue(['perusahaan', 'nama_perusahaan', 'company']) ?: '');
-            $jobTitle = $this->title;
-            if (empty($companyName) && str_contains($this->title, ' - ')) {
-                $parts = explode(' - ', $this->title, 2);
-                $jobTitle = trim($parts[0]);
-                $companyName = trim($parts[1]);
+            $position = $this->getDetailValue('posisi');
+            $jobTitle = $position ?: $this->title;
+            if (!$position && $companyName) {
+                $jobTitle = preg_replace('/\s+[-–—]\s+' . preg_quote($companyName, '/') . '\s*$/iu', '', $jobTitle);
             }
             if (empty($companyName)) {
                 $companyName = $this->title;
             }
 
-            // Ekstrak alamat dan kode pos yang valid
-            $streetAddress = $this->formatted_address ?: ($this->getDetailValue(['alamat', 'lokasi']) ?: ($cityName ?: 'Indonesia'));
-            $postalCode = $this->city?->postal_code ?: '40111';
+            // Lokasi kota bukan alamat jalan; jangan mengarang alamat atau kode pos.
+            $streetAddress = trim($this->formatted_address ?: ($this->getDetailValue(['alamat', 'street_address']) ?: ''));
+            if (in_array(mb_strtolower($streetAddress), array_map('mb_strtolower', [$cityName, $provName, 'Indonesia']), true)) {
+                $streetAddress = '';
+            }
+            $postalCode = $this->getDetailValue(['kode_pos', 'postal_code']);
 
             $jobSchema = [
                 '@type' => 'JobPosting',
@@ -508,14 +510,14 @@ class Post extends Model
                 ],
                 'jobLocation' => [
                     '@type' => 'Place',
-                    'address' => [
+                    'address' => array_filter([
                         '@type' => 'PostalAddress',
                         'streetAddress' => $streetAddress,
-                        'addressLocality' => $cityName ?: 'Indonesia',
-                        'addressRegion' => $provName ?: 'Indonesia',
+                        'addressLocality' => $cityName,
+                        'addressRegion' => $provName,
                         'postalCode' => $postalCode,
                         'addressCountry' => 'ID',
-                    ],
+                    ]),
                 ],
             ];
 

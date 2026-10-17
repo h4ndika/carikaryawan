@@ -18,16 +18,13 @@
                     <span class="hidden sm:inline">Sebelumnya</span>
                 </span>
             @else
-                <button type="button" 
-                        wire:click="previousPage('{{ $paginator->getPageName() }}')" 
-                        onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
-                        wire:loading.attr="disabled"
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" wire:navigate
                         style="cursor: pointer !important;"
                         class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer select-none"
                         aria-label="Halaman Sebelumnya">
                     <i class="fa-solid fa-arrow-left text-[10px]"></i>
                     <span class="hidden sm:inline">Sebelumnya</span>
-                </button>
+                </a>
             @endif
 
             {{-- Separator line between prev and numbers on mobile --}}
@@ -46,18 +43,15 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <span class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-xs sm:text-sm shadow-2xs select-none">
+                            <span aria-current="page" class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 font-bold text-xs sm:text-sm shadow-2xs select-none">
                                 {{ $page }}
                             </span>
                         @else
-                            <button type="button" 
-                                    wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')"
-                                    onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
-                                    wire:loading.attr="disabled"
+                            <a href="{{ $url }}" wire:navigate
                                     style="cursor: pointer !important;"
                                     class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 font-semibold text-xs sm:text-sm transition-colors cursor-pointer select-none">
                                 {{ $page }}
-                            </button>
+                            </a>
                         @endif
                     @endforeach
                 @endif
@@ -68,16 +62,13 @@
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <button type="button" 
-                        wire:click="nextPage('{{ $paginator->getPageName() }}')" 
-                        onclick="const target = document.getElementById('posts-feed') || document.getElementById('main-content') || document.querySelector('main'); if(target){ target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); }"
-                        wire:loading.attr="disabled"
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" wire:navigate
                         style="cursor: pointer !important;"
                         class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer select-none"
                         aria-label="Halaman Berikutnya">
                     <span class="hidden sm:inline">Berikutnya</span>
                     <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                </button>
+                </a>
             @else
                 <span class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-300 dark:text-zinc-700 select-none cursor-not-allowed">
                     <span class="hidden sm:inline">Berikutnya</span>

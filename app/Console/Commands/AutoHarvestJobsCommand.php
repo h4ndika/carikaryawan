@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\ApifyAccount;
 use App\Models\Category;
-use App\Models\City;
 use App\Models\AiGenerationJob;
 use App\Models\Post;
 use App\Models\Setting;
@@ -141,10 +140,6 @@ class AutoHarvestJobsCommand extends Command
 
         $categoryId = $jobCategory?->id;
 
-        // Resolve City Model if exists
-        $cityModel = City::where('name', 'LIKE', "%{$targetCityName}%")->first();
-        $cityId = $cityModel?->id;
-
         try {
             // 5. Jalankan Crawler di Apify
             $this->info("Menghubungi Apify Actor untuk {$engine}...");
@@ -188,12 +183,12 @@ class AutoHarvestJobsCommand extends Command
             // 7. Normalisasi Data
             $normalizedItems = [];
             if ($engine === 'glints') {
-                $normalizedItems = array_map(function ($item) use ($targetCityName) {
+                $normalizedItems = array_map(function ($item) {
                     $pos = $item['title'] ?? 'Lowongan Kerja';
                     $comp = $item['company_name'] ?? ($item['company'] ?? 'Perusahaan');
                     $loc = is_array($item['location'] ?? null) 
-                        ? ($item['location']['locality'] ?? ($item['location']['area'] ?? $targetCityName))
-                        : ($item['location'] ?? $targetCityName);
+                        ? ($item['location']['locality'] ?? ($item['location']['area'] ?? ''))
+                        : ($item['location'] ?? '');
                     $desc = $item['description'] ?? ($item['snippet'] ?? '');
                     $apply = $item['platform_url'] ?? ($item['url'] ?? '');
                     $logo = $item['company_logo'] ?? null;
@@ -233,10 +228,10 @@ class AutoHarvestJobsCommand extends Command
                     ];
                 }, $rawItems);
             } else {
-                $normalizedItems = array_map(function ($item) use ($targetCityName) {
+                $normalizedItems = array_map(function ($item) {
                     $pos = $item['title'] ?? ($item['job_title'] ?? 'Lowongan Kerja');
                     $comp = $item['company'] ?? ($item['company_name'] ?? 'Perusahaan');
-                    $loc = $item['location'] ?? $targetCityName;
+                    $loc = $item['location'] ?? '';
                     $desc = $item['description'] ?? ($item['snippet'] ?? '');
                     $apply = $item['url'] ?? ($item['apply_url'] ?? ($item['link'] ?? ''));
                     $salary = $item['salary'] ?? '-';
@@ -269,7 +264,6 @@ class AutoHarvestJobsCommand extends Command
             $importOptions = [
                 'skip_duplicates' => true,
                 'category_id' => $categoryId,
-                'city_id' => $cityId,
                 'status' => 'draft',
             ];
 
@@ -284,6 +278,11 @@ class AutoHarvestJobsCommand extends Command
             // 9. Masukkan Loker Baru ke Antrean AI (publish_on_complete = true)
             $queuedCount = 0;
             foreach ($importedPostIds as $postId) {
+                if (!Post::whereKey($postId)->whereNotNull('city_id')->exists()) {
+                    $this->warn("Loker {$postId} tetap draft: kota sumber belum dapat dipastikan.");
+                    continue;
+                }
+
                 $exists = AiGenerationJob::where('post_id', $postId)
                     ->whereIn('status', ['pending', 'processing', 'completed'])
                     ->exists();

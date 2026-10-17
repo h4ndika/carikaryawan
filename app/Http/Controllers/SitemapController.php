@@ -17,7 +17,6 @@ class SitemapController extends Controller
         // 1. Homepage
         $urls[] = [
             'loc' => route('home'),
-            'lastmod' => now()->toAtomString(),
             'changefreq' => 'daily',
             'priority' => '1.0',
         ];
@@ -27,7 +26,6 @@ class SitemapController extends Controller
         foreach ($policyRoutes as $routeName) {
             $urls[] = [
                 'loc' => route($routeName),
-                'lastmod' => now()->toAtomString(),
                 'changefreq' => 'monthly',
                 'priority' => '0.8',
             ];
@@ -37,7 +35,6 @@ class SitemapController extends Controller
         foreach (['tools.hub', 'career.cv-builder', 'career.interview-prep'] as $routeName) {
             $urls[] = [
                 'loc' => route($routeName),
-                'lastmod' => now()->toAtomString(),
                 'changefreq' => 'monthly',
                 'priority' => '0.7',
             ];
@@ -48,7 +45,7 @@ class SitemapController extends Controller
         foreach ($categories as $cat) {
             $urls[] = [
                 'loc' => route('category.home', ['category' => $cat->slug]),
-                'lastmod' => optional($cat->updated_at)->toAtomString() ?? now()->toAtomString(),
+                'lastmod' => $cat->updated_at?->toAtomString(),
                 'changefreq' => 'daily',
                 'priority' => '0.9',
             ];
@@ -67,19 +64,19 @@ class SitemapController extends Controller
 
         // Only list category+city pages with enough posts to be worth indexing.
         // ponytail: counted within the 5000-post sample; switch to a GROUP BY query if the sitemap is split.
-        $listCounts = $posts->countBy(fn (Post $post) => $post->category->slug . '|' . $post->city->slug);
+        $listGroups = $posts->groupBy(fn (Post $post) => $post->category->slug . '|' . $post->city->slug);
 
         $listKeys = [];
         foreach ($posts as $post) {
             $listKey = $post->category->slug . '|' . $post->city->slug;
-            if (!isset($listKeys[$listKey]) && $listCounts[$listKey] >= self::MIN_LISTING_POSTS) {
+            if (!isset($listKeys[$listKey]) && $listGroups[$listKey]->count() >= self::MIN_LISTING_POSTS) {
                 $listKeys[$listKey] = true;
                 $urls[] = [
                     'loc' => route('posts.list', [
                         'category' => $post->category->slug,
                         'city' => $post->city->slug,
                     ]),
-                    'lastmod' => optional($post->updated_at)->toAtomString() ?? now()->toAtomString(),
+                    'lastmod' => $listGroups[$listKey]->max(fn (Post $item) => $item->updated_at ?? $item->published_at)?->toAtomString(),
                     'changefreq' => 'daily',
                     'priority' => '0.8',
                 ];
@@ -91,9 +88,7 @@ class SitemapController extends Controller
                     'city' => $post->city->slug,
                     'slug' => $post->slug,
                 ]),
-                'lastmod' => optional($post->updated_at)->toAtomString()
-                    ?? optional($post->published_at)->toAtomString()
-                    ?? now()->toAtomString(),
+                'lastmod' => ($post->updated_at ?? $post->published_at)?->toAtomString(),
                 'changefreq' => 'weekly',
                 'priority' => '0.7',
             ];
@@ -107,7 +102,9 @@ class SitemapController extends Controller
         foreach ($urls as $url) {
             $lines[] = '  <url>';
             $lines[] = '    <loc>' . e($url['loc']) . '</loc>';
-            $lines[] = '    <lastmod>' . e($url['lastmod']) . '</lastmod>';
+            if (!empty($url['lastmod'])) {
+                $lines[] = '    <lastmod>' . e($url['lastmod']) . '</lastmod>';
+            }
             $lines[] = '    <changefreq>' . e($url['changefreq']) . '</changefreq>';
             $lines[] = '    <priority>' . e($url['priority']) . '</priority>';
             $lines[] = '  </url>';

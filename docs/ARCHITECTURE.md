@@ -102,6 +102,7 @@ Halaman `/tools` (hub), `/karir/cv-builder`, `/karir/interview-prep`, serta cove
 
 ## Middleware web
 
+0. `RedirectWwwToApex` (global, paling awal): 301 `www.{host APP_URL}` → apex.
 1. `CheckMaintenanceMode`: mengembalikan 503 di URL yang sama jika `maintenance_mode_enabled`. Admin yang login, IP whitelist, `/rahasia`, dan `/api/*` selalu lolos.
 2. `TrackVisitor`: mencatat `page_views` dan menambah `posts.views_count`. Bot, admin, dan aset tidak dihitung.
 

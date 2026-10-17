@@ -28,7 +28,8 @@ class CvBuilder extends Component
             'jobPost' => $this->jobPost,
         ])->layout('layouts.app', [
             'title' => 'ATS CV & Resume Builder · CariKaryawan',
-            'description' => 'Buat CV ATS-friendly yang rapi, profesional, dan siap cetak. Lengkapi data diri, pengalaman, pendidikan, serta keahlian dengan panduan analisis real-time.',
+            'metaDescription' => 'Buat CV ATS-friendly yang rapi, profesional, dan siap cetak. Lengkapi data diri, pengalaman, pendidikan, serta keahlian dengan panduan analisis real-time.',
+            'canonicalUrl' => route('career.cv-builder'),
         ]);
     }
 }

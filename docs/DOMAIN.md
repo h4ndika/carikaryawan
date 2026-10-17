@@ -34,7 +34,12 @@ Cakupan produk: **lowongan kerja** dan **tools karier**. Tempat, landmark, dan b
 - Sitemap dinamis: `/sitemap.xml`. Untuk frontend CSR: `/api/csr/sitemap.xml?domain=...`.
 - **Loker tutup** (`isExpired()`): tetap bisa dibuka, tapi `noindex,follow`, tanpa `JobPosting`, dan tidak masuk sitemap.
 - `JobPosting` wajib jujur (pedoman Google Jobs): `validThrough` = `expired_at` atau `published_at` + 21 hari (jangan digeser maju), `baseSalary` hanya jika gaji diketahui, `directApply: false` karena pelamar diarahkan ke situs sumber.
-- Sitemap hanya berisi halaman bernilai: listing kategori+kota minimal 3 post.
+- `JobPosting.title` = detail `posisi`, atau judul tanpa akhiran ` - {perusahaan}` yang diketahui. Alamat jalan/kode pos hanya dari detail `alamat`/`kode_pos`; tidak ada fallback tebakan (dulu `40111`).
+- **Lokasi loker** berasal dari lokasi item sumber via `AddressParser` (nama kota utuh, batas kata, terpanjang menang; lebih dari satu kota = ambigu). Harvest otomatis tidak lagi memaksa kota pencarian; item dengan kota tak dikenal/ambigu dilewati. Konten AI tidak boleh menimpa `posisi`, `perusahaan`, `lokasi`, `gaji` sumber dan tidak boleh menebak gaji.
+- **Koreksi kota data lama**: `php artisan jobs:fix-locations` (default dry-run). Apply wajib `--apply --id=… --backup=/path/dump.sql`. URL lama disimpan di `post_redirects` dan `PostShow` mengirim 301 ke URL baru. `place_id`, slug, dan masa aktif tidak berubah.
+- Host `www.` dari `APP_URL` diarahkan 301 ke apex (`RedirectWwwToApex`), path+query utuh.
+- Listing berhalaman memakai tautan `<a href>` dan canonical `?page=N` untuk halaman > 1.
+- Sitemap hanya berisi halaman bernilai: listing kategori+kota minimal 3 post. Halaman statis tanpa `lastmod`; listing memakai `updated_at` terbaru postnya.
 - URL warisan DISEKITAR (`/blog*`, `/disekitar/*`, halaman tempat/landmark yang sudah dihapus) diarahkan 301 ke `/` atau 404. Setelah deploy, kirim ulang sitemap di Google Search Console.
 
 ## Peta URL publik

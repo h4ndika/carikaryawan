@@ -86,6 +86,11 @@ class PostList extends Component
             ? route('posts.list', ['category' => $this->category->slug, 'city' => $this->city->slug])
             : route('category.home', ['category' => $this->category->slug]);
 
+        $posts->withPath($canonicalUrl);
+        if ($posts->currentPage() > 1) {
+            $canonicalUrl = $posts->url($posts->currentPage());
+        }
+
         $firstPostImg = $posts->first()?->primary_image_url ?? $editorPicks->first()?->primary_image_url;
 
         // JSON-LD Schema

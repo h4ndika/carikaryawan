@@ -36,6 +36,8 @@ class GoogleMapsImportService
     public function importFromRecords(array $records, array $options = []): array
     {
         $this->resetStats();
+        $this->overrideCityId = null;
+        $this->overrideProvinceId = null;
 
         if (isset($options['skip_duplicates'])) {
             $this->skipDuplicates = (bool) $options['skip_duplicates'];
@@ -143,6 +145,12 @@ class GoogleMapsImportService
                 return;
             }
 
+            if (!$this->overrideCityId && !$this->parseAddressToLocation($data['address'] ?? $data['location'] ?? '')['city_id']) {
+                Log::warning('Skipping job: source city is unknown or ambiguous', ['title' => $data['title']]);
+                $this->stats['skipped']++;
+                return;
+            }
+
             // Check for duplicates
             $placeId = $data['placeId'] ?? null;
             if ($placeId && $this->isDuplicate($placeId)) {
@@ -211,7 +219,7 @@ class GoogleMapsImportService
         $description = $data['description'] ?? ($data['snippet'] ?? '');
         $excerpt = Str::limit(strip_tags($description), 200);
 
-        $status = $this->defaultStatus ?: 'draft';
+        $status = $cityId ? ($this->defaultStatus ?: 'draft') : 'draft';
         $publishedAt = $status === 'published' ? now() : null;
 
         $isJob = $categoryId && Category::find($categoryId)?->isJob();

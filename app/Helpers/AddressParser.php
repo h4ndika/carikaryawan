@@ -79,37 +79,44 @@ class AddressParser
      */
     protected static function findCityId(string $normalizedAddress, ?int $provinceId = null): ?int
     {
-        // Build query
-        $query = City::query();
-        
-        // If we know the province, narrow down search
-        if ($provinceId) {
-            $query->where('province_id', $provinceId);
-        }
+        $ids = self::matchingCityIds($normalizedAddress, $provinceId);
 
-        $cities = $query->get();
+        return count($ids) === 1 ? $ids[0] : null;
+    }
+
+    public static function matchingCityIds(string $text, ?int $provinceId = null): array
+    {
+        $text = mb_strtoupper($text);
+        $matches = [];
+        $cities = City::query()->when($provinceId, fn ($query) => $query->where('province_id', $provinceId))->get();
 
         foreach ($cities as $city) {
-            $cityName = strtoupper($city->name);
-            
-            // Direct match
-            if (str_contains($normalizedAddress, $cityName)) {
-                return $city->id;
-            }
-
-            // Try without common prefixes
-            $patterns = ['KOTA ', 'KAB. ', 'KABUPATEN ', 'KOTA', 'KAB.', 'KABUPATEN'];
-            foreach ($patterns as $pattern) {
-                $cleanName = str_replace($pattern, '', $cityName);
-                $cleanName = trim($cleanName);
-                
-                if (!empty($cleanName) && str_contains($normalizedAddress, $cleanName)) {
-                    return $city->id;
+            $name = mb_strtoupper($city->name);
+            $short = preg_replace('/^(?:KOTA|KABUPATEN|KAB\.)\s+/u', '', $name);
+            foreach (array_unique([$name, $short]) as $alias) {
+                if ($alias === '') {
+                    continue;
+                }
+                preg_match_all('/(?<![\pL\pN])' . preg_quote($alias, '/') . '(?![\pL\pN])/u', $text, $hits, PREG_OFFSET_CAPTURE);
+                foreach ($hits[0] as [$value, $offset]) {
+                    $matches[] = ['id' => $city->id, 'start' => $offset, 'end' => $offset + strlen($value)];
                 }
             }
         }
 
-        return null;
+        // Prefer the full place name at each occurrence; separate cities remain ambiguous.
+        $matches = array_filter($matches, function ($match) use ($matches) {
+            foreach ($matches as $other) {
+                if ($other['start'] <= $match['start'] && $other['end'] >= $match['end']
+                    && ($other['start'] < $match['start'] || $other['end'] > $match['end'])) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return array_values(array_unique(array_column($matches, 'id')));
     }
 
     /**

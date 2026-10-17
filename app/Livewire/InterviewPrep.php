@@ -28,7 +28,8 @@ class InterviewPrep extends Component
             'jobPost' => $this->jobPost,
         ])->layout('layouts.app', [
             'title' => 'Interview Prep AI · Latihan Wawancara Kerja · CariKaryawan',
-            'description' => 'Latih wawancara kerja dengan AI. Dapatkan pertanyaan general, behavioral, dan teknis yang disesuaikan dengan posisi target.',
+            'metaDescription' => 'Latih wawancara kerja dengan AI. Dapatkan pertanyaan general, behavioral, dan teknis yang disesuaikan dengan posisi target.',
+            'canonicalUrl' => route('career.interview-prep'),
         ]);
     }
 }

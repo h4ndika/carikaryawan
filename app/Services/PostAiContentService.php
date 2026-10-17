@@ -24,8 +24,6 @@ class PostAiContentService
     {
         $post->loadMissing(['category', 'city', 'province']);
 
-        $cityName = $post->city?->name ?? '';
-        $provinceName = $post->province?->name ?? '';
         $title = $post->title;
 
         // Build context from existing metadata if present
@@ -42,6 +40,7 @@ class PostAiContentService
 
         $post->loadMissing('details');
         $existingDetails = $post->details->pluck('meta_value', 'meta_key')->toArray();
+        $extraContext[] = 'Fakta sumber (jangan diubah): ' . json_encode($existingDetails, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $existingDesc = trim(strip_tags($post->content));
         if (!empty($existingDesc)) {
             $extraContext[] = "Deskripsi Lowongan Asli dari Perusahaan: " . Str::limit($existingDesc, 800);
@@ -52,7 +51,8 @@ class PostAiContentService
 
         $extraContextStr = !empty($extraContext) ? 'Informasi pelengkap: ' . implode(' | ', $extraContext) . '.' : '';
 
-        return "Buatkan artikel lowongan kerja yang sangat informatif, profesional, dan rapi untuk posisi dan perusahaan: \"$title\", yang berlokasi di $cityName, $provinceName. " .
+        return "Rapikan informasi lowongan kerja untuk posisi dan perusahaan: \"$title\" hanya berdasarkan fakta sumber. " .
+            'Jangan mengarang lokasi, gaji, benefit, kualifikasi, atau tipe pekerjaan. Jika tidak disebutkan sumber, isi null dalam JSON dan jangan tambahkan klaim tersebut dalam artikel. ' .
             ($extraContextStr ? "$extraContextStr " : '') .
             'Tulis dengan bahasa Indonesia yang jelas, menarik bagi pencari kerja, dan terstruktur rapi. ' .
             'Gunakan susunan subjudul: <h2>Ringkasan Lowongan</h2>, <h3>Kualifikasi & Persyaratan</h3>, <h3>Tanggung Jawab Pekerjaan</h3>, dan <h3>Benefit & Cara Melamar</h3>. ' .
@@ -66,8 +66,8 @@ class PostAiContentService
             '{
                 "posisi": "Nama Posisi",
                 "perusahaan": "Nama Perusahaan",
-                "lokasi": "' . ($cityName ?: 'Indonesia') . '",
-                "gaji": "Perkiraan / Negosiasi / Kisaran Gaji",
+                "lokasi": null,
+                "gaji": null,
                 "kualifikasi": "Ringkasan kualifikasi utama",
                 "tipe_pekerjaan": "Full Time / Kontrak / Part Time / Magang"
             } ' .
@@ -100,7 +100,7 @@ class PostAiContentService
                 'excerpt' => $excerpt,
             ];
 
-            if ($publishOnComplete) {
+            if ($publishOnComplete && $post->city_id) {
                 $updateData['status'] = 'published';
                 if (is_null($post->published_at)) {
                     $updateData['published_at'] = now();
@@ -119,7 +119,8 @@ class PostAiContentService
                     $key = (string) $detail['meta_key'];
                     $val = (string) $detail['meta_value'];
                     // Jaga agar cara_melamar / website link asli tidak tertimpa teks dummy AI
-                    if ($key === 'cara_melamar' && !empty($existingDetails['cara_melamar']) && str_contains($existingDetails['cara_melamar'], 'http')) {
+                    if (!in_array($key, ['posisi', 'perusahaan', 'lokasi', 'gaji', 'kualifikasi', 'tipe_pekerjaan'], true)
+                        || trim((string) ($existingDetails[$key] ?? '')) !== '' || trim($val) === '') {
                         continue;
                     }
                     $merged[$key] = $val;

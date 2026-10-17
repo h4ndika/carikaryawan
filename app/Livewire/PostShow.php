@@ -20,6 +20,16 @@ class PostShow extends Component
         City|string|null $city = null,
         Post|string|null $slug = null
     ): void {
+        $redirectId = \Illuminate\Support\Facades\DB::table('post_redirects')
+            ->where('old_path', '/' . request()->path())->value('post_id');
+        if ($redirectId) {
+            $target = Post::published()->whereHas('category', fn ($query) => $query->jobs())
+                ->with(['category', 'city'])->find($redirectId);
+            if ($target?->city && parse_url($target->url(), PHP_URL_PATH) !== '/' . request()->path()) {
+                abort(new \Illuminate\Http\RedirectResponse($target->url(), 301));
+            }
+        }
+
         if ($category instanceof Category) {
             $categoryModel = $category;
             $this->categorySlug = $category->slug;
