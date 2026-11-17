@@ -57,11 +57,20 @@ it('avoids province substring collisions and resolves English or spacing variant
     $riau = Province::create(['name' => 'RIAU', 'slug' => 'riau']);
     $kepri = Province::create(['name' => 'KEPULAUAN RIAU', 'slug' => 'kepulauan-riau']);
     $babel = Province::create(['name' => 'KEPULAUAN BANGKA BELITUNG', 'slug' => 'kepulauan-bangka-belitung']);
+    $diy = Province::create(['name' => 'DI YOGYAKARTA', 'slug' => 'di-yogyakarta']);
+    $bengkuluProv = Province::create(['name' => 'BENGKULU', 'slug' => 'bengkulu']);
     $banten = Province::create(['name' => 'BANTEN', 'slug' => 'banten']);
 
     $balikpapan = City::create(['name' => 'KOTA BALIKPAPAN', 'slug' => 'balikpapan-kota', 'province_id' => $kaltim->id]);
     $batam = City::create(['name' => 'KOTA BATAM', 'slug' => 'batam-kota', 'province_id' => $kepri->id]);
+    $kabBangka = City::create(['name' => 'KAB. BANGKA', 'slug' => 'bangka-kabupaten', 'province_id' => $babel->id]);
+    City::create(['name' => 'KAB. BELITUNG', 'slug' => 'belitung-kabupaten', 'province_id' => $babel->id]);
+    $bangkaTengah = City::create(['name' => 'KAB. BANGKA TENGAH', 'slug' => 'bangka-tengah-kabupaten', 'province_id' => $babel->id]);
     $pangkalPinang = City::create(['name' => 'KOTA PANGKAL PINANG', 'slug' => 'pangkal-pinang-kota', 'province_id' => $babel->id]);
+    $kotaYogya = City::create(['name' => 'KOTA YOGYAKARTA', 'slug' => 'yogyakarta-kota', 'province_id' => $diy->id]);
+    $sleman = City::create(['name' => 'KAB. SLEMAN', 'slug' => 'sleman-kabupaten', 'province_id' => $diy->id]);
+    $kotaBengkulu = City::create(['name' => 'KOTA BENGKULU', 'slug' => 'bengkulu-kota', 'province_id' => $bengkuluProv->id]);
+    $rejangLebong = City::create(['name' => 'KAB. REJANG LEBONG', 'slug' => 'rejang-lebong-kabupaten', 'province_id' => $bengkuluProv->id]);
     $tangsel = City::create(['name' => 'KOTA TANGERANG SELATAN', 'slug' => 'tangerang-selatan-kota', 'province_id' => $banten->id]);
 
     expect(AddressParser::parse('Balikpapan, Kalimantan Timur'))->toBe(['province_id' => $kaltim->id, 'city_id' => $balikpapan->id])
@@ -69,6 +78,16 @@ it('avoids province substring collisions and resolves English or spacing variant
         ->and(AddressParser::parse('Batam, Kepulauan Riau'))->toBe(['province_id' => $kepri->id, 'city_id' => $batam->id])
         ->and(AddressParser::parse('Batam, Riau Islands'))->toBe(['province_id' => $kepri->id, 'city_id' => $batam->id])
         ->and(AddressParser::parse('Pangkalpinang, Bangka Belitung Islands'))->toBe(['province_id' => $babel->id, 'city_id' => $pangkalPinang->id])
+        ->and(AddressParser::parse('Bangka, Bangka Belitung Islands'))->toBe(['province_id' => $babel->id, 'city_id' => $kabBangka->id])
+        ->and(AddressParser::parse('Bangka Tengah, Bangka Belitung Islands'))->toBe(['province_id' => $babel->id, 'city_id' => $bangkaTengah->id])
+        ->and(AddressParser::parse('Bangka Belitung Islands'))->toBe(['province_id' => $babel->id, 'city_id' => null])
+        ->and(AddressParser::parse('Sleman, DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => $sleman->id])
+        ->and(AddressParser::parse('Yogyakarta, DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => $kotaYogya->id])
+        ->and(AddressParser::parse('Yogyakarta, Indonesia'))->toBe(['province_id' => $diy->id, 'city_id' => $kotaYogya->id])
+        ->and(AddressParser::parse('Mlati, Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => null])
+        ->and(AddressParser::parse('DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => null])
+        ->and(AddressParser::parse('Rejang Lebong, Bengkulu'))->toBe(['province_id' => $bengkuluProv->id, 'city_id' => $rejangLebong->id])
+        ->and(AddressParser::parse('Bengkulu, Bengkulu'))->toBe(['province_id' => $bengkuluProv->id, 'city_id' => $kotaBengkulu->id])
         ->and(AddressParser::parse('South Jakarta, Jakarta Raya'))->toBe(['province_id' => $this->province->id, 'city_id' => $this->south->id])
         ->and(AddressParser::parse('West Jakarta'))->toBe(['province_id' => $this->province->id, 'city_id' => $this->west->id])
         ->and(AddressParser::parse('South Tangerang, Banten'))->toBe(['province_id' => $banten->id, 'city_id' => $tangsel->id])

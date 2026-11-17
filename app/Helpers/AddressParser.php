@@ -27,10 +27,21 @@ class AddressParser
         $normalizedAddress = mb_strtoupper($address);
 
         // Try to find province
-        $provinceId = self::findProvinceId($normalizedAddress);
+        $provinceMatch = self::findProvinceMatch($normalizedAddress);
+        $provinceId = $provinceMatch['id'] ?? null;
 
-        // Try to find city
-        $cityId = self::findCityId($normalizedAddress, $provinceId);
+        // Strip the matched province span so province words like "Bangka Belitung" or "DI Yogyakarta" do not collide with cities.
+        if ($provinceMatch) {
+            $withoutProvince = substr_replace($normalizedAddress, ' ', $provinceMatch['start'], $provinceMatch['end'] - $provinceMatch['start']);
+            $cityId = self::findCityId($withoutProvince, $provinceId);
+
+            $hasPrefixBeforeProvince = trim(substr($normalizedAddress, 0, $provinceMatch['start']), " \t\n\r\0\x0B,-/") !== '';
+            if (!$cityId && !$hasPrefixBeforeProvince && !preg_match('/\b(?:DI|D\.I\.|DKI|PROVINSI|PROV|KEPULAUAN|KEP|ISLANDS?|DAERAH|SPECIAL REGION)\b/u', $provinceMatch['alias'])) {
+                $cityId = self::findCityId($normalizedAddress, $provinceId);
+            }
+        } else {
+            $cityId = self::findCityId($normalizedAddress, null);
+        }
 
         // If city found but no province, get province from city
         if ($cityId && !$provinceId) {
@@ -73,6 +84,11 @@ class AddressParser
      */
     protected static function findProvinceId(string $normalizedAddress): ?int
     {
+        return self::findProvinceMatch($normalizedAddress)['id'] ?? null;
+    }
+
+    protected static function findProvinceMatch(string $normalizedAddress): ?array
+    {
         $aliasesByProvince = [
             'ACEH' => ['NANGGROE ACEH DARUSSALAM'],
             'SUMATERA UTARA' => ['NORTH SUMATRA', 'SUMUT'],
@@ -80,7 +96,7 @@ class AddressParser
             'SUMATERA SELATAN' => ['SOUTH SUMATRA', 'SUMSEL'],
             'KEPULAUAN BANGKA BELITUNG' => ['BANGKA BELITUNG ISLANDS', 'KEP. BANGKA BELITUNG', 'BANGKA BELITUNG'],
             'KEPULAUAN RIAU' => ['RIAU ISLANDS', 'KEP. RIAU', 'KEPRI'],
-            'DKI JAKARTA' => ['DAERAH KHUSUS IBUKOTA JAKARTA'],
+            'DKI JAKARTA' => ['DAERAH KHUSUS IBUKOTA JAKARTA', 'JAKARTA RAYA'],
             'JAWA BARAT' => ['WEST JAVA', 'JABAR'],
             'JAWA TENGAH' => ['CENTRAL JAVA', 'JATENG'],
             'DI YOGYAKARTA' => ['SPECIAL REGION OF YOGYAKARTA', 'DAERAH ISTIMEWA YOGYAKARTA', 'D.I. YOGYAKARTA', 'YOGYAKARTA'],
@@ -116,8 +132,15 @@ class AddressParser
         usort($candidates, fn ($a, $b) => mb_strlen($b['alias']) <=> mb_strlen($a['alias']));
 
         foreach ($candidates as $candidate) {
-            if (preg_match('/(?<![\pL\pN])' . preg_quote($candidate['alias'], '/') . '(?![\pL\pN])/u', $normalizedAddress)) {
-                return $candidate['id'];
+            if (preg_match_all('/(?<![\pL\pN])' . preg_quote($candidate['alias'], '/') . '(?![\pL\pN])/u', $normalizedAddress, $hits, PREG_OFFSET_CAPTURE)) {
+                $last = end($hits[0]);
+
+                return [
+                    'id' => $candidate['id'],
+                    'alias' => $candidate['alias'],
+                    'start' => $last[1],
+                    'end' => $last[1] + strlen($last[0]),
+                ];
             }
         }
 
