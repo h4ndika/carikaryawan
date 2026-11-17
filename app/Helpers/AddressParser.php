@@ -24,7 +24,7 @@ class AddressParser
         $cityId = null;
 
         // Normalize address
-        $normalizedAddress = strtoupper($address);
+        $normalizedAddress = mb_strtoupper($address);
 
         // Try to find province
         $provinceId = self::findProvinceId($normalizedAddress);
@@ -46,28 +46,78 @@ class AddressParser
         ];
     }
 
+    public static function formatLocation(mixed $location, string $fallback = ''): string
+    {
+        if (!is_array($location)) {
+            $text = trim((string) ($location ?? ''));
+
+            return $text !== '' ? $text : $fallback;
+        }
+
+        $parts = [];
+        $seen = [];
+        foreach (['locality', 'city', 'area', 'raw', 'province'] as $key) {
+            $val = trim((string) ($location[$key] ?? ''));
+            $lower = mb_strtolower($val);
+            if ($val !== '' && !isset($seen[$lower])) {
+                $parts[] = $val;
+                $seen[$lower] = true;
+            }
+        }
+
+        return $parts !== [] ? implode(', ', $parts) : $fallback;
+    }
+
     /**
      * Find province ID from address string
      */
     protected static function findProvinceId(string $normalizedAddress): ?int
     {
-        // Get all provinces
-        $provinces = Province::all();
+        $aliasesByProvince = [
+            'ACEH' => ['NANGGROE ACEH DARUSSALAM'],
+            'SUMATERA UTARA' => ['NORTH SUMATRA', 'SUMUT'],
+            'SUMATERA BARAT' => ['WEST SUMATRA', 'SUMBAR'],
+            'SUMATERA SELATAN' => ['SOUTH SUMATRA', 'SUMSEL'],
+            'KEPULAUAN BANGKA BELITUNG' => ['BANGKA BELITUNG ISLANDS', 'KEP. BANGKA BELITUNG', 'BANGKA BELITUNG'],
+            'KEPULAUAN RIAU' => ['RIAU ISLANDS', 'KEP. RIAU', 'KEPRI'],
+            'DKI JAKARTA' => ['DAERAH KHUSUS IBUKOTA JAKARTA'],
+            'JAWA BARAT' => ['WEST JAVA', 'JABAR'],
+            'JAWA TENGAH' => ['CENTRAL JAVA', 'JATENG'],
+            'DI YOGYAKARTA' => ['SPECIAL REGION OF YOGYAKARTA', 'DAERAH ISTIMEWA YOGYAKARTA', 'D.I. YOGYAKARTA', 'YOGYAKARTA'],
+            'JAWA TIMUR' => ['EAST JAVA', 'JATIM'],
+            'NUSA TENGGARA BARAT' => ['WEST NUSA TENGGARA', 'NTB'],
+            'NUSA TENGGARA TIMUR' => ['EAST NUSA TENGGARA', 'NTT'],
+            'KALIMANTAN BARAT' => ['WEST KALIMANTAN', 'KALBAR'],
+            'KALIMANTAN TENGAH' => ['CENTRAL KALIMANTAN', 'KALTENG'],
+            'KALIMANTAN SELATAN' => ['SOUTH KALIMANTAN', 'KALSEL'],
+            'KALIMANTAN TIMUR' => ['EAST KALIMANTAN', 'KALTIM'],
+            'KALIMANTAN UTARA' => ['NORTH KALIMANTAN', 'KALTARA'],
+            'SULAWESI UTARA' => ['NORTH SULAWESI', 'SULUT'],
+            'SULAWESI TENGAH' => ['CENTRAL SULAWESI', 'SULTENG'],
+            'SULAWESI SELATAN' => ['SOUTH SULAWESI', 'SULSEL'],
+            'SULAWESI TENGGARA' => ['SOUTHEAST SULAWESI', 'SULTRA'],
+            'SULAWESI BARAT' => ['WEST SULAWESI', 'SULBAR'],
+            'MALUKU UTARA' => ['NORTH MALUKU', 'MALUT'],
+            'PAPUA BARAT' => ['WEST PAPUA'],
+        ];
 
-        foreach ($provinces as $province) {
-            $provinceName = strtoupper($province->name);
-            
-            // Direct match
-            if (str_contains($normalizedAddress, $provinceName)) {
-                return $province->id;
+        $candidates = [];
+        foreach (Province::all() as $province) {
+            $provinceName = mb_strtoupper($province->name);
+            $cleanName = trim(str_replace(['PROVINSI', 'PROV.', 'PROV'], '', $provinceName));
+            $aliases = array_merge([$provinceName, $cleanName], $aliasesByProvince[$cleanName] ?? []);
+
+            foreach (array_unique(array_filter($aliases)) as $alias) {
+                $candidates[] = ['alias' => $alias, 'id' => $province->id];
             }
+        }
 
-            // Try without common prefixes/suffixes
-            $cleanName = str_replace(['PROVINSI', 'PROV.', 'PROV'], '', $provinceName);
-            $cleanName = trim($cleanName);
-            
-            if (!empty($cleanName) && str_contains($normalizedAddress, $cleanName)) {
-                return $province->id;
+        // Longest alias wins so KEPULAUAN RIAU beats RIAU, and word boundaries avoid BALIKPAPAN -> BALI.
+        usort($candidates, fn ($a, $b) => mb_strlen($b['alias']) <=> mb_strlen($a['alias']));
+
+        foreach ($candidates as $candidate) {
+            if (preg_match('/(?<![\pL\pN])' . preg_quote($candidate['alias'], '/') . '(?![\pL\pN])/u', $normalizedAddress)) {
+                return $candidate['id'];
             }
         }
 
@@ -86,6 +136,27 @@ class AddressParser
 
     public static function matchingCityIds(string $text, ?int $provinceId = null): array
     {
+        $extraAliases = [
+            'JAKARTA SELATAN' => ['SOUTH JAKARTA', 'SOUTH JAKARTA CITY', 'JAKARTA SELATAN CITY'],
+            'JAKARTA BARAT' => ['WEST JAKARTA', 'WEST JAKARTA CITY', 'JAKARTA BARAT CITY'],
+            'JAKARTA TIMUR' => ['EAST JAKARTA', 'EAST JAKARTA CITY', 'JAKARTA TIMUR CITY'],
+            'JAKARTA UTARA' => ['NORTH JAKARTA', 'NORTH JAKARTA CITY', 'JAKARTA UTARA CITY'],
+            'JAKARTA PUSAT' => ['CENTRAL JAKARTA', 'CENTRAL JAKARTA CITY', 'JAKARTA PUSAT CITY'],
+            'TANGERANG SELATAN' => ['SOUTH TANGERANG'],
+            'BANDUNG BARAT' => ['WEST BANDUNG'],
+            'PANGKAL PINANG' => ['PANGKALPINANG'],
+            'TANJUNG PINANG' => ['TANJUNGPINANG'],
+            'TANJUNG BALAI' => ['TANJUNGBALAI'],
+            'PADANG SIDEMPUAN' => ['PADANGSIDIMPUAN'],
+            'LUBUK LINGGAU' => ['LUBUKLINGGAU'],
+            'TEBING TINGGI' => ['TEBINGTINGGI'],
+            'GUNUNGSITOLI' => ['GUNUNG SITOLI'],
+            'GUNUNGKIDUL' => ['GUNUNG KIDUL'],
+            'BAU BAU' => ['BAUBAU', 'BAU-BAU'],
+            'YOGYAKARTA' => ['JOGJAKARTA', 'JOGJA'],
+            'KEPULAUAN SERIBU' => ['THOUSAND ISLANDS', 'KEP. SERIBU'],
+        ];
+
         $text = mb_strtoupper($text);
         $matches = [];
         $cities = City::query()->when($provinceId, fn ($query) => $query->where('province_id', $provinceId))->get();
@@ -93,7 +164,23 @@ class AddressParser
         foreach ($cities as $city) {
             $name = mb_strtoupper($city->name);
             $short = preg_replace('/^(?:KOTA|KABUPATEN|KAB\.)\s+/u', '', $name);
-            foreach (array_unique([$name, $short]) as $alias) {
+            $aliases = [$name, $short];
+
+            if (preg_match('/^(?:KABUPATEN|KAB\.)\s+/u', $name)) {
+                $aliases[] = "KABUPATEN {$short}";
+                $aliases[] = "KAB. {$short}";
+                $aliases[] = "KAB {$short}";
+                $aliases[] = "{$short} REGENCY";
+                $aliases[] = "REGENCY OF {$short}";
+            } elseif (str_starts_with($name, 'KOTA ')) {
+                $aliases[] = "{$short} CITY";
+            }
+
+            foreach ($extraAliases[$short] ?? [] as $extra) {
+                $aliases[] = $extra;
+            }
+
+            foreach (array_unique($aliases) as $alias) {
                 if ($alias === '') {
                     continue;
                 }

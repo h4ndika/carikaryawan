@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\AddressParser;
 use App\Models\ApifyAccount;
 use App\Models\Category;
 use App\Models\AiGenerationJob;
@@ -186,9 +187,7 @@ class AutoHarvestJobsCommand extends Command
                 $normalizedItems = array_map(function ($item) {
                     $pos = $item['title'] ?? 'Lowongan Kerja';
                     $comp = $item['company_name'] ?? ($item['company'] ?? 'Perusahaan');
-                    $loc = is_array($item['location'] ?? null) 
-                        ? ($item['location']['locality'] ?? ($item['location']['area'] ?? ''))
-                        : ($item['location'] ?? '');
+                    $loc = AddressParser::formatLocation($item['location'] ?? null);
                     $desc = $item['description'] ?? ($item['snippet'] ?? '');
                     $apply = $item['platform_url'] ?? ($item['url'] ?? '');
                     $logo = $item['company_logo'] ?? null;

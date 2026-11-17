@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Helpers\AddressParser;
 use App\Models\ApifyAccount;
 use App\Models\GoogleMapsScrapeJob;
 use App\Services\ApifyScraperService;
@@ -182,9 +183,7 @@ class RunGoogleMapsScrapeJob implements ShouldQueue
                 $items = array_map(function ($item) {
                     $pos = $item['title'] ?? 'Lowongan Kerja';
                     $comp = $item['company_name'] ?? ($item['company'] ?? 'Perusahaan');
-                    $loc = is_array($item['location'] ?? null) 
-                        ? ($item['location']['locality'] ?? ($item['location']['area'] ?? 'Indonesia'))
-                        : ($item['location'] ?? 'Indonesia');
+                    $loc = AddressParser::formatLocation($item['location'] ?? null, 'Indonesia');
                     $desc = $item['description'] ?? ($item['snippet'] ?? '');
                     $apply = $item['platform_url'] ?? ($item['url'] ?? '');
                     $logo = $item['company_logo'] ?? null;

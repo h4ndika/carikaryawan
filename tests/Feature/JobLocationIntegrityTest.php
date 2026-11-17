@@ -35,14 +35,45 @@ function locationTestPost($test, array $attrs = []): Post
 
 it('matches complete city names and refuses ambiguous names', function () {
     $province = Province::create(['name' => 'Jawa Barat', 'slug' => 'jawa-barat']);
-    City::create(['name' => 'Kota Bandung', 'slug' => 'bandung-kota', 'province_id' => $province->id]);
-    City::create(['name' => 'Kabupaten Bandung', 'slug' => 'bandung-kabupaten', 'province_id' => $province->id]);
+    $kotaBandung = City::create(['name' => 'Kota Bandung', 'slug' => 'bandung-kota', 'province_id' => $province->id]);
+    $kabBandung = City::create(['name' => 'KAB. BANDUNG', 'slug' => 'bandung-kabupaten', 'province_id' => $province->id]);
     $west = City::create(['name' => 'Kabupaten Bandung Barat', 'slug' => 'bandung-barat', 'province_id' => $province->id]);
+    $cimahi = City::create(['name' => 'Kota Cimahi', 'slug' => 'cimahi-kota', 'province_id' => $province->id]);
     expect(AddressParser::parse('Bandung Barat, Jawa Barat')['city_id'])->toBe($west->id)
         ->and(AddressParser::parse('Bandung, Jawa Barat')['city_id'])->toBeNull()
+        ->and(AddressParser::parse('Bandung, West Java')['city_id'])->toBeNull()
+        ->and(AddressParser::parse('Kabupaten Bandung, West Java')['city_id'])->toBe($kabBandung->id)
+        ->and(AddressParser::parse('Bandung Regency, West Java')['city_id'])->toBe($kabBandung->id)
+        ->and(AddressParser::parse('Bandung City, West Java')['city_id'])->toBe($kotaBandung->id)
+        ->and(AddressParser::parse('Cimahi, West Java')['city_id'])->toBe($cimahi->id)
         ->and(AddressParser::parse('Jakarta')['city_id'])->toBeNull()
         ->and(AddressParser::parse('Jakarta Barat dan Jakarta Selatan')['city_id'])->toBeNull()
         ->and(AddressParser::parse('Jakarta Baratan')['city_id'])->toBeNull();
+});
+
+it('avoids province substring collisions and resolves English or spacing variants', function () {
+    $bali = Province::create(['name' => 'BALI', 'slug' => 'bali']);
+    $kaltim = Province::create(['name' => 'KALIMANTAN TIMUR', 'slug' => 'kalimantan-timur']);
+    $riau = Province::create(['name' => 'RIAU', 'slug' => 'riau']);
+    $kepri = Province::create(['name' => 'KEPULAUAN RIAU', 'slug' => 'kepulauan-riau']);
+    $babel = Province::create(['name' => 'KEPULAUAN BANGKA BELITUNG', 'slug' => 'kepulauan-bangka-belitung']);
+    $banten = Province::create(['name' => 'BANTEN', 'slug' => 'banten']);
+
+    $balikpapan = City::create(['name' => 'KOTA BALIKPAPAN', 'slug' => 'balikpapan-kota', 'province_id' => $kaltim->id]);
+    $batam = City::create(['name' => 'KOTA BATAM', 'slug' => 'batam-kota', 'province_id' => $kepri->id]);
+    $pangkalPinang = City::create(['name' => 'KOTA PANGKAL PINANG', 'slug' => 'pangkal-pinang-kota', 'province_id' => $babel->id]);
+    $tangsel = City::create(['name' => 'KOTA TANGERANG SELATAN', 'slug' => 'tangerang-selatan-kota', 'province_id' => $banten->id]);
+
+    expect(AddressParser::parse('Balikpapan, Kalimantan Timur'))->toBe(['province_id' => $kaltim->id, 'city_id' => $balikpapan->id])
+        ->and(AddressParser::parse('Balikpapan'))->toBe(['province_id' => $kaltim->id, 'city_id' => $balikpapan->id])
+        ->and(AddressParser::parse('Batam, Kepulauan Riau'))->toBe(['province_id' => $kepri->id, 'city_id' => $batam->id])
+        ->and(AddressParser::parse('Batam, Riau Islands'))->toBe(['province_id' => $kepri->id, 'city_id' => $batam->id])
+        ->and(AddressParser::parse('Pangkalpinang, Bangka Belitung Islands'))->toBe(['province_id' => $babel->id, 'city_id' => $pangkalPinang->id])
+        ->and(AddressParser::parse('South Jakarta, Jakarta Raya'))->toBe(['province_id' => $this->province->id, 'city_id' => $this->south->id])
+        ->and(AddressParser::parse('West Jakarta'))->toBe(['province_id' => $this->province->id, 'city_id' => $this->west->id])
+        ->and(AddressParser::parse('South Tangerang, Banten'))->toBe(['province_id' => $banten->id, 'city_id' => $tangsel->id])
+        ->and(AddressParser::formatLocation(['locality' => 'Tangerang Selatan', 'raw' => 'Ciputat']))->toBe('Tangerang Selatan, Ciputat')
+        ->and(AddressParser::formatLocation(['locality' => 'Jakarta Utara', 'raw' => 'Jakarta Utara']))->toBe('Jakarta Utara');
 });
 
 it('imports source location and keeps unknown locations unpublished', function () {
