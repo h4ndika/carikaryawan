@@ -12,6 +12,18 @@ sudo DB_PASS='<password-kuat>' bash deploy/setup-vps.sh
 
 Script meng-clone `git@github.com:h4ndika/carikaryawan.git` (butuh deploy key SSH di server). Script tidak mencetak password di akhir.
 
+## VPS bersama DISEKITAR
+
+Jangan menjalankan installer VPS baru pada server yang sudah dipakai DISEKITAR. CariKaryawan dipasang terpisah: `/var/www/carikaryawan`, database `carikaryawan`, user DB `carikaryawan_user` (akses hanya database ini), vhost `carikaryawan.com`, Supervisor `carikaryawan-worker-*`, dan cron `/etc/cron.d/carikaryawan-schedule` sebagai `www-data`. Jangan mengubah worker, cron, database, atau `.env` DISEKITAR.
+
+Instalasi 12 Oktober 2026 memakai `main` commit `6e8b367`, PHP 8.3 dan database bersih; Composer `--no-dev`, build Vite, migrasi, dan cache produksi. Session/cache/queue menggunakan database CariKaryawan, cookie `carikaryawan_session`, prefix cache `carikaryawan_cache_`, serta `DB_QUEUE_RETRY_AFTER=960` untuk timeout ekstraksi 900 detik. Worker awal: satu proses `ai,default` dan satu proses `jobs`.
+
+Repo menggunakan URL HTTPS tanpa token; credential GitHub disimpan privat di home administrator (mode `0600`) dan dibaca credential helper Git khusus repo. Jangan menampilkan credential atau memasukkannya ke Git. Update repo dijalankan sebagai administrator, bukan `www-data`.
+
+SSL Let's Encrypt mencakup `carikaryawan.com` dan `www.carikaryawan.com`, memakai validasi webroot `/var/www/carikaryawan/public`. HTTP diarahkan ke HTTPS, kecuali path validasi ACME. Renewal otomatis harus diikuti reload Nginx.
+
+Database baru tidak menyalin akun, lokasi, lowongan, atau integrasi DISEKITAR. Buat admin dengan `php artisan make:filament-user`, tambahkan provinsi/kota dan akun API sebelum mengaktifkan otomasi. `auto_job_harvest_enabled` dan `threads_auto_post_enabled` awalnya `0` melalui `Setting::set`; aktifkan dari admin setelah konfigurasi siap. Jangan menjalankan `db:seed` default karena hanya membuat pengguna contoh.
+
 ## Update rutin (setelah merge ke `main`)
 
 **Upgrade pertama dari DISEKITAR wajib mengikuti prosedur purge di bawah, bukan langsung menjalankan urutan update rutin ini.**
@@ -58,7 +70,7 @@ Supervisor (`/etc/supervisor/conf.d/carikaryawan-worker.conf`, dibuat oleh `setu
 
 Jika menambah `onQueue('baru')` di sebuah job, tambahkan juga worker untuk queue tersebut di Supervisor dan di `setup-vps.sh`. Tanpa itu, job akan menumpuk tanpa error.
 
-Jika server lama masih punya program `disekitar-worker-*` (termasuk `photos` dan `maps`), hentikan dan hapus file `.conf`-nya, lalu `supervisorctl reread && supervisorctl update`.
+Hanya jika **mengganti** instalasi DISEKITAR lama: hentikan dan hapus program `disekitar-worker-*` milik instalasi yang diganti. Pada VPS bersama, **biarkan seluruh worker DISEKITAR berjalan**; gunakan `supervisorctl update carikaryawan-worker-fast carikaryawan-worker-jobs` agar perubahan terbatas ke CariKaryawan.
 
 ```bash
 sudo supervisorctl status               # semua harus RUNNING
