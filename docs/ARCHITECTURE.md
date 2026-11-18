@@ -71,7 +71,7 @@ Semua berjalan lewat scheduler di `routes/console.php`. Jam scheduler dalam **UT
 
 ### Dua jalur masuk
 
-- **Otomatis**: `jobs:auto-harvest --engine=auto` merotasi kata kunci dan kota prioritas, bergantian antara Glints dan JobStreet. Tiap otomasi punya saklar di tabel `settings` (misal `auto_job_harvest_enabled`, `threads_auto_post_enabled`).
+- **Otomatis**: `jobs:auto-harvest --engine=auto` merotasi kata kunci dan daftar kota prioritas (`AutoHarvestJobsCommand::priorityCities()`, default Jabodetabek, Jawa Barat dengan bobot utama Bandung, Yogyakarta, Surabaya, Bali; dapat di-override lewat setting `auto_job_harvest_cities`), bergantian antara Glints dan JobStreet. Tiap otomasi punya saklar di tabel `settings` (misal `auto_job_harvest_enabled`, `threads_auto_post_enabled`).
 - **Manual**: menu Filament **Ekstraksi** (`GoogleMapsScrapeJobs`) dan **Harvest Loker** (`JobHarvests`) membuat baris `google_maps_scrape_jobs` dengan `engine` `jobstreet` atau `glints`, lalu mendispatch `RunGoogleMapsScrapeJob` ke queue `jobs`. Tersedia ekstraksi batch multi-keyword × multi-kota/provinsi.
 
 Kedua jalur memakai pool token `apify_accounts` (dirotasi; fallback `APIFY_TOKEN`).

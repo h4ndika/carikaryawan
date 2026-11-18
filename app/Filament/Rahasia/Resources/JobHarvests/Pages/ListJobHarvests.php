@@ -2,6 +2,7 @@
 
 namespace App\Filament\Rahasia\Resources\JobHarvests\Pages;
 
+use App\Console\Commands\AutoHarvestJobsCommand;
 use App\Filament\Rahasia\Resources\JobHarvests\JobHarvestResource;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -66,24 +67,11 @@ class ListJobHarvests extends ListRecords
 
                     Select::make('city')
                         ->label('Kota Tujuan (Opsional)')
-                        ->options([
-                            'Jakarta' => 'Jakarta',
-                            'Surabaya' => 'Surabaya',
-                            'Bandung' => 'Bandung',
-                            'Medan' => 'Medan',
-                            'Semarang' => 'Semarang',
-                            'Yogyakarta' => 'Yogyakarta',
-                            'Denpasar' => 'Denpasar',
-                            'Makassar' => 'Makassar',
-                            'Bekasi' => 'Bekasi',
-                            'Tangerang' => 'Tangerang',
-                            'Depok' => 'Depok',
-                            'Bogor' => 'Bogor',
-                            'Malang' => 'Malang',
-                            'Batam' => 'Batam',
-                            'Balikpapan' => 'Balikpapan',
-                            'Palembang' => 'Palembang',
-                        ])
+                        ->options(function (): array {
+                            $cities = array_values(array_unique(AutoHarvestJobsCommand::priorityCities()));
+
+                            return array_combine($cities, $cities);
+                        })
                         ->searchable()
                         ->placeholder('Biarkan kosong untuk rotasi otomatis harian')
                         ->helperText('Kosongkan bila ingin menggunakan rotasi kota prioritas harian.'),

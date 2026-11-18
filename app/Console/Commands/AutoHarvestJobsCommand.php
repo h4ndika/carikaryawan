@@ -53,26 +53,46 @@ class AutoHarvestJobsCommand extends Command
     ];
 
     /**
-     * Kota prioritas rotasi harian se-Indonesia
+     * Kota prioritas rotasi harian (Jabodetabek, Jawa Barat terutama Bandung, Yogyakarta, Surabaya, Bali).
      */
-    protected array $priorityCities = [
+    public const DEFAULT_PRIORITY_CITIES = [
+        'Bandung',
         'Jakarta',
         'Surabaya',
-        'Bandung',
-        'Medan',
-        'Semarang',
         'Yogyakarta',
-        'Denpasar',
-        'Makassar',
+        'Bali',
         'Bekasi',
+        'Cimahi',
         'Tangerang',
+        'Bandung',
+        'Karawang',
         'Depok',
         'Bogor',
-        'Malang',
-        'Batam',
-        'Balikpapan',
-        'Palembang',
+        'Tangerang Selatan',
+        'Denpasar',
+        'Cirebon',
+        'Bandung Barat',
+        'Purwakarta',
+        'Bandung',
+        'Sumedang',
+        'Subang',
+        'Sukabumi',
+        'Tasikmalaya',
+        'Garut',
     ];
+
+    public static function priorityCities(): array
+    {
+        $configured = json_decode((string) Setting::get('auto_job_harvest_cities', ''), true);
+        if (is_array($configured)) {
+            $cities = array_values(array_filter(array_map(fn ($city) => is_string($city) ? trim($city) : '', $configured)));
+            if ($cities !== []) {
+                return $cities;
+            }
+        }
+
+        return self::DEFAULT_PRIORITY_CITIES;
+    }
 
     public function handle(
         ApifyScraperService $apifyService,
@@ -112,9 +132,10 @@ class AutoHarvestJobsCommand extends Command
         if ($overrideCityName) {
             $targetCityName = $overrideCityName;
         } else {
+            $priorityCities = self::priorityCities();
             $lastCityIndex = (int) Setting::get('auto_job_harvest_last_city_index', 0);
-            $targetCityName = $this->priorityCities[$lastCityIndex % count($this->priorityCities)];
-            Setting::set('auto_job_harvest_last_city_index', ($lastCityIndex + 1) % count($this->priorityCities));
+            $targetCityName = $priorityCities[$lastCityIndex % count($priorityCities)];
+            Setting::set('auto_job_harvest_last_city_index', ($lastCityIndex + 1) % count($priorityCities));
         }
 
         $this->info("=== Memulai Auto Harvest Lowongan Kerja ===");
