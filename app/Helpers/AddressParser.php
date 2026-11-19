@@ -152,9 +152,67 @@ class AddressParser
      */
     protected static function findCityId(string $normalizedAddress, ?int $provinceId = null): ?int
     {
-        $ids = self::matchingCityIds($normalizedAddress, $provinceId);
+        $parts = preg_split('/[,;\/]/u', $normalizedAddress);
+        $cityText = preg_replace('/(?:^|[,;\/])\s*(?:KECAMATAN|KEC\.?|KAPANEWON|KEMANTREN)\s+[^,;\/]+/u', ' ', $normalizedAddress);
+        $ids = self::matchingCityIds($cityText, $provinceId);
+        $parents = null;
+        static $districts = null;
+        $districts ??= json_decode(file_get_contents(resource_path('data/district-cities.json')), true, 512, JSON_THROW_ON_ERROR);
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+            $district = preg_replace('/^(?:KECAMATAN|KEC\.?|KAPANEWON|KEMANTREN)\s+/u', '', $part);
+            $prefixed = $district !== $part;
+            // Only whole location components are districts, never words inside a street address.
+            if (!$prefixed && self::matchingCityIds($part, $provinceId) !== []) {
+                continue;
+            }
+            $matches = $districts[$district] ?? [];
+            if ($matches === []) {
+                continue;
+            }
+            $candidates = [];
+            foreach ($matches as [$province, $city]) {
+                if (str_starts_with($part, 'KAPANEWON ') && $province !== 'DAERAH ISTIMEWA YOGYAKARTA') {
+                    continue;
+                }
+                if (str_starts_with($part, 'KEMANTREN ') && $city !== 'KOTA YOGYAKARTA') {
+                    continue;
+                }
+                $provinceMatch = self::findProvinceId($province);
+                if ($provinceId && $provinceMatch !== $provinceId) {
+                    continue;
+                }
+                $candidates[self::regionKey($city)] = $provinceMatch;
+            }
+            $parents = $parents === null ? $candidates : array_intersect_key($parents, $candidates);
+        }
+
+        if ($parents !== null) {
+            $cities = City::query()->when($provinceId, fn ($query) => $query->where('province_id', $provinceId))->get();
+            if ($ids !== []) {
+                $cities = $cities->whereIn('id', $ids);
+                if ($cities->map(fn ($city) => explode(':', self::regionKey($city->name), 2)[1])->unique()->count() > 1) {
+                    return null;
+                }
+            } elseif (count($parents) !== 1) {
+                // ponytail: unresolved duplicate district names need source city/province, not the search city.
+                return null;
+            }
+            $ids = $cities->filter(fn ($city) => array_key_exists(self::regionKey($city->name), $parents)
+                && $parents[self::regionKey($city->name)] === $city->province_id)->pluck('id')->all();
+        }
 
         return count($ids) === 1 ? $ids[0] : null;
+    }
+
+    private static function regionKey(string $name): string
+    {
+        $name = mb_strtoupper(trim($name));
+        $type = str_starts_with($name, 'KAB') ? 'KAB:' : 'KOTA:';
+        $name = preg_replace('/^(?:KOTA(?:\s+ADM(?:INISTRASI)?\.?)?|KABUPATEN|KAB\.?)\s+/u', '', $name);
+
+        return $type . preg_replace('/[^\pL\pN]/u', '', $name);
     }
 
     public static function matchingCityIds(string $text, ?int $provinceId = null): array
@@ -186,7 +244,7 @@ class AddressParser
 
         foreach ($cities as $city) {
             $name = mb_strtoupper($city->name);
-            $short = preg_replace('/^(?:KOTA|KABUPATEN|KAB\.)\s+/u', '', $name);
+            $short = preg_replace('/^(?:KOTA(?:\s+ADM(?:INISTRASI)?\.?)?|KABUPATEN|KAB\.)\s+/u', '', $name);
             $aliases = [$name, $short];
 
             if (preg_match('/^(?:KABUPATEN|KAB\.)\s+/u', $name)) {

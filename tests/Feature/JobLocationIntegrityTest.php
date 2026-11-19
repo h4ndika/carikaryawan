@@ -84,7 +84,7 @@ it('avoids province substring collisions and resolves English or spacing variant
         ->and(AddressParser::parse('Sleman, DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => $sleman->id])
         ->and(AddressParser::parse('Yogyakarta, DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => $kotaYogya->id])
         ->and(AddressParser::parse('Yogyakarta, Indonesia'))->toBe(['province_id' => $diy->id, 'city_id' => $kotaYogya->id])
-        ->and(AddressParser::parse('Mlati, Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => null])
+        ->and(AddressParser::parse('Mlati, Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => $sleman->id])
         ->and(AddressParser::parse('DI Yogyakarta'))->toBe(['province_id' => $diy->id, 'city_id' => null])
         ->and(AddressParser::parse('Rejang Lebong, Bengkulu'))->toBe(['province_id' => $bengkuluProv->id, 'city_id' => $rejangLebong->id])
         ->and(AddressParser::parse('Bengkulu, Bengkulu'))->toBe(['province_id' => $bengkuluProv->id, 'city_id' => $kotaBengkulu->id])
@@ -93,6 +93,49 @@ it('avoids province substring collisions and resolves English or spacing variant
         ->and(AddressParser::parse('South Tangerang, Banten'))->toBe(['province_id' => $banten->id, 'city_id' => $tangsel->id])
         ->and(AddressParser::formatLocation(['locality' => 'Tangerang Selatan', 'raw' => 'Ciputat']))->toBe('Tangerang Selatan, Ciputat')
         ->and(AddressParser::formatLocation(['locality' => 'Jakarta Utara', 'raw' => 'Jakarta Utara']))->toBe('Jakarta Utara');
+});
+
+it('resolves source districts without guessing from incomplete local taxonomy', function () {
+    $jabar = Province::create(['name' => 'Jawa Barat', 'slug' => 'jawa-barat']);
+    $diy = Province::create(['name' => 'DI Yogyakarta', 'slug' => 'di-yogyakarta']);
+    $bali = Province::create(['name' => 'Bali', 'slug' => 'bali']);
+    $jateng = Province::create(['name' => 'Jawa Tengah', 'slug' => 'jawa-tengah']);
+    $bandung = City::create(['name' => 'KOTA BANDUNG', 'slug' => 'bandung-kota', 'province_id' => $jabar->id]);
+    City::create(['name' => 'KAB. BANDUNG', 'slug' => 'bandung-kab', 'province_id' => $jabar->id]);
+    $bogor = City::create(['name' => 'KOTA BOGOR', 'slug' => 'bogor-kota', 'province_id' => $jabar->id]);
+    $kabBogor = City::create(['name' => 'KAB. BOGOR', 'slug' => 'bogor-kab', 'province_id' => $jabar->id]);
+    $sleman = City::create(['name' => 'KAB. SLEMAN', 'slug' => 'sleman-kab', 'province_id' => $diy->id]);
+    $yogya = City::create(['name' => 'KOTA YOGYAKARTA', 'slug' => 'yogya-kota', 'province_id' => $diy->id]);
+    $badung = City::create(['name' => 'KAB. BADUNG', 'slug' => 'badung-kab', 'province_id' => $bali->id]);
+    $denpasar = City::create(['name' => 'KOTA DENPASAR', 'slug' => 'denpasar-kota', 'province_id' => $bali->id]);
+    City::create(['name' => 'KOTA SURAKARTA', 'slug' => 'surakarta-kota', 'province_id' => $jateng->id]);
+
+    foreach ([
+        'Andir' => $bandung->id,
+        'Bandung, Andir' => $bandung->id,
+        'Bogor, Tanah Sareal' => $bogor->id,
+        'Cileungsi' => $kabBogor->id,
+        'Kapanewon Depok' => $sleman->id,
+        'Kapanewon Ngemplak' => $sleman->id,
+        'Kapanewon Sleman' => $sleman->id,
+        'Kemantren Jetis' => $yogya->id,
+        'Kuta Utara' => $badung->id,
+        'North Denpasar, Bali' => $denpasar->id,
+        'Kec. Cengkareng' => $this->west->id,
+        'Grogol Petamburan' => $this->west->id,
+    ] as $source => $cityId) {
+        expect(AddressParser::parse($source)['city_id'])->toBe($cityId, $source);
+    }
+    foreach (['Jetis', 'Banjarsari', 'Andir, Bali', 'Kota Bogor, Cileungsi', 'Kota Bandung, Kota Bogor, Andir', 'Jl. Andir No. 5', 'Andiran'] as $source) {
+        expect(AddressParser::parse($source)['city_id'])->toBeNull($source);
+    }
+    $stats = app(GoogleMapsImportService::class)->importFromRecords([
+        ['title' => 'Warehouse Andir', 'location' => 'Andir', 'details' => ['lokasi' => 'Andir']],
+        ['title' => 'Warehouse Banjarsari', 'location' => 'Banjarsari'],
+    ], ['category_id' => $this->category->id, 'status' => 'draft']);
+    expect($stats['imported'])->toBe(1)
+        ->and(Post::where('title', 'Warehouse Andir')->first()->city_id)->toBe($bandung->id)
+        ->and(Post::where('title', 'Warehouse Andir')->first()->details()->where('meta_key', 'lokasi')->value('meta_value'))->toBe('Andir');
 });
 
 it('imports source location and keeps unknown locations unpublished', function () {
